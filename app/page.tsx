@@ -1,9 +1,11 @@
 import Link from 'next/link';
+import { MessageCircle, MapPin, Clock, Phone, CircleHelp } from 'lucide-react';
 import { site } from '@/lib/site';
 import { serviceCategories } from '@/lib/services';
 import { faqSchema } from '@/lib/schema';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { ServiceIcon } from '@/components/service-icon';
 
 const faqs = [
   {
@@ -43,6 +45,7 @@ export default function HomePage() {
           size="lg"
           className="mt-10 rounded-full bg-line px-8 text-white hover:bg-line/90"
         >
+          <MessageCircle className="size-4" />
           จองคิวผ่าน LINE
         </Button>
       </section>
@@ -54,7 +57,8 @@ export default function HomePage() {
             <Link key={c.slug} href={`/${c.slug}`} className="block">
               <Card className="h-full rounded-2xl border-olive/15 ring-0 transition hover:border-olive hover:shadow-md">
                 <CardContent>
-                  <p className="font-serif text-lg text-olive-deep">{c.title}</p>
+                  <ServiceIcon slug={c.slug} className="size-6 text-olive" />
+                  <p className="mt-3 font-serif text-lg text-olive-deep">{c.title}</p>
                   <p className="mt-1 text-xs uppercase tracking-wide text-olive-light">
                     {c.titleEn}
                   </p>
@@ -70,20 +74,35 @@ export default function HomePage() {
         <div className="mx-auto grid max-w-6xl gap-10 md:grid-cols-2">
           <div>
             <h2 className="font-serif text-2xl text-olive-deep">เวลาทำการ &amp; ที่อยู่</h2>
-            <p className="mt-4 text-sm text-ink/70">{site.addressFull}</p>
+            <p className="mt-4 flex items-start gap-2 text-sm text-ink/70">
+              <MapPin className="mt-0.5 size-4 shrink-0 text-olive" />
+              {site.addressFull}
+            </p>
             <ul className="mt-4 space-y-1 text-sm text-ink/70">
-              <li>จันทร์–เสาร์: 9:00–22:00</li>
-              <li>อาทิตย์: 9:00–17:00</li>
+              <li className="flex items-center gap-2">
+                <Clock className="size-4 shrink-0 text-olive" />
+                จันทร์–เสาร์: 9:00–22:00
+              </li>
+              <li className="flex items-center gap-2">
+                <Clock className="size-4 shrink-0 text-olive" />
+                อาทิตย์: 9:00–17:00
+              </li>
             </ul>
-            <p className="mt-4 text-sm text-ink/70">โทร {site.phone}</p>
+            <p className="mt-4 flex items-center gap-2 text-sm text-ink/70">
+              <Phone className="size-4 shrink-0 text-olive" />
+              {site.phone}
+            </p>
           </div>
           <div>
             <h2 className="font-serif text-2xl text-olive-deep">คำถามที่พบบ่อย</h2>
             <dl className="mt-4 space-y-4">
               {faqs.map((f) => (
                 <div key={f.question}>
-                  <dt className="text-sm font-medium text-ink">{f.question}</dt>
-                  <dd className="mt-1 text-sm text-ink/70">{f.answer}</dd>
+                  <dt className="flex items-start gap-2 text-sm font-medium text-ink">
+                    <CircleHelp className="mt-0.5 size-4 shrink-0 text-olive" />
+                    {f.question}
+                  </dt>
+                  <dd className="mt-1 pl-6 text-sm text-ink/70">{f.answer}</dd>
                 </div>
               ))}
             </dl>

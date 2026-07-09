@@ -1,8 +1,9 @@
 import Link from 'next/link';
-import { Menu } from 'lucide-react';
+import { Menu, MessageCircle } from 'lucide-react';
 import { site } from '@/lib/site';
 import { serviceCategories } from '@/lib/services';
 import { Button } from '@/components/ui/button';
+import { ServiceIcon } from '@/components/service-icon';
 import {
   Sheet,
   SheetContent,
@@ -13,9 +14,9 @@ import {
 } from '@/components/ui/sheet';
 
 const navItems = [
-  ...serviceCategories.map((c) => ({ href: `/${c.slug}`, label: c.title })),
-  { href: '/about', label: 'เกี่ยวกับเรา' },
-  { href: '/contact', label: 'ติดต่อ' },
+  ...serviceCategories.map((c) => ({ href: `/${c.slug}`, label: c.title, slug: c.slug })),
+  { href: '/about', label: 'เกี่ยวกับเรา', slug: null },
+  { href: '/contact', label: 'ติดต่อ', slug: null },
 ];
 
 export default function Header() {
@@ -39,6 +40,7 @@ export default function Header() {
             render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
             className="hidden bg-line text-white hover:bg-line/90 sm:inline-flex"
           >
+            <MessageCircle className="size-4" />
             จองคิว LINE
           </Button>
 
@@ -63,10 +65,11 @@ export default function Header() {
                     render={
                       <Link
                         href={item.href}
-                        className="rounded-md px-3 py-2 text-sm text-foreground/80 hover:bg-muted hover:text-primary"
+                        className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-foreground/80 hover:bg-muted hover:text-primary"
                       />
                     }
                   >
+                    {item.slug && <ServiceIcon slug={item.slug} className="size-4" />}
                     {item.label}
                   </SheetClose>
                 ))}
@@ -74,6 +77,7 @@ export default function Header() {
                   render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
                   className="mt-4 bg-line text-white hover:bg-line/90"
                 >
+                  <MessageCircle className="size-4" />
                   จองคิว LINE
                 </Button>
               </nav>
