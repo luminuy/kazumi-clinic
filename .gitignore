@@ -1,0 +1,24 @@
+# deps
+node_modules
+
+# next
+.next
+out
+next-env.d.ts
+
+# cloudflare
+.open-next
+.wrangler
+
+# env
+.env
+.env*.local
+
+# claude code local settings
+.claude/settings.local.json
+
+# misc
+.DS_Store
+* 2.*
+*.log
+*.tsbuildinfo
