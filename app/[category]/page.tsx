@@ -1,12 +1,14 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import { MessageCircle } from 'lucide-react';
 import { site } from '@/lib/site';
 import { serviceCategories, getServiceBySlug } from '@/lib/services';
 import { serviceItemListSchema, breadcrumbSchema } from '@/lib/schema';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { ServiceIcon } from '@/components/service-icon';
 
 type Props = { params: Promise<{ category: string }> };
 
@@ -65,7 +67,8 @@ export default async function ServiceCategoryPage({ params }: Props) {
       </nav>
 
       <section className="mx-auto max-w-6xl px-6 py-10">
-        <p className="font-serif text-sm uppercase tracking-[0.3em] text-olive-light">
+        <ServiceIcon slug={service.slug} className="size-8 text-olive" />
+        <p className="mt-3 font-serif text-sm uppercase tracking-[0.3em] text-olive-light">
           {service.titleEn}
         </p>
         <h1 className="mt-2 font-serif text-3xl text-olive-deep md:text-4xl">{service.title}</h1>
@@ -98,6 +101,7 @@ export default async function ServiceCategoryPage({ params }: Props) {
           size="lg"
           className="mt-10 rounded-full bg-line px-8 text-white hover:bg-line/90"
         >
+          <MessageCircle className="size-4" />
           จองคิว {service.title} ผ่าน LINE
         </Button>
       </section>

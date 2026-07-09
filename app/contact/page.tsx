@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { MapPin, Phone, Clock, MessageCircle, AtSign } from 'lucide-react';
 import { site } from '@/lib/site';
 import { breadcrumbSchema } from '@/lib/schema';
 import { Button } from '@/components/ui/button';
@@ -43,16 +44,26 @@ export default function ContactPage() {
       <section className="mx-auto grid max-w-6xl gap-10 px-6 py-14 md:grid-cols-2">
         <div>
           <h1 className="font-serif text-3xl text-olive-deep md:text-4xl">ติดต่อเรา</h1>
-          <p className="mt-6 text-ink/70">{site.addressFull}</p>
+          <p className="mt-6 flex items-start gap-2 text-ink/70">
+            <MapPin className="mt-0.5 size-4 shrink-0 text-olive" />
+            {site.addressFull}
+          </p>
           <ul className="mt-6 space-y-2 text-sm text-ink/70">
-            <li>โทร: {site.phone}</li>
-            <li>เวลาทำการ: จันทร์–เสาร์ 9:00–22:00, อาทิตย์ 9:00–17:00</li>
+            <li className="flex items-center gap-2">
+              <Phone className="size-4 shrink-0 text-olive" />
+              โทร: {site.phone}
+            </li>
+            <li className="flex items-center gap-2">
+              <Clock className="size-4 shrink-0 text-olive" />
+              เวลาทำการ: จันทร์–เสาร์ 9:00–22:00, อาทิตย์ 9:00–17:00
+            </li>
           </ul>
           <div className="mt-6 flex gap-4">
             <Button
               render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
               className="rounded-full bg-line text-white hover:bg-line/90"
             >
+              <MessageCircle className="size-4" />
               LINE
             </Button>
             <Button
@@ -60,6 +71,7 @@ export default function ContactPage() {
               variant="outline"
               className="rounded-full border-olive text-olive-deep hover:bg-olive/10"
             >
+              <AtSign className="size-4" />
               Instagram
             </Button>
           </div>

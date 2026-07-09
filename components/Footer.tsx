@@ -1,6 +1,8 @@
 import Link from 'next/link';
+import { MapPin, Phone, Clock, MessageCircle, AtSign, ExternalLink } from 'lucide-react';
 import { site } from '@/lib/site';
 import { serviceCategories } from '@/lib/services';
+import { ServiceIcon } from '@/components/service-icon';
 
 export default function Footer() {
   return (
@@ -16,7 +18,8 @@ export default function Footer() {
           <ul className="mt-3 space-y-2 text-sm text-sand/70">
             {serviceCategories.map((c) => (
               <li key={c.slug}>
-                <Link href={`/${c.slug}`} className="hover:text-white">
+                <Link href={`/${c.slug}`} className="flex items-center gap-2 hover:text-white">
+                  <ServiceIcon slug={c.slug} className="size-4" />
                   {c.title}
                 </Link>
               </li>
@@ -24,17 +27,44 @@ export default function Footer() {
           </ul>
         </div>
         <div className="text-sm text-sand/70">
-          <p>{site.addressFull}</p>
-          <p className="mt-2">โทร {site.phone}</p>
-          <p className="mt-2">ทุกวัน 9:00–22:00 (อาทิตย์ 9:00–17:00)</p>
+          <p className="flex items-start gap-2">
+            <MapPin className="mt-0.5 size-4 shrink-0" />
+            {site.addressFull}
+          </p>
+          <p className="mt-2 flex items-center gap-2">
+            <Phone className="size-4 shrink-0" />
+            โทร {site.phone}
+          </p>
+          <p className="mt-2 flex items-center gap-2">
+            <Clock className="size-4 shrink-0" />
+            ทุกวัน 9:00–22:00 (อาทิตย์ 9:00–17:00)
+          </p>
           <div className="mt-4 flex gap-4">
-            <a href={site.lineUrl} target="_blank" rel="noopener" className="hover:text-white">
+            <a
+              href={site.lineUrl}
+              target="_blank"
+              rel="noopener"
+              className="flex items-center gap-1.5 hover:text-white"
+            >
+              <MessageCircle className="size-4" />
               LINE
             </a>
-            <a href={site.instagram} target="_blank" rel="noopener" className="hover:text-white">
+            <a
+              href={site.instagram}
+              target="_blank"
+              rel="noopener"
+              className="flex items-center gap-1.5 hover:text-white"
+            >
+              <AtSign className="size-4" />
               Instagram
             </a>
-            <a href={site.facebook} target="_blank" rel="noopener" className="hover:text-white">
+            <a
+              href={site.facebook}
+              target="_blank"
+              rel="noopener"
+              className="flex items-center gap-1.5 hover:text-white"
+            >
+              <ExternalLink className="size-4" />
               Facebook
             </a>
           </div>

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { ShieldCheck } from 'lucide-react';
 import { site } from '@/lib/site';
 import { breadcrumbSchema } from '@/lib/schema';
 
@@ -46,7 +47,10 @@ export default function AboutPage() {
           Confidence — เน้นการปรับแต่งอย่างพอดี ให้ผลลัพธ์ที่เป็นธรรมชาติ ดูแลโดยแพทย์ผู้เชี่ยวชาญ
           ในบรรยากาศคลินิกที่สงบและเป็นส่วนตัว
         </p>
-        <p className="mt-6 text-sm text-ink/50">ใบอนุญาตประกอบกิจการสถานพยาบาลเลขที่ {site.license}</p>
+        <p className="mt-6 flex items-center gap-2 text-sm text-ink/50">
+          <ShieldCheck className="size-4 shrink-0" />
+          ใบอนุญาตประกอบกิจการสถานพยาบาลเลขที่ {site.license}
+        </p>
       </section>
     </>
   );
