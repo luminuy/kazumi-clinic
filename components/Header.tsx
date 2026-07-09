@@ -1,35 +1,85 @@
 import Link from 'next/link';
+import { Menu } from 'lucide-react';
 import { site } from '@/lib/site';
 import { serviceCategories } from '@/lib/services';
+import { Button } from '@/components/ui/button';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetClose,
+} from '@/components/ui/sheet';
+
+const navItems = [
+  ...serviceCategories.map((c) => ({ href: `/${c.slug}`, label: c.title })),
+  { href: '/about', label: 'เกี่ยวกับเรา' },
+  { href: '/contact', label: 'ติดต่อ' },
+];
 
 export default function Header() {
   return (
-    <header className="sticky top-0 z-40 border-b border-olive/10 bg-sand/95 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <Link href="/" className="font-serif text-xl tracking-widest text-olive-deep">
-          KAZUMI <span className="text-sm align-top">CLINIC</span>
+          KAZUMI <span className="align-top text-sm">CLINIC</span>
         </Link>
-        <nav className="hidden gap-6 text-sm text-ink/80 md:flex">
-          {serviceCategories.map((c) => (
-            <Link key={c.slug} href={`/${c.slug}`} className="hover:text-olive">
-              {c.title}
+
+        <nav className="hidden gap-6 text-sm text-foreground/80 md:flex">
+          {navItems.map((item) => (
+            <Link key={item.href} href={item.href} className="hover:text-primary">
+              {item.label}
             </Link>
           ))}
-          <Link href="/about" className="hover:text-olive">
-            เกี่ยวกับเรา
-          </Link>
-          <Link href="/contact" className="hover:text-olive">
-            ติดต่อ
-          </Link>
         </nav>
-        <a
-          href={site.lineUrl}
-          target="_blank"
-          rel="noopener"
-          className="rounded-full bg-line px-4 py-2 text-sm font-medium text-white"
-        >
-          จองคิว LINE
-        </a>
+
+        <div className="flex items-center gap-2">
+          <Button
+            render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
+            className="hidden bg-line text-white hover:bg-line/90 sm:inline-flex"
+          >
+            จองคิว LINE
+          </Button>
+
+          <Sheet>
+            <SheetTrigger
+              render={
+                <Button variant="ghost" size="icon" className="md:hidden" aria-label="เปิดเมนู" />
+              }
+            >
+              <Menu className="size-5" />
+            </SheetTrigger>
+            <SheetContent side="right">
+              <SheetHeader>
+                <SheetTitle className="font-serif tracking-widest text-olive-deep">
+                  KAZUMI CLINIC
+                </SheetTitle>
+              </SheetHeader>
+              <nav className="flex flex-col gap-1 px-4">
+                {navItems.map((item) => (
+                  <SheetClose
+                    key={item.href}
+                    render={
+                      <Link
+                        href={item.href}
+                        className="rounded-md px-3 py-2 text-sm text-foreground/80 hover:bg-muted hover:text-primary"
+                      />
+                    }
+                  >
+                    {item.label}
+                  </SheetClose>
+                ))}
+                <Button
+                  render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
+                  className="mt-4 bg-line text-white hover:bg-line/90"
+                >
+                  จองคิว LINE
+                </Button>
+              </nav>
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
     </header>
   );

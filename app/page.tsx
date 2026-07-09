@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { site } from '@/lib/site';
 import { serviceCategories } from '@/lib/services';
 import { faqSchema } from '@/lib/schema';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 
 const faqs = [
   {
@@ -36,30 +38,29 @@ export default function HomePage() {
           &ldquo;{site.tagline}&rdquo;
         </h1>
         <p className="mt-3 text-sand/60">{site.taglineJa}</p>
-        <a
-          href={site.lineUrl}
-          target="_blank"
-          rel="noopener"
-          className="mt-10 inline-block rounded-full bg-line px-8 py-3 text-sm font-medium text-white"
+        <Button
+          render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
+          size="lg"
+          className="mt-10 rounded-full bg-line px-8 text-white hover:bg-line/90"
         >
           จองคิวผ่าน LINE
-        </a>
+        </Button>
       </section>
 
       <section className="mx-auto max-w-6xl px-6 py-20">
         <h2 className="font-serif text-2xl text-olive-deep">บริการของเรา</h2>
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {serviceCategories.map((c) => (
-            <Link
-              key={c.slug}
-              href={`/${c.slug}`}
-              className="rounded-2xl border border-olive/15 bg-white p-6 transition hover:border-olive hover:shadow-md"
-            >
-              <p className="font-serif text-lg text-olive-deep">{c.title}</p>
-              <p className="mt-1 text-xs uppercase tracking-wide text-olive-light">
-                {c.titleEn}
-              </p>
-              <p className="mt-3 text-sm text-ink/70">{c.shortDescription}</p>
+            <Link key={c.slug} href={`/${c.slug}`} className="block">
+              <Card className="h-full rounded-2xl border-olive/15 ring-0 transition hover:border-olive hover:shadow-md">
+                <CardContent>
+                  <p className="font-serif text-lg text-olive-deep">{c.title}</p>
+                  <p className="mt-1 text-xs uppercase tracking-wide text-olive-light">
+                    {c.titleEn}
+                  </p>
+                  <p className="mt-3 text-sm text-ink/70">{c.shortDescription}</p>
+                </CardContent>
+              </Card>
             </Link>
           ))}
         </div>
