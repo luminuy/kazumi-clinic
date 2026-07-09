@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { site } from '@/lib/site';
 import { breadcrumbSchema } from '@/lib/schema';
+import { Button } from '@/components/ui/button';
 
 export const metadata: Metadata = {
   title: 'ติดต่อเรา',
@@ -47,23 +48,20 @@ export default function ContactPage() {
             <li>โทร: {site.phone}</li>
             <li>เวลาทำการ: จันทร์–เสาร์ 9:00–22:00, อาทิตย์ 9:00–17:00</li>
           </ul>
-          <div className="mt-6 flex gap-4 text-sm">
-            <a
-              href={site.lineUrl}
-              target="_blank"
-              rel="noopener"
-              className="rounded-full bg-line px-6 py-2 font-medium text-white"
+          <div className="mt-6 flex gap-4">
+            <Button
+              render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
+              className="rounded-full bg-line text-white hover:bg-line/90"
             >
               LINE
-            </a>
-            <a
-              href={site.instagram}
-              target="_blank"
-              rel="noopener"
-              className="rounded-full border border-olive px-6 py-2 font-medium text-olive-deep"
+            </Button>
+            <Button
+              render={<a href={site.instagram} target="_blank" rel="noopener" />}
+              variant="outline"
+              className="rounded-full border-olive text-olive-deep hover:bg-olive/10"
             >
               Instagram
-            </a>
+            </Button>
           </div>
         </div>
         <div className="overflow-hidden rounded-2xl border border-olive/15">

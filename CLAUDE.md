@@ -2,7 +2,7 @@
 
 ไฟล์นี้เป็น **กฎที่ AI ทุกตัว** (Claude Code, Cursor, Copilot, Codex, etc.) ต้องทำตามเมื่อแก้โค้ดในโปรเจกต์นี้ เพื่อให้ SEO และ metadata สม่ำเสมอตลอดทั้งไซต์
 
-Stack: Next.js App Router + TypeScript + Tailwind, deploy บน Cloudflare Workers ผ่าน OpenNext (D1 + R2 + Durable Object queue สำหรับ ISR)
+Stack: Next.js App Router (React 19) + TypeScript + Tailwind CSS v4 + shadcn/ui (Base UI primitives) + Zod, deploy บน Cloudflare Workers ผ่าน OpenNext (D1 + R2 + Durable Object queue สำหรับ ISR)
 
 ---
 
@@ -67,10 +67,35 @@ Stack: Next.js App Router + TypeScript + Tailwind, deploy บน Cloudflare Work
 
 - **ใช้ความสามารถออกแบบของ Claude ได้เต็มที่** — ไม่ต้องถามก่อนทุก step
 - เรียก skill `anthropic-skills:frontend-design` เมื่อเหมาะ (สร้าง component, page, หรือ overhaul ครั้งใหญ่)
-- ตัดสินใจเรื่อง spacing / typography / color / layout / motion ได้เอง โดยอิงโทนสีที่มีในโปรเจกต์: `#4B5740` olive (primary), `#333C2B` olive-deep, `#7C8A68` olive-light, `#F4F2EA` sand (background), `#1E211B` ink (text), `#06C755` LINE — ดู [tailwind.config.ts](tailwind.config.ts)
+- ตัดสินใจเรื่อง spacing / typography / color / layout / motion ได้เอง โดยอิงโทนสีที่มีในโปรเจกต์: `#4B5740` olive (primary), `#333C2B` olive-deep, `#7C8A68` olive-light, `#F4F2EA` sand (background), `#1E211B` ink (text), `#06C755` LINE — ค่าจริงอยู่ใน `@theme`/`:root` ของ [app/globals.css](app/globals.css) (Tailwind v4 ไม่มี `tailwind.config.ts` แล้ว ห้ามสร้างไฟล์นั้นกลับมา)
 - สไตล์แบรนด์: มินิมอล ญี่ปุ่น สงบ (ดู [lib/site.ts](lib/site.ts) tagline: "Where balance purity becomes eternal beauty" / 純粋さは永遠の美へ)
 - ห้ามทำแค่ "ลด padding ให้พอผ่าน" — ถ้าจุดนั้นดูไม่ดี ให้คิดใหม่ทั้ง section
 - กฎเดิม (§0.1, §0.3, §0 auto-merge) ยังบังคับใช้
+
+### 0.4.1 UI component library — shadcn/ui บน Base UI (ไม่ใช่ Radix)
+
+โปรเจกต์นี้ใช้ shadcn CLI เวอร์ชันที่ generate component บน **Base UI** (`@base-ui/react`) ไม่ใช่ Radix UI แบบที่คุ้นเคยจาก tutorial ทั่วไป — จุดต่างที่สำคัญที่สุด:
+
+- **ไม่มี `asChild` prop** — Base UI ใช้ prop `render` แทน ต้องเขียนแบบนี้:
+
+  ```tsx
+  // ✓ ถูก — Base UI pattern
+  <Button render={<a href="/foo" target="_blank" rel="noopener" />}>ข้อความ</Button>
+
+  // ✗ ผิด — Radix asChild pattern ใช้ไม่ได้กับ component library นี้
+  <Button asChild><a href="/foo">ข้อความ</a></Button>
+  ```
+
+  ใช้แบบเดียวกันกับ `SheetTrigger`, `SheetClose`, และ Base UI primitive อื่นทุกตัวใน `components/ui/`
+- เพิ่ม component ใหม่ด้วย `npx shadcn@latest add <name>` — ห้ามเขียน component เองโดยไม่เช็ค registry ก่อน (จะได้ API ที่ไม่ตรงกับที่มีอยู่)
+- ห้ามรัน `npx shadcn@latest init` ซ้ำ — จะ overwrite `app/globals.css`/`app/layout.tsx` ทับสี brand และฟอนต์ Thai ที่ตั้งไว้ (ครั้งก่อนมันเคยใส่ font `Geist` ทับ `Noto Sans Thai` มาแล้ว ทำให้ข้อความไทยพังเงียบ ๆ)
+
+### 0.4.2 Cloudflare Workers runtime — ห้ามใส่ `export const runtime = 'edge'`
+
+`@opennextjs/cloudflare` (adapter ที่ deploy โปรเจกต์นี้) ต้องใช้ **Node.js runtime** (ผ่าน `nodejs_compat` flag ใน [wrangler.jsonc](wrangler.jsonc)) — ต่างจาก `@cloudflare/next-on-pages` ที่บังคับ Edge runtime
+
+- **ห้ามใส่** `export const runtime = 'edge';` ในหน้า Page หรือ Route Handler ใด ๆ — จะขัดกับ adapter และพังตอน build/deploy
+- ทั้ง Worker รันที่ edge ของ Cloudflare อยู่แล้วโดยธรรมชาติ ไม่ต้องประกาศ runtime เพิ่ม ปล่อย default ไว้
 
 ### 0.5 Lessons learned — กฎจากความผิดพลาดจริง
 
@@ -208,7 +233,7 @@ provider: { '@id': `${site.url}/#business` }   // ✓ ถูก
 | ชื่อร้าน, เบอร์, ที่อยู่, เวลาทำการ, social | [lib/site.ts](lib/site.ts)           |
 | หมวดบริการ + ราคา                          | [lib/services.ts](lib/services.ts)   |
 | MedicalBusiness JSON-LD + schema helpers   | [lib/schema.ts](lib/schema.ts)       |
-| สี/ฟอนต์ของแบรนด์                          | [tailwind.config.ts](tailwind.config.ts) |
+| สี/ฟอนต์ของแบรนด์ (CSS variables)          | [app/globals.css](app/globals.css)   |
 
 เพิ่มบริการ/หมวดใหม่ → แก้ `lib/services.ts` → sitemap + schema + หน้า listing generate อัตโนมัติ
 
@@ -248,6 +273,9 @@ provider: { '@id': `${site.url}/#business` }   // ✓ ถูก
 - ❌ ลบเลขใบอนุญาตสถานพยาบาลออกจาก footer/about
 - ❌ อ้างสรรพคุณทางการแพทย์เกินจริงหรือรับประกันผลลัพธ์ (ดู §0.2)
 - ❌ ปล่อย `open-next.config.ts` ไม่มี `queue`/`tagCache` override ก่อน deploy จริง
+- ❌ ใส่ `export const runtime = 'edge'` ในหน้า/route ใด ๆ (ขัดกับ `@opennextjs/cloudflare`, ดู §0.4.2)
+- ❌ ใช้ prop `asChild` กับ component ใน `components/ui/` — ต้องใช้ `render` (ดู §0.4.1)
+- ❌ รัน `npx shadcn@latest init` ซ้ำ หรือสร้าง `tailwind.config.ts` กลับมา (Tailwind v4 ใช้ `@theme` ใน `app/globals.css`)
 
 ---
 

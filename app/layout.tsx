@@ -4,6 +4,7 @@ import { site } from '@/lib/site';
 import { clinicSchema } from '@/lib/schema';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { cn } from '@/lib/utils';
 import './globals.css';
 
 const serif = EB_Garamond({
@@ -12,6 +13,7 @@ const serif = EB_Garamond({
   weight: ['400', '500', '600'],
 });
 
+// Noto Sans Thai is required — Geist/other Latin-only fonts silently fall back for Thai glyphs.
 const sans = Noto_Sans_Thai({
   subsets: ['thai', 'latin'],
   variable: '--font-sans',
@@ -45,7 +47,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="th" className={`${serif.variable} ${sans.variable}`}>
+    <html lang="th" className={cn(serif.variable, sans.variable)}>
       <body className="font-sans">
         <script
           type="application/ld+json"

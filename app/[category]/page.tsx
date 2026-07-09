@@ -4,6 +4,9 @@ import Link from 'next/link';
 import { site } from '@/lib/site';
 import { serviceCategories, getServiceBySlug } from '@/lib/services';
 import { serviceItemListSchema, breadcrumbSchema } from '@/lib/schema';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 type Props = { params: Promise<{ category: string }> };
 
@@ -70,28 +73,33 @@ export default async function ServiceCategoryPage({ params }: Props) {
 
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {service.items.map((item) => (
-            <div
+            <Card
               key={`${item.name}-${item.detail ?? ''}`}
-              className="rounded-2xl border border-olive/15 bg-white p-6"
+              className="rounded-2xl border-olive/15 ring-0"
             >
-              <p className="font-serif text-lg text-olive-deep">{item.name}</p>
-              {item.detail && <p className="mt-1 text-xs text-ink/50">{item.detail}</p>}
-              <p className="mt-4 text-xl font-medium text-olive">
-                {item.priceFrom.toLocaleString('th-TH')} บาท
-                <span className="ml-1 text-sm font-normal text-ink/50">/ {item.unit}</span>
-              </p>
-            </div>
+              <CardContent>
+                <p className="font-serif text-lg text-olive-deep">{item.name}</p>
+                {item.detail && (
+                  <Badge variant="outline" className="mt-2 border-olive/30 text-ink/60">
+                    {item.detail}
+                  </Badge>
+                )}
+                <p className="mt-4 text-xl font-medium text-olive">
+                  {item.priceFrom.toLocaleString('th-TH')} บาท
+                  <span className="ml-1 text-sm font-normal text-ink/50">/ {item.unit}</span>
+                </p>
+              </CardContent>
+            </Card>
           ))}
         </div>
 
-        <a
-          href={site.lineUrl}
-          target="_blank"
-          rel="noopener"
-          className="mt-10 inline-block rounded-full bg-line px-8 py-3 text-sm font-medium text-white"
+        <Button
+          render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
+          size="lg"
+          className="mt-10 rounded-full bg-line px-8 text-white hover:bg-line/90"
         >
           จองคิว {service.title} ผ่าน LINE
-        </a>
+        </Button>
       </section>
     </>
   );
