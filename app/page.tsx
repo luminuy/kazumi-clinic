@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowUpRight, ArrowRight, MapPin, Clock, Phone, CircleHelp } from 'lucide-react';
-import { site } from '@/lib/site';
+import { site, hoursLines, hoursText } from '@/lib/site';
 import { serviceCategories, type ServiceCategory } from '@/lib/services';
 import { faqSchema } from '@/lib/schema';
 import { cloudAssets, heroHomePortrait } from '@/lib/cloud';
@@ -20,7 +20,7 @@ const faqs = [
   },
   {
     question: 'คลินิกเปิดกี่โมงถึงกี่โมง?',
-    answer: 'เปิดทุกวัน 9:00–22:00 ยกเว้นวันอาทิตย์เปิด 9:00–17:00',
+    answer: `เปิดทำการ ${hoursText()}`,
   },
   {
     question: 'จองคิวได้ที่ไหน?',
@@ -124,9 +124,11 @@ export default function HomePage() {
             <div>
               <dt className="uppercase tracking-[0.2em] text-olive-light">เวลาทำการ</dt>
               <dd className="mt-1.5">
-                จ–ส 9:00–22:00
-                <br />
-                อา 9:00–17:00
+                {hoursLines('short').map((line) => (
+                  <span key={line.days} className="block">
+                    {line.days} {line.time}
+                  </span>
+                ))}
               </dd>
             </div>
             <div>
@@ -239,9 +241,11 @@ export default function HomePage() {
               <li className="flex items-start gap-3">
                 <Clock className="mt-0.5 size-5 shrink-0 text-olive" />
                 <span>
-                  จันทร์–เสาร์ 9:00–22:00
-                  <br />
-                  อาทิตย์ 9:00–17:00
+                  {hoursLines().map((line) => (
+                    <span key={line.days} className="block">
+                      {line.days} {line.time}
+                    </span>
+                  ))}
                 </span>
               </li>
               <li className="flex items-center gap-3">

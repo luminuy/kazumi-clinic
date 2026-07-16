@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { MapPin, Phone, Clock, MessageCircle, AtSign } from 'lucide-react';
-import { site } from '@/lib/site';
+import { site, hoursLines } from '@/lib/site';
 import { breadcrumbSchema } from '@/lib/schema';
 import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/reveal';
@@ -56,9 +56,11 @@ export default function ContactPage() {
             <li className="flex items-start gap-3">
               <Clock className="mt-0.5 size-5 shrink-0 text-olive" />
               <span>
-                จันทร์–เสาร์ 9:00–22:00
-                <br />
-                อาทิตย์ 9:00–17:00
+                {hoursLines().map((line) => (
+                  <span key={line.days} className="block">
+                    {line.days} {line.time}
+                  </span>
+                ))}
               </span>
             </li>
           </ul>
