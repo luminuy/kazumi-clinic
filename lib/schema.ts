@@ -3,6 +3,7 @@
 // repeating the MedicalBusiness block (see CLAUDE.md §3.1).
 import { site } from './site';
 import { ServiceCategory } from './services';
+import { cld, cloudAssets } from './cloud';
 
 const dayMap: Record<string, string> = {
   Monday: 'Monday',
@@ -24,7 +25,7 @@ export const clinicSchema = {
   url: site.url,
   telephone: site.phoneIntl,
   priceRange: '$$',
-  image: `${site.url}/images/og/default.jpg`,
+  image: cld(cloudAssets.heroHome, { width: 1200, height: 630, crop: 'fill' }),
   address: {
     '@type': 'PostalAddress',
     streetAddress: `${site.address.line1} ${site.address.street}`,

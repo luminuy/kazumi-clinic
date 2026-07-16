@@ -22,3 +22,7 @@ next-env.d.ts
 * 2.*
 *.log
 *.tsbuildinfo
+
+# raw source images staged for Cloudinary upload — the delivered asset lives in
+# Cloudinary (see lib/cloud.ts cloudAssets), not the repo
+uploads/
