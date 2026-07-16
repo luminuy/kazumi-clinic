@@ -2,8 +2,7 @@
 // Prices where present came from clinic promo posters — confirm the standard (non-promo) price
 // list with the clinic before treating them as permanent (see CLAUDE.md §0.2). Items without a
 // price (e.g. IV Drip programs) render as "สอบถามราคา" until the clinic publishes one.
-import { site } from './site';
-import { cloudAssets } from './cloud';
+import { cld, cloudAssets } from './cloud';
 
 export type ServiceItem = {
   name: string;
@@ -23,8 +22,10 @@ export type ServiceCategory = {
   titleEn: string;
   shortDescription: string;
   description: string;
-  ogImage: string;
-  /** Cloudinary public ID for the category page's PageHero background, if one exists. */
+  /**
+   * Cloudinary public ID for the category page's PageHero background, if one exists.
+   * Also the source of the page's OG image — see `serviceOgImage`.
+   */
   heroImage?: string;
   items: ServiceItem[];
 };
@@ -37,7 +38,6 @@ export const serviceCategories: ServiceCategory[] = [
     shortDescription: 'เติมเต็มร่องลึก ปรับรูปหน้าให้เรียวคมอย่างเป็นธรรมชาติ',
     description:
       'บริการฟิลเลอร์กรดไฮยาลูรอนิกจากแบรนด์คุณภาพ ปรับโครงหน้า ร่องแก้ม ร่องน้ำหมาก และริมฝีปาก โดยแพทย์ผู้เชี่ยวชาญของ Kazumi Clinic',
-    ogImage: `${site.url}/images/og/filler.jpg`,
     heroImage: cloudAssets.heroFiller,
     items: [
       { name: 'Neura Deep', detail: '1 CC', priceFrom: 3990, unit: 'ครั้ง' },
@@ -60,7 +60,8 @@ export const serviceCategories: ServiceCategory[] = [
     shortDescription: 'ลดริ้วรอย ปรับรูปหน้า กรามเรียว ด้วยโบท็อกซ์คุณภาพสูง',
     description:
       'ฉีดโบทูลินั่มท็อกซินโดยแพทย์ ลดริ้วรอยบนใบหน้า ปรับกราม ลดเหงื่อ และกำหนดขนาดยาเฉพาะบุคคล',
-    ogImage: `${site.url}/images/og/botox.jpg`,
+    // TODO: no hero photo in Cloudinary yet, so this page ships without an OG image.
+    // Upload one and set `heroImage` to give it a link preview.
     items: [
       { name: 'Botulinum Toxin Neuro', detail: '100 U', priceFrom: 8990, unit: 'ครั้ง' },
     ],
@@ -72,7 +73,6 @@ export const serviceCategories: ServiceCategory[] = [
     shortDescription: 'ให้วิตามินทางหลอดเลือด ฟื้นฟูผิวจากภายในให้กระจ่างใส',
     description:
       'โปรแกรม IV Drip วิตามินสูตรเฉพาะของ Kazumi Clinic ช่วยปรับโทนสีผิว ลดเม็ดสี กระตุ้นคอลลาเจน และชะลอความเสื่อมของผิวจากแสงแดด',
-    ogImage: `${site.url}/images/og/iv-drip.jpg`,
     heroImage: cloudAssets.heroIvDrip1,
     items: [
       {
@@ -131,7 +131,6 @@ export const serviceCategories: ServiceCategory[] = [
     shortDescription: 'ฟื้นฟูผิวเชิงลึก เพิ่มความชุ่มชื้นและความยืดหยุ่น',
     description:
       'สกินบูสเตอร์เกรดพรีเมียม ฟื้นฟูเซลล์ผิวจากภายใน กระตุ้นการสร้างคอลลาเจนใหม่ เหมาะกับผิวโทรม ผิวขาดน้ำ',
-    ogImage: `${site.url}/images/og/skin-booster.jpg`,
     heroImage: cloudAssets.heroSkinBooster,
     items: [
       {
@@ -156,7 +155,8 @@ export const serviceCategories: ServiceCategory[] = [
     shortDescription: 'เติมคอลลาเจนสด ลดเลือนริ้วรอย ปรับรูปหน้าให้ดูอ่อนเยาว์',
     description:
       'โปรแกรมเติมคอลลาเจนสด Karisma Rh Collagen ฟื้นฟูโครงสร้างผิว ลดเลือนร่องแก้ม ร่องน้ำหมาก และถุงใต้ตา',
-    ogImage: `${site.url}/images/og/collagen-booster.jpg`,
+    // TODO: no hero photo in Cloudinary yet, so this page ships without an OG image.
+    // Upload one and set `heroImage` to give it a link preview.
     items: [
       {
         name: 'Karisma Rh Collagen',
@@ -176,4 +176,14 @@ export const serviceCategories: ServiceCategory[] = [
 
 export function getServiceBySlug(slug: string) {
   return serviceCategories.find((c) => c.slug === slug);
+}
+
+/**
+ * The category's OG/Twitter image: its hero photo cropped to the 1200x630 social ratio.
+ * `undefined` for categories with no hero photo uploaded yet — those pages ship without an
+ * OG image rather than reusing the homepage's, which CLAUDE.md §12 forbids.
+ */
+export function serviceOgImage(category: ServiceCategory) {
+  if (!category.heroImage) return undefined;
+  return cld(category.heroImage, { width: 1200, height: 630, crop: 'fill', gravity: 'auto' });
 }
