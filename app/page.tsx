@@ -28,15 +28,17 @@ const faqs = [
   },
 ];
 
-// Desktop bento placement — a tall feature for the first photo category, two stacked
-// beside it, then a wide pair along the bottom. Order follows serviceCategories.
-const gridSpan: Record<string, string> = {
-  filler: 'md:col-span-7 md:row-span-2',
-  botox: 'md:col-span-5',
-  'iv-drip': 'md:col-span-5',
-  'skin-booster': 'md:col-span-7',
-  'collagen-booster': 'md:col-span-5',
-};
+// Desktop bento placement — a tall feature for the first photo category, two stacked beside it,
+// then a wide pair along the bottom. This is a deliberate homepage shortlist, not every category:
+// /services lists them all, and the nav's mega dropdown reaches the rest. Adding a category to
+// lib/services.ts therefore does NOT change the homepage until it's given a cell here.
+const homeBento: { slug: string; span: string }[] = [
+  { slug: 'filler', span: 'md:col-span-7 md:row-span-2' },
+  { slug: 'botox', span: 'md:col-span-5' },
+  { slug: 'iv-drip', span: 'md:col-span-5' },
+  { slug: 'skin-booster', span: 'md:col-span-7' },
+  { slug: 'collagen-booster', span: 'md:col-span-5' },
+];
 
 export default function HomePage() {
   return (
@@ -175,19 +177,19 @@ export default function HomePage() {
         </Reveal>
 
         <div className="mt-14 grid grid-cols-1 gap-5 md:grid-cols-12 md:auto-rows-[13rem]">
-          {serviceCategories.map((c, i) => (
-            <Reveal
-              key={c.slug}
-              delay={i * 70}
-              className={cn('min-h-[16rem] md:min-h-0', gridSpan[c.slug])}
-            >
-              {c.heroImage ? (
-                <PhotoServiceCard category={c} index={i + 1} />
-              ) : (
-                <TextServiceCard category={c} index={i + 1} />
-              )}
-            </Reveal>
-          ))}
+          {homeBento.map(({ slug, span }, i) => {
+            const c = serviceCategories.find((category) => category.slug === slug);
+            if (!c) return null;
+            return (
+              <Reveal key={slug} delay={i * 70} className={cn('min-h-[16rem] md:min-h-0', span)}>
+                {c.heroImage ? (
+                  <PhotoServiceCard category={c} index={i + 1} />
+                ) : (
+                  <TextServiceCard category={c} index={i + 1} />
+                )}
+              </Reveal>
+            );
+          })}
         </div>
       </section>
 

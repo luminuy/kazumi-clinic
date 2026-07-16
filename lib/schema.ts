@@ -45,6 +45,14 @@ export const clinicSchema = {
     opens: h.open,
     closes: h.close,
   })),
+  // The clinic's licensed physicians — `identifier` carries the แพทยสภา ว. number, which is
+  // the credential a search engine (or a patient) can actually verify us on.
+  employee: site.doctors.map((doctor) => ({
+    '@type': 'Physician',
+    name: doctor.name,
+    jobTitle: doctor.role,
+    identifier: doctor.licenseNo,
+  })),
   sameAs: [site.facebook, site.instagram, site.lineUrl].filter(Boolean),
 };
 
