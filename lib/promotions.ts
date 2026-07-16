@@ -17,6 +17,55 @@ export type Promotion = {
   categorySlug?: string;
 };
 
+export type PromotionPoster = {
+  src: string;
+  alt: string;
+  label: string;
+};
+
+/**
+ * Visual campaign artwork supplied by the clinic. These are shown as a gallery,
+ * not as date-gated offers; visitors should confirm current price and validity
+ * with the clinic before booking.
+ */
+export const promotionPosters: PromotionPoster[] = [
+  {
+    src: '/images/promotions/signature-flawless.jpg',
+    alt: 'โปสเตอร์ Signature Flawless IV Drip พร้อมภาพผู้หญิงและถุงสารน้ำ',
+    label: 'IV Drip · Signature Flawless',
+  },
+  {
+    src: '/images/promotions/radiant-bright.jpg',
+    alt: 'โปสเตอร์ Radiant Bright IV Drip พร้อมภาพผู้หญิงผมสีน้ำตาล',
+    label: 'IV Drip · Radiant Bright',
+  },
+  {
+    src: '/images/promotions/filler-neura.jpg',
+    alt: 'โปสเตอร์ Filler Neura Deep และ Neura Volume พร้อมภาพใบหน้าด้านข้าง',
+    label: 'Filler · Neura',
+  },
+  {
+    src: '/images/promotions/oxelle-skin-booster.jpg',
+    alt: 'โปสเตอร์ Oxelle Skin Boosters พร้อมภาพผิวก่อนและหลัง',
+    label: 'Skin Booster · Oxelle',
+  },
+  {
+    src: '/images/promotions/velvet-glow.jpg',
+    alt: 'โปสเตอร์ Velvet Glow IV Drip พร้อมภาพผู้หญิงและถุงสารน้ำ',
+    label: 'IV Drip · Velvet Glow',
+  },
+  {
+    src: '/images/promotions/active-refresh.jpg',
+    alt: 'โปสเตอร์ Active & Refresh IV Drip พร้อมภาพผู้หญิงกลางแจ้ง',
+    label: 'IV Drip · Active & Refresh',
+  },
+  {
+    src: '/images/promotions/karisma-collagen.jpg',
+    alt: 'โปสเตอร์ Karisma Rh Collagen พร้อมภาพแพ็กเกจผลิตภัณฑ์',
+    label: 'Collagen · Karisma',
+  },
+];
+
 export const promotions: Promotion[] = [
   {
     name: 'Filler Neura Deep',
