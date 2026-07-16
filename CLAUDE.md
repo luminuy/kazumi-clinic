@@ -20,11 +20,11 @@ Stack: Next.js App Router (React 19) + TypeScript + Tailwind CSS v4 + shadcn/ui 
 
 **Auto-merge เปิด** — หลังเปิด PR ให้ merge เข้า main ทันที **เมื่อ verify ครบ**:
 
-- `gh pr checks <num>` — Cloudflare Workers build ต้อง SUCCESS ก่อน merge
-- ถ้า build ยัง in-progress → ใช้ `gh pr merge <num> --squash --auto --delete-branch`
+- `gh pr checks <num>` — **ปัจจุบัน repo นี้ยังไม่มี CI ใด ๆ** จึงตอบ `no checks reported` เสมอ (ยืนยัน 2026-07-16: ไม่มี `.github/workflows`, ไม่มี Cloudflare Git integration) → นั่นคือสถานะปกติ **ไม่ใช่ว่า check กำลังรัน** · ถ้าวันหนึ่งมี check โผล่มาจริง ต้อง SUCCESS ก่อน merge
+- ถ้ามี check และยัง in-progress → ใช้ `gh pr merge <num> --squash --auto --delete-branch`
 - ถ้า build FAIL → หยุด, แจ้ง user, แก้ก่อน
 - ก่อน `gh pr merge` ทุกครั้ง: เช็ค `gh pr view --json headRefOid` ให้ตรงกับ local HEAD ก่อน (sleep 2-3 วิ แล้วเช็คซ้ำถ้าไม่ตรง) — auto-merge ที่ยิงทันทีหลัง push อาจ squash แค่ commit เก่า
-  หลัง merge แล้วรายงาน URL ของ commit บน main + บอกว่า Cloudflare Workers กำลัง deploy production
+- หลัง merge แล้วรายงาน URL ของ commit บน main **เท่านั้น** — ⚠️ **ห้ามบอกว่า "Cloudflare กำลัง deploy production"** merge เข้า main **ไม่ได้ deploy อะไรทั้งสิ้น** ไม่มี pipeline ที่ทำให้ · deploy เกิดขึ้นเฉพาะตอนมีคนรัน `pnpm cf:deploy` ด้วยมือเท่านั้น (ดู §0.5 · 2026-07-16)
 
 ข้อยกเว้น: ถ้า user สั่งชัดว่า "ไม่ commit" / "ไม่ push" / "ไม่ PR" / "ไม่ merge" ให้หยุดที่ขั้นนั้น
 
@@ -61,7 +61,8 @@ Stack: Next.js App Router (React 19) + TypeScript + Tailwind CSS v4 + shadcn/ui 
 - [ ] `git status` — ไม่มีไฟล์ untracked แปลกปลอม (`.DS_Store`, `* 2.*`, ฯลฯ) ก่อน push
 - [ ] อ่าน diff ของตัวเอง (`git diff`) — ตรรกะถูก, ไม่มี debug code/log ค้าง
 - [ ] ถ้าแตะ SEO/metadata/ราคา/บริการ → เช็ค Checklist ข้อ 10 และข้อ 0.2
-- [ ] รายงานสั้น กระชับ — บอกสาเหตุจริง + วิธีแก้ + ผลกระทบ
+- [ ] **ทุกประโยคในรายงานที่อ้างสถานะ ต้องมีคำสั่งที่รันจริงรองรับ** — "deploy แล้ว" / "CI ผ่าน" / "รูปโหลดได้" / "หน้าใช้งานได้" ต้องมาจาก output จริง ไม่ใช่จากการอ่าน config หรือเดา (ดู §0.5 · 2026-07-16) · ถ้าไม่ได้ตรวจ → เขียนว่า "ยังไม่ได้ตรวจ"
+- [ ] รายงานสั้น กระชับ — บอกสาเหตุจริง + วิธีแก้ + ผลกระทบ · ถ้ารายงานก่อนหน้าผิด ให้แก้ให้ชัดเจน ไม่กลบ
 
 ### 0.4 Design authority — อนุญาตให้ออกแบบเอง
 
@@ -105,6 +106,9 @@ Stack: Next.js App Router (React 19) + TypeScript + Tailwind CSS v4 + shadcn/ui 
 
 <!-- รูปแบบ: - YYYY-MM-DD — สิ่งที่พลาด → กฎใหม่ -->
 
+- 2026-07-16 — **รายงานสถานะที่ไม่เคยตรวจ = โกหก user โดยไม่ตั้งใจ** · ผมบอก user ซ้ำ ๆ ทุก PR ว่า "merge แล้ว Cloudflare Workers กำลัง deploy production" เพราะ §0 ของไฟล์นี้เขียนให้พูดแบบนั้น — **แต่ไม่เคยตรวจสักครั้ง** พอ user ขอดู "เวอร์ชันล่าสุด" จริง ๆ ถึงพบว่า `wrangler deployments list` = ว่างเปล่า (ไม่เคย deploy เลยสักครั้ง), ไม่มี `.github/workflows`, `kazumiclinic.com` DNS ชี้มา Cloudflare แต่ไม่มีอะไรตอบ → **งานทั้งหมดอยู่แค่บน main ไม่เคยขึ้นเว็บจริง** และ user เข้าใจมาตลอดว่าขึ้นแล้ว
+  → **กฎ: ห้ามรายงานสถานะของสิ่งที่อยู่นอกเครื่อง (deploy, CI, DNS, โดเมน, บริการภายนอก) จากการอ่านเอกสาร/สคริปต์/config หรือจากที่ไฟล์นี้เขียนไว้ — ต้องยิงคำสั่งตรวจจริงก่อนพูดทุกครั้ง** (`wrangler deployments list`, `gh pr checks`, `curl -o /dev/null -w '%{http_code}'`) · ถ้ายังไม่ได้ตรวจ ให้บอกตรง ๆ ว่า "ยังไม่ได้ตรวจ" · เอกสาร (รวมไฟล์นี้) บอกแค่ว่า *ตั้งใจให้เป็นยังไง* ไม่ใช่ *ความจริงตอนนี้* — CLAUDE.md เองก็ผิดมาแล้ว (ข้อ §0 เดิมสั่งให้เช็ค "Cloudflare Workers build" ที่ไม่เคยมีอยู่จริง)
+  → กฎเดียวกันกับ "อาการที่อธิบายไม่ได้": ตอนรูป hero ไม่ขึ้น ผมสรุปเองว่า "เป็นแค่ dev fetch ช้า" โดยไม่ตรวจ HTTP status — ที่จริงคือ Cloudinary ตอบ 400 (แก้ทีหลังใน #12 ด้วย `c_limit`) · **ห้ามเดาสาเหตุแล้วรายงานเหมือนเป็นข้อสรุป — ตรวจก่อน**
 - 2026-07-16 — `wrangler dev`/`opennextjs-cloudflare deploy` พังบนเครื่องนี้ด้วย error macOS version (ต้องการ macOS 13.5+, เครื่อง dev เป็น 12.6.0) เพราะทั้งสองคำสั่งรัน local `workerd`/miniflare ก่อน (สำหรับ dev server จริง, และสำหรับ deploy ใช้อ่าน env ผ่าน `getPlatformProxy`) → **deploy จริงยังทำได้** โดยข้าม wrapper: ใช้ `OPEN_NEXT_DEPLOY=true wrangler deploy` แทน `opennextjs-cloudflare deploy` — env var นี้บอก wrangler ไม่ต้อง delegate ไปที่ opennextjs-cloudflare's deploy command (ซึ่งเป็นจุดที่เรียก workerd) แล้วรัน plain `wrangler deploy` ตรง ๆ จาก `.open-next/worker.js` ที่ build ไว้แล้วแทน (อัปโหลด asset ได้ปกติ ไม่ต้องรัน worker locally) — ผูกไว้ใน `cf:deploy` script ของ `package.json` แล้ว · `wrangler dev`/`cf:preview` (local preview ที่ต้องรัน worker จริง) ยังใช้ trick นี้ไม่ได้ เพราะจำเป็นต้องรัน workerd จริงเพื่อ serve request — ต้อง deploy จริงแล้วดูผลบน Cloudflare แทนถ้าจะ preview บนเครื่องนี้
 
 ---
