@@ -55,6 +55,12 @@ const TRANSFORM_SEGMENT = /^[a-z]+_/;
  * next/image loader that delegates resizing to Cloudinary instead of Next's own optimizer.
  * Wired globally via `images.loaderFile` in next.config.mjs (default export = the loader) —
  * a `loader` prop can't be passed from Server Components, so images just use `src={cloudAssets.x}` directly.
+ *
+ * `c_limit` is required, not cosmetic: next/image's default deviceSizes top out at 3840, so every
+ * srcset gets a w_3840 candidate. Without a crop mode Cloudinary upscales to reach that width, and
+ * on a tall source that overshoots the account's 25 Megapixel cap — hero-filler (400x1750) scales
+ * to 3840x16800 = 64.5MP and the derived image 400s with `x-cld-error: Maximum image size is 25
+ * Megapixels`. `c_limit` caps the resize at the source's own dimensions rather than upscaling.
  */
 function cloudinaryLoader({
   src,
@@ -65,7 +71,7 @@ function cloudinaryLoader({
   width: number;
   quality?: number;
 }) {
-  const resize = `f_auto,q_${quality ?? 'auto'},w_${width}`;
+  const resize = `f_auto,q_${quality ?? 'auto'},c_limit,w_${width}`;
   const [head, ...rest] = src.split('/');
   const prefix = rest.length > 0 && TRANSFORM_SEGMENT.test(head) ? `${head}/` : '';
   const publicId = prefix ? rest.join('/') : src;
