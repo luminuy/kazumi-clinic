@@ -52,8 +52,8 @@ const faqs = [
   },
 ];
 
-// Desktop bento placement — a tall feature for the first photo category, two stacked
-// beside it, then a wide pair along the bottom. Order follows serviceCategories.
+// The first five services are the clinic's signature menu and get the visual bento treatment.
+// The newer categories live in an editorial index below so every title stays readable.
 const gridSpan: Record<string, string> = {
   filler: 'md:col-span-7 md:row-span-2',
   botox: 'md:col-span-5',
@@ -61,6 +61,9 @@ const gridSpan: Record<string, string> = {
   'skin-booster': 'md:col-span-7',
   'collagen-booster': 'md:col-span-5',
 };
+
+const signatureCategories = serviceCategories.filter((category) => gridSpan[category.slug]);
+const additionalCategories = serviceCategories.filter((category) => !gridSpan[category.slug]);
 
 export const revalidate = 3600;
 
@@ -76,36 +79,42 @@ export default function HomePage() {
       />
 
       {/* ── Hero ──────────────────────────────────────────────── */}
-      <section className="bg-cream">
-        <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 md:grid-cols-[1fr_0.85fr] md:gap-14 md:py-24">
-          <div>
-            <div className="flex items-center gap-3 text-xs uppercase tracking-[0.35em] text-olive-light">
+      <section className="hero-section relative isolate overflow-hidden bg-olive-deep text-sand">
+        <div className="hero-grid absolute inset-0 opacity-20" aria-hidden="true" />
+        <FlowerMark
+          className="pointer-events-none absolute -right-40 -top-40 size-[34rem] text-sand/[0.045] md:-right-24 md:-top-52 md:size-[44rem]"
+        />
+        <div className="relative mx-auto grid max-w-7xl gap-12 px-6 pb-14 pt-12 sm:px-10 md:grid-cols-[minmax(0,1fr)_minmax(20rem,0.78fr)] md:items-end md:gap-16 md:px-12 md:pb-20 md:pt-16 lg:gap-24 lg:px-16">
+          <div className="max-w-3xl pb-2 md:pb-10">
+            <div className="hero-enter flex items-center gap-3 text-[0.68rem] uppercase tracking-[0.34em] text-sand/55">
               <span className="h-px w-10 bg-clay" />
-              สถานเสริมความงาม · สุขุมวิท กรุงเทพฯ
+              Kazumi Clinic · Sukhumvit, Bangkok
             </div>
             <h1 className="mt-8">
               <span
                 lang="en"
-                className="block font-serif text-[13vw] leading-[0.95] tracking-tight text-olive-deep sm:text-6xl md:text-[3.75rem] lg:text-7xl"
+                className="hero-enter hero-enter--slow block font-serif text-[16vw] leading-[0.87] tracking-[-0.06em] text-sand sm:text-7xl md:text-[5.4rem] lg:text-[7.1rem]"
               >
                 Where balance
                 <br />
                 <span className="text-clay">purity</span> becomes
                 <br />
-                eternal beauty.
-              </span>
-              <span className="mt-7 block max-w-md text-sm font-normal leading-relaxed text-ink/70">
-                {site.description}
+                <span className="text-sand/90">eternal beauty.</span>
               </span>
             </h1>
-            <p className="mt-5 font-serif text-sm italic tracking-wide text-olive-light">
-              <span lang="ja">{site.taglineJa}</span> — <span lang="en">{site.taglineTh}</span>
-            </p>
-            <div className="mt-10 flex flex-wrap items-center gap-4">
+            <div className="hero-enter hero-enter--later mt-8 grid max-w-xl gap-6 border-t border-sand/20 pt-5 sm:grid-cols-[1.15fr_0.85fr] sm:gap-10">
+              <p className="text-sm leading-relaxed text-sand/70">{site.description}</p>
+              <p className="font-serif text-sm italic leading-relaxed text-sand/55">
+                <span lang="ja">{site.taglineJa}</span>
+                <br />
+                <span lang="en">{site.taglineTh}</span>
+              </p>
+            </div>
+            <div className="hero-enter hero-enter--later mt-8 flex flex-wrap items-center gap-4">
               <Button
                 render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
                 size="lg"
-                className="rounded-full bg-line px-8 text-white hover:bg-line/90"
+                className="rounded-full bg-line px-8 text-white shadow-lg shadow-black/10 transition-transform duration-300 hover:-translate-y-1 hover:bg-line/90"
               >
                 จองคิวผ่าน LINE
                 <ArrowUpRight className="size-4" />
@@ -114,25 +123,43 @@ export default function HomePage() {
                 render={<Link href="/services" />}
                 variant="outline"
                 size="lg"
-                className="rounded-full border-olive/25 bg-transparent text-olive-deep hover:bg-olive/5"
+                className="rounded-full border-sand/30 bg-transparent text-sand hover:border-sand/60 hover:bg-sand/10"
               >
                 ดูบริการทั้งหมด
               </Button>
             </div>
           </div>
 
-          <div className="relative aspect-square overflow-hidden rounded-[2rem]">
-            <Image
-              src={heroHomePortrait}
-              alt=""
-              aria-hidden="true"
-              fill
-              priority
-              fetchPriority="high"
-              sizes="(min-width: 768px) 45vw, 90vw"
-              className="object-cover"
-            />
+          <div className="hero-enter hero-enter--image relative mx-auto w-full max-w-[31rem] md:mb-0">
+            <div className="hero-image-frame relative aspect-[0.88] overflow-hidden rounded-[2rem] rounded-bl-[5rem] border border-sand/20 bg-olive shadow-2xl shadow-black/25">
+              <Image
+                src={heroHomePortrait}
+                alt=""
+                aria-hidden="true"
+                fill
+                priority
+                fetchPriority="high"
+                sizes="(min-width: 1024px) 38vw, (min-width: 768px) 42vw, 90vw"
+                className="object-cover transition-transform duration-1000 ease-out hover:scale-[1.03]"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-olive-deep/65 via-transparent to-transparent" />
+              <div className="absolute inset-x-5 bottom-5 flex items-end justify-between gap-4 text-xs text-sand/75">
+                <span className="max-w-[12rem] leading-relaxed">แพทย์ประเมินทุกเคส · ดูแลอย่างเป็นส่วนตัว</span>
+                <span className="font-serif text-3xl text-clay/80">01</span>
+              </div>
+            </div>
+            <div className="hero-caption absolute -bottom-7 -left-3 flex items-center gap-3 rounded-full border border-sand/20 bg-olive-deep/90 px-4 py-2 text-[0.68rem] tracking-[0.18em] text-sand/65 backdrop-blur sm:-left-7">
+              <span className="size-2 rounded-full bg-line shadow-[0_0_0_4px_rgba(6,199,85,0.14)]" />
+              OPEN TODAY · 09:00—22:00
+            </div>
           </div>
+        </div>
+        <div className="relative mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 border-t border-sand/15 px-6 py-5 text-[0.68rem] uppercase tracking-[0.22em] text-sand/45 sm:px-10 md:px-12 lg:px-16">
+          <span>Minimal change. Maximum confidence.</span>
+          <span className="hidden sm:inline">Est. 2024 · Medical aesthetics</span>
+          <a href={site.phoneUrl} className="text-sand/70 transition-colors hover:text-sand">
+            {site.phone}
+          </a>
         </div>
       </section>
 
@@ -144,35 +171,105 @@ export default function HomePage() {
         />
       </div>
 
-      {/* ── Services — photo-led bento ───────────────────────── */}
-      <section className="mx-auto max-w-6xl px-6 py-24">
-        <Reveal className="flex items-end justify-between gap-6">
-          <div>
-            <span className="text-xs uppercase tracking-[0.3em] text-olive-light">(01) บริการ</span>
-            <h2 className="mt-3 font-serif text-4xl text-olive-deep md:text-5xl">บริการของเรา</h2>
-          </div>
-          <Link
-            href="/services"
-            className="hidden items-center gap-1 text-sm text-olive hover:text-olive-deep sm:flex"
-          >
-            ดูทั้งหมด <ArrowRight className="size-4" />
-          </Link>
-        </Reveal>
+      {/* ── Services — signature bento + editorial index ─────── */}
+      <section
+        className="relative overflow-hidden border-y border-olive/10 bg-cream"
+        style={{
+          backgroundImage:
+            'radial-gradient(circle at 86% 12%, rgb(197 174 155 / 0.16), transparent 30%)',
+        }}
+      >
+        <FlowerMark className="pointer-events-none absolute -right-48 top-20 hidden size-[38rem] text-olive/[0.035] lg:block" />
+        <div className="relative mx-auto max-w-6xl px-6 py-24 md:py-32">
+          <Reveal className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-end lg:gap-16">
+            <div>
+              <div className="flex items-center gap-3 text-xs uppercase tracking-[0.3em] text-olive-light">
+                <span className="h-px w-10 bg-clay" />
+                01 / Treatment menu
+              </div>
+              <h2 className="mt-6 font-serif text-5xl leading-[0.92] tracking-tight text-olive-deep sm:text-6xl md:text-7xl">
+                บริการ
+                <br />
+                <span className="text-clay">ของเรา.</span>
+              </h2>
+            </div>
+            <div className="flex max-w-xl flex-col items-start gap-6 lg:pb-1">
+              <p className="text-sm leading-relaxed text-ink/65 md:text-base">
+                โปรแกรมดูแลความงามที่ออกแบบให้เหมาะกับเป้าหมายและสภาพผิวของแต่ละคน
+                เริ่มต้นด้วยการประเมินโดยแพทย์ ก่อนเลือกแนวทางที่พอดีและเป็นธรรมชาติ
+              </p>
+              <div className="flex flex-wrap items-center gap-4">
+                <Link
+                  href="/services"
+                  className="group inline-flex items-center gap-2 rounded-full bg-olive-deep px-5 py-3 text-sm text-sand transition-colors hover:bg-olive"
+                >
+                  ดูบริการทั้งหมด <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                </Link>
+                <span className="text-xs uppercase tracking-[0.2em] text-olive-light">
+                  {serviceCategories.length} โปรแกรมดูแล
+                </span>
+              </div>
+            </div>
+          </Reveal>
 
-        <div className="mt-14 grid grid-cols-1 gap-5 md:grid-cols-12 md:auto-rows-[13rem]">
-          {serviceCategories.map((c, i) => (
-            <Reveal
-              key={c.slug}
-              delay={i * 70}
-              className={cn('min-h-[16rem] md:min-h-0', gridSpan[c.slug])}
-            >
-              {c.heroImage ? (
-                <PhotoServiceCard category={c} index={i + 1} />
-              ) : (
-                <TextServiceCard category={c} index={i + 1} />
-              )}
+          <div className="mt-16 grid grid-cols-1 gap-4 md:grid-cols-12 md:auto-rows-[11rem]">
+            {signatureCategories.map((category, index) => (
+              <Reveal
+                key={category.slug}
+                delay={index * 70}
+                className={cn('min-h-[17rem] md:min-h-0', gridSpan[category.slug])}
+              >
+                {category.heroImage ? (
+                  <PhotoServiceCard category={category} index={index + 1} />
+                ) : (
+                  <TextServiceCard category={category} index={index + 1} />
+                )}
+              </Reveal>
+            ))}
+          </div>
+
+          {additionalCategories.length > 0 && (
+            <Reveal className="mt-20 grid gap-8 border-t border-olive/15 pt-10 lg:grid-cols-[0.7fr_1.3fr] lg:gap-16">
+              <div>
+                <div className="flex items-center gap-3 text-xs uppercase tracking-[0.3em] text-olive-light">
+                  <span className="h-px w-8 bg-clay" />
+                  02 / More care
+                </div>
+                <h3 className="mt-5 font-serif text-3xl leading-tight text-olive-deep md:text-4xl">
+                  ดูแลเพิ่มเติม
+                </h3>
+                <p className="mt-4 max-w-xs text-sm leading-relaxed text-ink/60">
+                  ทางเลือกสำหรับการดูแลผิวและรูปหน้าในรายละเอียดที่มากขึ้น
+                </p>
+              </div>
+
+              <div className="grid gap-x-8 sm:grid-cols-2">
+                {additionalCategories.map((category, index) => (
+                  <Link
+                    key={category.slug}
+                    href={`/${category.slug}`}
+                    className="group flex min-h-[9.5rem] items-start gap-4 rounded-xl border-b border-olive/15 px-2 py-5 transition-[background-color,transform] first:border-t first:border-olive/15 hover:-translate-y-0.5 hover:bg-sand/65"
+                  >
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-full border border-olive/15 text-olive transition-colors group-hover:border-clay group-hover:bg-clay">
+                      <ServiceIcon slug={category.slug} className="size-4" />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="flex items-start justify-between gap-2 text-[0.65rem] uppercase tracking-[0.2em] text-olive-light">
+                        {String(signatureCategories.length + index + 1).padStart(2, '0')} · {category.titleEn}
+                        <ArrowUpRight className="size-4 shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                      </span>
+                      <span className="mt-2 block font-serif text-xl leading-tight text-olive-deep">
+                        {category.title}
+                      </span>
+                      <span className="mt-2 block text-xs leading-relaxed text-ink/55">
+                        {category.shortDescription}
+                      </span>
+                    </span>
+                  </Link>
+                ))}
+              </div>
             </Reveal>
-          ))}
+          )}
         </div>
       </section>
 
@@ -447,12 +544,12 @@ function PhotoServiceCard({ category, index }: { category: ServiceCategory; inde
   return (
     <Link
       href={`/${category.slug}`}
-      className="group relative block h-full overflow-hidden rounded-2xl"
+      className="group relative block h-full overflow-hidden rounded-[1.5rem] shadow-[0_18px_50px_rgb(38_40_31/0.08)] transition-[transform,box-shadow] duration-500 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgb(38_40_31/0.14)]"
     >
       <Image
         src={category.heroImage!}
-        alt=""
-        aria-hidden="true"
+        alt={category.heroAlt ?? ''}
+        aria-hidden={category.heroAlt ? undefined : 'true'}
         fill
         sizes="(min-width: 768px) 50vw, 100vw"
         className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
@@ -479,7 +576,7 @@ function TextServiceCard({ category, index }: { category: ServiceCategory; index
   return (
     <Link
       href={`/${category.slug}`}
-      className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl bg-olive-deep p-6 text-sand"
+      className="group relative flex h-full flex-col justify-between overflow-hidden rounded-[1.5rem] bg-olive-deep p-7 text-sand shadow-[0_18px_50px_rgb(38_40_31/0.08)] transition-[transform,background-color,box-shadow] duration-500 hover:-translate-y-1 hover:bg-olive hover:shadow-[0_24px_60px_rgb(38_40_31/0.14)]"
     >
       <span
         aria-hidden="true"
@@ -487,10 +584,9 @@ function TextServiceCard({ category, index }: { category: ServiceCategory; index
       >
         {String(index).padStart(2, '0')}
       </span>
-      <ServiceIcon
-        slug={category.slug}
-        className="relative size-7 text-clay transition-transform group-hover:scale-110"
-      />
+      <span className="relative flex size-11 items-center justify-center rounded-full border border-clay/30 text-clay transition-colors group-hover:border-clay group-hover:bg-clay group-hover:text-olive-deep">
+        <ServiceIcon slug={category.slug} className="size-5 transition-transform group-hover:scale-110" />
+      </span>
       <div className="relative">
         <p className="text-xs uppercase tracking-[0.25em] text-sand/50">{category.titleEn}</p>
         <p className="mt-1 flex items-center gap-2 font-serif text-2xl text-sand">
