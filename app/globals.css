@@ -39,6 +39,10 @@
   --cream: #f6f3ec;
   --ink: #26281f;
   --line: #06c755;
+
+  /* Layout rhythm. 1.618 keeps major and minor regions in a consistent proportion. */
+  --phi: 1.618;
+  --content-gutter: clamp(1.25rem, 3vw, 4rem);
 }
 
 .dark {
@@ -158,10 +162,29 @@
   animation: orbit-breathe 12s ease-in-out infinite;
   opacity: 0.8;
 }
+.golden-service-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+}
 .doctor-frame,
 .promo-board,
 .visit-dossier {
   isolation: isolate;
+}
+
+@media (min-width: 48rem) {
+  .golden-service-grid {
+    grid-template-columns: repeat(13, minmax(0, 1fr));
+    grid-auto-rows: minmax(12rem, auto);
+  }
+}
+
+@media (max-width: 30rem) {
+  .hero-caption {
+    max-width: calc(100% - 1.5rem);
+    letter-spacing: 0.12em;
+  }
 }
 @keyframes orbit-breathe {
   0%,
