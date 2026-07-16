@@ -101,11 +101,15 @@ export const cloudAssets = {
   ogAbout: 'kazumi-clinic/og-about',
   promoActiveRefresh: 'kazumi-clinic/promo-active-refresh',
   promoFillerNeura: 'kazumi-clinic/promo-filler-neura',
-  promoKarismaCollagen: 'kazumi-clinic/promo-karisma-collagen',
+  // promo-karisma-collagen and promo-velvet-glow hold each other's artwork — the two source
+  // files were swapped long before they reached Cloudinary, and an unsigned upload can't
+  // overwrite, so these two IDs replace them. The old pair is now orphaned; delete it from the
+  // Cloudinary media library when convenient.
+  promoKarismaCollagen: 'kazumi-clinic/promo-karisma-rh-collagen',
   promoOxelleSkinBooster: 'kazumi-clinic/promo-oxelle-skin-booster',
   promoRadiantBright: 'kazumi-clinic/promo-radiant-bright',
   promoSignatureFlawless: 'kazumi-clinic/promo-signature-flawless',
-  promoVelvetGlow: 'kazumi-clinic/promo-velvet-glow',
+  promoVelvetGlow: 'kazumi-clinic/promo-velvet-glow-iv',
 } as const;
 
 // The `hero-home` asset (1920x1080) has the logo and the "Where balance purity…" quote burnt
