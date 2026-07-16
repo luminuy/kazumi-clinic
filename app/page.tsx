@@ -148,7 +148,13 @@ export default function HomePage() {
       </div>
 
       {/* ── Services — signature bento + editorial index ─────── */}
-      <section className="relative overflow-hidden border-y border-olive/10 bg-cream">
+      <section
+        className="relative overflow-hidden border-y border-olive/10 bg-cream"
+        style={{
+          backgroundImage:
+            'radial-gradient(circle at 86% 12%, rgb(197 174 155 / 0.16), transparent 30%)',
+        }}
+      >
         <FlowerMark className="pointer-events-none absolute -right-48 top-20 hidden size-[38rem] text-olive/[0.035] lg:block" />
         <div className="relative mx-auto max-w-6xl px-6 py-24 md:py-32">
           <Reveal className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-end lg:gap-16">
@@ -218,7 +224,7 @@ export default function HomePage() {
                   <Link
                     key={category.slug}
                     href={`/${category.slug}`}
-                    className="group flex min-h-[9.5rem] items-start gap-4 border-b border-olive/15 py-5 transition-colors first:border-t first:border-olive/15"
+                    className="group flex min-h-[9.5rem] items-start gap-4 rounded-xl border-b border-olive/15 px-2 py-5 transition-[background-color,transform] first:border-t first:border-olive/15 hover:-translate-y-0.5 hover:bg-sand/65"
                   >
                     <span className="flex size-9 shrink-0 items-center justify-center rounded-full border border-olive/15 text-olive transition-colors group-hover:border-clay group-hover:bg-clay">
                       <ServiceIcon slug={category.slug} className="size-4" />
@@ -514,7 +520,7 @@ function PhotoServiceCard({ category, index }: { category: ServiceCategory; inde
   return (
     <Link
       href={`/${category.slug}`}
-      className="group relative block h-full overflow-hidden rounded-[1.5rem]"
+      className="group relative block h-full overflow-hidden rounded-[1.5rem] shadow-[0_18px_50px_rgb(38_40_31/0.08)] transition-[transform,box-shadow] duration-500 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgb(38_40_31/0.14)]"
     >
       <Image
         src={category.heroImage!}
@@ -546,7 +552,7 @@ function TextServiceCard({ category, index }: { category: ServiceCategory; index
   return (
     <Link
       href={`/${category.slug}`}
-      className="group relative flex h-full flex-col justify-between overflow-hidden rounded-[1.5rem] bg-olive-deep p-7 text-sand transition-colors duration-300 hover:bg-olive"
+      className="group relative flex h-full flex-col justify-between overflow-hidden rounded-[1.5rem] bg-olive-deep p-7 text-sand shadow-[0_18px_50px_rgb(38_40_31/0.08)] transition-[transform,background-color,box-shadow] duration-500 hover:-translate-y-1 hover:bg-olive hover:shadow-[0_24px_60px_rgb(38_40_31/0.14)]"
     >
       <span
         aria-hidden="true"
