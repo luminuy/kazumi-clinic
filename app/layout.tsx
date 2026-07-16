@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { EB_Garamond, Noto_Sans_Thai } from 'next/font/google';
 import { site } from '@/lib/site';
-import { clinicSchema } from '@/lib/schema';
+import { clinicSchema, websiteSchema } from '@/lib/schema';
 import { cld, cloudAssets } from '@/lib/cloud';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -57,6 +57,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           type="application/ld+json"
           // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{ __html: JSON.stringify(clinicSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
         <Header />
         <main>{children}</main>
