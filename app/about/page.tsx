@@ -55,8 +55,9 @@ export default function AboutPage() {
         </Reveal>
       </section>
 
-      {/* ทีมแพทย์ — placeholder. เติมชื่อ/วุฒิ/เลขใบประกอบวิชาชีพเวชกรรมจริงของแพทย์ก่อน publish
-          (ห้ามกุข้อมูล ดู CLAUDE.md §0.2) */}
+      {/* ทีมแพทย์ — ชื่อและเลข ว. มาจาก "Kazumi NavBar Structure Final" (2026-07-16) ที่คลินิก
+          มาร์คไว้ว่า verified · ห้ามเพิ่มแพทย์คนอื่นหรือวุฒิใด ๆ ที่คลินิกไม่ได้ยืนยันเป็นลายลักษณ์
+          อักษร (ห้ามกุข้อมูล ดู CLAUDE.md §0.2) */}
       <section className="border-t border-olive/15 bg-cream">
         <div className="mx-auto max-w-3xl px-6 py-20">
           <Reveal>
@@ -70,13 +71,32 @@ export default function AboutPage() {
               ให้คำปรึกษาและออกแบบการรักษาเฉพาะบุคคล
             </p>
 
-            <div className="mt-8 rounded-2xl border border-dashed border-olive/30 p-10 text-center">
-              <UserRound className="mx-auto size-8 text-olive-light" />
-              <p className="mx-auto mt-4 max-w-md text-sm text-ink/60">
-                ข้อมูลแพทย์ (ชื่อ วุฒิการศึกษา และเลขที่ใบประกอบวิชาชีพเวชกรรม)
-                จะแสดงที่นี่ — สอบถามหรือนัดปรึกษาแพทย์ได้ทาง LINE
-              </p>
-            </div>
+            <ul className="mt-8 space-y-4">
+              {site.doctors.map((doctor) => (
+                <li
+                  key={doctor.licenseNo}
+                  className="flex items-start gap-4 rounded-2xl border border-olive/15 bg-sand/50 p-6"
+                >
+                  <UserRound className="mt-0.5 size-8 shrink-0 text-olive-light" />
+                  <div>
+                    <p className="font-serif text-xl text-olive-deep">
+                      {doctor.name}
+                      {doctor.nickname && (
+                        <span className="ml-2 text-base text-ink/50">({doctor.nickname})</span>
+                      )}
+                    </p>
+                    <p className="mt-1 text-xs uppercase tracking-[0.2em] text-olive-light">
+                      เลขที่ใบประกอบวิชาชีพเวชกรรม {doctor.licenseNo}
+                    </p>
+                    <p className="mt-3 text-sm text-ink/70">{doctor.role}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            <p className="mt-6 text-sm text-ink/60">
+              สอบถามหรือนัดปรึกษาแพทย์ได้ทาง LINE — ผลลัพธ์ขึ้นอยู่กับสภาพผิวและปัญหาเฉพาะบุคคล
+            </p>
           </Reveal>
         </div>
       </section>
