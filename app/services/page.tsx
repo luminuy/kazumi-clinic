@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import { site } from '@/lib/site';
 import { serviceCategories } from '@/lib/services';
 import { serviceCategoryListSchema, breadcrumbSchema } from '@/lib/schema';
-import { Card, CardContent } from '@/components/ui/card';
 import { ServiceIcon } from '@/components/service-icon';
+import { Reveal } from '@/components/reveal';
+import { PageHero } from '@/components/page-hero';
 
 export const metadata: Metadata = {
   title: 'บริการ / หัตถการ',
@@ -39,38 +40,38 @@ export default function ServicesPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }}
       />
 
-      <nav className="mx-auto max-w-6xl px-6 pt-8 text-xs text-ink/50">
-        <Link href="/" className="hover:text-olive">
-          หน้าหลัก
-        </Link>{' '}
-        / <span className="text-ink/70">บริการ / หัตถการ</span>
-      </nav>
+      <PageHero
+        eyebrow="Services & Treatments"
+        title="บริการ / หัตถการ"
+        lead={`${site.name} ให้บริการหัตถการความงามครบวงจร ดูแลโดยแพทย์ผู้เชี่ยวชาญ เลือกหมวดบริการที่สนใจเพื่อดูรายละเอียดและราคา`}
+        breadcrumb={[{ name: 'หน้าหลัก', href: '/' }, { name: 'บริการ / หัตถการ' }]}
+      />
 
-      <section className="mx-auto max-w-6xl px-6 py-10">
-        <h1 className="font-serif text-3xl text-olive-deep md:text-4xl">บริการ / หัตถการ</h1>
-        <p className="mt-4 max-w-2xl text-ink/70">
-          {site.name} ให้บริการหัตถการความงามครบวงจร ดูแลโดยแพทย์ผู้เชี่ยวชาญ
-          เลือกหมวดบริการที่สนใจเพื่อดูรายละเอียดและราคา
-        </p>
-
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {serviceCategories.map((c) => (
-            <Link key={c.slug} href={`/${c.slug}`} className="block">
-              <Card className="h-full rounded-2xl border-olive/15 ring-0 transition hover:border-olive hover:shadow-md">
-                <CardContent>
-                  <ServiceIcon slug={c.slug} className="size-6 text-olive" />
-                  <p className="mt-3 font-serif text-lg text-olive-deep">{c.title}</p>
-                  <p className="mt-1 text-xs uppercase tracking-wide text-olive-light">
-                    {c.titleEn}
-                  </p>
-                  <p className="mt-3 text-sm text-ink/70">{c.shortDescription}</p>
-                  <p className="mt-4 flex items-center gap-1 text-sm font-medium text-olive">
-                    ดูรายละเอียด
-                    <ArrowRight className="size-4" />
-                  </p>
-                </CardContent>
-              </Card>
-            </Link>
+      <section className="mx-auto max-w-6xl px-6 py-20">
+        <div className="divide-y divide-olive/15 border-y border-olive/15">
+          {serviceCategories.map((c, i) => (
+            <Reveal key={c.slug} delay={i * 60}>
+              <Link
+                href={`/${c.slug}`}
+                className="group flex items-center gap-6 py-7 transition-colors hover:bg-cream/60"
+              >
+                <span className="w-10 font-serif text-sm text-olive-light">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <ServiceIcon
+                  slug={c.slug}
+                  className="size-6 shrink-0 text-olive transition-transform group-hover:scale-110"
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="font-serif text-2xl text-olive-deep">{c.title}</p>
+                  <p className="mt-1 truncate text-sm text-ink/60">{c.shortDescription}</p>
+                </div>
+                <span className="hidden text-xs uppercase tracking-widest text-olive-light md:block">
+                  {c.titleEn}
+                </span>
+                <ArrowUpRight className="size-6 shrink-0 text-olive-light transition-transform group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-olive" />
+              </Link>
+            </Reveal>
           ))}
         </div>
       </section>

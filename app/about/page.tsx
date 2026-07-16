@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { ShieldCheck, Stethoscope, UserRound } from 'lucide-react';
 import { site } from '@/lib/site';
 import { breadcrumbSchema } from '@/lib/schema';
-import { Card, CardContent } from '@/components/ui/card';
+import { Reveal } from '@/components/reveal';
+import { PageHero, SectionLabel } from '@/components/page-hero';
 
 export const metadata: Metadata = {
   title: 'เกี่ยวกับเรา / แพทย์',
@@ -32,48 +32,52 @@ export default function AboutPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }}
       />
 
-      <nav className="mx-auto max-w-6xl px-6 pt-8 text-xs text-ink/50">
-        <Link href="/" className="hover:text-olive">
-          หน้าหลัก
-        </Link>{' '}
-        / <span className="text-ink/70">เกี่ยวกับเรา / แพทย์</span>
-      </nav>
+      <PageHero
+        eyebrow="About Us / Our Doctors"
+        title={`เกี่ยวกับ ${site.name}`}
+        lead={`“${site.tagline}” — 純粋さは永遠の美へ`}
+        breadcrumb={[{ name: 'หน้าหลัก', href: '/' }, { name: 'เกี่ยวกับเรา / แพทย์' }]}
+      />
 
-      <section className="mx-auto max-w-3xl px-6 py-14">
-        <h1 className="font-serif text-3xl text-olive-deep md:text-4xl">เกี่ยวกับ {site.name}</h1>
-        <p className="mt-2 font-serif italic text-olive-light">&ldquo;{site.tagline}&rdquo;</p>
-        <p className="mt-6 text-ink/70">{site.description}</p>
-        <p className="mt-4 text-ink/70">
-          {site.name} ยึดหลักปรัชญาความงามแบบมินิมอลสไตล์ญี่ปุ่น — Minimal Change, Maximum
-          Confidence — เน้นการปรับแต่งอย่างพอดี ให้ผลลัพธ์ที่เป็นธรรมชาติ ดูแลโดยแพทย์ผู้เชี่ยวชาญ
-          ในบรรยากาศคลินิกที่สงบและเป็นส่วนตัว
-        </p>
-        <p className="mt-6 flex items-center gap-2 text-sm text-ink/50">
-          <ShieldCheck className="size-4 shrink-0" />
-          ใบอนุญาตประกอบกิจการสถานพยาบาลเลขที่ {site.license}
-        </p>
+      <section className="mx-auto max-w-3xl px-6 py-20">
+        <Reveal>
+          <SectionLabel index={1}>ปรัชญาของเรา</SectionLabel>
+          <p className="mt-6 text-lg leading-relaxed text-ink/75">{site.description}</p>
+          <p className="mt-5 leading-relaxed text-ink/70">
+            {site.name} ยึดหลักปรัชญาความงามแบบมินิมอลสไตล์ญี่ปุ่น — Minimal Change, Maximum
+            Confidence — เน้นการปรับแต่งอย่างพอดี ให้ผลลัพธ์ที่เป็นธรรมชาติ ดูแลโดยแพทย์ผู้เชี่ยวชาญ
+            ในบรรยากาศคลินิกที่สงบและเป็นส่วนตัว
+          </p>
+          <p className="mt-6 flex items-center gap-2 text-sm text-ink/50">
+            <ShieldCheck className="size-4 shrink-0" />
+            ใบอนุญาตประกอบกิจการสถานพยาบาลเลขที่ {site.license}
+          </p>
+        </Reveal>
       </section>
 
       {/* ทีมแพทย์ — placeholder. เติมชื่อ/วุฒิ/เลขใบประกอบวิชาชีพเวชกรรมจริงของแพทย์ก่อน publish
           (ห้ามกุข้อมูล ดู CLAUDE.md §0.2) */}
-      <section className="border-t border-olive/10 bg-cream">
-        <div className="mx-auto max-w-3xl px-6 py-14">
-          <div className="flex items-center gap-2 text-olive">
-            <Stethoscope className="size-5" />
-            <h2 className="font-serif text-2xl text-olive-deep">ทีมแพทย์ของเรา</h2>
-          </div>
-          <p className="mt-4 text-ink/70">
-            หัตถการทุกอย่างที่ {site.name} ดำเนินการโดยแพทย์ผู้มีใบประกอบวิชาชีพเวชกรรม
-            ให้คำปรึกษาและออกแบบการรักษาเฉพาะบุคคล
-          </p>
-
-          <div className="mt-8 rounded-2xl border border-dashed border-olive/30 p-8 text-center">
-            <UserRound className="mx-auto size-8 text-olive-light" />
-            <p className="mt-4 text-sm text-ink/60">
-              ข้อมูลแพทย์ (ชื่อ วุฒิการศึกษา และเลขที่ใบประกอบวิชาชีพเวชกรรม)
-              จะแสดงที่นี่ — สอบถามหรือนัดปรึกษาแพทย์ได้ทาง LINE
+      <section className="border-t border-olive/15 bg-cream">
+        <div className="mx-auto max-w-3xl px-6 py-20">
+          <Reveal>
+            <SectionLabel index={2}>ทีมแพทย์</SectionLabel>
+            <h2 className="mt-4 flex items-center gap-2 font-serif text-3xl text-olive-deep">
+              <Stethoscope className="size-6 text-olive" />
+              ทีมแพทย์ของเรา
+            </h2>
+            <p className="mt-4 text-ink/70">
+              หัตถการทุกอย่างที่ {site.name} ดำเนินการโดยแพทย์ผู้มีใบประกอบวิชาชีพเวชกรรม
+              ให้คำปรึกษาและออกแบบการรักษาเฉพาะบุคคล
             </p>
-          </div>
+
+            <div className="mt-8 rounded-2xl border border-dashed border-olive/30 p-10 text-center">
+              <UserRound className="mx-auto size-8 text-olive-light" />
+              <p className="mx-auto mt-4 max-w-md text-sm text-ink/60">
+                ข้อมูลแพทย์ (ชื่อ วุฒิการศึกษา และเลขที่ใบประกอบวิชาชีพเวชกรรม)
+                จะแสดงที่นี่ — สอบถามหรือนัดปรึกษาแพทย์ได้ทาง LINE
+              </p>
+            </div>
+          </Reveal>
         </div>
       </section>
     </>
