@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import { Award, Languages, ShieldCheck, Sparkles, Stethoscope } from 'lucide-react';
 import { site } from '@/lib/site';
+import { cld, cloudAssets } from '@/lib/cloud';
 import { doctor } from '@/lib/doctor';
 import { breadcrumbSchema, doctorSchema } from '@/lib/schema';
 import { Reveal } from '@/components/reveal';
@@ -16,7 +17,13 @@ export const metadata: Metadata = {
     description: site.description,
     url: `${site.url}/about`,
     type: 'website',
-    images: [{ url: `${site.url}/images/og/about.jpg`, width: 1200, height: 630 }],
+    images: [
+      {
+        url: cld(cloudAssets.ogAbout, { width: 1200, height: 630, crop: 'fill' }),
+        width: 1200,
+        height: 630,
+      },
+    ],
   },
 };
 
@@ -70,7 +77,6 @@ export default function AboutPage() {
                 src={doctor.image}
                 alt={`${doctor.name} ${doctor.role}`}
                 fill
-                unoptimized
                 sizes="(min-width: 768px) 36vw, 90vw"
                 className="object-cover"
               />
@@ -80,7 +86,9 @@ export default function AboutPage() {
               <p className="mt-5 text-xs uppercase tracking-[0.24em] text-olive-light">
                 {doctor.role}
               </p>
-              <h2 className="mt-2 font-serif text-4xl text-olive-deep md:text-5xl">{doctor.name}</h2>
+              <h2 className="mt-2 font-serif text-4xl text-olive-deep md:text-5xl">
+                {doctor.name}
+              </h2>
               <p className="mt-5 leading-relaxed text-ink/70">{doctor.summary}</p>
               <p className="mt-3 text-xs text-ink/50">
                 {doctor.nameTh} · ใบประกอบวิชาชีพเวชกรรมเลขที่ {doctor.licenseNo}

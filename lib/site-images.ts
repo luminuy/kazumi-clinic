@@ -17,7 +17,16 @@ export type SiteImageKey =
   | 'hero-iv-drip-1'
   | 'hero-iv-drip-2'
   | 'hero-iv-drip-3'
-  | 'hero-skin-booster';
+  | 'hero-skin-booster'
+  | 'doctor-pratch'
+  | 'og-about'
+  | 'promo-active-refresh'
+  | 'promo-filler-neura'
+  | 'promo-karisma-collagen'
+  | 'promo-oxelle-skin-booster'
+  | 'promo-radiant-bright'
+  | 'promo-signature-flawless'
+  | 'promo-velvet-glow';
 
 export type SiteImageSpec = {
   key: SiteImageKey;
@@ -79,46 +88,75 @@ export const siteImages: SiteImageSpec[] = [
     defaultPublicId: cloudAssets.heroSkinBooster,
     ratioHint: 'แนวนอน',
   },
+  {
+    key: 'doctor-pratch',
+    label: 'รูปคุณหมอ',
+    where: 'หน้าแรก · /about · รูปใน Person JSON-LD',
+    defaultPublicId: cloudAssets.doctorPratch,
+    ratioHint: 'แนวตั้ง 4:5 — เห็นหน้าชัด อยู่กลางเฟรม',
+  },
+  {
+    key: 'og-about',
+    label: 'รูป OG หน้าเกี่ยวกับเรา',
+    where: 'ตอนแชร์ลิงก์ /about',
+    defaultPublicId: cloudAssets.ogAbout,
+    ratioHint: '1200×630 เป๊ะ (สเปก Facebook/LINE)',
+  },
+  {
+    key: 'promo-active-refresh',
+    label: 'โปสเตอร์โปรฯ Active & Refresh',
+    where: '/promotions',
+    defaultPublicId: cloudAssets.promoActiveRefresh,
+    ratioHint: 'แนวตั้ง 4:5 (โปสเตอร์)',
+  },
+  {
+    key: 'promo-filler-neura',
+    label: 'โปสเตอร์โปรฯ Filler Neura',
+    where: '/promotions',
+    defaultPublicId: cloudAssets.promoFillerNeura,
+    ratioHint: 'แนวตั้ง 4:5 (โปสเตอร์)',
+  },
+  {
+    key: 'promo-karisma-collagen',
+    label: 'โปสเตอร์โปรฯ Karisma Collagen',
+    where: '/promotions',
+    defaultPublicId: cloudAssets.promoKarismaCollagen,
+    ratioHint: 'แนวตั้ง 4:5 (โปสเตอร์)',
+  },
+  {
+    key: 'promo-oxelle-skin-booster',
+    label: 'โปสเตอร์โปรฯ Oxelle Skin Booster',
+    where: '/promotions',
+    defaultPublicId: cloudAssets.promoOxelleSkinBooster,
+    ratioHint: 'แนวตั้ง 4:5 (โปสเตอร์)',
+  },
+  {
+    key: 'promo-radiant-bright',
+    label: 'โปสเตอร์โปรฯ Radiant Bright',
+    where: '/promotions',
+    defaultPublicId: cloudAssets.promoRadiantBright,
+    ratioHint: 'แนวตั้ง 4:5 (โปสเตอร์)',
+  },
+  {
+    key: 'promo-signature-flawless',
+    label: 'โปสเตอร์โปรฯ Signature Flawless',
+    where: '/promotions',
+    defaultPublicId: cloudAssets.promoSignatureFlawless,
+    ratioHint: 'แนวตั้ง 4:5 (โปสเตอร์)',
+  },
+  {
+    key: 'promo-velvet-glow',
+    label: 'โปสเตอร์โปรฯ Velvet Glow',
+    where: '/promotions',
+    defaultPublicId: cloudAssets.promoVelvetGlow,
+    ratioHint: 'แนวตั้ง 4:5 (โปสเตอร์)',
+  },
 ];
 
 /**
- * Images that live in `public/` and are therefore baked into the build — the clinic CANNOT swap
- * these from /admin, because changing them requires a rebuild. Listed so /admin can say so out
- * loud instead of pretending every image is editable. Moving them to Cloudinary is what makes
- * them editable; until then this is an honest gap, not a hidden one.
+ * Nothing lives under public/ any more — every image the site renders is a Cloudinary asset,
+ * so /admin can replace all of them. Kept as an explicit empty list rather than deleted: if a
+ * future change reintroduces a baked-in image, put it here so /admin keeps telling the truth
+ * about what it cannot edit.
  */
-export const bakedInImages = [
-  {
-    path: '/images/doctor/dr-pratch-achawanitkun.jpg',
-    label: 'รูปคุณหมอ',
-    where: 'หน้าแรก · /about',
-  },
-  { path: '/images/og/about.jpg', label: 'รูป OG หน้าเกี่ยวกับเรา', where: 'ตอนแชร์ลิงก์ /about' },
-  { path: '/images/promotions/filler-neura.jpg', label: 'โปรฯ Filler Neura', where: '/promotions' },
-  {
-    path: '/images/promotions/karisma-collagen.jpg',
-    label: 'โปรฯ Karisma Collagen',
-    where: '/promotions',
-  },
-  {
-    path: '/images/promotions/oxelle-skin-booster.jpg',
-    label: 'โปรฯ Oxelle',
-    where: '/promotions',
-  },
-  {
-    path: '/images/promotions/radiant-bright.jpg',
-    label: 'โปรฯ Radiant Bright',
-    where: '/promotions',
-  },
-  {
-    path: '/images/promotions/signature-flawless.jpg',
-    label: 'โปรฯ Signature Flawless',
-    where: '/promotions',
-  },
-  {
-    path: '/images/promotions/active-refresh.jpg',
-    label: 'โปรฯ Active & Refresh',
-    where: '/promotions',
-  },
-  { path: '/images/promotions/velvet-glow.jpg', label: 'โปรฯ Velvet Glow', where: '/promotions' },
-];
+export const bakedInImages: { path: string; label: string; where: string }[] = [];
