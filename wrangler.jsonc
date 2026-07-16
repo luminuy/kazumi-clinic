@@ -8,7 +8,14 @@
   // block all crawling, because every canonical/sitemap/JSON-LD URL still says kazumiclinic.com.
   // DELETE this var the moment a real domain is live, or the real site ships uncrawlable.
   "vars": {
-    "SITE_ENV": "preview"
+    "SITE_ENV": "preview",
+    // Cloudflare Access, guarding /admin (app "kazumi-clinic-admin", policy "Admin only").
+    // Not secrets: the AUD is a public application identifier and the team domain is a public
+    // hostname. Security comes from lib/auth.ts verifying the JWT signature against Cloudflare's
+    // key set — knowing these two values gets an attacker nothing, so they belong in git where
+    // they're reviewable, not in `wrangler secret`.
+    "CF_ACCESS_TEAM_DOMAIN": "https://mute-wind-2c05.cloudflareaccess.com",
+    "CF_ACCESS_AUD": "e2a3d26d5b575e1290b4e5db4c438bab437e59e35d386c1a87e11242dffd6b35"
   },
   "assets": {
     "directory": ".open-next/assets",
