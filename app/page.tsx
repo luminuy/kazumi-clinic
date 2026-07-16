@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { ServiceIcon } from '@/components/service-icon';
 import { Reveal } from '@/components/reveal';
 import { Marquee } from '@/components/marquee';
+import { SectionLabel } from '@/components/page-hero';
 import { cn } from '@/lib/utils';
 
 const faqs = [
@@ -47,25 +48,40 @@ export default function HomePage() {
       />
 
       {/* ── Hero ──────────────────────────────────────────────── */}
-      <section className="bg-cream">
-        <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 md:grid-cols-[1fr_0.85fr] md:gap-14 md:py-24">
-          <div>
+      <section className="relative overflow-hidden bg-cream">
+        {/* Desktop only — on a narrow viewport it sits right behind the headline and muddies it. */}
+        <FlowerMark className="pointer-events-none absolute -right-40 -top-32 hidden size-[40rem] text-olive/[0.04] md:block" />
+
+        {/* Mobile order is headline → photo → facts; on desktop the facts tuck under the
+            headline in column one while the photo spans both rows of column two. */}
+        <div className="relative mx-auto grid max-w-6xl gap-y-10 px-6 py-16 md:grid-cols-[1fr_0.8fr] md:gap-x-16 md:gap-y-12 md:py-24">
+          <div className="md:col-start-1 md:row-start-1 md:self-end">
             <div className="flex items-center gap-3 text-xs uppercase tracking-[0.35em] text-olive-light">
               <span className="h-px w-10 bg-clay" />
               สถานเสริมความงาม · สุขุมวิท กรุงเทพฯ
             </div>
-            <h1 className="mt-8 font-serif text-[13vw] leading-[0.95] tracking-tight text-olive-deep sm:text-6xl md:text-[3.75rem] lg:text-7xl">
-              Where balance
-              <br />
-              <span className="text-clay">purity</span> becomes
-              <br />
-              eternal beauty.
+
+            {/* The <h1> carries both the brand line and the Thai one — on its own the English
+                slogan gives Google nothing to rank this clinic on. `site.description` is the
+                clinic's own approved wording, so the heading and the meta description agree. */}
+            <h1 className="mt-8">
+              <span className="block font-serif text-[13vw] leading-[0.95] tracking-tight text-olive-deep sm:text-6xl md:text-[3.5rem] lg:text-[4.25rem]">
+                Where balance
+                <br />
+                <span className="text-clay">purity</span> becomes
+                <br />
+                eternal beauty.
+              </span>
+              <span className="mt-7 block max-w-md text-sm font-normal leading-relaxed text-ink/70">
+                {site.description}
+              </span>
             </h1>
-            <p className="mt-8 max-w-md text-sm leading-relaxed text-ink/70">
-              純粋さは永遠の美へ — {site.taglineTh} ดูแลทุกหัตถการโดยแพทย์ผู้เชี่ยวชาญ
-              ในบรรยากาศคลินิกที่สงบและเป็นส่วนตัว
+
+            <p className="mt-5 font-serif text-sm italic tracking-wide text-olive-light">
+              {site.taglineJa} — {site.taglineTh}
             </p>
-            <div className="mt-10 flex flex-wrap items-center gap-4">
+
+            <div className="mt-9 flex flex-wrap items-center gap-4">
               <Button
                 render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
                 size="lg"
@@ -85,18 +101,51 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="relative aspect-square overflow-hidden rounded-[2rem]">
-            <Image
-              src={heroHomePortrait}
-              alt=""
+          {/* Offset hairline frame — the photo sits inside it, slightly rotated against it. */}
+          <div className="relative md:col-start-2 md:row-span-2 md:row-start-1 md:self-center">
+            <div
               aria-hidden="true"
-              fill
-              priority
-              fetchPriority="high"
-              sizes="(min-width: 768px) 45vw, 90vw"
-              className="object-cover"
+              className="absolute -inset-4 rotate-[1.5deg] rounded-[2.5rem] border border-clay/60"
             />
+            <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem]">
+              <Image
+                src={heroHomePortrait}
+                alt="ผู้หญิงยกมือแตะเส้นผม ผิวหน้าเรียบเนียนในแสงแดดอ่อน"
+                fill
+                priority
+                fetchPriority="high"
+                sizes="(min-width: 768px) 40vw, 90vw"
+                className="object-cover"
+              />
+            </div>
           </div>
+
+          <dl className="grid gap-x-8 gap-y-4 border-t border-olive/15 pt-7 text-xs leading-relaxed text-ink/60 sm:grid-cols-3 md:col-start-1 md:row-start-2 md:self-start">
+            <div>
+              <dt className="uppercase tracking-[0.2em] text-olive-light">เวลาทำการ</dt>
+              <dd className="mt-1.5">
+                จ–ส 9:00–22:00
+                <br />
+                อา 9:00–17:00
+              </dd>
+            </div>
+            <div>
+              <dt className="uppercase tracking-[0.2em] text-olive-light">ที่ตั้ง</dt>
+              <dd className="mt-1.5">
+                {site.address.street}
+                <br />
+                {site.address.subdistrict} {site.address.district}
+              </dd>
+            </div>
+            <div>
+              <dt className="uppercase tracking-[0.2em] text-olive-light">ใบอนุญาต</dt>
+              <dd className="mt-1.5">
+                สถานพยาบาลเลขที่
+                <br />
+                {site.license}
+              </dd>
+            </div>
+          </dl>
         </div>
       </section>
 
@@ -112,7 +161,7 @@ export default function HomePage() {
       <section className="mx-auto max-w-6xl px-6 py-24">
         <Reveal className="flex items-end justify-between gap-6">
           <div>
-            <span className="text-xs uppercase tracking-[0.3em] text-olive-light">(01) บริการ</span>
+            <SectionLabel index={1}>บริการ</SectionLabel>
             <h2 className="mt-3 font-serif text-4xl text-olive-deep md:text-5xl">บริการของเรา</h2>
           </div>
           <Link
@@ -145,15 +194,21 @@ export default function HomePage() {
         <div className="mx-auto grid max-w-6xl gap-12 md:grid-cols-2 md:items-center md:gap-16">
           <Reveal className="order-2 md:order-1">
             <span className="text-xs uppercase tracking-[0.3em] text-sand/50">(02) ปรัชญา</span>
-            <p className="mt-8 font-serif text-3xl leading-snug md:text-5xl md:leading-[1.15]">
+            <h2 className="mt-8 font-serif text-3xl leading-snug md:text-5xl md:leading-[1.15]">
               ความงามที่แท้จริงเกิดจาก
               <span className="text-clay"> ความสมดุลและความบริสุทธิ์</span>
-            </p>
+            </h2>
             <p className="mt-6 max-w-md text-sm leading-relaxed text-sand/70">
               เราเชื่อในการปรับแต่งอย่างพอดี ให้ผลลัพธ์ที่เป็นธรรมชาติที่สุด
               ดูแลโดยแพทย์ผู้เชี่ยวชาญ ในบรรยากาศคลินิกที่สงบและเป็นส่วนตัว
             </p>
-            <p className="mt-8 font-serif italic text-sand/40">純粋さは永遠の美へ</p>
+            <p className="mt-8 font-serif italic text-sand/40">{site.taglineJa}</p>
+            <Link
+              href="/about"
+              className="mt-8 inline-flex items-center gap-1.5 border-b border-clay/40 pb-1 text-sm text-clay transition-colors hover:border-clay hover:text-sand"
+            >
+              เกี่ยวกับ {site.name} <ArrowRight className="size-4" />
+            </Link>
           </Reveal>
           <Reveal
             delay={100}
@@ -161,8 +216,7 @@ export default function HomePage() {
           >
             <Image
               src={cloudAssets.heroIvDrip2}
-              alt=""
-              aria-hidden="true"
+              alt="ดวงตาและผิวหน้าของผู้หญิงในแสงแดดรำไรผ่านใบไม้"
               fill
               sizes="(min-width: 768px) 40vw, 90vw"
               className="object-cover"
@@ -172,16 +226,15 @@ export default function HomePage() {
       </section>
 
       {/* ── Hours / FAQ ───────────────────────────────────────── */}
-      <section className="mx-auto max-w-6xl px-6 py-24">
-        <div className="grid gap-6 md:grid-cols-2">
-          <Reveal className="rounded-2xl border border-olive/15 bg-cream p-8 md:p-10">
-            <span className="text-xs uppercase tracking-[0.3em] text-olive-light">
-              (03) เวลาทำการ &amp; ที่อยู่
-            </span>
+      <section className="border-t border-olive/10 bg-sand/60 px-6 py-24">
+        <div className="mx-auto grid max-w-6xl gap-6 md:grid-cols-5">
+          <Reveal className="rounded-2xl border border-olive/15 bg-cream p-8 md:col-span-2 md:p-10">
+            <SectionLabel index={3}>เวลาทำการ &amp; ที่อยู่</SectionLabel>
+            <h2 className="mt-3 font-serif text-3xl text-olive-deep">แวะมาหาเรา</h2>
             <ul className="mt-8 space-y-5 text-sm text-ink/75">
               <li className="flex items-start gap-3">
                 <MapPin className="mt-0.5 size-5 shrink-0 text-olive" />
-                {site.addressFull}
+                <address className="not-italic">{site.addressFull}</address>
               </li>
               <li className="flex items-start gap-3">
                 <Clock className="mt-0.5 size-5 shrink-0 text-olive" />
@@ -193,15 +246,25 @@ export default function HomePage() {
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="size-5 shrink-0 text-olive" />
-                {site.phone}
+                <a href={`tel:${site.phoneIntl}`} className="hover:text-olive-deep">
+                  {site.phone}
+                </a>
               </li>
             </ul>
+            <Link
+              href="/contact"
+              className="mt-8 inline-flex items-center gap-1.5 text-sm text-olive hover:text-olive-deep"
+            >
+              แผนที่และเส้นทาง <ArrowRight className="size-4" />
+            </Link>
           </Reveal>
 
-          <Reveal delay={80} className="rounded-2xl border border-olive/15 bg-cream p-8 md:p-10">
-            <span className="text-xs uppercase tracking-[0.3em] text-olive-light">
-              (04) คำถามที่พบบ่อย
-            </span>
+          <Reveal
+            delay={80}
+            className="rounded-2xl border border-olive/15 bg-cream p-8 md:col-span-3 md:p-10"
+          >
+            <SectionLabel index={4}>คำถามที่พบบ่อย</SectionLabel>
+            <h2 className="mt-3 font-serif text-3xl text-olive-deep">คำถามที่พบบ่อย</h2>
             <dl className="mt-8 divide-y divide-olive/15">
               {faqs.map((f) => (
                 <div key={f.question} className="py-5 first:pt-0 last:pb-0">
@@ -224,14 +287,25 @@ export default function HomePage() {
           <h2 className="mx-auto max-w-2xl font-serif text-4xl text-olive-deep md:text-5xl">
             พร้อมเริ่มดูแลผิวของคุณแล้วหรือยัง?
           </h2>
-          <Button
-            render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
-            size="lg"
-            className="mt-10 rounded-full bg-line px-10 text-white hover:bg-line/90"
-          >
-            จองคิวผ่าน LINE
-            <ArrowUpRight className="size-4" />
-          </Button>
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+            <Button
+              render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
+              size="lg"
+              className="rounded-full bg-line px-10 text-white hover:bg-line/90"
+            >
+              จองคิวผ่าน LINE
+              <ArrowUpRight className="size-4" />
+            </Button>
+            <Button
+              render={<a href={`tel:${site.phoneIntl}`} />}
+              variant="outline"
+              size="lg"
+              className="rounded-full border-olive/25 bg-transparent px-8 text-olive-deep hover:bg-olive/5"
+            >
+              <Phone className="size-4" />
+              โทร {site.phone}
+            </Button>
+          </div>
         </Reveal>
       </section>
     </>
@@ -246,8 +320,8 @@ function PhotoServiceCard({ category, index }: { category: ServiceCategory; inde
     >
       <Image
         src={category.heroImage!}
-        alt=""
-        aria-hidden="true"
+        alt={category.heroAlt ?? ''}
+        aria-hidden={category.heroAlt ? undefined : 'true'}
         fill
         sizes="(min-width: 768px) 50vw, 100vw"
         className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
