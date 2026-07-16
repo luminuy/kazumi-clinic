@@ -56,7 +56,7 @@ export default function AboutPage() {
 
       {/* ทีมแพทย์ — placeholder. เติมชื่อ/วุฒิ/เลขใบประกอบวิชาชีพเวชกรรมจริงของแพทย์ก่อน publish
           (ห้ามกุข้อมูล ดู CLAUDE.md §0.2) */}
-      <section className="border-t border-olive/10 bg-white">
+      <section className="border-t border-olive/10 bg-cream">
         <div className="mx-auto max-w-3xl px-6 py-14">
           <div className="flex items-center gap-2 text-olive">
             <Stethoscope className="size-5" />

@@ -52,7 +52,7 @@ export default function ReviewsPage() {
           ผลลัพธ์จากการทำหัตถการที่ {site.name} — ดูรีวิวจากลูกค้าจริงและผลลัพธ์ก่อน-หลังทำ
         </p>
 
-        <div className="mt-10 rounded-2xl border border-dashed border-olive/30 bg-white p-10 text-center">
+        <div className="mt-10 rounded-2xl border border-dashed border-olive/30 bg-cream p-10 text-center">
           <div className="flex justify-center gap-1 text-olive-light">
             {Array.from({ length: 5 }).map((_, i) => (
               <Star key={i} className="size-5" />

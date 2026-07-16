@@ -90,7 +90,7 @@ export default function PromotionsPage() {
             ))}
           </div>
         ) : (
-          <div className="mt-10 rounded-2xl border border-dashed border-olive/30 bg-white p-10 text-center">
+          <div className="mt-10 rounded-2xl border border-dashed border-olive/30 bg-cream p-10 text-center">
             <Sparkles className="mx-auto size-8 text-olive-light" />
             <p className="mt-4 font-serif text-lg text-olive-deep">
               ยังไม่มีโปรโมชั่นในขณะนี้
