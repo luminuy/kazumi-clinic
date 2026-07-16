@@ -1,6 +1,14 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowUpRight, ArrowRight, MapPin, Clock, Phone, CircleHelp } from 'lucide-react';
+import {
+  ArrowUpRight,
+  ArrowRight,
+  MapPin,
+  Clock,
+  Phone,
+  CircleHelp,
+  Stethoscope,
+} from 'lucide-react';
 import { site, hoursLines, hoursText } from '@/lib/site';
 import { serviceCategories, type ServiceCategory } from '@/lib/services';
 import { faqSchema } from '@/lib/schema';
@@ -12,15 +20,27 @@ import { Marquee } from '@/components/marquee';
 import { SectionLabel } from '@/components/page-hero';
 import { cn } from '@/lib/utils';
 
+// Every answer here is a fact already stated in lib/site.ts or lib/services.ts — these feed
+// FAQPage JSON-LD, so no answer may claim anything the clinic hasn't approved (§0.2).
+// The services answer is built from the catalogue so it can't drift as categories are added.
 const faqs = [
   {
-    question: 'Kazumi Clinic ให้บริการอะไรบ้าง?',
-    answer:
-      'Kazumi Clinic ให้บริการฟิลเลอร์ โบท็อกซ์ สกินบูสเตอร์ คอลลาเจนบูสเตอร์ และ IV Drip วิตามิน โดยแพทย์ผู้เชี่ยวชาญ',
+    question: `${site.name} ให้บริการอะไรบ้าง?`,
+    answer: `${site.name} ให้บริการ${serviceCategories.map((c) => c.title).join(' ')} โดยแพทย์ผู้เชี่ยวชาญ`,
   },
   {
     question: 'คลินิกเปิดกี่โมงถึงกี่โมง?',
     answer: `เปิดทำการ ${hoursText()}`,
+  },
+  {
+    question: 'คลินิกอยู่ที่ไหน?',
+    answer: `${site.name} ตั้งอยู่ที่ ${site.addressFull} ใบอนุญาตสถานพยาบาลเลขที่ ${site.license}`,
+  },
+  {
+    question: 'ใครเป็นผู้ทำหัตถการ?',
+    answer: `หัตถการทุกอย่างดำเนินการโดยแพทย์ผู้มีใบประกอบวิชาชีพเวชกรรม — ${site.doctors
+      .map((d) => `${d.name} (เลขที่ ${d.licenseNo})`)
+      .join(', ')}`,
   },
   {
     question: 'จองคิวได้ที่ไหน?',
@@ -29,9 +49,10 @@ const faqs = [
 ];
 
 // Desktop bento placement — a tall feature for the first photo category, two stacked beside it,
-// then a wide pair along the bottom. This is a deliberate homepage shortlist, not every category:
-// /services lists them all, and the nav's mega dropdown reaches the rest. Adding a category to
-// lib/services.ts therefore does NOT change the homepage until it's given a cell here.
+// then a wide pair along the bottom. Only the categories with artwork earn a bento cell; the
+// rest are listed underneath, so every category in lib/services.ts keeps a link from the
+// homepage's own content rather than only from the sitewide nav and footer, which Google
+// discounts as boilerplate.
 const homeBento: { slug: string; span: string }[] = [
   { slug: 'filler', span: 'md:col-span-7 md:row-span-2' },
   { slug: 'botox', span: 'md:col-span-5' },
@@ -39,6 +60,8 @@ const homeBento: { slug: string; span: string }[] = [
   { slug: 'skin-booster', span: 'md:col-span-7' },
   { slug: 'collagen-booster', span: 'md:col-span-5' },
 ];
+
+const bentoSlugs = new Set(homeBento.map((b) => b.slug));
 
 export default function HomePage() {
   return (
@@ -66,8 +89,13 @@ export default function HomePage() {
             {/* The <h1> carries both the brand line and the Thai one — on its own the English
                 slogan gives Google nothing to rank this clinic on. `site.description` is the
                 clinic's own approved wording, so the heading and the meta description agree. */}
+            {/* The document is lang="th"; without these the English and Japanese lines get read
+                out with Thai pronunciation rules by a screen reader. */}
             <h1 className="mt-8">
-              <span className="block font-serif text-[13vw] leading-[0.95] tracking-tight text-olive-deep sm:text-6xl md:text-[3.5rem] lg:text-[4.25rem]">
+              <span
+                lang="en"
+                className="block font-serif text-[13vw] leading-[0.95] tracking-tight text-olive-deep sm:text-6xl md:text-[3.5rem] lg:text-[4.25rem]"
+              >
                 Where balance
                 <br />
                 <span className="text-clay">purity</span> becomes
@@ -80,7 +108,7 @@ export default function HomePage() {
             </h1>
 
             <p className="mt-5 font-serif text-sm italic tracking-wide text-olive-light">
-              {site.taglineJa} — {site.taglineTh}
+              <span lang="ja">{site.taglineJa}</span> — <span lang="en">{site.taglineTh}</span>
             </p>
 
             <div className="mt-9 flex flex-wrap items-center gap-4">
@@ -191,6 +219,35 @@ export default function HomePage() {
             );
           })}
         </div>
+
+        {/* The categories without artwork — a plain row, but it keeps them linked from the
+            homepage's own copy instead of only from the nav and footer. */}
+        <Reveal className="mt-5 rounded-2xl border border-olive/15 bg-cream p-6 md:p-7">
+          <p className="text-xs uppercase tracking-[0.25em] text-olive-light">บริการอื่น ๆ</p>
+          <ul className="mt-4 grid gap-x-6 gap-y-3 sm:grid-cols-2 lg:grid-cols-4">
+            {serviceCategories
+              .filter((c) => !bentoSlugs.has(c.slug))
+              .map((c) => (
+                <li key={c.slug}>
+                  <Link href={`/${c.slug}`} className="group flex items-start gap-3">
+                    <ServiceIcon
+                      slug={c.slug}
+                      className="mt-0.5 size-4 shrink-0 text-olive-light transition-colors group-hover:text-olive"
+                    />
+                    <span>
+                      <span className="flex items-center gap-1.5 font-serif text-lg text-olive-deep">
+                        {c.title}
+                        <ArrowUpRight className="size-4 shrink-0 text-olive-light transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                      </span>
+                      <span className="mt-0.5 block text-xs leading-relaxed text-ink/60">
+                        {c.shortDescription}
+                      </span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+          </ul>
+        </Reveal>
       </section>
 
       {/* ── Editorial spread ──────────────────────────────────── */}
@@ -206,12 +263,33 @@ export default function HomePage() {
               เราเชื่อในการปรับแต่งอย่างพอดี ให้ผลลัพธ์ที่เป็นธรรมชาติที่สุด
               ดูแลโดยแพทย์ผู้เชี่ยวชาญ ในบรรยากาศคลินิกที่สงบและเป็นส่วนตัว
             </p>
-            <p className="mt-8 font-serif italic text-sand/40">{site.taglineJa}</p>
+            <p lang="ja" className="mt-8 font-serif italic text-sand/40">
+              {site.taglineJa}
+            </p>
+
+            {/* Who actually holds the needle, named and licensed, on the homepage itself.
+                For medical (YMYL) pages this is the E-E-A-T signal that matters most, and it
+                was previously only reachable two clicks away on /about. */}
+            <ul className="mt-9 space-y-3 border-t border-sand/15 pt-7">
+              {site.doctors.map((doctor) => (
+                <li key={doctor.licenseNo} className="flex items-start gap-3">
+                  <Stethoscope className="mt-1 size-4 shrink-0 text-clay" />
+                  <p className="text-sm text-sand/80">
+                    {doctor.name}
+                    {doctor.nickname && <span className="text-sand/50"> ({doctor.nickname})</span>}
+                    <span className="mt-0.5 block text-xs text-sand/50">
+                      ใบประกอบวิชาชีพเวชกรรมเลขที่ {doctor.licenseNo} · {doctor.role}
+                    </span>
+                  </p>
+                </li>
+              ))}
+            </ul>
+
             <Link
               href="/about"
               className="mt-8 inline-flex items-center gap-1.5 border-b border-clay/40 pb-1 text-sm text-clay transition-colors hover:border-clay hover:text-sand"
             >
-              เกี่ยวกับ {site.name} <ArrowRight className="size-4" />
+              เกี่ยวกับ {site.name} และทีมแพทย์ <ArrowRight className="size-4" />
             </Link>
           </Reveal>
           <Reveal
@@ -232,7 +310,9 @@ export default function HomePage() {
       {/* ── Hours / FAQ ───────────────────────────────────────── */}
       <section className="border-t border-olive/10 bg-sand/60 px-6 py-24">
         <div className="mx-auto grid max-w-6xl gap-6 md:grid-cols-5">
-          <Reveal className="rounded-2xl border border-olive/15 bg-cream p-8 md:col-span-2 md:p-10">
+          {/* self-start: the FAQ column is much taller, and stretching this card to match just
+              leaves a long empty tail under the phone number. */}
+          <Reveal className="rounded-2xl border border-olive/15 bg-cream p-8 md:col-span-2 md:self-start md:p-10">
             <SectionLabel index={3}>เวลาทำการ &amp; ที่อยู่</SectionLabel>
             <h2 className="mt-3 font-serif text-3xl text-olive-deep">แวะมาหาเรา</h2>
             <ul className="mt-8 space-y-5 text-sm text-ink/75">
