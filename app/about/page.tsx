@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ShieldCheck } from 'lucide-react';
+import { ShieldCheck, Stethoscope, UserRound } from 'lucide-react';
 import { site } from '@/lib/site';
 import { breadcrumbSchema } from '@/lib/schema';
+import { Card, CardContent } from '@/components/ui/card';
 
 export const metadata: Metadata = {
-  title: 'เกี่ยวกับเรา',
-  description: `รู้จัก ${site.name} สถานเสริมความงามย่านสุขุมวิท กรุงเทพฯ ใบอนุญาตเลขที่ ${site.license}`,
+  title: 'เกี่ยวกับเรา / แพทย์',
+  description: `รู้จัก ${site.name} สถานเสริมความงามย่านสุขุมวิท กรุงเทพฯ และทีมแพทย์ผู้เชี่ยวชาญ ใบอนุญาตเลขที่ ${site.license}`,
   alternates: { canonical: `${site.url}/about` },
   openGraph: {
     title: `เกี่ยวกับเรา — ${site.name}`,
@@ -35,7 +36,7 @@ export default function AboutPage() {
         <Link href="/" className="hover:text-olive">
           หน้าหลัก
         </Link>{' '}
-        / <span className="text-ink/70">เกี่ยวกับเรา</span>
+        / <span className="text-ink/70">เกี่ยวกับเรา / แพทย์</span>
       </nav>
 
       <section className="mx-auto max-w-3xl px-6 py-14">
@@ -51,6 +52,29 @@ export default function AboutPage() {
           <ShieldCheck className="size-4 shrink-0" />
           ใบอนุญาตประกอบกิจการสถานพยาบาลเลขที่ {site.license}
         </p>
+      </section>
+
+      {/* ทีมแพทย์ — placeholder. เติมชื่อ/วุฒิ/เลขใบประกอบวิชาชีพเวชกรรมจริงของแพทย์ก่อน publish
+          (ห้ามกุข้อมูล ดู CLAUDE.md §0.2) */}
+      <section className="border-t border-olive/10 bg-cream">
+        <div className="mx-auto max-w-3xl px-6 py-14">
+          <div className="flex items-center gap-2 text-olive">
+            <Stethoscope className="size-5" />
+            <h2 className="font-serif text-2xl text-olive-deep">ทีมแพทย์ของเรา</h2>
+          </div>
+          <p className="mt-4 text-ink/70">
+            หัตถการทุกอย่างที่ {site.name} ดำเนินการโดยแพทย์ผู้มีใบประกอบวิชาชีพเวชกรรม
+            ให้คำปรึกษาและออกแบบการรักษาเฉพาะบุคคล
+          </p>
+
+          <div className="mt-8 rounded-2xl border border-dashed border-olive/30 p-8 text-center">
+            <UserRound className="mx-auto size-8 text-olive-light" />
+            <p className="mt-4 text-sm text-ink/60">
+              ข้อมูลแพทย์ (ชื่อ วุฒิการศึกษา และเลขที่ใบประกอบวิชาชีพเวชกรรม)
+              จะแสดงที่นี่ — สอบถามหรือนัดปรึกษาแพทย์ได้ทาง LINE
+            </p>
+          </div>
+        </div>
       </section>
     </>
   );

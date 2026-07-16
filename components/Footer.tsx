@@ -2,19 +2,31 @@ import Link from 'next/link';
 import { MapPin, Phone, Clock, MessageCircle, AtSign, ExternalLink } from 'lucide-react';
 import { site } from '@/lib/site';
 import { serviceCategories } from '@/lib/services';
+import { navItems } from '@/lib/nav';
 import { ServiceIcon } from '@/components/service-icon';
 
 export default function Footer() {
   return (
     <footer className="border-t border-olive/10 bg-olive-deep text-sand">
-      <div className="mx-auto grid max-w-6xl gap-10 px-6 py-14 md:grid-cols-3">
+      <div className="mx-auto grid max-w-6xl gap-10 px-6 py-14 md:grid-cols-4">
         <div>
           <p className="font-serif text-lg tracking-widest">KAZUMI CLINIC</p>
           <p className="mt-3 text-sm text-sand/70">{site.taglineTh}</p>
           <p className="mt-1 text-xs text-sand/50">ใบอนุญาตเลขที่ {site.license}</p>
+          <nav className="mt-4 flex flex-col gap-2 text-sm text-sand/70">
+            {navItems.map((item) => (
+              <Link key={item.href} href={item.href} className="hover:text-white">
+                {item.label}
+              </Link>
+            ))}
+          </nav>
         </div>
         <div>
-          <p className="text-sm font-medium text-sand/90">บริการ</p>
+          <p className="text-sm font-medium text-sand/90">
+            <Link href="/services" className="hover:text-white">
+              บริการ / หัตถการ
+            </Link>
+          </p>
           <ul className="mt-3 space-y-2 text-sm text-sand/70">
             {serviceCategories.map((c) => (
               <li key={c.slug}>
@@ -26,7 +38,7 @@ export default function Footer() {
             ))}
           </ul>
         </div>
-        <div className="text-sm text-sand/70">
+        <div className="text-sm text-sand/70 md:col-span-2">
           <p className="flex items-start gap-2">
             <MapPin className="mt-0.5 size-4 shrink-0" />
             {site.addressFull}

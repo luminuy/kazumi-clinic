@@ -4,55 +4,62 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Brand palette — approximated from logo/cover assets, swap for exact brand hex if a style guide exists. */
+/* Brand palette — earthy olive/sage/clay/cream system.
+   Base swatches: #c7cec7 sage-pale · #a7af9a sage · #7a7a5e khaki · #3d4e46 forest
+   #c5ae9b clay · #4d573e olive · warm grey · cream. */
 :root {
-  --background: #f4f2ea;
-  --foreground: #1e211b;
-  --card: #ffffff;
-  --card-foreground: #1e211b;
-  --popover: #ffffff;
-  --popover-foreground: #1e211b;
-  --primary: #4b5740;
-  --primary-foreground: #f4f2ea;
-  --secondary: #eae7da;
-  --secondary-foreground: #333c2b;
-  --muted: #ece9dc;
-  --muted-foreground: #6e7263;
-  --accent: #7c8a68;
-  --accent-foreground: #1e211b;
-  --destructive: #b3452f;
-  --border: #dcd7c4;
-  --input: #dcd7c4;
-  --ring: #4b5740;
+  --background: #eee9df;
+  --foreground: #26281f;
+  --card: #f6f3ec;
+  --card-foreground: #26281f;
+  --popover: #f6f3ec;
+  --popover-foreground: #26281f;
+  --primary: #4d573e;
+  --primary-foreground: #eee9df;
+  --secondary: #e2ddce;
+  --secondary-foreground: #3d4e46;
+  --muted: #e5e0d1;
+  --muted-foreground: #6b6f5c;
+  --accent: #c5ae9b;
+  --accent-foreground: #26281f;
+  --destructive: #a8452f;
+  --border: #d8d1bf;
+  --input: #d8d1bf;
+  --ring: #4d573e;
   --radius: 0.75rem;
 
-  --olive: #4b5740;
-  --olive-deep: #333c2b;
-  --olive-light: #7c8a68;
-  --sand: #f4f2ea;
-  --ink: #1e211b;
+  /* brand scale */
+  --olive: #4d573e;
+  --olive-deep: #3d4e46;
+  --olive-light: #7a7a5e;
+  --sage: #a7af9a;
+  --sage-pale: #c7cec7;
+  --clay: #c5ae9b;
+  --sand: #eee9df;
+  --cream: #f6f3ec;
+  --ink: #26281f;
   --line: #06c755;
 }
 
 .dark {
-  --background: #1e211b;
-  --foreground: #f4f2ea;
-  --card: #262b21;
-  --card-foreground: #f4f2ea;
-  --popover: #262b21;
-  --popover-foreground: #f4f2ea;
-  --primary: #7c8a68;
-  --primary-foreground: #1e211b;
-  --secondary: #333c2b;
-  --secondary-foreground: #f4f2ea;
-  --muted: #2c3126;
-  --muted-foreground: #a7ac98;
-  --accent: #4b5740;
-  --accent-foreground: #f4f2ea;
+  --background: #23261f;
+  --foreground: #eee9df;
+  --card: #2b2f26;
+  --card-foreground: #eee9df;
+  --popover: #2b2f26;
+  --popover-foreground: #eee9df;
+  --primary: #a7af9a;
+  --primary-foreground: #23261f;
+  --secondary: #3d4e46;
+  --secondary-foreground: #eee9df;
+  --muted: #313528;
+  --muted-foreground: #aeb29c;
+  --accent: #c5ae9b;
+  --accent-foreground: #23261f;
   --destructive: #c96248;
-  --border: rgb(244 242 234 / 12%);
-  --input: rgb(244 242 234 / 16%);
-  --ring: #7c8a68;
+  --border: rgb(238 233 223 / 12%);
+  --input: rgb(238 233 223 / 16%);
+  --ring: #a7af9a;
 }
 
 @theme inline {
@@ -85,7 +92,11 @@
   --color-olive: var(--olive);
   --color-olive-deep: var(--olive-deep);
   --color-olive-light: var(--olive-light);
+  --color-sage: var(--sage);
+  --color-sage-pale: var(--sage-pale);
+  --color-clay: var(--clay);
   --color-sand: var(--sand);
+  --color-cream: var(--cream);
   --color-ink: var(--ink);
   --color-line: var(--line);
 }
@@ -96,5 +107,55 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
+  }
+}
+
+/* ── Motion primitives ─────────────────────────────────────────── */
+
+/* Scroll reveal (driven by components/reveal.tsx via .is-visible) */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.8s ease,
+    transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Horizontal marquee (components/marquee.tsx) */
+.marquee {
+  overflow: hidden;
+  white-space: nowrap;
+}
+.marquee-track {
+  display: inline-flex;
+  width: max-content;
+  animation: marquee var(--marquee-duration, 40s) linear infinite;
+}
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .marquee-track {
+    animation: none;
   }
 }
