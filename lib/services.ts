@@ -3,6 +3,7 @@
 // list with the clinic before treating them as permanent (see CLAUDE.md §0.2). Items without a
 // price (e.g. IV Drip programs) render as "สอบถามราคา" until the clinic publishes one.
 import { site } from './site';
+import { cloudAssets } from './cloud';
 
 export type ServiceItem = {
   name: string;
@@ -23,6 +24,8 @@ export type ServiceCategory = {
   shortDescription: string;
   description: string;
   ogImage: string;
+  /** Cloudinary public ID for the category page's PageHero background, if one exists. */
+  heroImage?: string;
   items: ServiceItem[];
 };
 
@@ -35,6 +38,7 @@ export const serviceCategories: ServiceCategory[] = [
     description:
       'บริการฟิลเลอร์กรดไฮยาลูรอนิกจากแบรนด์คุณภาพ ปรับโครงหน้า ร่องแก้ม ร่องน้ำหมาก และริมฝีปาก โดยแพทย์ผู้เชี่ยวชาญของ Kazumi Clinic',
     ogImage: `${site.url}/images/og/filler.jpg`,
+    heroImage: cloudAssets.heroFiller,
     items: [
       { name: 'Neura Deep', detail: '1 CC', priceFrom: 3990, unit: 'ครั้ง' },
       { name: 'Neura Deep', detail: '3 CC', priceFrom: 9990, unit: 'ครั้ง' },
@@ -69,6 +73,7 @@ export const serviceCategories: ServiceCategory[] = [
     description:
       'โปรแกรม IV Drip วิตามินสูตรเฉพาะของ Kazumi Clinic ช่วยปรับโทนสีผิว ลดเม็ดสี กระตุ้นคอลลาเจน และชะลอความเสื่อมของผิวจากแสงแดด',
     ogImage: `${site.url}/images/og/iv-drip.jpg`,
+    heroImage: cloudAssets.heroIvDrip1,
     items: [
       {
         name: 'Signature Flawless',
@@ -127,6 +132,7 @@ export const serviceCategories: ServiceCategory[] = [
     description:
       'สกินบูสเตอร์เกรดพรีเมียม ฟื้นฟูเซลล์ผิวจากภายใน กระตุ้นการสร้างคอลลาเจนใหม่ เหมาะกับผิวโทรม ผิวขาดน้ำ',
     ogImage: `${site.url}/images/og/skin-booster.jpg`,
+    heroImage: cloudAssets.heroSkinBooster,
     items: [
       {
         name: 'Oxelle Skin Booster',
