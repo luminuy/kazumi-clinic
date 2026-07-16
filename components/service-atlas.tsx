@@ -19,6 +19,7 @@ const fallbackImages = [
 export function ServiceAtlas() {
   const railRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<number | null>(null);
+  const programmaticIndexRef = useRef<number | null>(null);
   const activeIndexRef = useRef(0);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -28,12 +29,13 @@ export function ServiceAtlas() {
     const card = rail?.querySelector<HTMLElement>(`[data-service-index="${nextIndex}"]`);
     if (!card) return;
 
+    const firstCard = rail?.querySelector<HTMLElement>('[data-service-index="0"]');
+    if (!rail || !firstCard) return;
+
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    card.scrollIntoView({
-      behavior: prefersReducedMotion ? 'auto' : 'smooth',
-      block: 'nearest',
-      inline: 'start',
-    });
+    const targetLeft = Math.max(0, card.offsetLeft - firstCard.offsetLeft);
+    programmaticIndexRef.current = nextIndex;
+    rail.scrollTo({ left: targetLeft, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
     activeIndexRef.current = nextIndex;
     setActiveIndex(nextIndex);
   };
@@ -45,6 +47,14 @@ export function ServiceAtlas() {
       const rail = railRef.current;
       const firstCard = rail?.querySelector<HTMLElement>('[data-service-index="0"]');
       if (rail && firstCard) {
+        if (programmaticIndexRef.current !== null) {
+          const targetCard = rail.querySelector<HTMLElement>(`[data-service-index="${programmaticIndexRef.current}"]`);
+          if (targetCard && Math.abs(rail.scrollLeft - (targetCard.offsetLeft - firstCard.offsetLeft)) <= 2) {
+            programmaticIndexRef.current = null;
+          }
+          frameRef.current = null;
+          return;
+        }
         const gap = Number.parseFloat(getComputedStyle(rail).columnGap) || 0;
         const step = firstCard.getBoundingClientRect().width + gap;
         const nextIndex = Math.min(serviceCategories.length - 1, Math.max(0, Math.round(rail.scrollLeft / step)));
