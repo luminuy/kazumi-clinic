@@ -1,10 +1,21 @@
 import type { Metadata } from 'next';
 import { MapPin, Phone, Clock, MessageCircle, AtSign, Navigation } from 'lucide-react';
 import { site } from '@/lib/site';
+import { cld, cloudAssets } from '@/lib/cloud';
 import { breadcrumbSchema } from '@/lib/schema';
 import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/reveal';
 import { PageHero } from '@/components/page-hero';
+
+// Derived from the Cloudinary hero rather than a file in public/ — the previous
+// `/images/og/contact.jpg` was never actually added, so every share of this page
+// rendered with no preview image at all.
+const ogImage = cld(cloudAssets.heroIvDrip2, {
+  width: 1200,
+  height: 630,
+  crop: 'fill',
+  gravity: 'auto',
+});
 
 export const metadata: Metadata = {
   title: 'ติดต่อเรา',
@@ -15,7 +26,7 @@ export const metadata: Metadata = {
     description: site.description,
     url: `${site.url}/contact`,
     type: 'website',
-    images: [{ url: `${site.url}/images/og/contact.jpg`, width: 1200, height: 630 }],
+    images: [{ url: ogImage, width: 1200, height: 630 }],
   },
 };
 

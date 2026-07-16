@@ -1,10 +1,21 @@
 import type { Metadata } from 'next';
 import { ExternalLink, MessageCircle, Star } from 'lucide-react';
 import { site } from '@/lib/site';
+import { cld, cloudAssets } from '@/lib/cloud';
 import { breadcrumbSchema } from '@/lib/schema';
 import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/reveal';
 import { PageHero } from '@/components/page-hero';
+
+// Derived from the Cloudinary hero rather than a file in public/ — the previous
+// `/images/og/reviews.jpg` was never actually added, so every share of this page
+// rendered with no preview image at all.
+const ogImage = cld(cloudAssets.heroIvDrip1, {
+  width: 1200,
+  height: 630,
+  crop: 'fill',
+  gravity: 'auto',
+});
 
 export const metadata: Metadata = {
   title: 'รีวิว / ผลลัพธ์ก่อน-หลัง',
@@ -15,7 +26,7 @@ export const metadata: Metadata = {
     description: site.description,
     url: `${site.url}/reviews`,
     type: 'website',
-    images: [{ url: `${site.url}/images/og/reviews.jpg`, width: 1200, height: 630 }],
+    images: [{ url: ogImage, width: 1200, height: 630 }],
   },
 };
 
@@ -58,9 +69,7 @@ export default function ReviewsPage() {
             ระหว่างนี้สามารถดูรีวิวได้ที่ Google และ Instagram ของเรา
             หรือสอบถามผลลัพธ์เฉพาะบุคคลผ่าน LINE
           </p>
-          <p className="mt-4 text-xs text-ink/40">
-            *ผลลัพธ์ขึ้นอยู่กับสภาพผิวและปัญหาเฉพาะบุคคล
-          </p>
+          <p className="mt-4 text-xs text-ink/40">*ผลลัพธ์ขึ้นอยู่กับสภาพผิวและปัญหาเฉพาะบุคคล</p>
         </Reveal>
 
         <div className="mt-12 flex flex-wrap gap-3">
