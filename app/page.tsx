@@ -64,6 +64,13 @@ const gridSpan: Record<string, string> = {
 
 const signatureCategories = serviceCategories.filter((category) => gridSpan[category.slug]);
 const additionalCategories = serviceCategories.filter((category) => !gridSpan[category.slug]);
+const serviceImagePool = [
+  cloudAssets.heroFiller,
+  cloudAssets.heroIvDrip1,
+  cloudAssets.heroIvDrip2,
+  cloudAssets.heroIvDrip3,
+  cloudAssets.heroSkinBooster,
+];
 
 export const revalidate = 3600;
 
@@ -213,49 +220,29 @@ export default function HomePage() {
                 delay={index * 70}
                 className={cn('min-h-[17rem] md:min-h-0', gridSpan[category.slug])}
               >
-                {category.heroImage ? (
-                  <PhotoServiceCard category={category} index={index + 1} />
-                ) : (
-                  <TextServiceCard category={category} index={index + 1} />
-                )}
+                <PhotoServiceCard category={category} index={index + 1} />
               </Reveal>
             ))}
           </div>
 
           {additionalCategories.length > 0 && (
-            <Reveal className="mt-20 grid gap-10 border-t border-olive/15 pt-10 lg:grid-cols-[0.7fr_1.3fr] lg:gap-20">
-              <div>
-                <div className="section-eyebrow flex items-center gap-3">
+            <Reveal className="mt-6 overflow-hidden rounded-[1.75rem] border border-olive/12 bg-cream/70">
+              <div className="flex flex-wrap items-center justify-between gap-4 border-b border-olive/12 px-5 py-4 sm:px-7">
+                <div className="flex items-center gap-3">
                   <span className="h-px w-8 bg-clay" />
-                  02 / More care
+                  <span className="section-eyebrow">02 / Extended care</span>
                 </div>
-                <h3 className="mt-5 font-serif text-3xl leading-tight text-olive-deep md:text-4xl">
-                  ดูแลเพิ่มเติม
-                </h3>
-                <p className="mt-4 max-w-xs text-sm leading-relaxed text-ink/60">
-                  ทางเลือกสำหรับรายละเอียดเล็ก ๆ ที่ทำให้ความมั่นใจของคุณชัดขึ้น
-                </p>
+                <span className="text-xs text-ink/45">โปรแกรมเพิ่มเติม · เลือกตามเป้าหมายของคุณ</span>
               </div>
-
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid gap-px bg-olive/12 sm:grid-cols-2 lg:grid-cols-4">
                 {additionalCategories.map((category, index) => (
-                  <Link
+                  <PhotoServiceCard
                     key={category.slug}
-                    href={`/${category.slug}`}
-                    className="group relative flex min-h-[9.5rem] items-start gap-4 overflow-hidden rounded-2xl border border-olive/12 bg-cream/70 p-5 transition-[background-color,transform,box-shadow] hover:-translate-y-1 hover:bg-cream hover:shadow-[0_18px_40px_rgb(38_40_31/0.08)]"
-                  >
-                    <span className="flex size-9 shrink-0 items-center justify-center rounded-full border border-olive/15 text-olive transition-colors group-hover:border-clay group-hover:bg-clay">
-                      <ServiceIcon slug={category.slug} className="size-4" />
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="flex items-start justify-between gap-2 text-[0.65rem] uppercase tracking-[0.2em] text-olive-light">
-                        {String(signatureCategories.length + index + 1).padStart(2, '0')} · {category.titleEn}
-                        <ArrowUpRight className="size-4 shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                      </span>
-                      <span className="mt-2 block font-serif text-xl leading-tight text-olive-deep">{category.title}</span>
-                      <span className="mt-2 block text-xs leading-relaxed text-ink/55">{category.shortDescription}</span>
-                    </span>
-                  </Link>
+                    category={category}
+                    index={signatureCategories.length + index + 1}
+                    image={serviceImagePool[(signatureCategories.length + index) % serviceImagePool.length]}
+                    compact
+                  />
                 ))}
               </div>
             </Reveal>
@@ -458,26 +445,42 @@ export default function HomePage() {
   );
 }
 
-function PhotoServiceCard({ category, index }: { category: ServiceCategory; index: number }) {
+function PhotoServiceCard({
+  category,
+  index,
+  image,
+  compact = false,
+}: {
+  category: ServiceCategory;
+  index: number;
+  image?: string;
+  compact?: boolean;
+}) {
+  const imageSrc = image ?? category.heroImage;
+  const hasSemanticImage = !image && Boolean(category.heroAlt);
+
   return (
     <Link
       href={`/${category.slug}`}
-      className="group relative block h-full overflow-hidden rounded-[1.5rem] shadow-[0_18px_50px_rgb(38_40_31/0.08)] transition-[transform,box-shadow] duration-500 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgb(38_40_31/0.14)]"
+      className={cn(
+        'group relative block h-full min-h-[14rem] overflow-hidden bg-olive-deep shadow-[0_18px_50px_rgb(38_40_31/0.08)] transition-[transform,box-shadow] duration-500 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgb(38_40_31/0.14)]',
+        compact ? 'rounded-none shadow-none hover:translate-y-0 hover:shadow-none' : 'rounded-[1.5rem]',
+      )}
     >
       <Image
-        src={category.heroImage!}
-        alt={category.heroAlt ?? ''}
-        aria-hidden={category.heroAlt ? undefined : 'true'}
+        src={imageSrc!}
+        alt={hasSemanticImage ? category.heroAlt! : ''}
+        aria-hidden={hasSemanticImage ? undefined : 'true'}
         fill
         sizes="(min-width: 768px) 50vw, 100vw"
         className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-olive-deep/90 via-olive-deep/10 to-transparent transition-colors group-hover:from-olive-deep/95" />
-      <div className="relative flex h-full flex-col justify-between p-6">
+      <div className={cn('relative flex h-full flex-col justify-between p-6', compact && 'p-5')}>
         <span className="font-serif text-sm text-sand/60">{String(index).padStart(2, '0')}</span>
         <div>
           <p className="text-xs uppercase tracking-[0.25em] text-clay">{category.titleEn}</p>
-          <p className="mt-1 flex items-center gap-2 font-serif text-2xl text-sand md:text-3xl">
+          <p className={cn('mt-1 flex items-center gap-2 font-serif text-2xl text-sand', !compact && 'md:text-3xl')}>
             {category.title}
             <ArrowUpRight className="size-5 shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
           </p>
