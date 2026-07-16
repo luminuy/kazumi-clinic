@@ -19,19 +19,32 @@ export const site = {
     line1: '1558 โครงการไดมอนด์คอนโด',
     street: 'ถนนสุขุมวิท',
     subdistrict: 'แขวงพระโขนงเหนือ',
-    district: 'เขตคลองเตย',
+    // เขตวัฒนา per the clinic's NavBar spec (2026-07-16) — แขวงพระโขนงเหนือ sits in วัฒนา, not
+    // คลองเตย, which is what this said before. Feeds addressLocality in the MedicalBusiness JSON-LD,
+    // so it has to match the Google Business Profile exactly.
+    district: 'เขตวัฒนา',
     province: 'กรุงเทพมหานคร',
     postalCode: '10110',
     country: 'TH',
   },
-  addressFull:
-    '1558 โครงการไดมอนด์คอนโด ถนนสุขุมวิท แขวงพระโขนงเหนือ เขตคลองเตย กรุงเทพมหานคร 10110',
+  addressFull: '1558 โครงการไดมอนด์คอนโด ถนนสุขุมวิท แขวงพระโขนงเหนือ เขตวัฒนา กรุงเทพมหานคร 10110',
   geo: {
     // TODO: confirm exact lat/lng from Google Business Profile (approximate Diamond Condo Sukhumvit location for now)
     lat: 13.7053,
     lng: 100.5875,
   },
   license: 'มสพ.สบส.338/2569',
+  // Verified in the clinic's "Kazumi NavBar Structure Final" spec (2026-07-16). A doctor's
+  // ว. number is a regulated credential — never add or edit an entry here without the clinic
+  // confirming it in writing (CLAUDE.md §0.2).
+  doctors: [
+    {
+      name: 'นายแพทย์ปราชญ์ อาชวนิจกุล',
+      nickname: 'คุณหมอโอ๊ต',
+      licenseNo: 'ว.75302',
+      role: 'ผู้ออกแบบโปรแกรมฟิลเลอร์ปรับรูปหน้า',
+    },
+  ],
   hours: [
     { day: 'Monday', open: '09:00', close: '22:00' },
     { day: 'Tuesday', open: '09:00', close: '22:00' },
