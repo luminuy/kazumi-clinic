@@ -160,3 +160,6 @@ export const siteImages: SiteImageSpec[] = [
  * about what it cannot edit.
  */
 export const bakedInImages: { path: string; label: string; where: string }[] = [];
+
+/** Every valid slot key — the allowlist the admin API validates uploads against. */
+export const siteImageKeys = siteImages.map((image) => image.key);
