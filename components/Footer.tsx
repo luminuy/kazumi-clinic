@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { MapPin, Phone, Clock, MessageCircle, AtSign, ExternalLink } from 'lucide-react';
-import { site } from '@/lib/site';
+import { site, hoursText } from '@/lib/site';
 import { serviceCategories } from '@/lib/services';
 import { navItems } from '@/lib/nav';
 import { ServiceIcon } from '@/components/service-icon';
@@ -49,7 +49,7 @@ export default function Footer() {
           </p>
           <p className="mt-2 flex items-center gap-2">
             <Clock className="size-4 shrink-0" />
-            ทุกวัน 9:00–22:00 (อาทิตย์ 9:00–17:00)
+            {hoursText('short', ' · ')}
           </p>
           <div className="mt-4 flex gap-4">
             <a

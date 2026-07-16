@@ -42,3 +42,61 @@ export const site = {
     { day: 'Sunday', open: '09:00', close: '17:00' },
   ],
 } as const;
+
+type DayName = (typeof site.hours)[number]['day'];
+
+const dayLabelsTh: Record<DayName, { long: string; short: string }> = {
+  Monday: { long: 'จันทร์', short: 'จ' },
+  Tuesday: { long: 'อังคาร', short: 'อ' },
+  Wednesday: { long: 'พุธ', short: 'พ' },
+  Thursday: { long: 'พฤหัสบดี', short: 'พฤ' },
+  Friday: { long: 'ศุกร์', short: 'ศ' },
+  Saturday: { long: 'เสาร์', short: 'ส' },
+  Sunday: { long: 'อาทิตย์', short: 'อา' },
+};
+
+export type HoursStyle = 'long' | 'short';
+
+export type HoursLine = { days: string; time: string };
+
+// '09:00' → '9:00' — schema.org needs the padded 24h form, Thai copy reads better without it.
+function formatTime(time: string) {
+  return time.replace(/^0/, '');
+}
+
+function formatDays(days: DayName[], style: HoursStyle) {
+  const label = (day: DayName) => dayLabelsTh[day][style];
+  if (days.length === 1) return label(days[0]);
+  if (days.length === 2) return `${label(days[0])}, ${label(days[1])}`;
+  return `${label(days[0])}–${label(days[days.length - 1])}`;
+}
+
+/**
+ * Collapses `site.hours` into display lines, merging runs of days that share the same
+ * open/close — e.g. `[{ days: 'จันทร์–เสาร์', time: '9:00–22:00' }, { days: 'อาทิตย์', … }]`.
+ * Runs are found over adjacent entries, so `site.hours` must stay in week order.
+ */
+export function hoursLines(style: HoursStyle = 'long'): HoursLine[] {
+  const groups: { days: DayName[]; open: string; close: string }[] = [];
+
+  for (const hour of site.hours) {
+    const current = groups[groups.length - 1];
+    if (current && current.open === hour.open && current.close === hour.close) {
+      current.days.push(hour.day);
+    } else {
+      groups.push({ days: [hour.day], open: hour.open, close: hour.close });
+    }
+  }
+
+  return groups.map((group) => ({
+    days: formatDays(group.days, style),
+    time: `${formatTime(group.open)}–${formatTime(group.close)}`,
+  }));
+}
+
+/** Same grouping as `hoursLines`, flattened into one sentence for prose and JSON-LD. */
+export function hoursText(style: HoursStyle = 'long', separator = ' และ '): string {
+  return hoursLines(style)
+    .map((line) => `${line.days} ${line.time}`)
+    .join(separator);
+}
