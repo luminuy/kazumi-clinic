@@ -230,28 +230,6 @@
   transform: none;
 }
 
-/* Horizontal marquee (components/marquee.tsx) */
-.marquee {
-  overflow: hidden;
-  white-space: nowrap;
-}
-.marquee-track {
-  display: inline-flex;
-  width: max-content;
-  animation: marquee var(--marquee-duration, 40s) linear infinite;
-}
-.marquee:hover .marquee-track {
-  animation-play-state: paused;
-}
-@keyframes marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -265,8 +243,5 @@
     opacity: 1;
     transform: none;
     transition: none;
-  }
-  .marquee-track {
-    animation: none;
   }
 }

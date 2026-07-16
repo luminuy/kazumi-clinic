@@ -27,6 +27,12 @@ export const clinicSchema = {
   telephone: site.phoneIntl,
   priceRange: '$$',
   image: cld(cloudAssets.heroHome, { width: 1200, height: 630, crop: 'fill' }),
+  logo: cld(cloudAssets.logo, { width: 512, height: 512, crop: 'fill' }),
+  hasMap: site.mapsUrl,
+  areaServed: {
+    '@type': 'Place',
+    name: 'สุขุมวิท เขตวัฒนา กรุงเทพมหานคร',
+  },
   address: {
     '@type': 'PostalAddress',
     streetAddress: `${site.address.line1} ${site.address.street}`,
@@ -55,6 +61,34 @@ export const clinicSchema = {
     identifier: doctor.licenseNo,
   })),
   sameAs: [site.facebook, site.instagram, site.lineUrl].filter(Boolean),
+};
+
+export const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': `${site.url}/#website`,
+  name: site.name,
+  url: site.url,
+  inLanguage: 'th-TH',
+  publisher: { '@id': `${site.url}/#business` },
+};
+
+export const homePageSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  '@id': `${site.url}/#webpage`,
+  name: `${site.name} — คลินิกความงามสุขุมวิท กรุงเทพฯ`,
+  url: site.url,
+  description: site.description,
+  inLanguage: 'th-TH',
+  isPartOf: { '@id': `${site.url}/#website` },
+  about: { '@id': `${site.url}/#business` },
+  primaryImageOfPage: {
+    '@type': 'ImageObject',
+    url: cld(cloudAssets.heroHome, { width: 1200, height: 630, crop: 'fill' }),
+    width: 1200,
+    height: 630,
+  },
 };
 
 export const doctorSchema = {
