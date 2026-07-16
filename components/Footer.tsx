@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { MapPin, Phone, Clock, MessageCircle, AtSign, ExternalLink } from 'lucide-react';
-import { site, hoursText } from '@/lib/site';
+import { site } from '@/lib/site';
 import { serviceCategories } from '@/lib/services';
 import { navItems } from '@/lib/nav';
 import { ServiceIcon } from '@/components/service-icon';
@@ -45,13 +45,15 @@ export default function Footer() {
           </p>
           <p className="mt-2 flex items-center gap-2">
             <Phone className="size-4 shrink-0" />
-            โทร {site.phone}
+            <a href={site.phoneUrl} className="hover:text-white">
+              โทร {site.phone}
+            </a>
           </p>
           <p className="mt-2 flex items-center gap-2">
             <Clock className="size-4 shrink-0" />
-            {hoursText('short', ' · ')}
+            {site.hoursDisplay.short}
           </p>
-          <div className="mt-4 flex gap-4">
+          <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2">
             <a
               href={site.lineUrl}
               target="_blank"
@@ -78,6 +80,15 @@ export default function Footer() {
             >
               <ExternalLink className="size-4" />
               Facebook
+            </a>
+            <a
+              href={site.mapsUrl}
+              target="_blank"
+              rel="noopener"
+              className="flex items-center gap-1.5 hover:text-white"
+            >
+              <MapPin className="size-4" />
+              แผนที่
             </a>
           </div>
         </div>

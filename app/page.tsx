@@ -7,9 +7,16 @@ import {
   Clock,
   Phone,
   CircleHelp,
+  GraduationCap,
+  MessageCircle,
+  Navigation,
+  ShieldCheck,
+  Sparkles,
   Stethoscope,
 } from 'lucide-react';
-import { site, hoursLines, hoursText } from '@/lib/site';
+import { site } from '@/lib/site';
+import { doctor } from '@/lib/doctor';
+import { activePromotions } from '@/lib/promotions';
 import { serviceCategories, type ServiceCategory } from '@/lib/services';
 import { faqSchema } from '@/lib/schema';
 import { cloudAssets, heroHomePortrait } from '@/lib/cloud';
@@ -17,20 +24,17 @@ import { Button } from '@/components/ui/button';
 import { ServiceIcon } from '@/components/service-icon';
 import { Reveal } from '@/components/reveal';
 import { Marquee } from '@/components/marquee';
-import { SectionLabel } from '@/components/page-hero';
 import { cn } from '@/lib/utils';
 
-// Every answer here is a fact already stated in lib/site.ts or lib/services.ts — these feed
-// FAQPage JSON-LD, so no answer may claim anything the clinic hasn't approved (§0.2).
-// The services answer is built from the catalogue so it can't drift as categories are added.
 const faqs = [
   {
     question: `${site.name} ให้บริการอะไรบ้าง?`,
-    answer: `${site.name} ให้บริการ${serviceCategories.map((c) => c.title).join(' ')} โดยแพทย์ผู้เชี่ยวชาญ`,
+    answer:
+      `${site.name} ให้บริการ${serviceCategories.map((c) => c.title).join(' ')} โดยแพทย์เป็นผู้ประเมินก่อนรับบริการ`,
   },
   {
     question: 'คลินิกเปิดกี่โมงถึงกี่โมง?',
-    answer: `เปิดทำการ ${hoursText()}`,
+    answer: `${site.hoursDisplay.weekdays} และ${site.hoursDisplay.sunday}`,
   },
   {
     question: 'คลินิกอยู่ที่ไหน?',
@@ -38,32 +42,31 @@ const faqs = [
   },
   {
     question: 'ใครเป็นผู้ทำหัตถการ?',
-    answer: `หัตถการทุกอย่างดำเนินการโดยแพทย์ผู้มีใบประกอบวิชาชีพเวชกรรม — ${site.doctors
+    answer: `หัตถการดำเนินการโดยแพทย์ผู้มีใบประกอบวิชาชีพเวชกรรม — ${site.doctors
       .map((d) => `${d.name} (เลขที่ ${d.licenseNo})`)
       .join(', ')}`,
   },
   {
     question: 'จองคิวได้ที่ไหน?',
-    answer: `จองคิวผ่าน LINE Official Account ได้ที่ ${site.lineUrl} หรือโทร ${site.phone}`,
+    answer: `จองคิวผ่าน LINE Official Account หรือโทร ${site.phone}`,
   },
 ];
 
-// Desktop bento placement — a tall feature for the first photo category, two stacked beside it,
-// then a wide pair along the bottom. Only the categories with artwork earn a bento cell; the
-// rest are listed underneath, so every category in lib/services.ts keeps a link from the
-// homepage's own content rather than only from the sitewide nav and footer, which Google
-// discounts as boilerplate.
-const homeBento: { slug: string; span: string }[] = [
-  { slug: 'filler', span: 'md:col-span-7 md:row-span-2' },
-  { slug: 'botox', span: 'md:col-span-5' },
-  { slug: 'iv-drip', span: 'md:col-span-5' },
-  { slug: 'skin-booster', span: 'md:col-span-7' },
-  { slug: 'collagen-booster', span: 'md:col-span-5' },
-];
+// Desktop bento placement — a tall feature for the first photo category, two stacked
+// beside it, then a wide pair along the bottom. Order follows serviceCategories.
+const gridSpan: Record<string, string> = {
+  filler: 'md:col-span-7 md:row-span-2',
+  botox: 'md:col-span-5',
+  'iv-drip': 'md:col-span-5',
+  'skin-booster': 'md:col-span-7',
+  'collagen-booster': 'md:col-span-5',
+};
 
-const bentoSlugs = new Set(homeBento.map((b) => b.slug));
+export const revalidate = 3600;
 
 export default function HomePage() {
+  const promos = activePromotions().slice(0, 3);
+
   return (
     <>
       <script
@@ -73,28 +76,17 @@ export default function HomePage() {
       />
 
       {/* ── Hero ──────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-cream">
-        {/* Desktop only — on a narrow viewport it sits right behind the headline and muddies it. */}
-        <FlowerMark className="pointer-events-none absolute -right-40 -top-32 hidden size-[40rem] text-olive/[0.04] md:block" />
-
-        {/* Mobile order is headline → photo → facts; on desktop the facts tuck under the
-            headline in column one while the photo spans both rows of column two. */}
-        <div className="relative mx-auto grid max-w-6xl gap-y-10 px-6 py-16 md:grid-cols-[1fr_0.8fr] md:gap-x-16 md:gap-y-12 md:py-24">
-          <div className="md:col-start-1 md:row-start-1 md:self-end">
+      <section className="bg-cream">
+        <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 md:grid-cols-[1fr_0.85fr] md:gap-14 md:py-24">
+          <div>
             <div className="flex items-center gap-3 text-xs uppercase tracking-[0.35em] text-olive-light">
               <span className="h-px w-10 bg-clay" />
               สถานเสริมความงาม · สุขุมวิท กรุงเทพฯ
             </div>
-
-            {/* The <h1> carries both the brand line and the Thai one — on its own the English
-                slogan gives Google nothing to rank this clinic on. `site.description` is the
-                clinic's own approved wording, so the heading and the meta description agree. */}
-            {/* The document is lang="th"; without these the English and Japanese lines get read
-                out with Thai pronunciation rules by a screen reader. */}
             <h1 className="mt-8">
               <span
                 lang="en"
-                className="block font-serif text-[13vw] leading-[0.95] tracking-tight text-olive-deep sm:text-6xl md:text-[3.5rem] lg:text-[4.25rem]"
+                className="block font-serif text-[13vw] leading-[0.95] tracking-tight text-olive-deep sm:text-6xl md:text-[3.75rem] lg:text-7xl"
               >
                 Where balance
                 <br />
@@ -106,12 +98,10 @@ export default function HomePage() {
                 {site.description}
               </span>
             </h1>
-
             <p className="mt-5 font-serif text-sm italic tracking-wide text-olive-light">
               <span lang="ja">{site.taglineJa}</span> — <span lang="en">{site.taglineTh}</span>
             </p>
-
-            <div className="mt-9 flex flex-wrap items-center gap-4">
+            <div className="mt-10 flex flex-wrap items-center gap-4">
               <Button
                 render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
                 size="lg"
@@ -131,53 +121,18 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Offset hairline frame — the photo sits inside it, slightly rotated against it. */}
-          <div className="relative md:col-start-2 md:row-span-2 md:row-start-1 md:self-center">
-            <div
+          <div className="relative aspect-square overflow-hidden rounded-[2rem]">
+            <Image
+              src={heroHomePortrait}
+              alt=""
               aria-hidden="true"
-              className="absolute -inset-4 rotate-[1.5deg] rounded-[2.5rem] border border-clay/60"
+              fill
+              priority
+              fetchPriority="high"
+              sizes="(min-width: 768px) 45vw, 90vw"
+              className="object-cover"
             />
-            <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem]">
-              <Image
-                src={heroHomePortrait}
-                alt="ผู้หญิงยกมือแตะเส้นผม ผิวหน้าเรียบเนียนในแสงแดดอ่อน"
-                fill
-                priority
-                fetchPriority="high"
-                sizes="(min-width: 768px) 40vw, 90vw"
-                className="object-cover"
-              />
-            </div>
           </div>
-
-          <dl className="grid gap-x-8 gap-y-4 border-t border-olive/15 pt-7 text-xs leading-relaxed text-ink/60 sm:grid-cols-3 md:col-start-1 md:row-start-2 md:self-start">
-            <div>
-              <dt className="uppercase tracking-[0.2em] text-olive-light">เวลาทำการ</dt>
-              <dd className="mt-1.5">
-                {hoursLines('short').map((line) => (
-                  <span key={line.days} className="block">
-                    {line.days} {line.time}
-                  </span>
-                ))}
-              </dd>
-            </div>
-            <div>
-              <dt className="uppercase tracking-[0.2em] text-olive-light">ที่ตั้ง</dt>
-              <dd className="mt-1.5">
-                {site.address.street}
-                <br />
-                {site.address.subdistrict} {site.address.district}
-              </dd>
-            </div>
-            <div>
-              <dt className="uppercase tracking-[0.2em] text-olive-light">ใบอนุญาต</dt>
-              <dd className="mt-1.5">
-                สถานพยาบาลเลขที่
-                <br />
-                {site.license}
-              </dd>
-            </div>
-          </dl>
         </div>
       </section>
 
@@ -193,7 +148,7 @@ export default function HomePage() {
       <section className="mx-auto max-w-6xl px-6 py-24">
         <Reveal className="flex items-end justify-between gap-6">
           <div>
-            <SectionLabel index={1}>บริการ</SectionLabel>
+            <span className="text-xs uppercase tracking-[0.3em] text-olive-light">(01) บริการ</span>
             <h2 className="mt-3 font-serif text-4xl text-olive-deep md:text-5xl">บริการของเรา</h2>
           </div>
           <Link
@@ -205,92 +160,99 @@ export default function HomePage() {
         </Reveal>
 
         <div className="mt-14 grid grid-cols-1 gap-5 md:grid-cols-12 md:auto-rows-[13rem]">
-          {homeBento.map(({ slug, span }, i) => {
-            const c = serviceCategories.find((category) => category.slug === slug);
-            if (!c) return null;
-            return (
-              <Reveal key={slug} delay={i * 70} className={cn('min-h-[16rem] md:min-h-0', span)}>
-                {c.heroImage ? (
-                  <PhotoServiceCard category={c} index={i + 1} />
-                ) : (
-                  <TextServiceCard category={c} index={i + 1} />
-                )}
-              </Reveal>
-            );
-          })}
+          {serviceCategories.map((c, i) => (
+            <Reveal
+              key={c.slug}
+              delay={i * 70}
+              className={cn('min-h-[16rem] md:min-h-0', gridSpan[c.slug])}
+            >
+              {c.heroImage ? (
+                <PhotoServiceCard category={c} index={i + 1} />
+              ) : (
+                <TextServiceCard category={c} index={i + 1} />
+              )}
+            </Reveal>
+          ))}
         </div>
+      </section>
 
-        {/* The categories without artwork — a plain row, but it keeps them linked from the
-            homepage's own copy instead of only from the nav and footer. */}
-        <Reveal className="mt-5 rounded-2xl border border-olive/15 bg-cream p-6 md:p-7">
-          <p className="text-xs uppercase tracking-[0.25em] text-olive-light">บริการอื่น ๆ</p>
-          <ul className="mt-4 grid gap-x-6 gap-y-3 sm:grid-cols-2 lg:grid-cols-4">
-            {serviceCategories
-              .filter((c) => !bentoSlugs.has(c.slug))
-              .map((c) => (
-                <li key={c.slug}>
-                  <Link href={`/${c.slug}`} className="group flex items-start gap-3">
-                    <ServiceIcon
-                      slug={c.slug}
-                      className="mt-0.5 size-4 shrink-0 text-olive-light transition-colors group-hover:text-olive"
-                    />
-                    <span>
-                      <span className="flex items-center gap-1.5 font-serif text-lg text-olive-deep">
-                        {c.title}
-                        <ArrowUpRight className="size-4 shrink-0 text-olive-light transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                      </span>
-                      <span className="mt-0.5 block text-xs leading-relaxed text-ink/60">
-                        {c.shortDescription}
-                      </span>
-                    </span>
-                  </Link>
-                </li>
+      {/* ── Doctor / trust ───────────────────────────────────── */}
+      <section className="border-y border-olive/10 bg-cream px-6 py-24">
+        <div className="mx-auto grid max-w-6xl gap-12 md:grid-cols-[0.8fr_1.2fr] md:items-center md:gap-16">
+          <Reveal className="relative aspect-[4/5] overflow-hidden rounded-[2rem] bg-sage-pale">
+            <Image
+              src={doctor.image}
+              alt={`${doctor.name} ${doctor.role}`}
+              fill
+              unoptimized
+              sizes="(min-width: 768px) 38vw, 90vw"
+              className="object-cover"
+            />
+            <div className="absolute inset-x-4 bottom-4 rounded-2xl bg-cream/90 p-4 backdrop-blur">
+              <p className="font-serif text-xl text-olive-deep">{doctor.name}</p>
+              <p className="mt-0.5 text-xs text-ink/55">{doctor.role}</p>
+              <p className="mt-1 text-[0.68rem] text-ink/45">
+                ใบประกอบวิชาชีพเวชกรรมเลขที่ {site.doctors[0].licenseNo}
+              </p>
+            </div>
+          </Reveal>
+
+          <Reveal delay={80}>
+            <span className="text-xs uppercase tracking-[0.3em] text-olive-light">
+              (02) ดูแลโดยแพทย์
+            </span>
+            <h2 className="mt-4 max-w-xl font-serif text-4xl leading-tight text-olive-deep md:text-5xl">
+              ทุกแผนการดูแลเริ่มจากการประเมินเป็นรายบุคคล
+            </h2>
+            <p className="mt-6 max-w-xl leading-relaxed text-ink/70">{doctor.summary}</p>
+
+            <div className="mt-8 grid gap-3 sm:grid-cols-3">
+              {[
+                {
+                  icon: Stethoscope,
+                  title: 'ประเมินก่อนทำ',
+                  text: 'พูดคุยเป้าหมายและประวัติสุขภาพ',
+                },
+                { icon: Sparkles, title: 'วางแผนเฉพาะบุคคล', text: 'เลือกแนวทางให้เหมาะกับแต่ละคน' },
+                { icon: ShieldCheck, title: 'แนะนำการดูแล', text: 'เตรียมตัวและติดตามหลังหัตถการ' },
+              ].map(({ icon: Icon, title, text }) => (
+                <div key={title} className="rounded-2xl border border-olive/12 bg-background p-4">
+                  <Icon className="size-5 text-olive" />
+                  <p className="mt-3 text-sm font-medium text-olive-deep">{title}</p>
+                  <p className="mt-1 text-xs leading-relaxed text-ink/55">{text}</p>
+                </div>
               ))}
-          </ul>
-        </Reveal>
+            </div>
+
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <Button
+                render={<Link href="/about" />}
+                variant="outline"
+                className="rounded-full border-olive/25 bg-transparent text-olive-deep hover:bg-olive/5"
+              >
+                <GraduationCap className="size-4" />
+                ดูประวัติและวุฒิการศึกษา
+              </Button>
+              <p className="text-xs text-ink/45">ผลลัพธ์ขึ้นอยู่กับการประเมินและแต่ละบุคคล</p>
+            </div>
+          </Reveal>
+        </div>
       </section>
 
       {/* ── Editorial spread ──────────────────────────────────── */}
       <section className="bg-olive-deep px-6 py-24 text-sand md:py-28">
         <div className="mx-auto grid max-w-6xl gap-12 md:grid-cols-2 md:items-center md:gap-16">
           <Reveal className="order-2 md:order-1">
-            <span className="text-xs uppercase tracking-[0.3em] text-sand/50">(02) ปรัชญา</span>
-            <h2 className="mt-8 font-serif text-3xl leading-snug md:text-5xl md:leading-[1.15]">
+            <span className="text-xs uppercase tracking-[0.3em] text-sand/50">(03) ปรัชญา</span>
+            <p className="mt-8 font-serif text-3xl leading-snug md:text-5xl md:leading-[1.15]">
               ความงามที่แท้จริงเกิดจาก
               <span className="text-clay"> ความสมดุลและความบริสุทธิ์</span>
-            </h2>
+            </p>
             <p className="mt-6 max-w-md text-sm leading-relaxed text-sand/70">
-              เราเชื่อในการปรับแต่งอย่างพอดี ให้ผลลัพธ์ที่เป็นธรรมชาติที่สุด
-              ดูแลโดยแพทย์ผู้เชี่ยวชาญ ในบรรยากาศคลินิกที่สงบและเป็นส่วนตัว
+              เราเชื่อในการปรับแต่งอย่างพอดี โดยแพทย์เป็นผู้ประเมินและวางแผนการดูแล
+              ในบรรยากาศคลินิกที่สงบและเป็นส่วนตัว
             </p>
-            <p lang="ja" className="mt-8 font-serif italic text-sand/40">
-              {site.taglineJa}
-            </p>
-
-            {/* Who actually holds the needle, named and licensed, on the homepage itself.
-                For medical (YMYL) pages this is the E-E-A-T signal that matters most, and it
-                was previously only reachable two clicks away on /about. */}
-            <ul className="mt-9 space-y-3 border-t border-sand/15 pt-7">
-              {site.doctors.map((doctor) => (
-                <li key={doctor.licenseNo} className="flex items-start gap-3">
-                  <Stethoscope className="mt-1 size-4 shrink-0 text-clay" />
-                  <p className="text-sm text-sand/80">
-                    {doctor.name}
-                    {doctor.nickname && <span className="text-sand/50"> ({doctor.nickname})</span>}
-                    <span className="mt-0.5 block text-xs text-sand/50">
-                      ใบประกอบวิชาชีพเวชกรรมเลขที่ {doctor.licenseNo} · {doctor.role}
-                    </span>
-                  </p>
-                </li>
-              ))}
-            </ul>
-
-            <Link
-              href="/about"
-              className="mt-8 inline-flex items-center gap-1.5 border-b border-clay/40 pb-1 text-sm text-clay transition-colors hover:border-clay hover:text-sand"
-            >
-              เกี่ยวกับ {site.name} และทีมแพทย์ <ArrowRight className="size-4" />
-            </Link>
+            <p className="mt-8 font-serif italic text-sand/40">純粋さは永遠の美へ</p>
           </Reveal>
           <Reveal
             delay={100}
@@ -298,7 +260,8 @@ export default function HomePage() {
           >
             <Image
               src={cloudAssets.heroIvDrip2}
-              alt="ดวงตาและผิวหน้าของผู้หญิงในแสงแดดรำไรผ่านใบไม้"
+              alt=""
+              aria-hidden="true"
               fill
               sizes="(min-width: 768px) 40vw, 90vw"
               className="object-cover"
@@ -307,53 +270,146 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Hours / FAQ ───────────────────────────────────────── */}
-      <section className="border-t border-olive/10 bg-sand/60 px-6 py-24">
-        <div className="mx-auto grid max-w-6xl gap-6 md:grid-cols-5">
-          {/* self-start: the FAQ column is much taller, and stretching this card to match just
-              leaves a long empty tail under the phone number. */}
-          <Reveal className="rounded-2xl border border-olive/15 bg-cream p-8 md:col-span-2 md:self-start md:p-10">
-            <SectionLabel index={3}>เวลาทำการ &amp; ที่อยู่</SectionLabel>
-            <h2 className="mt-3 font-serif text-3xl text-olive-deep">แวะมาหาเรา</h2>
-            <ul className="mt-8 space-y-5 text-sm text-ink/75">
-              <li className="flex items-start gap-3">
-                <MapPin className="mt-0.5 size-5 shrink-0 text-olive" />
-                <address className="not-italic">{site.addressFull}</address>
-              </li>
-              <li className="flex items-start gap-3">
-                <Clock className="mt-0.5 size-5 shrink-0 text-olive" />
-                <span>
-                  {hoursLines().map((line) => (
-                    <span key={line.days} className="block">
-                      {line.days} {line.time}
-                    </span>
-                  ))}
-                </span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Phone className="size-5 shrink-0 text-olive" />
-                <a href={`tel:${site.phoneIntl}`} className="hover:text-olive-deep">
-                  {site.phone}
-                </a>
-              </li>
-            </ul>
-            <Link
-              href="/contact"
-              className="mt-8 inline-flex items-center gap-1.5 text-sm text-olive hover:text-olive-deep"
+      {/* ── Promotions — date-gated ───────────────────────────── */}
+      <section className="mx-auto max-w-6xl px-6 py-24">
+        <Reveal className="flex flex-wrap items-end justify-between gap-6">
+          <div>
+            <span className="text-xs uppercase tracking-[0.3em] text-olive-light">
+              (04) โปรโมชั่น
+            </span>
+            <h2 className="mt-3 font-serif text-4xl text-olive-deep md:text-5xl">
+              โปรโมชั่นล่าสุด
+            </h2>
+          </div>
+          <Link
+            href="/promotions"
+            className="flex items-center gap-1 text-sm text-olive hover:text-olive-deep"
+          >
+            ดูหน้ารวมโปรโมชั่น <ArrowRight className="size-4" />
+          </Link>
+        </Reveal>
+
+        {promos.length > 0 ? (
+          <div className="mt-12 grid gap-4 md:grid-cols-3">
+            {promos.map((promo, index) => (
+              <Reveal
+                key={`${promo.name}-${promo.detail ?? ''}`}
+                delay={index * 60}
+                className="rounded-2xl border border-olive/15 bg-cream p-6"
+              >
+                <p className="text-xs uppercase tracking-[0.2em] text-olive-light">ราคาโปรโมชั่น</p>
+                <h3 className="mt-3 font-serif text-2xl text-olive-deep">{promo.name}</h3>
+                {promo.detail && <p className="mt-1 text-sm text-ink/55">{promo.detail}</p>}
+                <p className="mt-5 text-2xl font-medium text-olive">
+                  {promo.price.toLocaleString('th-TH')} บาท
+                </p>
+                <p className="mt-2 text-xs text-ink/45">
+                  ใช้ได้ถึง{' '}
+                  {new Date(promo.validUntil).toLocaleDateString('th-TH', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                  })}
+                </p>
+              </Reveal>
+            ))}
+          </div>
+        ) : (
+          <Reveal className="mt-12 flex flex-col items-start justify-between gap-5 rounded-2xl border border-dashed border-olive/25 bg-cream p-8 sm:flex-row sm:items-center">
+            <div>
+              <p className="font-serif text-2xl text-olive-deep">
+                ติดตามโปรแกรมและสิทธิพิเศษรอบใหม่
+              </p>
+              <p className="mt-2 text-sm text-ink/60">
+                ขณะนี้ยังไม่มีโปรโมชั่นที่อยู่ในช่วงเวลาใช้งาน สอบถามข้อมูลล่าสุดได้ทาง LINE
+              </p>
+            </div>
+            <Button
+              render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
+              className="shrink-0 rounded-full bg-line text-white hover:bg-line/90"
             >
-              แผนที่และเส้นทาง <ArrowRight className="size-4" />
-            </Link>
+              <MessageCircle className="size-4" />
+              สอบถามผ่าน LINE
+            </Button>
+          </Reveal>
+        )}
+      </section>
+
+      {/* ── Visit / map / FAQ ──────────────────────────────────── */}
+      <section className="border-t border-olive/10 bg-cream px-6 py-24">
+        <div className="mx-auto max-w-6xl">
+          <Reveal>
+            <span className="text-xs uppercase tracking-[0.3em] text-olive-light">
+              (05) การเดินทาง
+            </span>
+            <h2 className="mt-3 font-serif text-4xl text-olive-deep md:text-5xl">มาเยี่ยมเรา</h2>
           </Reveal>
 
-          <Reveal
-            delay={80}
-            className="rounded-2xl border border-olive/15 bg-cream p-8 md:col-span-3 md:p-10"
-          >
-            <SectionLabel index={4}>คำถามที่พบบ่อย</SectionLabel>
-            <h2 className="mt-3 font-serif text-3xl text-olive-deep">คำถามที่พบบ่อย</h2>
-            <dl className="mt-8 divide-y divide-olive/15">
+          <div className="mt-12 grid overflow-hidden rounded-[2rem] border border-olive/15 bg-background md:grid-cols-[0.8fr_1.2fr]">
+            <Reveal className="p-8 md:p-10">
+              <ul className="space-y-5 text-sm text-ink/75">
+                <li className="flex items-start gap-3">
+                  <MapPin className="mt-0.5 size-5 shrink-0 text-olive" />
+                  <a
+                    href={site.mapsUrl}
+                    target="_blank"
+                    rel="noopener"
+                    className="hover:text-olive"
+                  >
+                    {site.addressFull}
+                  </a>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Clock className="mt-0.5 size-5 shrink-0 text-olive" />
+                  <span>
+                    {site.hoursDisplay.weekdays}
+                    <br />
+                    {site.hoursDisplay.sunday}
+                  </span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <Phone className="size-5 shrink-0 text-olive" />
+                  <a href={site.phoneUrl} className="hover:text-olive">
+                    {site.phone}
+                  </a>
+                </li>
+              </ul>
+              <Button
+                render={<a href={site.mapsUrl} target="_blank" rel="noopener" />}
+                variant="outline"
+                className="mt-8 rounded-full border-olive/25 text-olive-deep hover:bg-olive/5"
+              >
+                <Navigation className="size-4" /> เปิด Google Maps
+              </Button>
+            </Reveal>
+            <Reveal
+              delay={80}
+              className="min-h-80 overflow-hidden border-t border-olive/15 md:border-l md:border-t-0"
+            >
+              <iframe
+                src={site.mapsEmbedUrl}
+                width="100%"
+                height="100%"
+                className="min-h-80"
+                style={{ border: 0 }}
+                loading="lazy"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+                title={`แผนที่ ${site.name}`}
+              />
+            </Reveal>
+          </div>
+
+          <Reveal className="mt-16">
+            <span className="text-xs uppercase tracking-[0.3em] text-olive-light">
+              (06) คำถามที่พบบ่อย
+            </span>
+            <dl className="mt-6 grid gap-4 md:grid-cols-3">
               {faqs.map((f) => (
-                <div key={f.question} className="py-5 first:pt-0 last:pb-0">
+                <div
+                  key={f.question}
+                  className="rounded-2xl border border-olive/15 bg-background p-6"
+                >
                   <dt className="flex items-start gap-2 font-serif text-lg text-olive-deep">
                     <CircleHelp className="mt-1 size-4 shrink-0 text-olive-light" />
                     {f.question}
@@ -373,25 +429,14 @@ export default function HomePage() {
           <h2 className="mx-auto max-w-2xl font-serif text-4xl text-olive-deep md:text-5xl">
             พร้อมเริ่มดูแลผิวของคุณแล้วหรือยัง?
           </h2>
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-            <Button
-              render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
-              size="lg"
-              className="rounded-full bg-line px-10 text-white hover:bg-line/90"
-            >
-              จองคิวผ่าน LINE
-              <ArrowUpRight className="size-4" />
-            </Button>
-            <Button
-              render={<a href={`tel:${site.phoneIntl}`} />}
-              variant="outline"
-              size="lg"
-              className="rounded-full border-olive/25 bg-transparent px-8 text-olive-deep hover:bg-olive/5"
-            >
-              <Phone className="size-4" />
-              โทร {site.phone}
-            </Button>
-          </div>
+          <Button
+            render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
+            size="lg"
+            className="mt-10 rounded-full bg-line px-10 text-white hover:bg-line/90"
+          >
+            จองคิวผ่าน LINE
+            <ArrowUpRight className="size-4" />
+          </Button>
         </Reveal>
       </section>
     </>
@@ -406,8 +451,8 @@ function PhotoServiceCard({ category, index }: { category: ServiceCategory; inde
     >
       <Image
         src={category.heroImage!}
-        alt={category.heroAlt ?? ''}
-        aria-hidden={category.heroAlt ? undefined : 'true'}
+        alt=""
+        aria-hidden="true"
         fill
         sizes="(min-width: 768px) 50vw, 100vw"
         className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
@@ -420,6 +465,9 @@ function PhotoServiceCard({ category, index }: { category: ServiceCategory; inde
           <p className="mt-1 flex items-center gap-2 font-serif text-2xl text-sand md:text-3xl">
             {category.title}
             <ArrowUpRight className="size-5 shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          </p>
+          <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-sand/65">
+            {category.shortDescription}
           </p>
         </div>
       </div>

@@ -3,6 +3,7 @@
 // repeating the MedicalBusiness block (see CLAUDE.md §3.1).
 import { site } from './site';
 import { ServiceCategory } from './services';
+import { doctor } from './doctor';
 import { cld, cloudAssets } from './cloud';
 
 const dayMap: Record<string, string> = {
@@ -54,6 +55,25 @@ export const clinicSchema = {
     identifier: doctor.licenseNo,
   })),
   sameAs: [site.facebook, site.instagram, site.lineUrl].filter(Boolean),
+};
+
+export const doctorSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: doctor.name,
+  givenName: doctor.givenName,
+  familyName: doctor.familyName,
+  jobTitle: doctor.role,
+  alternateName: doctor.nameTh,
+  identifier: doctor.licenseNo,
+  image: `${site.url}${doctor.image}`,
+  worksFor: { '@id': `${site.url}/#business` },
+  alumniOf: doctor.education.map((item) => ({
+    '@type': 'EducationalOrganization',
+    name: item.institution,
+  })),
+  knowsLanguage: doctor.languages,
+  url: `${site.url}/about`,
 };
 
 export function serviceItemListSchema(category: ServiceCategory) {

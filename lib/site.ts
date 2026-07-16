@@ -7,10 +7,11 @@ export const site = {
   taglineJa: '純粋さは永遠の美へ',
   taglineTh: 'Minimal Change. Maximum Confidence.',
   description:
-    'Kazumi Clinic สถานเสริมความงามย่านสุขุมวิท กรุงเทพฯ ให้บริการฟิลเลอร์ โบท็อกซ์ สกินบูสเตอร์ และ IV Drip วิตามิน โดยแพทย์ผู้เชี่ยวชาญ',
+    'Kazumi Clinic สถานเสริมความงามย่านสุขุมวิท กรุงเทพฯ ให้บริการฟิลเลอร์ โบท็อกซ์ สกินบูสเตอร์ และ IV Drip วิตามิน ดูแลโดยแพทย์',
   url: 'https://kazumiclinic.com',
   phone: '081-712-7486',
   phoneIntl: '+66817127486',
+  phoneUrl: 'tel:+66817127486',
   lineUrl: 'https://lin.ee/1tshhNn',
   instagram: 'https://instagram.com/kazumiclinic',
   instagramHandle: '@kazumiclinic',
@@ -19,24 +20,22 @@ export const site = {
     line1: '1558 โครงการไดมอนด์คอนโด',
     street: 'ถนนสุขุมวิท',
     subdistrict: 'แขวงพระโขนงเหนือ',
-    // เขตวัฒนา per the clinic's NavBar spec (2026-07-16) — แขวงพระโขนงเหนือ sits in วัฒนา, not
-    // คลองเตย, which is what this said before. Feeds addressLocality in the MedicalBusiness JSON-LD,
-    // so it has to match the Google Business Profile exactly.
     district: 'เขตวัฒนา',
     province: 'กรุงเทพมหานคร',
     postalCode: '10110',
     country: 'TH',
   },
-  addressFull: '1558 โครงการไดมอนด์คอนโด ถนนสุขุมวิท แขวงพระโขนงเหนือ เขตวัฒนา กรุงเทพมหานคร 10110',
+  addressFull:
+    '1558 โครงการไดมอนด์คอนโด ถนนสุขุมวิท แขวงพระโขนงเหนือ เขตวัฒนา กรุงเทพมหานคร 10110',
+  mapsUrl:
+    'https://www.google.com/maps/search/?api=1&query=Kazumi%20Clinic%201558%20Sukhumvit%20Road%20Bangkok',
+  mapsEmbedUrl:
+    'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3876.1662424348838!2d100.59685397496709!3d13.708379298297611!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30e29f0a7f2125af%3A0x69eb1dcf129ee74b!2sKazumi%20Clinic!5e0!3m2!1sth!2sth!4v1784213088666!5m2!1sth!2sth',
   geo: {
-    // TODO: confirm exact lat/lng from Google Business Profile (approximate Diamond Condo Sukhumvit location for now)
-    lat: 13.7053,
-    lng: 100.5875,
+    lat: 13.708379298297611,
+    lng: 100.59685397496709,
   },
   license: 'มสพ.สบส.338/2569',
-  // Verified in the clinic's "Kazumi NavBar Structure Final" spec (2026-07-16). A doctor's
-  // ว. number is a regulated credential — never add or edit an entry here without the clinic
-  // confirming it in writing (CLAUDE.md §0.2).
   doctors: [
     {
       name: 'นายแพทย์ปราชญ์ อาชวนิจกุล',
@@ -54,62 +53,9 @@ export const site = {
     { day: 'Saturday', open: '09:00', close: '22:00' },
     { day: 'Sunday', open: '09:00', close: '17:00' },
   ],
+  hoursDisplay: {
+    weekdays: 'จันทร์–เสาร์ 9:00–22:00',
+    sunday: 'อาทิตย์ 9:00–17:00',
+    short: 'ทุกวัน 9:00–22:00 (อาทิตย์ 9:00–17:00)',
+  },
 } as const;
-
-type DayName = (typeof site.hours)[number]['day'];
-
-const dayLabelsTh: Record<DayName, { long: string; short: string }> = {
-  Monday: { long: 'จันทร์', short: 'จ' },
-  Tuesday: { long: 'อังคาร', short: 'อ' },
-  Wednesday: { long: 'พุธ', short: 'พ' },
-  Thursday: { long: 'พฤหัสบดี', short: 'พฤ' },
-  Friday: { long: 'ศุกร์', short: 'ศ' },
-  Saturday: { long: 'เสาร์', short: 'ส' },
-  Sunday: { long: 'อาทิตย์', short: 'อา' },
-};
-
-export type HoursStyle = 'long' | 'short';
-
-export type HoursLine = { days: string; time: string };
-
-// '09:00' → '9:00' — schema.org needs the padded 24h form, Thai copy reads better without it.
-function formatTime(time: string) {
-  return time.replace(/^0/, '');
-}
-
-function formatDays(days: DayName[], style: HoursStyle) {
-  const label = (day: DayName) => dayLabelsTh[day][style];
-  if (days.length === 1) return label(days[0]);
-  if (days.length === 2) return `${label(days[0])}, ${label(days[1])}`;
-  return `${label(days[0])}–${label(days[days.length - 1])}`;
-}
-
-/**
- * Collapses `site.hours` into display lines, merging runs of days that share the same
- * open/close — e.g. `[{ days: 'จันทร์–เสาร์', time: '9:00–22:00' }, { days: 'อาทิตย์', … }]`.
- * Runs are found over adjacent entries, so `site.hours` must stay in week order.
- */
-export function hoursLines(style: HoursStyle = 'long'): HoursLine[] {
-  const groups: { days: DayName[]; open: string; close: string }[] = [];
-
-  for (const hour of site.hours) {
-    const current = groups[groups.length - 1];
-    if (current && current.open === hour.open && current.close === hour.close) {
-      current.days.push(hour.day);
-    } else {
-      groups.push({ days: [hour.day], open: hour.open, close: hour.close });
-    }
-  }
-
-  return groups.map((group) => ({
-    days: formatDays(group.days, style),
-    time: `${formatTime(group.open)}–${formatTime(group.close)}`,
-  }));
-}
-
-/** Same grouping as `hoursLines`, flattened into one sentence for prose and JSON-LD. */
-export function hoursText(style: HoursStyle = 'long', separator = ' และ '): string {
-  return hoursLines(style)
-    .map((line) => `${line.days} ${line.time}`)
-    .join(separator);
-}

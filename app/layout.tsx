@@ -5,6 +5,7 @@ import { clinicSchema } from '@/lib/schema';
 import { cld, cloudAssets } from '@/lib/cloud';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { MobileContactBar } from '@/components/mobile-contact-bar';
 import { cn } from '@/lib/utils';
 import './globals.css';
 
@@ -51,7 +52,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="th" className={cn(serif.variable, sans.variable)}>
-      <body className="font-sans">
+      <body className="pb-16 font-sans md:pb-0">
         <script
           type="application/ld+json"
           // eslint-disable-next-line react/no-danger
@@ -60,6 +61,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Header />
         <main>{children}</main>
         <Footer />
+        <MobileContactBar />
       </body>
     </html>
   );
