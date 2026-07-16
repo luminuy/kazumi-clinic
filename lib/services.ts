@@ -128,7 +128,19 @@ export const serviceCategories: ServiceCategory[] = [
       'สกินบูสเตอร์เกรดพรีเมียม ฟื้นฟูเซลล์ผิวจากภายใน กระตุ้นการสร้างคอลลาเจนใหม่ เหมาะกับผิวโทรม ผิวขาดน้ำ',
     ogImage: `${site.url}/images/og/skin-booster.jpg`,
     items: [
-      { name: 'NCTF 135 HA + Oxelle', priceFrom: 11990, unit: 'ครั้ง' },
+      {
+        name: 'Oxelle Skin Booster',
+        detail: 'Product from Italy',
+        tagline: 'Skin Boosters',
+        benefits: [
+          'Revitalizing — กระตุ้นการสร้างคอลลาเจนให้ผิวอิ่มฟูและยืดหยุ่น',
+          'Bio-Stimulating — เร่งการสร้างเซลล์ผิวใหม่ เบลอรูขุมขน ปรับผิวให้เรียบเนียน',
+          'Antioxidant — ปกป้องผิวจากมลภาวะ และชะลอการเกิดริ้วรอย',
+          'Whitening — ลดเลือนฝ้า กระ จุดด่างดำ ปรับสีผิวให้สว่างกระจ่างใสสม่ำเสมอ',
+        ],
+        unit: 'ครั้ง',
+      },
+      { name: 'NCTF 135 HA + Oxelle', detail: 'โปรแกรมคู่', unit: 'ครั้ง' },
     ],
   },
   {
@@ -139,7 +151,20 @@ export const serviceCategories: ServiceCategory[] = [
     description:
       'โปรแกรมเติมคอลลาเจนสด Karisma Rh Collagen ฟื้นฟูโครงสร้างผิว ลดเลือนร่องแก้ม ร่องน้ำหมาก และถุงใต้ตา',
     ogImage: `${site.url}/images/og/collagen-booster.jpg`,
-    items: [{ name: 'Karisma Rh Collagen', detail: '1 กล่อง', priceFrom: 18990, unit: 'ครั้ง' }],
+    items: [
+      {
+        name: 'Karisma Rh Collagen',
+        detail: 'Made in Italy',
+        tagline: 'Rh Collagen',
+        benefits: [
+          'คอลลาเจนโครงสร้างถอดแบบจาก Collagen Type 1 ในผิวมนุษย์ 100%',
+          'เข้ากับร่างกายได้ดีถึง 99.99% ลดความเสี่ยงในการแพ้',
+          'เติมเต็มคอลลาเจน พร้อมกระตุ้นการสร้างคอลลาเจนใหม่',
+          'ลดเลือนริ้วรอย ร่องแก้ม ร่องน้ำหมาก และถุงใต้ตา',
+        ],
+        unit: 'ครั้ง',
+      },
+    ],
   },
 ];
 
