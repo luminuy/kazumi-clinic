@@ -62,6 +62,9 @@ const gridSpan: Record<string, string> = {
   'collagen-booster': 'md:col-span-5',
 };
 
+const featuredCategories = serviceCategories.filter((category) => gridSpan[category.slug]);
+const additionalCategories = serviceCategories.filter((category) => !gridSpan[category.slug]);
+
 export const revalidate = 3600;
 
 export default function HomePage() {
@@ -160,7 +163,7 @@ export default function HomePage() {
         </Reveal>
 
         <div className="mt-14 grid grid-cols-1 gap-5 md:grid-cols-12 md:auto-rows-[13rem]">
-          {serviceCategories.map((c, i) => (
+          {featuredCategories.map((c, i) => (
             <Reveal
               key={c.slug}
               delay={i * 70}
@@ -174,6 +177,48 @@ export default function HomePage() {
             </Reveal>
           ))}
         </div>
+
+        {additionalCategories.length > 0 && (
+          <div className="mt-5">
+            <Reveal>
+              <p className="text-xs uppercase tracking-[0.28em] text-olive-light">
+                ดูแลเพิ่มเติม
+              </p>
+            </Reveal>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {additionalCategories.map((category, index) => (
+                <Reveal key={category.slug} delay={index * 60}>
+                  <Link
+                    href={`/${category.slug}`}
+                    className="group relative flex min-h-[15rem] flex-col justify-between overflow-hidden rounded-2xl border border-olive/15 bg-cream p-5 transition-[transform,background-color,border-color] duration-300 hover:-translate-y-1 hover:border-olive/30 hover:bg-olive-deep"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className="pointer-events-none absolute -right-2 -top-5 font-serif text-[7rem] leading-none text-olive-deep/[0.06] transition-colors group-hover:text-sand/[0.08]"
+                    >
+                      {String(featuredCategories.length + index + 1).padStart(2, '0')}
+                    </span>
+                    <span className="relative flex size-10 items-center justify-center rounded-xl bg-olive/10 text-olive transition-colors group-hover:bg-clay group-hover:text-olive-deep">
+                      <ServiceIcon slug={category.slug} className="size-5" />
+                    </span>
+                    <span className="relative">
+                      <span className="block text-[0.65rem] uppercase tracking-[0.22em] text-olive-light transition-colors group-hover:text-sand/55">
+                        {category.titleEn}
+                      </span>
+                      <span className="mt-1 flex items-start justify-between gap-2 font-serif text-xl leading-tight text-olive-deep transition-colors group-hover:text-sand">
+                        {category.title}
+                        <ArrowUpRight className="mt-0.5 size-4 shrink-0 text-olive-light transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-clay" />
+                      </span>
+                      <span className="mt-2 block text-xs leading-relaxed text-ink/60 transition-colors group-hover:text-sand/65">
+                        {category.shortDescription}
+                      </span>
+                    </span>
+                  </Link>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        )}
       </section>
 
       {/* ── Doctor / trust ───────────────────────────────────── */}
