@@ -71,6 +71,22 @@ export function serviceItemListSchema(category: ServiceCategory) {
   };
 }
 
+// ItemList for the /services hub — lists the service categories themselves (not procedures).
+export function serviceCategoryListSchema(categories: ServiceCategory[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: `บริการทั้งหมด — ${site.name}`,
+    url: `${site.url}/services`,
+    itemListElement: categories.map((category, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: category.title,
+      url: `${site.url}/${category.slug}`,
+    })),
+  };
+}
+
 export function breadcrumbSchema(items: { name: string; path: string }[]) {
   return {
     '@context': 'https://schema.org',

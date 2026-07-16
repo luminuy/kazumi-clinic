@@ -1,9 +1,8 @@
 import Link from 'next/link';
 import { Menu, MessageCircle } from 'lucide-react';
 import { site } from '@/lib/site';
-import { serviceCategories } from '@/lib/services';
+import { navItems } from '@/lib/nav';
 import { Button } from '@/components/ui/button';
-import { ServiceIcon } from '@/components/service-icon';
 import {
   Sheet,
   SheetContent,
@@ -12,12 +11,6 @@ import {
   SheetTrigger,
   SheetClose,
 } from '@/components/ui/sheet';
-
-const navItems = [
-  ...serviceCategories.map((c) => ({ href: `/${c.slug}`, label: c.title, slug: c.slug })),
-  { href: '/about', label: 'เกี่ยวกับเรา', slug: null },
-  { href: '/contact', label: 'ติดต่อ', slug: null },
-];
 
 export default function Header() {
   return (
@@ -65,11 +58,10 @@ export default function Header() {
                     render={
                       <Link
                         href={item.href}
-                        className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-foreground/80 hover:bg-muted hover:text-primary"
+                        className="rounded-md px-3 py-2 text-sm text-foreground/80 hover:bg-muted hover:text-primary"
                       />
                     }
                   >
-                    {item.slug && <ServiceIcon slug={item.slug} className="size-4" />}
                     {item.label}
                   </SheetClose>
                 ))}
