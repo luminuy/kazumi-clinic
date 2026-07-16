@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { MessageCircle, Star } from 'lucide-react';
 import { site } from '@/lib/site';
 import { breadcrumbSchema } from '@/lib/schema';
 import { Button } from '@/components/ui/button';
+import { Reveal } from '@/components/reveal';
+import { PageHero } from '@/components/page-hero';
 
 export const metadata: Metadata = {
   title: 'รีวิว / ผลลัพธ์ก่อน-หลัง',
@@ -37,28 +38,21 @@ export default function ReviewsPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }}
       />
 
-      <nav className="mx-auto max-w-6xl px-6 pt-8 text-xs text-ink/50">
-        <Link href="/" className="hover:text-olive">
-          หน้าหลัก
-        </Link>{' '}
-        / <span className="text-ink/70">รีวิว / ผลลัพธ์ก่อน-หลัง</span>
-      </nav>
+      <PageHero
+        eyebrow="Reviews / Before & After"
+        title="รีวิว / ผลลัพธ์ก่อน-หลัง"
+        lead={`ผลลัพธ์จากการทำหัตถการที่ ${site.name} — ดูรีวิวจากลูกค้าจริงและผลลัพธ์ก่อน-หลังทำ`}
+        breadcrumb={[{ name: 'หน้าหลัก', href: '/' }, { name: 'รีวิว / ผลลัพธ์ก่อน-หลัง' }]}
+      />
 
-      <section className="mx-auto max-w-6xl px-6 py-10">
-        <h1 className="font-serif text-3xl text-olive-deep md:text-4xl">
-          รีวิว / ผลลัพธ์ก่อน-หลัง
-        </h1>
-        <p className="mt-4 max-w-2xl text-ink/70">
-          ผลลัพธ์จากการทำหัตถการที่ {site.name} — ดูรีวิวจากลูกค้าจริงและผลลัพธ์ก่อน-หลังทำ
-        </p>
-
-        <div className="mt-10 rounded-2xl border border-dashed border-olive/30 bg-cream p-10 text-center">
+      <section className="mx-auto max-w-6xl px-6 py-20">
+        <Reveal className="rounded-2xl border border-dashed border-olive/30 bg-cream p-14 text-center">
           <div className="flex justify-center gap-1 text-olive-light">
             {Array.from({ length: 5 }).map((_, i) => (
               <Star key={i} className="size-5" />
             ))}
           </div>
-          <p className="mt-4 font-serif text-lg text-olive-deep">กำลังรวบรวมรีวิวจากลูกค้า</p>
+          <p className="mt-4 font-serif text-xl text-olive-deep">กำลังรวบรวมรีวิวจากลูกค้า</p>
           <p className="mx-auto mt-2 max-w-md text-sm text-ink/60">
             รีวิวและภาพผลลัพธ์ก่อน-หลังจากลูกค้าจริงกำลังจะมาเร็ว ๆ นี้
             ระหว่างนี้สามารถดูรีวิวได้ที่ Google และ Instagram ของเรา
@@ -67,12 +61,12 @@ export default function ReviewsPage() {
           <p className="mt-4 text-xs text-ink/40">
             *ผลลัพธ์ขึ้นอยู่กับสภาพผิวและปัญหาเฉพาะบุคคล
           </p>
-        </div>
+        </Reveal>
 
         <Button
           render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
           size="lg"
-          className="mt-10 rounded-full bg-line px-8 text-white hover:bg-line/90"
+          className="mt-12 rounded-full bg-line px-8 text-white hover:bg-line/90"
         >
           <MessageCircle className="size-4" />
           สอบถามผลลัพธ์ผ่าน LINE
