@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { MessageCircle, Check, ArrowRight } from 'lucide-react';
 import { site } from '@/lib/site';
-import { serviceCategories, getServiceBySlug } from '@/lib/services';
+import { serviceCategories, getServiceBySlug, serviceOgImage } from '@/lib/services';
 import { serviceItemListSchema, breadcrumbSchema } from '@/lib/schema';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -22,6 +22,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const service = getServiceBySlug(category);
   if (!service) return {};
 
+  const ogImage = serviceOgImage(service);
+
   return {
     title: service.title,
     description: service.description,
@@ -31,9 +33,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: service.description,
       url: `${site.url}/${service.slug}`,
       type: 'website',
-      images: [{ url: service.ogImage, width: 1200, height: 630 }],
+      ...(ogImage && { images: [{ url: ogImage, width: 1200, height: 630 }] }),
     },
-    twitter: { card: 'summary_large_image', images: [service.ogImage] },
+    // A category with no hero photo gets no social image at all: the `twitter` key must still be
+    // set to override the root layout's default, which would otherwise leak the homepage hero
+    // onto this page (CLAUDE.md §6 — every category needs its own image, never the homepage's).
+    twitter: {
+      title: service.title,
+      description: service.description,
+      ...(ogImage
+        ? { card: 'summary_large_image' as const, images: [ogImage] }
+        : { card: 'summary' as const }),
+    },
   };
 }
 
