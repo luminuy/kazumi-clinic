@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { MapPin, Phone, Clock, MessageCircle, AtSign } from 'lucide-react';
 import { site } from '@/lib/site';
 import { breadcrumbSchema } from '@/lib/schema';
 import { Button } from '@/components/ui/button';
+import { Reveal } from '@/components/reveal';
+import { PageHero } from '@/components/page-hero';
 
 export const metadata: Metadata = {
   title: 'ติดต่อเรา',
@@ -34,31 +35,34 @@ export default function ContactPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }}
       />
 
-      <nav className="mx-auto max-w-6xl px-6 pt-8 text-xs text-ink/50">
-        <Link href="/" className="hover:text-olive">
-          หน้าหลัก
-        </Link>{' '}
-        / <span className="text-ink/70">ติดต่อเรา</span>
-      </nav>
+      <PageHero
+        eyebrow="Contact Us"
+        title="ติดต่อเรา"
+        lead={`${site.name} ยินดีให้คำปรึกษาและดูแลทุกหัตถการ — นัดหมายหรือสอบถามได้ทุกวัน`}
+        breadcrumb={[{ name: 'หน้าหลัก', href: '/' }, { name: 'ติดต่อเรา' }]}
+      />
 
-      <section className="mx-auto grid max-w-6xl gap-10 px-6 py-14 md:grid-cols-2">
-        <div>
-          <h1 className="font-serif text-3xl text-olive-deep md:text-4xl">ติดต่อเรา</h1>
-          <p className="mt-6 flex items-start gap-2 text-ink/70">
-            <MapPin className="mt-0.5 size-4 shrink-0 text-olive" />
-            {site.addressFull}
-          </p>
-          <ul className="mt-6 space-y-2 text-sm text-ink/70">
-            <li className="flex items-center gap-2">
-              <Phone className="size-4 shrink-0 text-olive" />
-              โทร: {site.phone}
+      <section className="mx-auto grid max-w-6xl gap-12 px-6 py-20 md:grid-cols-2">
+        <Reveal>
+          <ul className="space-y-6 text-ink/75">
+            <li className="flex items-start gap-3">
+              <MapPin className="mt-0.5 size-5 shrink-0 text-olive" />
+              {site.addressFull}
             </li>
-            <li className="flex items-center gap-2">
-              <Clock className="size-4 shrink-0 text-olive" />
-              เวลาทำการ: จันทร์–เสาร์ 9:00–22:00, อาทิตย์ 9:00–17:00
+            <li className="flex items-center gap-3">
+              <Phone className="size-5 shrink-0 text-olive" />
+              โทร {site.phone}
+            </li>
+            <li className="flex items-start gap-3">
+              <Clock className="mt-0.5 size-5 shrink-0 text-olive" />
+              <span>
+                จันทร์–เสาร์ 9:00–22:00
+                <br />
+                อาทิตย์ 9:00–17:00
+              </span>
             </li>
           </ul>
-          <div className="mt-6 flex gap-4">
+          <div className="mt-8 flex gap-4">
             <Button
               render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
               className="rounded-full bg-line text-white hover:bg-line/90"
@@ -75,17 +79,17 @@ export default function ContactPage() {
               Instagram
             </Button>
           </div>
-        </div>
-        <div className="overflow-hidden rounded-2xl border border-olive/15">
+        </Reveal>
+        <Reveal delay={80} className="overflow-hidden rounded-2xl border border-olive/15">
           <iframe
             src={mapSrc}
             width="100%"
-            height="360"
+            height="380"
             style={{ border: 0 }}
             loading="lazy"
             title={`แผนที่ ${site.name}`}
           />
-        </div>
+        </Reveal>
       </section>
     </>
   );
