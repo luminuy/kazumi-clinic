@@ -6,6 +6,8 @@
 // promos automatically, so the live page shows an empty state until the clinic supplies
 // current, in-date promotions. Do NOT present expired promos as active.
 
+import { cloudAssets } from './cloud';
+
 export type Promotion = {
   name: string;
   detail?: string;
@@ -30,37 +32,37 @@ export type PromotionPoster = {
  */
 export const promotionPosters: PromotionPoster[] = [
   {
-    src: '/images/promotions/signature-flawless.jpg',
+    src: cloudAssets.promoSignatureFlawless,
     alt: 'โปสเตอร์ Signature Flawless IV Drip พร้อมภาพผู้หญิงและถุงสารน้ำ',
     label: 'IV Drip · Signature Flawless',
   },
   {
-    src: '/images/promotions/radiant-bright.jpg',
+    src: cloudAssets.promoRadiantBright,
     alt: 'โปสเตอร์ Radiant Bright IV Drip พร้อมภาพผู้หญิงผมสีน้ำตาล',
     label: 'IV Drip · Radiant Bright',
   },
   {
-    src: '/images/promotions/filler-neura.jpg',
+    src: cloudAssets.promoFillerNeura,
     alt: 'โปสเตอร์ Filler Neura Deep และ Neura Volume พร้อมภาพใบหน้าด้านข้าง',
     label: 'Filler · Neura',
   },
   {
-    src: '/images/promotions/oxelle-skin-booster.jpg',
+    src: cloudAssets.promoOxelleSkinBooster,
     alt: 'โปสเตอร์ Oxelle Skin Boosters พร้อมภาพผิวก่อนและหลัง',
     label: 'Skin Booster · Oxelle',
   },
   {
-    src: '/images/promotions/velvet-glow.jpg',
+    src: cloudAssets.promoVelvetGlow,
     alt: 'โปสเตอร์ Velvet Glow IV Drip พร้อมภาพผู้หญิงและถุงสารน้ำ',
     label: 'IV Drip · Velvet Glow',
   },
   {
-    src: '/images/promotions/active-refresh.jpg',
+    src: cloudAssets.promoActiveRefresh,
     alt: 'โปสเตอร์ Active & Refresh IV Drip พร้อมภาพผู้หญิงกลางแจ้ง',
     label: 'IV Drip · Active & Refresh',
   },
   {
-    src: '/images/promotions/karisma-collagen.jpg',
+    src: cloudAssets.promoKarismaCollagen,
     alt: 'โปสเตอร์ Karisma Rh Collagen พร้อมภาพแพ็กเกจผลิตภัณฑ์',
     label: 'Collagen · Karisma',
   },
