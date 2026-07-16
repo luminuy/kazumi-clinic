@@ -79,36 +79,42 @@ export default function HomePage() {
       />
 
       {/* ── Hero ──────────────────────────────────────────────── */}
-      <section className="bg-cream">
-        <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 md:grid-cols-[1fr_0.85fr] md:gap-14 md:py-24">
-          <div>
-            <div className="flex items-center gap-3 text-xs uppercase tracking-[0.35em] text-olive-light">
+      <section className="hero-section relative isolate overflow-hidden bg-olive-deep text-sand">
+        <div className="hero-grid absolute inset-0 opacity-20" aria-hidden="true" />
+        <FlowerMark
+          className="pointer-events-none absolute -right-40 -top-40 size-[34rem] text-sand/[0.045] md:-right-24 md:-top-52 md:size-[44rem]"
+        />
+        <div className="relative mx-auto grid max-w-7xl gap-12 px-6 pb-14 pt-12 sm:px-10 md:grid-cols-[minmax(0,1fr)_minmax(20rem,0.78fr)] md:items-end md:gap-16 md:px-12 md:pb-20 md:pt-16 lg:gap-24 lg:px-16">
+          <div className="max-w-3xl pb-2 md:pb-10">
+            <div className="hero-enter flex items-center gap-3 text-[0.68rem] uppercase tracking-[0.34em] text-sand/55">
               <span className="h-px w-10 bg-clay" />
-              สถานเสริมความงาม · สุขุมวิท กรุงเทพฯ
+              Kazumi Clinic · Sukhumvit, Bangkok
             </div>
             <h1 className="mt-8">
               <span
                 lang="en"
-                className="block font-serif text-[13vw] leading-[0.95] tracking-tight text-olive-deep sm:text-6xl md:text-[3.75rem] lg:text-7xl"
+                className="hero-enter hero-enter--slow block font-serif text-[16vw] leading-[0.87] tracking-[-0.06em] text-sand sm:text-7xl md:text-[5.4rem] lg:text-[7.1rem]"
               >
                 Where balance
                 <br />
                 <span className="text-clay">purity</span> becomes
                 <br />
-                eternal beauty.
-              </span>
-              <span className="mt-7 block max-w-md text-sm font-normal leading-relaxed text-ink/70">
-                {site.description}
+                <span className="text-sand/90">eternal beauty.</span>
               </span>
             </h1>
-            <p className="mt-5 font-serif text-sm italic tracking-wide text-olive-light">
-              <span lang="ja">{site.taglineJa}</span> — <span lang="en">{site.taglineTh}</span>
-            </p>
-            <div className="mt-10 flex flex-wrap items-center gap-4">
+            <div className="hero-enter hero-enter--later mt-8 grid max-w-xl gap-6 border-t border-sand/20 pt-5 sm:grid-cols-[1.15fr_0.85fr] sm:gap-10">
+              <p className="text-sm leading-relaxed text-sand/70">{site.description}</p>
+              <p className="font-serif text-sm italic leading-relaxed text-sand/55">
+                <span lang="ja">{site.taglineJa}</span>
+                <br />
+                <span lang="en">{site.taglineTh}</span>
+              </p>
+            </div>
+            <div className="hero-enter hero-enter--later mt-8 flex flex-wrap items-center gap-4">
               <Button
                 render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
                 size="lg"
-                className="rounded-full bg-line px-8 text-white hover:bg-line/90"
+                className="rounded-full bg-line px-8 text-white shadow-lg shadow-black/10 transition-transform duration-300 hover:-translate-y-1 hover:bg-line/90"
               >
                 จองคิวผ่าน LINE
                 <ArrowUpRight className="size-4" />
@@ -117,25 +123,43 @@ export default function HomePage() {
                 render={<Link href="/services" />}
                 variant="outline"
                 size="lg"
-                className="rounded-full border-olive/25 bg-transparent text-olive-deep hover:bg-olive/5"
+                className="rounded-full border-sand/30 bg-transparent text-sand hover:border-sand/60 hover:bg-sand/10"
               >
                 ดูบริการทั้งหมด
               </Button>
             </div>
           </div>
 
-          <div className="relative aspect-square overflow-hidden rounded-[2rem]">
-            <Image
-              src={heroHomePortrait}
-              alt=""
-              aria-hidden="true"
-              fill
-              priority
-              fetchPriority="high"
-              sizes="(min-width: 768px) 45vw, 90vw"
-              className="object-cover"
-            />
+          <div className="hero-enter hero-enter--image relative mx-auto w-full max-w-[31rem] md:mb-0">
+            <div className="hero-image-frame relative aspect-[0.88] overflow-hidden rounded-[2rem] rounded-bl-[5rem] border border-sand/20 bg-olive shadow-2xl shadow-black/25">
+              <Image
+                src={heroHomePortrait}
+                alt=""
+                aria-hidden="true"
+                fill
+                priority
+                fetchPriority="high"
+                sizes="(min-width: 1024px) 38vw, (min-width: 768px) 42vw, 90vw"
+                className="object-cover transition-transform duration-1000 ease-out hover:scale-[1.03]"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-olive-deep/65 via-transparent to-transparent" />
+              <div className="absolute inset-x-5 bottom-5 flex items-end justify-between gap-4 text-xs text-sand/75">
+                <span className="max-w-[12rem] leading-relaxed">แพทย์ประเมินทุกเคส · ดูแลอย่างเป็นส่วนตัว</span>
+                <span className="font-serif text-3xl text-clay/80">01</span>
+              </div>
+            </div>
+            <div className="hero-caption absolute -bottom-7 -left-3 flex items-center gap-3 rounded-full border border-sand/20 bg-olive-deep/90 px-4 py-2 text-[0.68rem] tracking-[0.18em] text-sand/65 backdrop-blur sm:-left-7">
+              <span className="size-2 rounded-full bg-line shadow-[0_0_0_4px_rgba(6,199,85,0.14)]" />
+              OPEN TODAY · 09:00—22:00
+            </div>
           </div>
+        </div>
+        <div className="relative mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 border-t border-sand/15 px-6 py-5 text-[0.68rem] uppercase tracking-[0.22em] text-sand/45 sm:px-10 md:px-12 lg:px-16">
+          <span>Minimal change. Maximum confidence.</span>
+          <span className="hidden sm:inline">Est. 2024 · Medical aesthetics</span>
+          <a href={site.phoneUrl} className="text-sand/70 transition-colors hover:text-sand">
+            {site.phone}
+          </a>
         </div>
       </section>
 
