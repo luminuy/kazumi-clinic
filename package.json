@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit",
     "cf:build": "opennextjs-cloudflare build",
     "cf:preview": "opennextjs-cloudflare preview",
-    "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
+    "cf:deploy": "opennextjs-cloudflare build && OPEN_NEXT_DEPLOY=true wrangler deploy"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
