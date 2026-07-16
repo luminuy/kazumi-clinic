@@ -264,6 +264,133 @@
   width: 1.5rem;
   background: var(--clay);
 }
+.promotion-carousel {
+  min-width: 0;
+}
+.promotion-carousel-viewport {
+  position: relative;
+  overflow: hidden;
+}
+.promotion-carousel-rail {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding: 0.25rem 2.75rem 0.75rem;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+.promotion-carousel-rail::-webkit-scrollbar {
+  display: none;
+}
+.promotion-carousel-card {
+  flex: 0 0 clamp(16rem, 28vw, 24rem);
+  scroll-snap-align: start;
+}
+.promotion-carousel-card__link {
+  position: relative;
+  display: block;
+  aspect-ratio: 0.8;
+  overflow: hidden;
+  border: 1px solid rgb(197 174 155 / 28%);
+  border-radius: 1.5rem;
+  background: var(--cream);
+  box-shadow: 0 1rem 2.5rem rgb(197 174 155 / 14%);
+  isolation: isolate;
+  transition: transform 240ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 240ms ease-out;
+}
+.promotion-carousel-card--active .promotion-carousel-card__link {
+  border-color: rgb(197 174 155 / 62%);
+  box-shadow: 0 1.25rem 3rem rgb(197 174 155 / 21%);
+}
+.promotion-carousel-card__image {
+  transition: transform 700ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.promotion-carousel-card__veil {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(to top, rgb(32 38 30 / 72%), transparent 28%);
+  opacity: 0.45;
+  transition: opacity 240ms ease-out;
+}
+.promotion-carousel-card__meta {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  left: 1rem;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  color: var(--sand);
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+.promotion-carousel-controls {
+  position: absolute;
+  top: 50%;
+  right: 0.75rem;
+  left: 0.75rem;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+.promotion-carousel-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid rgb(246 243 236 / 78%);
+  border-radius: 999px;
+  background: rgb(246 243 236 / 90%);
+  color: var(--olive-deep);
+  box-shadow: 0 0.75rem 1.5rem rgb(38 40 31 / 14%);
+  backdrop-filter: blur(12px);
+  pointer-events: auto;
+  transition: transform 160ms ease-out, background-color 160ms ease-out;
+}
+.promotion-carousel-arrow:focus-visible,
+.promotion-carousel-dot:focus-visible {
+  outline: 2px solid var(--clay);
+  outline-offset: 4px;
+}
+.promotion-carousel-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.15rem 2.75rem 0;
+}
+.promotion-carousel-note {
+  color: rgb(38 40 31 / 50%);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+}
+.promotion-carousel-dots {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+.promotion-carousel-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: rgb(77 87 62 / 28%);
+  transition: width 180ms ease-out, background-color 180ms ease-out;
+}
+.promotion-carousel-dot--active {
+  width: 1.5rem;
+  background: var(--clay);
+}
 .doctor-frame,
 .promo-board,
 .visit-dossier {
@@ -306,6 +433,20 @@
     background: var(--olive-deep);
     color: var(--sand);
   }
+  .promotion-carousel-card__link:hover {
+    transform: translateY(-0.4rem);
+    box-shadow: 0 1.5rem 3.5rem rgb(197 174 155 / 26%);
+  }
+  .promotion-carousel-card__link:hover .promotion-carousel-card__image {
+    transform: scale(1.035);
+  }
+  .promotion-carousel-card__link:hover .promotion-carousel-card__veil {
+    opacity: 0.7;
+  }
+  .promotion-carousel-arrow:hover {
+    transform: translateY(-0.15rem);
+    background: var(--cream);
+  }
 }
 
 @media (max-width: 30rem) {
@@ -315,6 +456,18 @@
   .hero-caption {
     max-width: calc(100% - 1.5rem);
     letter-spacing: 0.12em;
+  }
+  .promotion-carousel-rail {
+    padding-inline: 2rem;
+  }
+  .promotion-carousel-card {
+    flex-basis: 84vw;
+  }
+  .promotion-carousel-footer {
+    padding-inline: 2rem;
+  }
+  .promotion-carousel-note {
+    width: 100%;
   }
 }
 @keyframes orbit-breathe {
@@ -382,7 +535,12 @@
   .service-atlas-card__image,
   .service-atlas-card__arrow,
   .service-atlas-arrow,
-  .service-atlas-dot {
+  .service-atlas-dot,
+  .promotion-carousel-card__link,
+  .promotion-carousel-card__image,
+  .promotion-carousel-card__veil,
+  .promotion-carousel-arrow,
+  .promotion-carousel-dot {
     transition: none;
   }
 }

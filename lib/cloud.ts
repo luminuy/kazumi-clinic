@@ -71,6 +71,10 @@ function cloudinaryLoader({
   width: number;
   quality?: number;
 }) {
+  // Public-folder assets are already optimized and served by Next directly.
+  // Keep them local instead of treating `/images/...` as a Cloudinary public ID.
+  if (src.startsWith('/')) return src;
+
   const resize = `f_auto,q_${quality ?? 'auto'},c_limit,w_${width}`;
   const [head, ...rest] = src.split('/');
   const prefix = rest.length > 0 && TRANSFORM_SEGMENT.test(head) ? `${head}/` : '';

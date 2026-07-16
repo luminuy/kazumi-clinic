@@ -9,7 +9,6 @@ import {
   Phone,
   CircleHelp,
   GraduationCap,
-  MessageCircle,
   Navigation,
   ShieldCheck,
   Sparkles,
@@ -17,13 +16,13 @@ import {
 } from 'lucide-react';
 import { site } from '@/lib/site';
 import { doctor } from '@/lib/doctor';
-import { activePromotions } from '@/lib/promotions';
 import { serviceCategories } from '@/lib/services';
 import { faqSchema, homePageSchema } from '@/lib/schema';
 import { cld, cloudAssets, heroHomePortrait } from '@/lib/cloud';
 import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/reveal';
 import { ServiceAtlas } from '@/components/service-atlas';
+import { PromotionCarousel } from '@/components/promotion-carousel';
 
 const homeTitle = 'คลินิกความงามสุขุมวิท กรุงเทพฯ | Kazumi Clinic';
 const homeDescription =
@@ -80,8 +79,6 @@ const faqs = [
 export const revalidate = 3600;
 
 export default function HomePage() {
-  const promos = activePromotions().slice(0, 3);
-
   return (
     <>
       <script
@@ -297,33 +294,9 @@ export default function HomePage() {
             </Link>
           </Reveal>
 
-          {promos.length > 0 ? (
-            <div className="mt-14 grid gap-4 md:grid-cols-3">
-              {promos.map((promo, index) => (
-                <Reveal key={`${promo.name}-${promo.detail ?? ''}`} delay={index * 60} className="group relative overflow-hidden rounded-[1.75rem] border border-olive/12 bg-cream p-7 transition-[transform,box-shadow] hover:-translate-y-1 hover:shadow-[0_24px_60px_rgb(38_40_31/0.1)]">
-                  <span className="absolute -right-3 -top-8 font-serif text-[8rem] leading-none text-clay/20">0{index + 1}</span>
-                  <p className="relative text-xs uppercase tracking-[0.22em] text-olive-light">ราคาโปรโมชั่น</p>
-                  <h3 className="relative mt-8 font-serif text-2xl text-olive-deep">{promo.name}</h3>
-                  {promo.detail && <p className="relative mt-1 text-sm text-ink/55">{promo.detail}</p>}
-                  <p className="relative mt-8 text-3xl font-medium text-olive">{promo.price.toLocaleString('th-TH')} <span className="text-sm">บาท</span></p>
-                  <p className="relative mt-2 text-xs text-ink/45">ใช้ได้ถึง {new Date(promo.validUntil).toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
-                </Reveal>
-              ))}
-            </div>
-          ) : (
-            <Reveal className="promo-board mt-14 grid overflow-hidden rounded-[2rem] border border-olive/15 bg-olive-deep text-sand md:grid-cols-[1.618fr_1fr]">
-              <div className="relative p-8 sm:p-12 md:p-16">
-                <span className="text-xs uppercase tracking-[0.28em] text-sand/45">No active promotion / now</span>
-                <h3 className="mt-8 max-w-xl font-serif text-4xl leading-[1.08] text-sand sm:text-5xl">จังหวะใหม่ของคุณ<br /><span className="text-clay">เริ่มจากการพูดคุย.</span></h3>
-                <p className="mt-6 max-w-md text-sm leading-relaxed text-sand/60">ขณะนี้ยังไม่มีโปรโมชั่นที่อยู่ในช่วงเวลาใช้งาน สอบถามโปรแกรมล่าสุดกับทีม Kazumi ได้ทาง LINE</p>
-                <Button render={<a href={site.lineUrl} target="_blank" rel="noopener" />} className="mt-8 rounded-full bg-line px-6 text-white hover:bg-line/90"><MessageCircle className="size-4" /> สอบถามผ่าน LINE</Button>
-              </div>
-              <div className="relative min-h-[17rem] overflow-hidden border-t border-sand/15 bg-olive md:border-l md:border-t-0">
-                <FlowerMark className="absolute left-1/2 top-1/2 size-[23rem] -translate-x-1/2 -translate-y-1/2 text-sand/[0.07]" />
-                <span className="absolute bottom-8 left-8 text-[0.68rem] uppercase tracking-[0.24em] text-sand/45">KAZUMI / OPEN DIALOGUE</span>
-              </div>
-            </Reveal>
-          )}
+          <Reveal className="mt-14">
+            <PromotionCarousel />
+          </Reveal>
         </div>
       </section>
 
