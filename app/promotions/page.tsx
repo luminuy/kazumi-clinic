@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { MessageCircle, Sparkles } from 'lucide-react';
 import { site } from '@/lib/site';
+import { cld, cloudAssets } from '@/lib/cloud';
 import { activePromotions } from '@/lib/promotions';
 import { breadcrumbSchema } from '@/lib/schema';
 import { Button } from '@/components/ui/button';
@@ -8,6 +9,16 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Reveal } from '@/components/reveal';
 import { PageHero } from '@/components/page-hero';
+
+// Derived from the Cloudinary hero rather than a file in public/ — the previous
+// `/images/og/promotions.jpg` was never actually added, so every share of this page
+// rendered with no preview image at all.
+const ogImage = cld(cloudAssets.heroSkinBooster, {
+  width: 1200,
+  height: 630,
+  crop: 'fill',
+  gravity: 'auto',
+});
 
 export const metadata: Metadata = {
   title: 'โปรโมชั่น / แพ็กเกจ',
@@ -18,7 +29,7 @@ export const metadata: Metadata = {
     description: site.description,
     url: `${site.url}/promotions`,
     type: 'website',
-    images: [{ url: `${site.url}/images/og/promotions.jpg`, width: 1200, height: 630 }],
+    images: [{ url: ogImage, width: 1200, height: 630 }],
   },
 };
 
