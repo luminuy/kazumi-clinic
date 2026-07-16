@@ -2,11 +2,22 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { site } from '@/lib/site';
+import { cld, cloudAssets } from '@/lib/cloud';
 import { serviceCategories } from '@/lib/services';
 import { serviceCategoryListSchema, breadcrumbSchema } from '@/lib/schema';
 import { ServiceIcon } from '@/components/service-icon';
 import { Reveal } from '@/components/reveal';
 import { PageHero } from '@/components/page-hero';
+
+// Derived from the Cloudinary hero rather than a file in public/ — the previous
+// `/images/og/services.jpg` was never actually added, so every share of this page
+// rendered with no preview image at all.
+const ogImage = cld(cloudAssets.heroFiller, {
+  width: 1200,
+  height: 630,
+  crop: 'fill',
+  gravity: 'auto',
+});
 
 export const metadata: Metadata = {
   title: 'บริการ / หัตถการ',
@@ -17,7 +28,7 @@ export const metadata: Metadata = {
     description: site.description,
     url: `${site.url}/services`,
     type: 'website',
-    images: [{ url: `${site.url}/images/og/services.jpg`, width: 1200, height: 630 }],
+    images: [{ url: ogImage, width: 1200, height: 630 }],
   },
 };
 
@@ -32,7 +43,9 @@ export default function ServicesPage() {
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceCategoryListSchema(serviceCategories)) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(serviceCategoryListSchema(serviceCategories)),
+        }}
       />
       <script
         type="application/ld+json"
