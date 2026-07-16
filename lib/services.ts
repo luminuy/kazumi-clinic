@@ -26,6 +26,8 @@ export type ServiceCategory = {
   ogImage: string;
   /** Cloudinary public ID for the category page's PageHero background, if one exists. */
   heroImage?: string;
+  /** Describes what `heroImage` actually shows — required alongside it (CLAUDE.md §8). */
+  heroAlt?: string;
   items: ServiceItem[];
 };
 
@@ -39,6 +41,7 @@ export const serviceCategories: ServiceCategory[] = [
       'บริการฟิลเลอร์กรดไฮยาลูรอนิกจากแบรนด์คุณภาพ ปรับโครงหน้า ร่องแก้ม ร่องน้ำหมาก และริมฝีปาก โดยแพทย์ผู้เชี่ยวชาญของ Kazumi Clinic',
     ogImage: `${site.url}/images/og/filler.jpg`,
     heroImage: cloudAssets.heroFiller,
+    heroAlt: 'ใบหน้าด้านข้างของผู้หญิง เห็นริมฝีปากและกรอบหน้าชัด ในแสงธรรมชาติโทนเขียว',
     items: [
       { name: 'Neura Deep', detail: '1 CC', priceFrom: 3990, unit: 'ครั้ง' },
       { name: 'Neura Deep', detail: '3 CC', priceFrom: 9990, unit: 'ครั้ง' },
@@ -74,6 +77,7 @@ export const serviceCategories: ServiceCategory[] = [
       'โปรแกรม IV Drip วิตามินสูตรเฉพาะของ Kazumi Clinic ช่วยปรับโทนสีผิว ลดเม็ดสี กระตุ้นคอลลาเจน และชะลอความเสื่อมของผิวจากแสงแดด',
     ogImage: `${site.url}/images/og/iv-drip.jpg`,
     heroImage: cloudAssets.heroIvDrip1,
+    heroAlt: 'ใบหน้าผู้หญิงถ่ายตรงหน้าในแสงนุ่ม ผิวเรียบเนียนกระจ่างใส',
     items: [
       {
         name: 'Signature Flawless',
@@ -133,6 +137,7 @@ export const serviceCategories: ServiceCategory[] = [
       'สกินบูสเตอร์เกรดพรีเมียม ฟื้นฟูเซลล์ผิวจากภายใน กระตุ้นการสร้างคอลลาเจนใหม่ เหมาะกับผิวโทรม ผิวขาดน้ำ',
     ogImage: `${site.url}/images/og/skin-booster.jpg`,
     heroImage: cloudAssets.heroSkinBooster,
+    heroAlt: 'ใบหน้าผู้หญิงท่ามกลางเงาใบไม้และแสงแดดอ่อน',
     items: [
       {
         name: 'Oxelle Skin Booster',

@@ -4,19 +4,22 @@ import Image from 'next/image';
 // Editorial page header shared by all inner pages: dark forest band, breadcrumb,
 // uppercase eyebrow, oversized serif title, optional lead paragraph. Pass `image`
 // (a Cloudinary public ID) to show a full-bleed photo behind the text instead of
-// the flat olive-deep background.
+// the flat olive-deep background, with `imageAlt` describing what it shows —
+// omit `imageAlt` only when the photo is purely decorative.
 export function PageHero({
   eyebrow,
   title,
   lead,
   breadcrumb,
   image,
+  imageAlt,
 }: {
   eyebrow?: string;
   title: string;
   lead?: string;
   breadcrumb: { name: string; href?: string }[];
   image?: string;
+  imageAlt?: string;
 }) {
   return (
     <section className="relative overflow-hidden bg-olive-deep px-6 pb-16 pt-28 text-sand">
@@ -24,10 +27,11 @@ export function PageHero({
         <>
           <Image
             src={image}
-            alt=""
-            aria-hidden="true"
+            alt={imageAlt ?? ''}
+            aria-hidden={imageAlt ? undefined : 'true'}
             fill
             priority
+            fetchPriority="high"
             sizes="100vw"
             className="object-cover opacity-90"
           />

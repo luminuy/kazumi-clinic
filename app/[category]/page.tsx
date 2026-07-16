@@ -65,6 +65,7 @@ export default async function ServiceCategoryPage({ params }: Props) {
         title={service.title}
         lead={service.description}
         image={service.heroImage}
+        imageAlt={service.heroAlt}
         breadcrumb={[
           { name: 'หน้าหลัก', href: '/' },
           { name: 'บริการ', href: '/services' },
