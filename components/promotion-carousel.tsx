@@ -23,7 +23,12 @@ export function PromotionCarousel() {
     if (!rail || !card || !firstCard) return;
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const targetLeft = Math.max(0, rail.scrollLeft + card.offsetLeft - firstCard.offsetLeft);
+    // Distance from the first card IS the target scrollLeft — both offsetLeft values are
+    // measured from the same offsetParent, so the difference already cancels the rail's
+    // padding out. Adding the current scrollLeft on top counted the scroll position twice,
+    // so every click overshot by however far the rail had already travelled and scroll-snap
+    // yanked it back to a card that wasn't the one asked for.
+    const targetLeft = Math.max(0, card.offsetLeft - firstCard.offsetLeft);
     programmaticIndexRef.current = nextIndex;
     programmaticTargetRef.current = targetLeft;
     rail.scrollTo({
