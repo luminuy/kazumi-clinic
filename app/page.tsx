@@ -18,13 +18,12 @@ import {
 import { site } from '@/lib/site';
 import { doctor } from '@/lib/doctor';
 import { activePromotions } from '@/lib/promotions';
-import { serviceCategories, type ServiceCategory } from '@/lib/services';
+import { serviceCategories } from '@/lib/services';
 import { faqSchema, homePageSchema } from '@/lib/schema';
 import { cld, cloudAssets, heroHomePortrait } from '@/lib/cloud';
 import { Button } from '@/components/ui/button';
-import { ServiceIcon } from '@/components/service-icon';
 import { Reveal } from '@/components/reveal';
-import { cn } from '@/lib/utils';
+import { ServiceAtlas } from '@/components/service-atlas';
 
 const homeTitle = 'คลินิกความงามสุขุมวิท กรุงเทพฯ | Kazumi Clinic';
 const homeDescription =
@@ -76,26 +75,6 @@ const faqs = [
     question: 'จองคิวได้ที่ไหน?',
     answer: `จองคิวผ่าน LINE Official Account หรือโทร ${site.phone}`,
   },
-];
-
-// The first five services are the clinic's signature menu and get the visual bento treatment.
-// The newer categories live in an editorial index below so every title stays readable.
-const gridSpan: Record<string, string> = {
-  filler: 'md:col-span-8 md:row-span-2',
-  botox: 'md:col-span-5',
-  'iv-drip': 'md:col-span-5',
-  'skin-booster': 'md:col-span-8',
-  'collagen-booster': 'md:col-span-5',
-};
-
-const signatureCategories = serviceCategories.filter((category) => gridSpan[category.slug]);
-const additionalCategories = serviceCategories.filter((category) => !gridSpan[category.slug]);
-const serviceImagePool = [
-  cloudAssets.heroFiller,
-  cloudAssets.heroIvDrip1,
-  cloudAssets.heroIvDrip2,
-  cloudAssets.heroIvDrip3,
-  cloudAssets.heroSkinBooster,
 ];
 
 export const revalidate = 3600;
@@ -205,71 +184,7 @@ export default function HomePage() {
       <section className="relative overflow-hidden border-y border-olive/10 bg-background px-6 py-24 md:py-32">
         <div className="atlas-orbit pointer-events-none absolute -right-44 top-12 size-[34rem] rounded-full border border-clay/20" aria-hidden="true" />
         <div className="relative mx-auto max-w-7xl">
-          <Reveal className="grid gap-10 lg:grid-cols-[1.618fr_1fr] lg:items-end lg:gap-20">
-            <div>
-              <div className="section-eyebrow flex items-center gap-3">
-                <span className="h-px w-10 bg-clay" />
-                01 / Treatment atlas
-              </div>
-              <h2 className="mt-7 max-w-lg font-serif text-5xl leading-[0.9] tracking-[-0.04em] text-olive-deep sm:text-6xl md:text-8xl">
-                พอดีใน
-                <br />
-                <span className="text-clay">แบบของคุณ.</span>
-              </h2>
-            </div>
-            <div className="max-w-xl lg:pb-2">
-              <p className="text-sm leading-[1.9] text-ink/65 md:text-base">
-                ทุกโปรแกรมเริ่มต้นจากการฟังเป้าหมายและประเมินโดยแพทย์
-                ก่อนเลือกแนวทางที่เหมาะกับผิวและรูปหน้าของแต่ละคน
-              </p>
-              <div className="mt-7 flex flex-wrap items-center gap-4">
-                <Link
-                  href="/services"
-                  className="group inline-flex items-center gap-2 rounded-full bg-olive-deep px-5 py-3 text-sm text-sand transition-[background-color,transform] hover:-translate-y-0.5 hover:bg-olive"
-                >
-                  สำรวจ treatment ทั้งหมด <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                </Link>
-                <span className="text-xs uppercase tracking-[0.22em] text-olive-light">
-                  {serviceCategories.length} โปรแกรม / curated care
-                </span>
-              </div>
-            </div>
-          </Reveal>
-
-          <div className="golden-service-grid mt-16">
-            {signatureCategories.map((category, index) => (
-              <Reveal
-                key={category.slug}
-                delay={index * 70}
-                className={cn('min-h-[17rem] md:min-h-0', gridSpan[category.slug])}
-              >
-                <PhotoServiceCard category={category} index={index + 1} />
-              </Reveal>
-            ))}
-          </div>
-
-          {additionalCategories.length > 0 && (
-            <Reveal className="mt-6 overflow-hidden rounded-[1.75rem] border border-olive/12 bg-cream/70">
-              <div className="flex flex-wrap items-center justify-between gap-4 border-b border-olive/12 px-5 py-4 sm:px-7">
-                <div className="flex items-center gap-3">
-                  <span className="h-px w-8 bg-clay" />
-                  <span className="section-eyebrow">02 / Extended care</span>
-                </div>
-                <span className="text-xs text-ink/45">โปรแกรมเพิ่มเติม · เลือกตามเป้าหมายของคุณ</span>
-              </div>
-              <div className="grid gap-px bg-olive/12 sm:grid-cols-2 lg:grid-cols-4">
-                {additionalCategories.map((category, index) => (
-                  <PhotoServiceCard
-                    key={category.slug}
-                    category={category}
-                    index={signatureCategories.length + index + 1}
-                    image={serviceImagePool[(signatureCategories.length + index) % serviceImagePool.length]}
-                    compact
-                  />
-                ))}
-              </div>
-            </Reveal>
-          )}
+          <ServiceAtlas />
         </div>
       </section>
 
@@ -465,83 +380,6 @@ export default function HomePage() {
         </Reveal>
       </section>
     </>
-  );
-}
-
-function PhotoServiceCard({
-  category,
-  index,
-  image,
-  compact = false,
-}: {
-  category: ServiceCategory;
-  index: number;
-  image?: string;
-  compact?: boolean;
-}) {
-  const imageSrc = image ?? category.heroImage;
-  const hasSemanticImage = !image && Boolean(category.heroAlt);
-
-  return (
-    <Link
-      href={`/${category.slug}`}
-      className={cn(
-        'group relative block h-full min-h-0 overflow-hidden bg-olive-deep shadow-[0_18px_50px_rgb(38_40_31/0.08)] transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_24px_60px_rgb(38_40_31/0.14)] active:scale-[0.99]',
-        compact ? 'min-h-[14rem] rounded-none shadow-none hover:translate-y-0 hover:shadow-none' : 'rounded-[1.5rem]',
-      )}
-    >
-      {imageSrc ? (
-        <Image
-          src={imageSrc}
-          alt={hasSemanticImage ? category.heroAlt! : ''}
-          aria-hidden={hasSemanticImage ? undefined : 'true'}
-          fill
-          sizes="(min-width: 768px) 50vw, 100vw"
-          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-        />
-      ) : null}
-      <div className="absolute inset-0 bg-gradient-to-t from-olive-deep/90 via-olive-deep/10 to-transparent transition-colors group-hover:from-olive-deep/95" />
-      <div className={cn('relative flex h-full flex-col justify-between p-6', compact && 'p-5')}>
-        <span className="font-serif text-sm text-sand/60">{String(index).padStart(2, '0')}</span>
-        <div>
-          <p className="text-xs uppercase tracking-[0.25em] text-clay">{category.titleEn}</p>
-          <p className={cn('mt-1 flex items-center gap-2 font-serif text-2xl text-sand', !compact && 'md:text-3xl')}>
-            {category.title}
-            <ArrowUpRight className="size-5 shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-          </p>
-          <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-sand/65">
-            {category.shortDescription}
-          </p>
-        </div>
-      </div>
-    </Link>
-  );
-}
-
-function TextServiceCard({ category, index }: { category: ServiceCategory; index: number }) {
-  return (
-    <Link
-      href={`/${category.slug}`}
-      className="group relative flex h-full flex-col justify-between overflow-hidden rounded-[1.5rem] bg-olive-deep p-7 text-sand shadow-[0_18px_50px_rgb(38_40_31/0.08)] transition-[transform,background-color,box-shadow] duration-500 hover:-translate-y-1 hover:bg-olive hover:shadow-[0_24px_60px_rgb(38_40_31/0.14)]"
-    >
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute -right-3 -top-8 select-none font-serif text-[8rem] leading-none text-sand/[0.06]"
-      >
-        {String(index).padStart(2, '0')}
-      </span>
-      <span className="relative flex size-11 items-center justify-center rounded-full border border-clay/30 text-clay transition-colors group-hover:border-clay group-hover:bg-clay group-hover:text-olive-deep">
-        <ServiceIcon slug={category.slug} className="size-5 transition-transform group-hover:scale-110" />
-      </span>
-      <div className="relative">
-        <p className="text-xs uppercase tracking-[0.25em] text-sand/50">{category.titleEn}</p>
-        <p className="mt-1 flex items-center gap-2 font-serif text-2xl text-sand">
-          {category.title}
-          <ArrowUpRight className="size-5 shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-        </p>
-        <p className="mt-2 text-sm text-sand/60">{category.shortDescription}</p>
-      </div>
-    </Link>
   );
 }
 
