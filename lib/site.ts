@@ -7,7 +7,7 @@ export const site = {
   taglineJa: '純粋さは永遠の美へ',
   taglineTh: 'Minimal Change. Maximum Confidence.',
   description:
-    'Kazumi Clinic สถานเสริมความงามย่านสุขุมวิท กรุงเทพฯ ให้บริการฟิลเลอร์ โบท็อกซ์ สกินบูสเตอร์ และ IV Drip วิตามิน ดูแลโดยแพทย์',
+    'Kazumi Clinic คลินิกความงามย่านสุขุมวิท กรุงเทพฯ ให้บริการฟิลเลอร์ โบท็อกซ์ IV Drip วิตามิน สกินบูสเตอร์ และคอลลาเจนบูสเตอร์ โดยแพทย์ประเมินและวางแผนการดูแลเฉพาะบุคคล',
   url: 'https://kazumiclinic.com',
   phone: '081-712-7486',
   phoneIntl: '+66817127486',

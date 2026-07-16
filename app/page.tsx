@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -18,13 +19,38 @@ import { site } from '@/lib/site';
 import { doctor } from '@/lib/doctor';
 import { activePromotions } from '@/lib/promotions';
 import { serviceCategories, type ServiceCategory } from '@/lib/services';
-import { faqSchema } from '@/lib/schema';
-import { cloudAssets, heroHomePortrait } from '@/lib/cloud';
+import { faqSchema, homePageSchema } from '@/lib/schema';
+import { cld, cloudAssets, heroHomePortrait } from '@/lib/cloud';
 import { Button } from '@/components/ui/button';
 import { ServiceIcon } from '@/components/service-icon';
 import { Reveal } from '@/components/reveal';
-import { Marquee } from '@/components/marquee';
 import { cn } from '@/lib/utils';
+
+const homeTitle = 'คลินิกความงามสุขุมวิท กรุงเทพฯ | Kazumi Clinic';
+const homeDescription =
+  'Kazumi Clinic คลินิกความงามย่านสุขุมวิท กรุงเทพฯ ให้บริการฟิลเลอร์ โบท็อกซ์ IV Drip วิตามิน สกินบูสเตอร์ และคอลลาเจนบูสเตอร์ โดยแพทย์ประเมินและวางแผนการดูแลเฉพาะบุคคล';
+const homeOgImage = cld(cloudAssets.heroHome, { width: 1200, height: 630, crop: 'fill' });
+
+export const metadata: Metadata = {
+  title: homeTitle,
+  description: homeDescription,
+  alternates: { canonical: site.url },
+  openGraph: {
+    title: homeTitle,
+    description: homeDescription,
+    url: site.url,
+    siteName: site.name,
+    type: 'website',
+    locale: 'th_TH',
+    images: [{ url: homeOgImage, width: 1200, height: 630, alt: `${site.name} คลินิกความงามสุขุมวิท` }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: homeTitle,
+    description: homeDescription,
+    images: [homeOgImage],
+  },
+};
 
 const faqs = [
   {
@@ -83,6 +109,11 @@ export default function HomePage() {
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema(faqs)) }}
+      />
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homePageSchema) }}
       />
 
       {/* ── Hero ──────────────────────────────────────────────── */}
@@ -169,14 +200,6 @@ export default function HomePage() {
           </a>
         </div>
       </section>
-
-      {/* ── Kinetic tagline band ──────────────────────────────── */}
-      <div className="border-y border-olive/15 bg-clay/25 py-4 font-serif text-2xl text-olive-deep md:text-3xl">
-        <Marquee
-          items={['Minimal Change', 'Maximum Confidence', '純粋さは永遠の美へ', 'Eternal Beauty']}
-          durationSec={38}
-        />
-      </div>
 
       {/* ── Treatment atlas ──────────────────────────────────── */}
       <section className="relative overflow-hidden border-y border-olive/10 bg-background px-6 py-24 md:py-32">
