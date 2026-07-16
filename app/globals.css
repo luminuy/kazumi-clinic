@@ -180,7 +180,7 @@
   display: none;
 }
 .service-atlas-card {
-  flex: 0 0 clamp(16rem, 19vw, 20rem);
+  flex: 0 0 min(20rem, 78vw);
   scroll-snap-align: start;
 }
 .service-atlas-card__link {
@@ -264,6 +264,9 @@
 }
 
 @media (min-width: 64rem) {
+  .service-atlas-card {
+    flex-basis: calc((100% - 1rem) / 2);
+  }
   .service-atlas-layout {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.618fr);
     align-items: center;
@@ -294,7 +297,7 @@
 
 @media (max-width: 30rem) {
   .service-atlas-card {
-    flex-basis: 78vw;
+    flex-basis: 100%;
   }
   .hero-caption {
     max-width: calc(100% - 1.5rem);
