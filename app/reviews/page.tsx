@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { MessageCircle, Star } from 'lucide-react';
+import { ExternalLink, MessageCircle, Star } from 'lucide-react';
 import { site } from '@/lib/site';
 import { breadcrumbSchema } from '@/lib/schema';
 import { Button } from '@/components/ui/button';
@@ -63,14 +63,25 @@ export default function ReviewsPage() {
           </p>
         </Reveal>
 
-        <Button
-          render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
-          size="lg"
-          className="mt-12 rounded-full bg-line px-8 text-white hover:bg-line/90"
-        >
-          <MessageCircle className="size-4" />
-          สอบถามผลลัพธ์ผ่าน LINE
-        </Button>
+        <div className="mt-12 flex flex-wrap gap-3">
+          <Button
+            render={<a href={site.mapsUrl} target="_blank" rel="noopener" />}
+            size="lg"
+            variant="outline"
+            className="rounded-full border-olive px-8 text-olive-deep hover:bg-olive/10"
+          >
+            <ExternalLink className="size-4" />
+            ดูรีวิวจริงบน Google Maps
+          </Button>
+          <Button
+            render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
+            size="lg"
+            className="rounded-full bg-line px-8 text-white hover:bg-line/90"
+          >
+            <MessageCircle className="size-4" />
+            สอบถามผลลัพธ์ผ่าน LINE
+          </Button>
+        </div>
       </section>
     </>
   );
