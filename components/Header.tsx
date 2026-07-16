@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Menu, MessageCircle } from 'lucide-react';
 import { site } from '@/lib/site';
 import { navItems } from '@/lib/nav';
+import { logoIconUrl } from '@/lib/cloud';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -16,7 +17,9 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link href="/" className="font-serif text-xl tracking-widest text-olive-deep">
+        <Link href="/" className="flex items-center gap-2.5 font-serif text-xl tracking-widest text-olive-deep">
+          {/* eslint-disable-next-line @next/next/no-img-element -- fixed 96x96 crop from Cloudinary, no next/image benefit */}
+          <img src={logoIconUrl} alt="Kazumi Clinic" width={36} height={36} className="size-9" />
           KAZUMI <span className="align-top text-sm">CLINIC</span>
         </Link>
 
