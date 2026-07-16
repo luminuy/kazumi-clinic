@@ -166,12 +166,15 @@
   display: grid;
   gap: 2.5rem;
 }
+.service-atlas-rail-shell {
+  position: relative;
+}
 .service-atlas-rail {
   display: flex;
   gap: 1rem;
   overflow-x: auto;
   overscroll-behavior-inline: contain;
-  padding: 0.25rem 0.25rem 1.25rem;
+  padding: 0.25rem;
   scroll-behavior: smooth;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
@@ -189,12 +192,12 @@
   border: 1px solid rgb(77 87 62 / 14%);
   border-radius: 1.5rem;
   background: var(--cream);
-  box-shadow: 0 1rem 2.5rem rgb(38 40 31 / 7%);
+  box-shadow: 0 0.75rem 1.75rem rgb(38 40 31 / 6%);
   transition: transform 200ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 200ms ease-out;
 }
 .service-atlas-card--active .service-atlas-card__link {
   border-color: rgb(197 174 155 / 75%);
-  box-shadow: 0 1.5rem 3.5rem rgb(38 40 31 / 13%);
+  box-shadow: 0 1rem 2.25rem rgb(38 40 31 / 9%);
 }
 .service-atlas-card__media {
   position: relative;
@@ -212,10 +215,16 @@
   min-height: 9.25rem;
   padding: 1.25rem 1.35rem 1.4rem;
 }
-.service-atlas-controls {
+.service-atlas-overlay-controls {
+  position: absolute;
+  top: 31%;
+  right: 0.8rem;
+  left: 0.8rem;
+  z-index: 2;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: space-between;
+  pointer-events: none;
 }
 .service-atlas-arrow {
   display: inline-flex;
@@ -223,9 +232,13 @@
   justify-content: center;
   width: 2.5rem;
   height: 2.5rem;
-  border: 1px solid rgb(77 87 62 / 22%);
+  border: 1px solid rgb(246 243 236 / 65%);
   border-radius: 999px;
-  color: var(--olive-deep);
+  background: rgb(61 78 70 / 72%);
+  color: var(--sand);
+  box-shadow: 0 0.5rem 1.25rem rgb(38 40 31 / 16%);
+  backdrop-filter: blur(10px);
+  pointer-events: auto;
   transition: transform 160ms ease-out, background-color 160ms ease-out, color 160ms ease-out;
 }
 .service-atlas-arrow:focus-visible,
