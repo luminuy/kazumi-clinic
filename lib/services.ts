@@ -37,7 +37,7 @@ export const serviceCategories: ServiceCategory[] = [
     titleEn: 'Filler',
     shortDescription: 'เติมเต็มร่องลึก ปรับรูปหน้าให้เรียวคมอย่างเป็นธรรมชาติ',
     description:
-      'บริการฟิลเลอร์กรดไฮยาลูรอนิกจากแบรนด์คุณภาพ ปรับโครงหน้า ร่องแก้ม ร่องน้ำหมาก และริมฝีปาก โดยแพทย์ผู้เชี่ยวชาญของ Kazumi Clinic',
+      'บริการฟิลเลอร์กรดไฮยาลูรอนิกจากแบรนด์คุณภาพ สำหรับโครงหน้า ร่องแก้ม ร่องน้ำหมาก และริมฝีปาก โดยแพทย์ของ Kazumi Clinic เป็นผู้ประเมินก่อนรับบริการ',
     heroImage: cloudAssets.heroFiller,
     items: [
       { name: 'Neura Deep', detail: '1 CC', priceFrom: 3990, unit: 'ครั้ง' },

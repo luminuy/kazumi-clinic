@@ -1,7 +1,22 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowUpRight, ArrowRight, MapPin, Clock, Phone, CircleHelp } from 'lucide-react';
+import {
+  ArrowUpRight,
+  ArrowRight,
+  MapPin,
+  Clock,
+  Phone,
+  CircleHelp,
+  GraduationCap,
+  MessageCircle,
+  Navigation,
+  ShieldCheck,
+  Sparkles,
+  Stethoscope,
+} from 'lucide-react';
 import { site } from '@/lib/site';
+import { doctor } from '@/lib/doctor';
+import { activePromotions } from '@/lib/promotions';
 import { serviceCategories, type ServiceCategory } from '@/lib/services';
 import { faqSchema } from '@/lib/schema';
 import { cloudAssets, heroHomePortrait } from '@/lib/cloud';
@@ -15,15 +30,15 @@ const faqs = [
   {
     question: 'Kazumi Clinic ให้บริการอะไรบ้าง?',
     answer:
-      'Kazumi Clinic ให้บริการฟิลเลอร์ โบท็อกซ์ สกินบูสเตอร์ คอลลาเจนบูสเตอร์ และ IV Drip วิตามิน โดยแพทย์ผู้เชี่ยวชาญ',
+      'Kazumi Clinic ให้บริการฟิลเลอร์ โบท็อกซ์ สกินบูสเตอร์ คอลลาเจนบูสเตอร์ และ IV Drip วิตามิน โดยแพทย์เป็นผู้ประเมินก่อนรับบริการ',
   },
   {
     question: 'คลินิกเปิดกี่โมงถึงกี่โมง?',
-    answer: 'เปิดทุกวัน 9:00–22:00 ยกเว้นวันอาทิตย์เปิด 9:00–17:00',
+    answer: `${site.hoursDisplay.weekdays} และ${site.hoursDisplay.sunday}`,
   },
   {
     question: 'จองคิวได้ที่ไหน?',
-    answer: `จองคิวผ่าน LINE Official Account ได้ที่ ${site.lineUrl} หรือโทร ${site.phone}`,
+    answer: `จองคิวผ่าน LINE Official Account หรือโทร ${site.phone}`,
   },
 ];
 
@@ -37,7 +52,11 @@ const gridSpan: Record<string, string> = {
   'collagen-booster': 'md:col-span-5',
 };
 
+export const revalidate = 3600;
+
 export default function HomePage() {
+  const promos = activePromotions().slice(0, 3);
+
   return (
     <>
       <script
@@ -62,7 +81,7 @@ export default function HomePage() {
               eternal beauty.
             </h1>
             <p className="mt-8 max-w-md text-sm leading-relaxed text-ink/70">
-              純粋さは永遠の美へ — {site.taglineTh} ดูแลทุกหัตถการโดยแพทย์ผู้เชี่ยวชาญ
+              純粋さは永遠の美へ — {site.taglineTh} ดูแลทุกหัตถการโดยแพทย์
               ในบรรยากาศคลินิกที่สงบและเป็นส่วนตัว
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-4">
@@ -140,18 +159,78 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── Doctor / trust ───────────────────────────────────── */}
+      <section className="border-y border-olive/10 bg-cream px-6 py-24">
+        <div className="mx-auto grid max-w-6xl gap-12 md:grid-cols-[0.8fr_1.2fr] md:items-center md:gap-16">
+          <Reveal className="relative aspect-[4/5] overflow-hidden rounded-[2rem] bg-sage-pale">
+            <Image
+              src={doctor.image}
+              alt={`${doctor.name} ${doctor.role}`}
+              fill
+              unoptimized
+              sizes="(min-width: 768px) 38vw, 90vw"
+              className="object-cover"
+            />
+            <div className="absolute inset-x-4 bottom-4 rounded-2xl bg-cream/90 p-4 backdrop-blur">
+              <p className="font-serif text-xl text-olive-deep">{doctor.name}</p>
+              <p className="mt-0.5 text-xs text-ink/55">{doctor.role}</p>
+            </div>
+          </Reveal>
+
+          <Reveal delay={80}>
+            <span className="text-xs uppercase tracking-[0.3em] text-olive-light">
+              (02) ดูแลโดยแพทย์
+            </span>
+            <h2 className="mt-4 max-w-xl font-serif text-4xl leading-tight text-olive-deep md:text-5xl">
+              ทุกแผนการดูแลเริ่มจากการประเมินเป็นรายบุคคล
+            </h2>
+            <p className="mt-6 max-w-xl leading-relaxed text-ink/70">{doctor.summary}</p>
+
+            <div className="mt-8 grid gap-3 sm:grid-cols-3">
+              {[
+                {
+                  icon: Stethoscope,
+                  title: 'ประเมินก่อนทำ',
+                  text: 'พูดคุยเป้าหมายและประวัติสุขภาพ',
+                },
+                { icon: Sparkles, title: 'วางแผนเฉพาะบุคคล', text: 'เลือกแนวทางให้เหมาะกับแต่ละคน' },
+                { icon: ShieldCheck, title: 'แนะนำการดูแล', text: 'เตรียมตัวและติดตามหลังหัตถการ' },
+              ].map(({ icon: Icon, title, text }) => (
+                <div key={title} className="rounded-2xl border border-olive/12 bg-background p-4">
+                  <Icon className="size-5 text-olive" />
+                  <p className="mt-3 text-sm font-medium text-olive-deep">{title}</p>
+                  <p className="mt-1 text-xs leading-relaxed text-ink/55">{text}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <Button
+                render={<Link href="/about" />}
+                variant="outline"
+                className="rounded-full border-olive/25 bg-transparent text-olive-deep hover:bg-olive/5"
+              >
+                <GraduationCap className="size-4" />
+                ดูประวัติและวุฒิการศึกษา
+              </Button>
+              <p className="text-xs text-ink/45">ผลลัพธ์ขึ้นอยู่กับการประเมินและแต่ละบุคคล</p>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
       {/* ── Editorial spread ──────────────────────────────────── */}
       <section className="bg-olive-deep px-6 py-24 text-sand md:py-28">
         <div className="mx-auto grid max-w-6xl gap-12 md:grid-cols-2 md:items-center md:gap-16">
           <Reveal className="order-2 md:order-1">
-            <span className="text-xs uppercase tracking-[0.3em] text-sand/50">(02) ปรัชญา</span>
+            <span className="text-xs uppercase tracking-[0.3em] text-sand/50">(03) ปรัชญา</span>
             <p className="mt-8 font-serif text-3xl leading-snug md:text-5xl md:leading-[1.15]">
               ความงามที่แท้จริงเกิดจาก
               <span className="text-clay"> ความสมดุลและความบริสุทธิ์</span>
             </p>
             <p className="mt-6 max-w-md text-sm leading-relaxed text-sand/70">
-              เราเชื่อในการปรับแต่งอย่างพอดี ให้ผลลัพธ์ที่เป็นธรรมชาติที่สุด
-              ดูแลโดยแพทย์ผู้เชี่ยวชาญ ในบรรยากาศคลินิกที่สงบและเป็นส่วนตัว
+              เราเชื่อในการปรับแต่งอย่างพอดี โดยแพทย์เป็นผู้ประเมินและวางแผนการดูแล
+              ในบรรยากาศคลินิกที่สงบและเป็นส่วนตัว
             </p>
             <p className="mt-8 font-serif italic text-sand/40">純粋さは永遠の美へ</p>
           </Reveal>
@@ -171,40 +250,146 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Hours / FAQ ───────────────────────────────────────── */}
+      {/* ── Promotions — date-gated ───────────────────────────── */}
       <section className="mx-auto max-w-6xl px-6 py-24">
-        <div className="grid gap-6 md:grid-cols-2">
-          <Reveal className="rounded-2xl border border-olive/15 bg-cream p-8 md:p-10">
+        <Reveal className="flex flex-wrap items-end justify-between gap-6">
+          <div>
             <span className="text-xs uppercase tracking-[0.3em] text-olive-light">
-              (03) เวลาทำการ &amp; ที่อยู่
+              (04) โปรโมชั่น
             </span>
-            <ul className="mt-8 space-y-5 text-sm text-ink/75">
-              <li className="flex items-start gap-3">
-                <MapPin className="mt-0.5 size-5 shrink-0 text-olive" />
-                {site.addressFull}
-              </li>
-              <li className="flex items-start gap-3">
-                <Clock className="mt-0.5 size-5 shrink-0 text-olive" />
-                <span>
-                  จันทร์–เสาร์ 9:00–22:00
-                  <br />
-                  อาทิตย์ 9:00–17:00
-                </span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Phone className="size-5 shrink-0 text-olive" />
-                {site.phone}
-              </li>
-            </ul>
+            <h2 className="mt-3 font-serif text-4xl text-olive-deep md:text-5xl">
+              โปรโมชั่นล่าสุด
+            </h2>
+          </div>
+          <Link
+            href="/promotions"
+            className="flex items-center gap-1 text-sm text-olive hover:text-olive-deep"
+          >
+            ดูหน้ารวมโปรโมชั่น <ArrowRight className="size-4" />
+          </Link>
+        </Reveal>
+
+        {promos.length > 0 ? (
+          <div className="mt-12 grid gap-4 md:grid-cols-3">
+            {promos.map((promo, index) => (
+              <Reveal
+                key={`${promo.name}-${promo.detail ?? ''}`}
+                delay={index * 60}
+                className="rounded-2xl border border-olive/15 bg-cream p-6"
+              >
+                <p className="text-xs uppercase tracking-[0.2em] text-olive-light">ราคาโปรโมชั่น</p>
+                <h3 className="mt-3 font-serif text-2xl text-olive-deep">{promo.name}</h3>
+                {promo.detail && <p className="mt-1 text-sm text-ink/55">{promo.detail}</p>}
+                <p className="mt-5 text-2xl font-medium text-olive">
+                  {promo.price.toLocaleString('th-TH')} บาท
+                </p>
+                <p className="mt-2 text-xs text-ink/45">
+                  ใช้ได้ถึง{' '}
+                  {new Date(promo.validUntil).toLocaleDateString('th-TH', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                  })}
+                </p>
+              </Reveal>
+            ))}
+          </div>
+        ) : (
+          <Reveal className="mt-12 flex flex-col items-start justify-between gap-5 rounded-2xl border border-dashed border-olive/25 bg-cream p-8 sm:flex-row sm:items-center">
+            <div>
+              <p className="font-serif text-2xl text-olive-deep">
+                ติดตามโปรแกรมและสิทธิพิเศษรอบใหม่
+              </p>
+              <p className="mt-2 text-sm text-ink/60">
+                ขณะนี้ยังไม่มีโปรโมชั่นที่อยู่ในช่วงเวลาใช้งาน สอบถามข้อมูลล่าสุดได้ทาง LINE
+              </p>
+            </div>
+            <Button
+              render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
+              className="shrink-0 rounded-full bg-line text-white hover:bg-line/90"
+            >
+              <MessageCircle className="size-4" />
+              สอบถามผ่าน LINE
+            </Button>
+          </Reveal>
+        )}
+      </section>
+
+      {/* ── Visit / map / FAQ ──────────────────────────────────── */}
+      <section className="border-t border-olive/10 bg-cream px-6 py-24">
+        <div className="mx-auto max-w-6xl">
+          <Reveal>
+            <span className="text-xs uppercase tracking-[0.3em] text-olive-light">
+              (05) การเดินทาง
+            </span>
+            <h2 className="mt-3 font-serif text-4xl text-olive-deep md:text-5xl">มาเยี่ยมเรา</h2>
           </Reveal>
 
-          <Reveal delay={80} className="rounded-2xl border border-olive/15 bg-cream p-8 md:p-10">
+          <div className="mt-12 grid overflow-hidden rounded-[2rem] border border-olive/15 bg-background md:grid-cols-[0.8fr_1.2fr]">
+            <Reveal className="p-8 md:p-10">
+              <ul className="space-y-5 text-sm text-ink/75">
+                <li className="flex items-start gap-3">
+                  <MapPin className="mt-0.5 size-5 shrink-0 text-olive" />
+                  <a
+                    href={site.mapsUrl}
+                    target="_blank"
+                    rel="noopener"
+                    className="hover:text-olive"
+                  >
+                    {site.addressFull}
+                  </a>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Clock className="mt-0.5 size-5 shrink-0 text-olive" />
+                  <span>
+                    {site.hoursDisplay.weekdays}
+                    <br />
+                    {site.hoursDisplay.sunday}
+                  </span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <Phone className="size-5 shrink-0 text-olive" />
+                  <a href={site.phoneUrl} className="hover:text-olive">
+                    {site.phone}
+                  </a>
+                </li>
+              </ul>
+              <Button
+                render={<a href={site.mapsUrl} target="_blank" rel="noopener" />}
+                variant="outline"
+                className="mt-8 rounded-full border-olive/25 text-olive-deep hover:bg-olive/5"
+              >
+                <Navigation className="size-4" /> เปิด Google Maps
+              </Button>
+            </Reveal>
+            <Reveal
+              delay={80}
+              className="min-h-80 overflow-hidden border-t border-olive/15 md:border-l md:border-t-0"
+            >
+              <iframe
+                src={site.mapsEmbedUrl}
+                width="100%"
+                height="100%"
+                className="min-h-80"
+                style={{ border: 0 }}
+                loading="lazy"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+                title={`แผนที่ ${site.name}`}
+              />
+            </Reveal>
+          </div>
+
+          <Reveal className="mt-16">
             <span className="text-xs uppercase tracking-[0.3em] text-olive-light">
-              (04) คำถามที่พบบ่อย
+              (06) คำถามที่พบบ่อย
             </span>
-            <dl className="mt-8 divide-y divide-olive/15">
+            <dl className="mt-6 grid gap-4 md:grid-cols-3">
               {faqs.map((f) => (
-                <div key={f.question} className="py-5 first:pt-0 last:pb-0">
+                <div
+                  key={f.question}
+                  className="rounded-2xl border border-olive/15 bg-background p-6"
+                >
                   <dt className="flex items-start gap-2 font-serif text-lg text-olive-deep">
                     <CircleHelp className="mt-1 size-4 shrink-0 text-olive-light" />
                     {f.question}
@@ -260,6 +445,9 @@ function PhotoServiceCard({ category, index }: { category: ServiceCategory; inde
           <p className="mt-1 flex items-center gap-2 font-serif text-2xl text-sand md:text-3xl">
             {category.title}
             <ArrowUpRight className="size-5 shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          </p>
+          <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-sand/65">
+            {category.shortDescription}
           </p>
         </div>
       </div>

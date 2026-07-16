@@ -10,7 +10,7 @@ import { PageHero } from '@/components/page-hero';
 
 export const metadata: Metadata = {
   title: 'บริการ / หัตถการ',
-  description: `บริการและหัตถการทั้งหมดของ ${site.name} — ฟิลเลอร์ โบท็อกซ์ สกินบูสเตอร์ คอลลาเจนบูสเตอร์ และ IV Drip วิตามิน โดยแพทย์ผู้เชี่ยวชาญ`,
+  description: `บริการและหัตถการทั้งหมดของ ${site.name} — ฟิลเลอร์ โบท็อกซ์ สกินบูสเตอร์ คอลลาเจนบูสเตอร์ และ IV Drip วิตามิน ดูแลโดยแพทย์`,
   alternates: { canonical: `${site.url}/services` },
   openGraph: {
     title: `บริการ / หัตถการ — ${site.name}`,
@@ -43,7 +43,7 @@ export default function ServicesPage() {
       <PageHero
         eyebrow="Services & Treatments"
         title="บริการ / หัตถการ"
-        lead={`${site.name} ให้บริการหัตถการความงามครบวงจร ดูแลโดยแพทย์ผู้เชี่ยวชาญ เลือกหมวดบริการที่สนใจเพื่อดูรายละเอียดและราคา`}
+        lead={`${site.name} ให้บริการหัตถการความงามโดยแพทย์ เลือกหมวดบริการที่สนใจเพื่อดูรายละเอียดและราคา`}
         breadcrumb={[{ name: 'หน้าหลัก', href: '/' }, { name: 'บริการ / หัตถการ' }]}
       />
 

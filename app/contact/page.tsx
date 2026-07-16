@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { MapPin, Phone, Clock, MessageCircle, AtSign } from 'lucide-react';
+import { MapPin, Phone, Clock, MessageCircle, AtSign, Navigation } from 'lucide-react';
 import { site } from '@/lib/site';
 import { breadcrumbSchema } from '@/lib/schema';
 import { Button } from '@/components/ui/button';
@@ -25,8 +25,6 @@ export default function ContactPage() {
     { name: 'ติดต่อเรา', path: '/contact' },
   ]);
 
-  const mapSrc = `https://www.google.com/maps?q=${site.geo.lat},${site.geo.lng}&z=16&output=embed`;
-
   return (
     <>
       <script
@@ -47,22 +45,26 @@ export default function ContactPage() {
           <ul className="space-y-6 text-ink/75">
             <li className="flex items-start gap-3">
               <MapPin className="mt-0.5 size-5 shrink-0 text-olive" />
-              {site.addressFull}
+              <a href={site.mapsUrl} target="_blank" rel="noopener" className="hover:text-olive">
+                {site.addressFull}
+              </a>
             </li>
             <li className="flex items-center gap-3">
               <Phone className="size-5 shrink-0 text-olive" />
-              โทร {site.phone}
+              <a href={site.phoneUrl} className="hover:text-olive">
+                โทร {site.phone}
+              </a>
             </li>
             <li className="flex items-start gap-3">
               <Clock className="mt-0.5 size-5 shrink-0 text-olive" />
               <span>
-                จันทร์–เสาร์ 9:00–22:00
+                {site.hoursDisplay.weekdays}
                 <br />
-                อาทิตย์ 9:00–17:00
+                {site.hoursDisplay.sunday}
               </span>
             </li>
           </ul>
-          <div className="mt-8 flex gap-4">
+          <div className="mt-8 flex flex-wrap gap-3">
             <Button
               render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
               className="rounded-full bg-line text-white hover:bg-line/90"
@@ -78,15 +80,25 @@ export default function ContactPage() {
               <AtSign className="size-4" />
               Instagram
             </Button>
+            <Button
+              render={<a href={site.mapsUrl} target="_blank" rel="noopener" />}
+              variant="outline"
+              className="rounded-full border-olive text-olive-deep hover:bg-olive/10"
+            >
+              <Navigation className="size-4" />
+              เปิด Google Maps
+            </Button>
           </div>
         </Reveal>
         <Reveal delay={80} className="overflow-hidden rounded-2xl border border-olive/15">
           <iframe
-            src={mapSrc}
+            src={site.mapsEmbedUrl}
             width="100%"
             height="380"
             style={{ border: 0 }}
             loading="lazy"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
             title={`แผนที่ ${site.name}`}
           />
         </Reveal>

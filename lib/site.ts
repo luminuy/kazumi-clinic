@@ -7,10 +7,11 @@ export const site = {
   taglineJa: '純粋さは永遠の美へ',
   taglineTh: 'Minimal Change. Maximum Confidence.',
   description:
-    'Kazumi Clinic สถานเสริมความงามย่านสุขุมวิท กรุงเทพฯ ให้บริการฟิลเลอร์ โบท็อกซ์ สกินบูสเตอร์ และ IV Drip วิตามิน โดยแพทย์ผู้เชี่ยวชาญ',
+    'Kazumi Clinic สถานเสริมความงามย่านสุขุมวิท กรุงเทพฯ ให้บริการฟิลเลอร์ โบท็อกซ์ สกินบูสเตอร์ และ IV Drip วิตามิน ดูแลโดยแพทย์',
   url: 'https://kazumiclinic.com',
   phone: '081-712-7486',
   phoneIntl: '+66817127486',
+  phoneUrl: 'tel:+66817127486',
   lineUrl: 'https://lin.ee/1tshhNn',
   instagram: 'https://instagram.com/kazumiclinic',
   instagramHandle: '@kazumiclinic',
@@ -26,10 +27,13 @@ export const site = {
   },
   addressFull:
     '1558 โครงการไดมอนด์คอนโด ถนนสุขุมวิท แขวงพระโขนงเหนือ เขตคลองเตย กรุงเทพมหานคร 10110',
+  mapsUrl:
+    'https://www.google.com/maps/search/?api=1&query=Kazumi%20Clinic%201558%20Sukhumvit%20Road%20Bangkok',
+  mapsEmbedUrl:
+    'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3876.1662424348838!2d100.59685397496709!3d13.708379298297611!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30e29f0a7f2125af%3A0x69eb1dcf129ee74b!2sKazumi%20Clinic!5e0!3m2!1sth!2sth!4v1784213088666!5m2!1sth!2sth',
   geo: {
-    // TODO: confirm exact lat/lng from Google Business Profile (approximate Diamond Condo Sukhumvit location for now)
-    lat: 13.7053,
-    lng: 100.5875,
+    lat: 13.708379298297611,
+    lng: 100.59685397496709,
   },
   license: 'มสพ.สบส.338/2569',
   hours: [
@@ -41,4 +45,9 @@ export const site = {
     { day: 'Saturday', open: '09:00', close: '22:00' },
     { day: 'Sunday', open: '09:00', close: '17:00' },
   ],
+  hoursDisplay: {
+    weekdays: 'จันทร์–เสาร์ 9:00–22:00',
+    sunday: 'อาทิตย์ 9:00–17:00',
+    short: 'ทุกวัน 9:00–22:00 (อาทิตย์ 9:00–17:00)',
+  },
 } as const;
