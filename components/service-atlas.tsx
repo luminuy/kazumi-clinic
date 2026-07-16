@@ -101,45 +101,47 @@ export function ServiceAtlas() {
             {serviceCategories.length} โปรแกรม / curated care
           </span>
         </div>
-        <div className="service-atlas-controls mt-10">
-          <button
-            type="button"
-            className="service-atlas-arrow"
-            onClick={() => goTo(activeIndex - 1)}
-            aria-label="ดูบริการก่อนหน้า"
-          >
-            <ArrowLeft className="size-4" />
-          </button>
-          <button
-            type="button"
-            className="service-atlas-arrow"
-            onClick={() => goTo(activeIndex + 1)}
-            aria-label="ดูบริการถัดไป"
-          >
-            <ArrowRight className="size-4" />
-          </button>
-          <span className="ml-2 text-xs uppercase tracking-[0.22em] text-olive-light">
-            {String(activeIndex + 1).padStart(2, '0')} / {String(serviceCategories.length).padStart(2, '0')}
-          </span>
-        </div>
       </div>
 
       <div className="min-w-0">
-        <div
-          ref={railRef}
-          className="service-atlas-rail"
-          onScroll={handleScroll}
-          role="region"
-          aria-label="รายการบริการของ Kazumi Clinic"
-        >
-          {serviceCategories.map((category, index) => (
-            <ServiceAtlasCard
-              key={category.slug}
-              category={category}
-              index={index}
-              active={activeIndex === index}
-            />
-          ))}
+        <div className="service-atlas-rail-shell">
+          <div
+            ref={railRef}
+            id="service-atlas-rail"
+            className="service-atlas-rail"
+            onScroll={handleScroll}
+            role="region"
+            aria-label="รายการบริการของ Kazumi Clinic"
+          >
+            {serviceCategories.map((category, index) => (
+              <ServiceAtlasCard
+                key={category.slug}
+                category={category}
+                index={index}
+                active={activeIndex === index}
+              />
+            ))}
+          </div>
+          <div className="service-atlas-overlay-controls" role="group" aria-label="เลื่อนรายการบริการ">
+            <button
+              type="button"
+              className="service-atlas-arrow"
+              onClick={() => goTo(activeIndex - 1)}
+              aria-label="ดูบริการก่อนหน้า"
+              aria-controls="service-atlas-rail"
+            >
+              <ArrowLeft className="size-4" />
+            </button>
+            <button
+              type="button"
+              className="service-atlas-arrow"
+              onClick={() => goTo(activeIndex + 1)}
+              aria-label="ดูบริการถัดไป"
+              aria-controls="service-atlas-rail"
+            >
+              <ArrowRight className="size-4" />
+            </button>
+          </div>
         </div>
         <div className="service-atlas-dots" role="group" aria-label="เลือกบริการ">
           {serviceCategories.map((category, index) => (
