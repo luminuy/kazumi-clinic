@@ -1,12 +1,18 @@
 // Single source of truth for service categories — import instead of hardcoding.
-// Prices below are pulled from a "May Exclusive Offer" promo (valid until 2026-05-31) — confirm
-// standard price list with the clinic before treating these as permanent.
+// Prices where present came from clinic promo posters — confirm the standard (non-promo) price
+// list with the clinic before treating them as permanent (see CLAUDE.md §0.2). Items without a
+// price (e.g. IV Drip programs) render as "สอบถามราคา" until the clinic publishes one.
 import { site } from './site';
 
 export type ServiceItem = {
   name: string;
   detail?: string;
-  priceFrom: number;
+  /** English tagline from the program poster, shown under the name. */
+  tagline?: string;
+  /** Bullet benefits from the clinic's own program material. */
+  benefits?: string[];
+  /** Omit when the clinic hasn't published a fixed price — the UI shows "สอบถามราคา" instead. */
+  priceFrom?: number;
   unit: string;
 };
 
@@ -64,8 +70,53 @@ export const serviceCategories: ServiceCategory[] = [
       'โปรแกรม IV Drip วิตามินสูตรเฉพาะของ Kazumi Clinic ช่วยปรับโทนสีผิว ลดเม็ดสี กระตุ้นคอลลาเจน และชะลอความเสื่อมของผิวจากแสงแดด',
     ogImage: `${site.url}/images/og/iv-drip.jpg`,
     items: [
-      { name: 'Snow IV Drip (Velvet Glow)', priceFrom: 2590, unit: 'ครั้ง' },
-      { name: 'Signature Flawless IV Drip', priceFrom: 2590, unit: 'ครั้ง' },
+      {
+        name: 'Signature Flawless',
+        detail: 'IV Drip Vitamin',
+        tagline: 'The Masterpiece of Skin Perfection',
+        benefits: [
+          'ช่วยปรับโทนสีผิวสว่าง',
+          'ลดปัญหาเม็ดสี ฝ้า กระ',
+          'กระตุ้นคอลลาเจน',
+          'ชะลอการเสื่อมของผิวจากแสง UV',
+        ],
+        unit: 'ครั้ง',
+      },
+      {
+        name: 'Radiant Bright',
+        detail: 'IV Drip Vitamin',
+        tagline: 'The Shield for Radiant Skin',
+        benefits: [
+          'ผิวกระจ่างใส ลดรอยดำ-แดง',
+          'กระตุ้นคอลลาเจน',
+          'ฟื้นฟูผิวเสียจากแสงแดด',
+          'ขจัดสารพิษในชั้นผิว',
+        ],
+        unit: 'ครั้ง',
+      },
+      {
+        name: 'Active & Refresh',
+        detail: 'IV Drip Vitamin',
+        tagline: 'Refresh and Rebalance Your Body',
+        benefits: [
+          'มีสารต้านอนุมูลอิสระ',
+          'ช่วยให้ร่างกายฟื้นตัว',
+          'คืนความสดชื่น ลดอาการอ่อนเพลีย',
+          'ช่วยให้ผิวพรรณสดใส',
+        ],
+        unit: 'ครั้ง',
+      },
+      {
+        name: 'Velvet Glow',
+        detail: 'IV Drip Vitamin',
+        tagline: 'การดูแลตัวเองจากภายใน',
+        benefits: [
+          'ฟื้นฟูความสดชื่นเปล่งปลั่ง ไม่โทรม',
+          'เติมความชุ่มชื้น ผิวเนียนละเอียด',
+          'เสริมเกราะป้องกันผิวจากมลภาวะ',
+        ],
+        unit: 'ครั้ง',
+      },
     ],
   },
   {
@@ -77,7 +128,19 @@ export const serviceCategories: ServiceCategory[] = [
       'สกินบูสเตอร์เกรดพรีเมียม ฟื้นฟูเซลล์ผิวจากภายใน กระตุ้นการสร้างคอลลาเจนใหม่ เหมาะกับผิวโทรม ผิวขาดน้ำ',
     ogImage: `${site.url}/images/og/skin-booster.jpg`,
     items: [
-      { name: 'NCTF 135 HA + Oxelle', priceFrom: 11990, unit: 'ครั้ง' },
+      {
+        name: 'Oxelle Skin Booster',
+        detail: 'Product from Italy',
+        tagline: 'Skin Boosters',
+        benefits: [
+          'Revitalizing — กระตุ้นการสร้างคอลลาเจนให้ผิวอิ่มฟูและยืดหยุ่น',
+          'Bio-Stimulating — เร่งการสร้างเซลล์ผิวใหม่ เบลอรูขุมขน ปรับผิวให้เรียบเนียน',
+          'Antioxidant — ปกป้องผิวจากมลภาวะ และชะลอการเกิดริ้วรอย',
+          'Whitening — ลดเลือนฝ้า กระ จุดด่างดำ ปรับสีผิวให้สว่างกระจ่างใสสม่ำเสมอ',
+        ],
+        unit: 'ครั้ง',
+      },
+      { name: 'NCTF 135 HA + Oxelle', detail: 'โปรแกรมคู่', unit: 'ครั้ง' },
     ],
   },
   {
@@ -88,7 +151,20 @@ export const serviceCategories: ServiceCategory[] = [
     description:
       'โปรแกรมเติมคอลลาเจนสด Karisma Rh Collagen ฟื้นฟูโครงสร้างผิว ลดเลือนร่องแก้ม ร่องน้ำหมาก และถุงใต้ตา',
     ogImage: `${site.url}/images/og/collagen-booster.jpg`,
-    items: [{ name: 'Karisma Rh Collagen', detail: '1 กล่อง', priceFrom: 18990, unit: 'ครั้ง' }],
+    items: [
+      {
+        name: 'Karisma Rh Collagen',
+        detail: 'Made in Italy',
+        tagline: 'Rh Collagen',
+        benefits: [
+          'คอลลาเจนโครงสร้างถอดแบบจาก Collagen Type 1 ในผิวมนุษย์ 100%',
+          'เข้ากับร่างกายได้ดีถึง 99.99% ลดความเสี่ยงในการแพ้',
+          'เติมเต็มคอลลาเจน พร้อมกระตุ้นการสร้างคอลลาเจนใหม่',
+          'ลดเลือนริ้วรอย ร่องแก้ม ร่องน้ำหมาก และถุงใต้ตา',
+        ],
+        unit: 'ครั้ง',
+      },
+    ],
   },
 ];
 

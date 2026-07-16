@@ -60,13 +60,32 @@ export function serviceItemListSchema(category: ServiceCategory) {
         '@type': 'MedicalProcedure',
         name: `${item.name}${item.detail ? ` (${item.detail})` : ''}`,
         provider: { '@id': `${site.url}/#business` },
-        offers: {
-          '@type': 'Offer',
-          price: item.priceFrom,
-          priceCurrency: 'THB',
-          url: `${site.url}/${category.slug}`,
-        },
+        // Only emit an Offer when there's a real price — a fabricated/zero price is worse than none.
+        ...(item.priceFrom !== undefined && {
+          offers: {
+            '@type': 'Offer',
+            price: item.priceFrom,
+            priceCurrency: 'THB',
+            url: `${site.url}/${category.slug}`,
+          },
+        }),
       },
+    })),
+  };
+}
+
+// ItemList for the /services hub — lists the service categories themselves (not procedures).
+export function serviceCategoryListSchema(categories: ServiceCategory[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: `บริการทั้งหมด — ${site.name}`,
+    url: `${site.url}/services`,
+    itemListElement: categories.map((category, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: category.title,
+      url: `${site.url}/${category.slug}`,
     })),
   };
 }

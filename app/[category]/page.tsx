@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle, Check } from 'lucide-react';
 import { site } from '@/lib/site';
 import { serviceCategories, getServiceBySlug } from '@/lib/services';
 import { serviceItemListSchema, breadcrumbSchema } from '@/lib/schema';
@@ -80,16 +80,37 @@ export default async function ServiceCategoryPage({ params }: Props) {
               key={`${item.name}-${item.detail ?? ''}`}
               className="rounded-2xl border-olive/15 ring-0"
             >
-              <CardContent>
+              <CardContent className="flex h-full flex-col">
                 <p className="font-serif text-lg text-olive-deep">{item.name}</p>
+                {item.tagline && (
+                  <p className="mt-0.5 font-serif text-sm italic text-olive-light">
+                    {item.tagline}
+                  </p>
+                )}
                 {item.detail && (
-                  <Badge variant="outline" className="mt-2 border-olive/30 text-ink/60">
+                  <Badge variant="outline" className="mt-2 w-fit border-olive/30 text-ink/60">
                     {item.detail}
                   </Badge>
                 )}
+                {item.benefits && (
+                  <ul className="mt-3 space-y-1.5">
+                    {item.benefits.map((b) => (
+                      <li key={b} className="flex items-start gap-2 text-sm text-ink/70">
+                        <Check className="mt-0.5 size-4 shrink-0 text-olive" />
+                        {b}
+                      </li>
+                    ))}
+                  </ul>
+                )}
                 <p className="mt-4 text-xl font-medium text-olive">
-                  {item.priceFrom.toLocaleString('th-TH')} บาท
-                  <span className="ml-1 text-sm font-normal text-ink/50">/ {item.unit}</span>
+                  {item.priceFrom !== undefined ? (
+                    <>
+                      {item.priceFrom.toLocaleString('th-TH')} บาท
+                      <span className="ml-1 text-sm font-normal text-ink/50">/ {item.unit}</span>
+                    </>
+                  ) : (
+                    <span className="text-base font-medium text-ink/60">สอบถามราคา</span>
+                  )}
                 </p>
               </CardContent>
             </Card>
@@ -104,6 +125,10 @@ export default async function ServiceCategoryPage({ params }: Props) {
           <MessageCircle className="size-4" />
           จองคิว {service.title} ผ่าน LINE
         </Button>
+
+        <p className="mt-6 text-xs text-ink/40">
+          *ทุกหัตถการไม่แนะนำสำหรับผู้มีอายุต่ำกว่า 18 ปี · ผลลัพธ์แตกต่างกันในแต่ละบุคคล
+        </p>
       </section>
     </>
   );
