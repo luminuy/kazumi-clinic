@@ -52,9 +52,7 @@ export const promotionPosters: PromotionPoster[] = [
     label: 'Skin Booster · Oxelle',
   },
   {
-    // promo-karisma-collagen is the asset that actually holds the Velvet Glow poster — the two
-    // source files were swapped before they ever reached Cloudinary.
-    src: cloudAssets.promoKarismaCollagen,
+    src: cloudAssets.promoVelvetGlow,
     alt: 'โปสเตอร์ Velvet Glow IV Drip พร้อมภาพผู้หญิงและถุงสารน้ำ',
     label: 'IV Drip · Velvet Glow',
   },
@@ -64,8 +62,7 @@ export const promotionPosters: PromotionPoster[] = [
     label: 'IV Drip · Active & Refresh',
   },
   {
-    // ...and promo-velvet-glow holds the KARISMA poster. See the note above.
-    src: cloudAssets.promoVelvetGlow,
+    src: cloudAssets.promoKarismaCollagen,
     alt: 'โปสเตอร์ Karisma Rh Collagen พร้อมภาพแพ็กเกจผลิตภัณฑ์',
     label: 'Collagen · Karisma',
   },

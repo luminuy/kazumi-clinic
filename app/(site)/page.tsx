@@ -19,6 +19,7 @@ import { doctor } from '@/lib/doctor';
 import { serviceCategories } from '@/lib/services';
 import { faqSchema, homePageSchema } from '@/lib/schema';
 import { cld, cloudAssets, heroHomePortrait } from '@/lib/cloud';
+import { getImageOverrides } from '@/lib/site-images-store';
 import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/reveal';
 import { ServiceAtlas } from '@/components/service-atlas';
@@ -79,7 +80,16 @@ const faqs = [
 
 export const revalidate = 3600;
 
-export default function HomePage() {
+export default async function HomePage() {
+  const overrides = await getImageOverrides();
+  const pick = (key: string, fallback: string) => overrides.get(key)?.public_id ?? fallback;
+
+  // The portrait crop exists only to dodge the logo and quote burnt into the shipped hero
+  // asset (see lib/cloud.ts). A hero the clinic uploaded themselves has no such text, so it's
+  // rendered whole — applying the old crop box to a different photo would cut it at random.
+  const heroSrc = overrides.has('hero-home') ? pick('hero-home', '') : heroHomePortrait;
+  const philosophySrc = pick('hero-iv-drip-2', cloudAssets.heroIvDrip2);
+  const doctorSrc = pick('doctor-pratch', doctor.image);
   return (
     <>
       <script
@@ -146,7 +156,7 @@ export default function HomePage() {
           <div className="hero-enter hero-enter--image relative mx-auto w-full max-w-[31rem] md:mb-0">
             <div className="hero-image-frame relative aspect-[0.72] overflow-hidden rounded-[2rem] rounded-bl-[5rem] border border-sand/20 bg-olive shadow-2xl shadow-black/25 md:aspect-[0.618]">
               <Image
-                src={heroHomePortrait}
+                src={heroSrc}
                 alt=""
                 aria-hidden="true"
                 fill
@@ -199,7 +209,7 @@ export default function HomePage() {
           <Reveal className="relative mx-auto w-full max-w-[27rem]">
             <div className="doctor-frame relative aspect-[0.72] overflow-hidden rounded-[2rem] rounded-tr-[5rem] border border-sand/20 bg-olive shadow-2xl shadow-black/20 md:aspect-[0.618]">
               <Image
-                src={doctor.image}
+                src={doctorSrc}
                 alt={`${doctor.name} ${doctor.role}`}
                 fill
                 sizes="(min-width: 768px) 35vw, 90vw"
@@ -299,7 +309,7 @@ export default function HomePage() {
           <Reveal delay={100} className="relative order-1 mx-auto w-full max-w-[25rem] md:order-2">
             <div className="relative aspect-[0.72] overflow-hidden rounded-[2rem] rounded-bl-[5rem] border border-olive/15 bg-olive-deep shadow-2xl shadow-olive-deep/15 md:aspect-[0.618]">
               <Image
-                src={cloudAssets.heroIvDrip2}
+                src={philosophySrc}
                 alt=""
                 aria-hidden="true"
                 fill

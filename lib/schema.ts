@@ -91,24 +91,26 @@ export const homePageSchema = {
   },
 };
 
-export const doctorSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'Person',
-  name: doctor.name,
-  givenName: doctor.givenName,
-  familyName: doctor.familyName,
-  jobTitle: doctor.role,
-  alternateName: doctor.nameTh,
-  identifier: doctor.licenseNo,
-  image: cld(doctor.image, { width: 800, crop: 'fit' }),
-  worksFor: { '@id': `${site.url}/#business` },
-  alumniOf: doctor.education.map((item) => ({
-    '@type': 'EducationalOrganization',
-    name: item.institution,
-  })),
-  knowsLanguage: doctor.languages,
-  url: `${site.url}/about`,
-};
+export function doctorSchema(imagePublicId: string = doctor.image) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: doctor.name,
+    givenName: doctor.givenName,
+    familyName: doctor.familyName,
+    jobTitle: doctor.role,
+    alternateName: doctor.nameTh,
+    identifier: doctor.licenseNo,
+    image: cld(imagePublicId, { width: 800, crop: 'fit' }),
+    worksFor: { '@id': `${site.url}/#business` },
+    alumniOf: doctor.education.map((item) => ({
+      '@type': 'EducationalOrganization',
+      name: item.institution,
+    })),
+    knowsLanguage: doctor.languages,
+    url: `${site.url}/about`,
+  };
+}
 
 export function serviceItemListSchema(category: ServiceCategory) {
   return {

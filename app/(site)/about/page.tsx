@@ -5,6 +5,7 @@ import { site } from '@/lib/site';
 import { cld, cloudAssets } from '@/lib/cloud';
 import { doctor } from '@/lib/doctor';
 import { breadcrumbSchema, doctorSchema } from '@/lib/schema';
+import { getImageOverrides } from '@/lib/site-images-store';
 import { Reveal } from '@/components/reveal';
 import { PageHero, SectionLabel } from '@/components/page-hero';
 
@@ -27,7 +28,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const overrides = await getImageOverrides();
+  const doctorSrc = overrides.get('doctor-pratch')?.public_id ?? doctor.image;
   const breadcrumb = breadcrumbSchema([
     { name: 'หน้าหลัก', path: '/' },
     { name: 'เกี่ยวกับเรา', path: '/about' },
@@ -43,7 +46,7 @@ export default function AboutPage() {
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(doctorSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(doctorSchema(doctorSrc)) }}
       />
 
       <PageHero
@@ -74,7 +77,7 @@ export default function AboutPage() {
           <Reveal className="grid gap-10 md:grid-cols-[0.75fr_1.25fr] md:items-start">
             <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] bg-sage-pale">
               <Image
-                src={doctor.image}
+                src={doctorSrc}
                 alt={`${doctor.name} ${doctor.role}`}
                 fill
                 sizes="(min-width: 768px) 36vw, 90vw"
