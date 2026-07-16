@@ -60,12 +60,15 @@ export function serviceItemListSchema(category: ServiceCategory) {
         '@type': 'MedicalProcedure',
         name: `${item.name}${item.detail ? ` (${item.detail})` : ''}`,
         provider: { '@id': `${site.url}/#business` },
-        offers: {
-          '@type': 'Offer',
-          price: item.priceFrom,
-          priceCurrency: 'THB',
-          url: `${site.url}/${category.slug}`,
-        },
+        // Only emit an Offer when there's a real price — a fabricated/zero price is worse than none.
+        ...(item.priceFrom !== undefined && {
+          offers: {
+            '@type': 'Offer',
+            price: item.priceFrom,
+            priceCurrency: 'THB',
+            url: `${site.url}/${category.slug}`,
+          },
+        }),
       },
     })),
   };
