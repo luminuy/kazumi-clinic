@@ -55,10 +55,10 @@ const faqs = [
 // The first five services are the clinic's signature menu and get the visual bento treatment.
 // The newer categories live in an editorial index below so every title stays readable.
 const gridSpan: Record<string, string> = {
-  filler: 'md:col-span-7 md:row-span-2',
+  filler: 'md:col-span-8 md:row-span-2',
   botox: 'md:col-span-5',
   'iv-drip': 'md:col-span-5',
-  'skin-booster': 'md:col-span-7',
+  'skin-booster': 'md:col-span-8',
   'collagen-booster': 'md:col-span-5',
 };
 
@@ -91,7 +91,7 @@ export default function HomePage() {
         <FlowerMark
           className="pointer-events-none absolute -right-40 -top-40 size-[34rem] text-sand/[0.045] md:-right-24 md:-top-52 md:size-[44rem]"
         />
-        <div className="relative mx-auto grid max-w-7xl gap-12 px-6 pb-14 pt-12 sm:px-10 md:grid-cols-[minmax(0,1fr)_minmax(20rem,0.78fr)] md:items-end md:gap-16 md:px-12 md:pb-20 md:pt-16 lg:gap-24 lg:px-16">
+        <div className="relative mx-auto grid max-w-7xl gap-12 px-6 pb-14 pt-12 sm:px-10 md:grid-cols-[minmax(0,1.618fr)_minmax(20rem,1fr)] md:items-end md:gap-16 md:px-12 md:pb-20 md:pt-16 lg:gap-24 lg:px-16">
           <div className="max-w-3xl pb-2 md:pb-10">
             <div className="hero-enter flex items-center gap-3 text-[0.68rem] uppercase tracking-[0.34em] text-sand/55">
               <span className="h-px w-10 bg-clay" />
@@ -138,7 +138,7 @@ export default function HomePage() {
           </div>
 
           <div className="hero-enter hero-enter--image relative mx-auto w-full max-w-[31rem] md:mb-0">
-            <div className="hero-image-frame relative aspect-[0.88] overflow-hidden rounded-[2rem] rounded-bl-[5rem] border border-sand/20 bg-olive shadow-2xl shadow-black/25">
+            <div className="hero-image-frame relative aspect-[0.72] overflow-hidden rounded-[2rem] rounded-bl-[5rem] border border-sand/20 bg-olive shadow-2xl shadow-black/25 md:aspect-[0.618]">
               <Image
                 src={heroHomePortrait}
                 alt=""
@@ -182,7 +182,7 @@ export default function HomePage() {
       <section className="relative overflow-hidden border-y border-olive/10 bg-background px-6 py-24 md:py-32">
         <div className="atlas-orbit pointer-events-none absolute -right-44 top-12 size-[34rem] rounded-full border border-clay/20" aria-hidden="true" />
         <div className="relative mx-auto max-w-7xl">
-          <Reveal className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end lg:gap-20">
+          <Reveal className="grid gap-10 lg:grid-cols-[1.618fr_1fr] lg:items-end lg:gap-20">
             <div>
               <div className="section-eyebrow flex items-center gap-3">
                 <span className="h-px w-10 bg-clay" />
@@ -213,7 +213,7 @@ export default function HomePage() {
             </div>
           </Reveal>
 
-          <div className="mt-16 grid grid-cols-1 gap-4 md:grid-cols-12 md:auto-rows-[12rem]">
+          <div className="golden-service-grid mt-16">
             {signatureCategories.map((category, index) => (
               <Reveal
                 key={category.slug}
@@ -253,9 +253,9 @@ export default function HomePage() {
       {/* ── Doctor dossier ───────────────────────────────────── */}
       <section className="relative overflow-hidden bg-olive-deep px-6 py-24 text-sand md:py-32">
         <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(rgb(238_233_223/.12)_1px,transparent_1px),linear-gradient(90deg,rgb(238_233_223/.12)_1px,transparent_1px)] [background-size:5rem_5rem]" aria-hidden="true" />
-        <div className="relative mx-auto grid max-w-7xl gap-14 md:grid-cols-[0.82fr_1.18fr] md:items-center md:gap-20">
+        <div className="relative mx-auto grid max-w-7xl gap-14 md:grid-cols-[1fr_1.618fr] md:items-center md:gap-20">
           <Reveal className="relative mx-auto w-full max-w-[27rem]">
-            <div className="doctor-frame relative aspect-[0.82] overflow-hidden rounded-[2rem] rounded-tr-[5rem] border border-sand/20 bg-olive shadow-2xl shadow-black/20">
+            <div className="doctor-frame relative aspect-[0.72] overflow-hidden rounded-[2rem] rounded-tr-[5rem] border border-sand/20 bg-olive shadow-2xl shadow-black/20 md:aspect-[0.618]">
               <Image
                 src={doctor.image}
                 alt={`${doctor.name} ${doctor.role}`}
@@ -312,7 +312,7 @@ export default function HomePage() {
       {/* ── Philosophy manifesto ─────────────────────────────── */}
       <section className="relative overflow-hidden border-b border-olive/10 bg-clay/20 px-6 py-24 md:py-32">
         <FlowerMark className="pointer-events-none absolute -bottom-48 -left-32 size-[34rem] text-olive/[0.06]" />
-        <div className="relative mx-auto grid max-w-7xl gap-12 md:grid-cols-[1fr_0.82fr] md:items-center md:gap-24">
+        <div className="relative mx-auto grid max-w-7xl gap-12 md:grid-cols-[1.618fr_1fr] md:items-center md:gap-24">
           <Reveal className="order-2 md:order-1">
             <div className="section-eyebrow flex items-center gap-3">
               <span className="h-px w-10 bg-clay" />
@@ -333,7 +333,7 @@ export default function HomePage() {
             </div>
           </Reveal>
           <Reveal delay={100} className="relative order-1 mx-auto w-full max-w-[25rem] md:order-2">
-            <div className="relative aspect-[0.8] overflow-hidden rounded-[2rem] rounded-bl-[5rem] border border-olive/15 bg-olive-deep shadow-2xl shadow-olive-deep/15">
+            <div className="relative aspect-[0.72] overflow-hidden rounded-[2rem] rounded-bl-[5rem] border border-olive/15 bg-olive-deep shadow-2xl shadow-olive-deep/15 md:aspect-[0.618]">
               <Image src={cloudAssets.heroIvDrip2} alt="" aria-hidden="true" fill sizes="(min-width: 768px) 34vw, 90vw" className="object-cover transition-transform duration-1000 hover:scale-[1.04]" />
               <div className="absolute inset-0 bg-gradient-to-t from-olive-deep/60 via-transparent to-transparent" />
               <span className="absolute bottom-5 left-5 text-[0.68rem] uppercase tracking-[0.25em] text-sand/65">Quiet care / 2026</span>
@@ -373,7 +373,7 @@ export default function HomePage() {
               ))}
             </div>
           ) : (
-            <Reveal className="promo-board mt-14 grid overflow-hidden rounded-[2rem] border border-olive/15 bg-olive-deep text-sand md:grid-cols-[1.2fr_0.8fr]">
+            <Reveal className="promo-board mt-14 grid overflow-hidden rounded-[2rem] border border-olive/15 bg-olive-deep text-sand md:grid-cols-[1.618fr_1fr]">
               <div className="relative p-8 sm:p-12 md:p-16">
                 <span className="text-xs uppercase tracking-[0.28em] text-sand/45">No active promotion / now</span>
                 <h3 className="mt-8 max-w-xl font-serif text-4xl leading-[1.08] text-sand sm:text-5xl">จังหวะใหม่ของคุณ<br /><span className="text-clay">เริ่มจากการพูดคุย.</span></h3>
@@ -403,7 +403,7 @@ export default function HomePage() {
             <p className="max-w-sm text-sm leading-relaxed text-ink/60">พื้นที่สงบสำหรับการพูดคุย ประเมิน และวางแผนการดูแลในแบบที่เป็นคุณ</p>
           </Reveal>
 
-          <div className="visit-dossier mt-14 grid overflow-hidden rounded-[2rem] border border-olive/15 bg-background md:grid-cols-[0.68fr_1.32fr]">
+          <div className="visit-dossier mt-14 grid overflow-hidden rounded-[2rem] border border-olive/15 bg-background md:grid-cols-[1fr_1.618fr]">
             <Reveal className="relative p-8 sm:p-10 md:p-12">
               <span className="font-serif text-6xl text-clay/45">05</span>
               <ul className="mt-8 space-y-6 text-sm text-ink/75">
