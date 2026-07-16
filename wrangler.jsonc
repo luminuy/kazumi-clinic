@@ -37,12 +37,12 @@
       "bucket_name": "kazumi-clinic-cache"
     }
   ],
-  // Run `wrangler d1 create kazumi-clinic-tag-cache` then update database_name/database_id below.
+  // D1 created 2026-07-16 (region APAC) via `wrangler d1 create kazumi-clinic-tag-cache`.
   "d1_databases": [
     {
       "binding": "NEXT_TAG_CACHE_D1",
       "database_name": "kazumi-clinic-tag-cache",
-      "database_id": "REPLACE_WITH_D1_DATABASE_ID"
+      "database_id": "b6f4112b-ab0a-449c-9584-46066d82ef0d"
     }
   ]
 }
