@@ -70,40 +70,44 @@ export default async function AdminImagesPage() {
         </ul>
       </section>
 
-      <section className="mt-12">
-        <h2 className="font-serif text-xl text-olive-deep">รูปที่ยังเปลี่ยนเองไม่ได้</h2>
-        <div className="mt-3 flex gap-3 rounded-2xl border border-clay/50 bg-clay/10 p-4 text-sm text-ink/70">
-          <AlertTriangle className="mt-0.5 size-4 shrink-0 text-clay" />
-          <p>
-            รูป {bakedInImages.length} ใบนี้เป็นไฟล์ที่ถูก build ติดไปกับโค้ด (อยู่ใน{' '}
-            <code className="text-xs">public/</code>) — เปลี่ยนจากหน้านี้ไม่ได้ ต้องย้ายขึ้น
-            Cloudinary ก่อน
-          </p>
-        </div>
-        <ul className="mt-4 grid gap-2 sm:grid-cols-2">
-          {bakedInImages.map((image) => (
-            <li
-              key={image.path}
-              className="flex items-center gap-3 rounded-xl border border-olive/10 px-3 py-2"
-            >
-              <span className="relative size-10 shrink-0 overflow-hidden rounded-md bg-sand">
-                <Image
-                  src={image.path}
-                  alt=""
-                  aria-hidden="true"
-                  fill
-                  sizes="40px"
-                  className="object-cover"
-                />
-              </span>
-              <span className="min-w-0">
-                <span className="block truncate text-sm text-ink/75">{image.label}</span>
-                <span className="block truncate text-xs text-ink/45">{image.where}</span>
-              </span>
-            </li>
-          ))}
-        </ul>
-      </section>
+      {/* Rendered only when something is actually stuck in the build — an empty warning
+          section would claim a problem that no longer exists. */}
+      {bakedInImages.length > 0 && (
+        <section className="mt-12">
+          <h2 className="font-serif text-xl text-olive-deep">รูปที่ยังเปลี่ยนเองไม่ได้</h2>
+          <div className="mt-3 flex gap-3 rounded-2xl border border-clay/50 bg-clay/10 p-4 text-sm text-ink/70">
+            <AlertTriangle className="mt-0.5 size-4 shrink-0 text-clay" />
+            <p>
+              รูป {bakedInImages.length} ใบนี้เป็นไฟล์ที่ถูก build ติดไปกับโค้ด (อยู่ใน{' '}
+              <code className="text-xs">public/</code>) — เปลี่ยนจากหน้านี้ไม่ได้ ต้องย้ายขึ้น
+              Cloudinary ก่อน
+            </p>
+          </div>
+          <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+            {bakedInImages.map((image) => (
+              <li
+                key={image.path}
+                className="flex items-center gap-3 rounded-xl border border-olive/10 px-3 py-2"
+              >
+                <span className="relative size-10 shrink-0 overflow-hidden rounded-md bg-sand">
+                  <Image
+                    src={image.path}
+                    alt=""
+                    aria-hidden="true"
+                    fill
+                    sizes="40px"
+                    className="object-cover"
+                  />
+                </span>
+                <span className="min-w-0">
+                  <span className="block truncate text-sm text-ink/75">{image.label}</span>
+                  <span className="block truncate text-xs text-ink/45">{image.where}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </div>
   );
 }

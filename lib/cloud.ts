@@ -95,6 +95,17 @@ export const cloudAssets = {
   heroIvDrip2: 'kazumi-clinic/hero-iv-drip-2',
   heroIvDrip3: 'kazumi-clinic/hero-iv-drip-3',
   heroSkinBooster: 'kazumi-clinic/hero-skin-booster',
+  // Moved out of public/ so /admin can replace them — a file under public/ is baked into
+  // the build and can only change by shipping code.
+  doctorPratch: 'kazumi-clinic/doctor-pratch',
+  ogAbout: 'kazumi-clinic/og-about',
+  promoActiveRefresh: 'kazumi-clinic/promo-active-refresh',
+  promoFillerNeura: 'kazumi-clinic/promo-filler-neura',
+  promoKarismaCollagen: 'kazumi-clinic/promo-karisma-collagen',
+  promoOxelleSkinBooster: 'kazumi-clinic/promo-oxelle-skin-booster',
+  promoRadiantBright: 'kazumi-clinic/promo-radiant-bright',
+  promoSignatureFlawless: 'kazumi-clinic/promo-signature-flawless',
+  promoVelvetGlow: 'kazumi-clinic/promo-velvet-glow',
 } as const;
 
 // The `hero-home` asset (1920x1080) has the logo and the "Where balance purity…" quote burnt

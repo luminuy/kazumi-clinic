@@ -100,7 +100,7 @@ export const doctorSchema = {
   jobTitle: doctor.role,
   alternateName: doctor.nameTh,
   identifier: doctor.licenseNo,
-  image: `${site.url}${doctor.image}`,
+  image: cld(doctor.image, { width: 800, crop: 'fit' }),
   worksFor: { '@id': `${site.url}/#business` },
   alumniOf: doctor.education.map((item) => ({
     '@type': 'EducationalOrganization',

@@ -89,14 +89,16 @@ export function PromotionCarousel() {
             <article
               key={poster.src}
               data-promotion-index={index}
-              className={cn('promotion-carousel-card', activeIndex === index && 'promotion-carousel-card--active')}
+              className={cn(
+                'promotion-carousel-card',
+                activeIndex === index && 'promotion-carousel-card--active',
+              )}
             >
               <Link href="/promotions" className="promotion-carousel-card__link group">
                 <Image
                   src={poster.src}
                   alt={poster.alt}
                   fill
-                  unoptimized
                   sizes="(min-width: 1024px) 30vw, (min-width: 640px) 48vw, 88vw"
                   className="promotion-carousel-card__image object-cover"
                 />
@@ -133,7 +135,9 @@ export function PromotionCarousel() {
       </div>
 
       <div className="promotion-carousel-footer">
-        <span className="promotion-carousel-note">สอบถามช่วงเวลาและสิทธิ์โปรโมชั่นกับทีม Kazumi</span>
+        <span className="promotion-carousel-note">
+          สอบถามช่วงเวลาและสิทธิ์โปรโมชั่นกับทีม Kazumi
+        </span>
         <div className="promotion-carousel-dots" role="group" aria-label="เลือกโปรโมชั่น">
           {promotionPosters.map((poster, index) => (
             <button
@@ -141,7 +145,10 @@ export function PromotionCarousel() {
               type="button"
               aria-current={activeIndex === index ? 'true' : undefined}
               aria-label={`ดู ${poster.label}`}
-              className={cn('promotion-carousel-dot', activeIndex === index && 'promotion-carousel-dot--active')}
+              className={cn(
+                'promotion-carousel-dot',
+                activeIndex === index && 'promotion-carousel-dot--active',
+              )}
               onClick={() => goTo(index)}
             />
           ))}
