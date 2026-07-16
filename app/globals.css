@@ -144,6 +144,34 @@
 .hero-caption {
   animation: hero-float 5s ease-in-out 1.1s infinite;
 }
+.section-eyebrow {
+  color: var(--olive-light);
+  font-size: 0.68rem;
+  letter-spacing: 0.3em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+.section-eyebrow--dark {
+  color: rgb(238 233 223 / 0.52);
+}
+.atlas-orbit {
+  animation: orbit-breathe 12s ease-in-out infinite;
+  opacity: 0.8;
+}
+.doctor-frame,
+.promo-board,
+.visit-dossier {
+  isolation: isolate;
+}
+@keyframes orbit-breathe {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(-1.2rem, 1rem, 0) rotate(8deg);
+  }
+}
 @keyframes hero-enter {
   from {
     opacity: 0;
@@ -206,7 +234,8 @@
     scroll-behavior: auto;
   }
   .hero-enter,
-  .hero-caption {
+  .hero-caption,
+  .atlas-orbit {
     animation: none;
   }
   .reveal {
