@@ -213,7 +213,7 @@ export default function HomePage() {
             </div>
           </Reveal>
 
-          <div className="mt-16 grid grid-cols-1 gap-4 md:grid-cols-12 md:auto-rows-[11rem]">
+          <div className="mt-16 grid grid-cols-1 gap-4 md:grid-cols-12 md:auto-rows-[12rem]">
             {signatureCategories.map((category, index) => (
               <Reveal
                 key={category.slug}
@@ -463,18 +463,20 @@ function PhotoServiceCard({
     <Link
       href={`/${category.slug}`}
       className={cn(
-        'group relative block h-full min-h-[14rem] overflow-hidden bg-olive-deep shadow-[0_18px_50px_rgb(38_40_31/0.08)] transition-[transform,box-shadow] duration-500 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgb(38_40_31/0.14)]',
-        compact ? 'rounded-none shadow-none hover:translate-y-0 hover:shadow-none' : 'rounded-[1.5rem]',
+        'group relative block h-full min-h-0 overflow-hidden bg-olive-deep shadow-[0_18px_50px_rgb(38_40_31/0.08)] transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_24px_60px_rgb(38_40_31/0.14)] active:scale-[0.99]',
+        compact ? 'min-h-[14rem] rounded-none shadow-none hover:translate-y-0 hover:shadow-none' : 'rounded-[1.5rem]',
       )}
     >
-      <Image
-        src={imageSrc!}
-        alt={hasSemanticImage ? category.heroAlt! : ''}
-        aria-hidden={hasSemanticImage ? undefined : 'true'}
-        fill
-        sizes="(min-width: 768px) 50vw, 100vw"
-        className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-      />
+      {imageSrc ? (
+        <Image
+          src={imageSrc}
+          alt={hasSemanticImage ? category.heroAlt! : ''}
+          aria-hidden={hasSemanticImage ? undefined : 'true'}
+          fill
+          sizes="(min-width: 768px) 50vw, 100vw"
+          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+        />
+      ) : null}
       <div className="absolute inset-0 bg-gradient-to-t from-olive-deep/90 via-olive-deep/10 to-transparent transition-colors group-hover:from-olive-deep/95" />
       <div className={cn('relative flex h-full flex-col justify-between p-6', compact && 'p-5')}>
         <span className="font-serif text-sm text-sand/60">{String(index).padStart(2, '0')}</span>
