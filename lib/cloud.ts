@@ -63,6 +63,11 @@ export default cloudinaryLoader;
 export const cloudAssets = {
   logo: 'kazumi-clinic/logo',
   heroHome: 'kazumi-clinic/hero-home',
+  heroFiller: 'kazumi-clinic/hero-filler',
+  heroIvDrip1: 'kazumi-clinic/hero-iv-drip-1',
+  heroIvDrip2: 'kazumi-clinic/hero-iv-drip-2',
+  heroIvDrip3: 'kazumi-clinic/hero-iv-drip-3',
+  heroSkinBooster: 'kazumi-clinic/hero-skin-booster',
 } as const;
 
 // `logo` is a 1500x1500 asset with the flower mark up top and "KAZUMI CLINIC" wordmark

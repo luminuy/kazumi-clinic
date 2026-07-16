@@ -1,21 +1,41 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 // Editorial page header shared by all inner pages: dark forest band, breadcrumb,
-// uppercase eyebrow, oversized serif title, optional lead paragraph.
+// uppercase eyebrow, oversized serif title, optional lead paragraph. Pass `image`
+// (a Cloudinary public ID) to show a full-bleed photo behind the text instead of
+// the flat olive-deep background.
 export function PageHero({
   eyebrow,
   title,
   lead,
   breadcrumb,
+  image,
 }: {
   eyebrow?: string;
   title: string;
   lead?: string;
   breadcrumb: { name: string; href?: string }[];
+  image?: string;
 }) {
   return (
-    <section className="bg-olive-deep px-6 pb-16 pt-28 text-sand">
-      <div className="mx-auto max-w-6xl">
+    <section className="relative overflow-hidden bg-olive-deep px-6 pb-16 pt-28 text-sand">
+      {image && (
+        <>
+          <Image
+            src={image}
+            alt=""
+            aria-hidden="true"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover opacity-90"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-olive-deep via-olive-deep/85 to-olive-deep/55" />
+        </>
+      )}
+
+      <div className="relative mx-auto max-w-6xl">
         <nav className="flex flex-wrap items-center gap-1.5 text-xs text-sand/50">
           {breadcrumb.map((b, i) => (
             <span key={b.name} className="flex items-center gap-1.5">

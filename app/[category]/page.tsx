@@ -64,6 +64,7 @@ export default async function ServiceCategoryPage({ params }: Props) {
         eyebrow={service.titleEn}
         title={service.title}
         lead={service.description}
+        image={service.heroImage}
         breadcrumb={[
           { name: 'หน้าหลัก', href: '/' },
           { name: 'บริการ', href: '/services' },
