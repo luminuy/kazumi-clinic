@@ -4,6 +4,12 @@
   "main": ".open-next/worker.js",
   "compatibility_date": "2025-01-01",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  // Served from *.workers.dev until a real domain is pointed here — app/robots.ts reads this to
+  // block all crawling, because every canonical/sitemap/JSON-LD URL still says kazumiclinic.com.
+  // DELETE this var the moment a real domain is live, or the real site ships uncrawlable.
+  "vars": {
+    "SITE_ENV": "preview"
+  },
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
@@ -30,11 +36,14 @@
       "new_sqlite_classes": ["DOQueueHandler"]
     }
   ],
-  // Run `wrangler r2 bucket create kazumi-clinic-cache` then update bucket_name below.
-  "r2_buckets": [
+  // ISR page cache. KV, not R2: R2 isn't enabled on this account (API code 10042 — enabling it
+  // is a dashboard action) and KV already works. Namespace created 2026-07-17 via
+  // `wrangler kv namespace create kazumi-clinic-inc-cache` — its own namespace, NOT shared with
+  // littlesmileflower's NEXT_INC_CACHE_KV, or the two sites would overwrite each other's pages.
+  "kv_namespaces": [
     {
-      "binding": "NEXT_INC_CACHE_R2_BUCKET",
-      "bucket_name": "kazumi-clinic-cache"
+      "binding": "NEXT_INC_CACHE_KV",
+      "id": "ab93a3d280094041aeab80a8d8f4f87d"
     }
   ],
   // D1 created 2026-07-16 (region APAC) via `wrangler d1 create kazumi-clinic-tag-cache`.
