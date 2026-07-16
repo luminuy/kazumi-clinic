@@ -25,8 +25,7 @@ export const site = {
     postalCode: '10110',
     country: 'TH',
   },
-  addressFull:
-    '1558 โครงการไดมอนด์คอนโด ถนนสุขุมวิท แขวงพระโขนงเหนือ เขตวัฒนา กรุงเทพมหานคร 10110',
+  addressFull: '1558 โครงการไดมอนด์คอนโด ถนนสุขุมวิท แขวงพระโขนงเหนือ เขตวัฒนา กรุงเทพมหานคร 10110',
   mapsUrl:
     'https://www.google.com/maps/search/?api=1&query=Kazumi%20Clinic%201558%20Sukhumvit%20Road%20Bangkok',
   mapsEmbedUrl:
@@ -59,3 +58,16 @@ export const site = {
     short: 'ทุกวัน 9:00–22:00 (อาทิตย์ 9:00–17:00)',
   },
 } as const;
+
+/**
+ * True while the site is served from somewhere that isn't its real domain — currently the
+ * workers.dev deploy that exists because kazumiclinic.com isn't confirmed ours yet.
+ *
+ * Everything SEO-facing (canonical, sitemap, JSON-LD @id) is built from `site.url`, so on a
+ * preview host every one of those URLs points somewhere other than the page being served. That's
+ * fine only as long as no crawler is allowed in — see app/robots.ts. Set by SITE_ENV in
+ * wrangler.jsonc; remove that var when a real domain is pointed at the Worker.
+ */
+export function isPreviewDeploy() {
+  return process.env.SITE_ENV === 'preview';
+}
