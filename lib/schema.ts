@@ -46,6 +46,14 @@ export const clinicSchema = {
     opens: h.open,
     closes: h.close,
   })),
+  // The clinic's licensed physicians — `identifier` carries the แพทยสภา ว. number, which is
+  // the credential a search engine (or a patient) can actually verify us on.
+  employee: site.doctors.map((doctor) => ({
+    '@type': 'Physician',
+    name: doctor.name,
+    jobTitle: doctor.role,
+    identifier: doctor.licenseNo,
+  })),
   sameAs: [site.facebook, site.instagram, site.lineUrl].filter(Boolean),
 };
 
@@ -56,6 +64,8 @@ export const doctorSchema = {
   givenName: doctor.givenName,
   familyName: doctor.familyName,
   jobTitle: doctor.role,
+  alternateName: doctor.nameTh,
+  identifier: doctor.licenseNo,
   image: `${site.url}${doctor.image}`,
   worksFor: { '@id': `${site.url}/#business` },
   alumniOf: doctor.education.map((item) => ({

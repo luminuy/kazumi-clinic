@@ -14,6 +14,8 @@ export type ServiceItem = {
   /** Omit when the clinic hasn't published a fixed price — the UI shows "สอบถามราคา" instead. */
   priceFrom?: number;
   unit: string;
+  /** Sub-heading this item sits under, e.g. the IV Drip "Essential Glow Collection". */
+  collection?: string;
 };
 
 export type ServiceCategory = {
@@ -27,6 +29,8 @@ export type ServiceCategory = {
    * Also the source of the page's OG image — see `serviceOgImage`.
    */
   heroImage?: string;
+  /** Describes what `heroImage` actually shows — required alongside it (CLAUDE.md §8). */
+  heroAlt?: string;
   items: ServiceItem[];
 };
 
@@ -39,6 +43,7 @@ export const serviceCategories: ServiceCategory[] = [
     description:
       'บริการฟิลเลอร์กรดไฮยาลูรอนิกจากแบรนด์คุณภาพ สำหรับโครงหน้า ร่องแก้ม ร่องน้ำหมาก และริมฝีปาก โดยแพทย์ของ Kazumi Clinic เป็นผู้ประเมินก่อนรับบริการ',
     heroImage: cloudAssets.heroFiller,
+    heroAlt: 'ใบหน้าด้านข้างของผู้หญิง เห็นริมฝีปากและกรอบหน้าชัด ในแสงธรรมชาติโทนเขียว',
     items: [
       { name: 'Neura Deep', detail: '1 CC', priceFrom: 3990, unit: 'ครั้ง' },
       { name: 'Neura Deep', detail: '3 CC', priceFrom: 9990, unit: 'ครั้ง' },
@@ -62,9 +67,7 @@ export const serviceCategories: ServiceCategory[] = [
       'ฉีดโบทูลินั่มท็อกซินโดยแพทย์ ลดริ้วรอยบนใบหน้า ปรับกราม ลดเหงื่อ และกำหนดขนาดยาเฉพาะบุคคล',
     // TODO: no hero photo in Cloudinary yet, so this page ships without an OG image.
     // Upload one and set `heroImage` to give it a link preview.
-    items: [
-      { name: 'Botulinum Toxin Neuro', detail: '100 U', priceFrom: 8990, unit: 'ครั้ง' },
-    ],
+    items: [{ name: 'Botulinum Toxin Neuro', detail: '100 U', priceFrom: 8990, unit: 'ครั้ง' }],
   },
   {
     slug: 'iv-drip',
@@ -74,52 +77,59 @@ export const serviceCategories: ServiceCategory[] = [
     description:
       'โปรแกรม IV Drip วิตามินสูตรเฉพาะของ Kazumi Clinic ช่วยปรับโทนสีผิว ลดเม็ดสี กระตุ้นคอลลาเจน และชะลอความเสื่อมของผิวจากแสงแดด',
     heroImage: cloudAssets.heroIvDrip1,
+    heroAlt: 'ใบหน้าผู้หญิงถ่ายตรงหน้าในแสงนุ่ม ผิวเรียบเนียนกระจ่างใส',
+    // The seven programs and prices below replace the clinic's older IV menu (Signature
+    // Flawless / Radiant Bright / Active & Refresh / Velvet Glow). Per the NavBar spec this
+    // collection is "verified ครบ 100%" from Kazumi's own poster, and unlike the filler and
+    // botox figures these are catalogue prices, not May promo prices — so they're safe to show.
     items: [
       {
-        name: 'Signature Flawless',
+        collection: 'Essential Glow Collection',
+        name: 'Aura Bright Express',
         detail: 'IV Drip Vitamin',
-        tagline: 'The Masterpiece of Skin Perfection',
-        benefits: [
-          'ช่วยปรับโทนสีผิวสว่าง',
-          'ลดปัญหาเม็ดสี ฝ้า กระ',
-          'กระตุ้นคอลลาเจน',
-          'ชะลอการเสื่อมของผิวจากแสง UV',
-        ],
+        priceFrom: 499,
         unit: 'ครั้ง',
       },
       {
-        name: 'Radiant Bright',
+        collection: 'Essential Glow Collection',
+        name: 'Snow White Intensive',
         detail: 'IV Drip Vitamin',
-        tagline: 'The Shield for Radiant Skin',
-        benefits: [
-          'ผิวกระจ่างใส ลดรอยดำ-แดง',
-          'กระตุ้นคอลลาเจน',
-          'ฟื้นฟูผิวเสียจากแสงแดด',
-          'ขจัดสารพิษในชั้นผิว',
-        ],
+        priceFrom: 699,
         unit: 'ครั้ง',
       },
       {
-        name: 'Active & Refresh',
+        collection: 'Essential Glow Collection',
+        name: 'Detox Restore',
         detail: 'IV Drip Vitamin',
-        tagline: 'Refresh and Rebalance Your Body',
-        benefits: [
-          'มีสารต้านอนุมูลอิสระ',
-          'ช่วยให้ร่างกายฟื้นตัว',
-          'คืนความสดชื่น ลดอาการอ่อนเพลีย',
-          'ช่วยให้ผิวพรรณสดใส',
-        ],
+        priceFrom: 690,
         unit: 'ครั้ง',
       },
       {
-        name: 'Velvet Glow',
+        collection: 'Recovery & Energy Collection',
+        name: 'Energy Reset',
         detail: 'IV Drip Vitamin',
-        tagline: 'การดูแลตัวเองจากภายใน',
-        benefits: [
-          'ฟื้นฟูความสดชื่นเปล่งปลั่ง ไม่โทรม',
-          'เติมความชุ่มชื้น ผิวเนียนละเอียด',
-          'เสริมเกราะป้องกันผิวจากมลภาวะ',
-        ],
+        priceFrom: 690,
+        unit: 'ครั้ง',
+      },
+      {
+        collection: 'Recovery & Energy Collection',
+        name: 'ALA Metabolic Glow',
+        detail: 'IV Drip Vitamin',
+        priceFrom: 990,
+        unit: 'ครั้ง',
+      },
+      {
+        collection: 'Signature Collection',
+        name: 'Super Max Signature',
+        detail: 'IV Drip Vitamin',
+        priceFrom: 1290,
+        unit: 'ครั้ง',
+      },
+      {
+        collection: 'Signature Collection',
+        name: 'Premium Bespoke',
+        detail: 'โปรแกรมเฉพาะบุคคล',
+        priceFrom: 1990,
         unit: 'ครั้ง',
       },
     ],
@@ -132,6 +142,7 @@ export const serviceCategories: ServiceCategory[] = [
     description:
       'สกินบูสเตอร์เกรดพรีเมียม ฟื้นฟูเซลล์ผิวจากภายใน กระตุ้นการสร้างคอลลาเจนใหม่ เหมาะกับผิวโทรม ผิวขาดน้ำ',
     heroImage: cloudAssets.heroSkinBooster,
+    heroAlt: 'ใบหน้าผู้หญิงท่ามกลางเงาใบไม้และแสงแดดอ่อน',
     items: [
       {
         name: 'Oxelle Skin Booster',
@@ -145,7 +156,6 @@ export const serviceCategories: ServiceCategory[] = [
         ],
         unit: 'ครั้ง',
       },
-      { name: 'NCTF 135 HA + Oxelle', detail: 'โปรแกรมคู่', unit: 'ครั้ง' },
     ],
   },
   {
@@ -171,6 +181,72 @@ export const serviceCategories: ServiceCategory[] = [
         unit: 'ครั้ง',
       },
     ],
+  },
+  // ── Categories below come from the "Kazumi NavBar Structure Final" spec (2026-07-16). ──
+  // That spec's own dev checklist says: "เช็คทะเบียน อย. ของแบรนด์ยา/ฟิลเลอร์ทุกตัวก่อนขึ้นชื่อ
+  // เฉพาะเจาะจงบนเว็บสาธารณะ — ถ้ายังไม่ชัวร์ ใช้ชื่อหมวดบริการแทนชั่วคราว". Every SKU it marks
+  // 🔄 ("ref. เดิม — รอ confirm") is therefore listed here under a generic programme name, not a
+  // brand name. Swap in the real SKUs once the clinic confirms each one's อย. registration.
+  {
+    slug: 'thread-lift',
+    title: 'ร้อยไหมกระชับใบหน้า',
+    titleEn: 'Thread Lift',
+    shortDescription: 'ยกกระชับผิวหน้าด้วยไหมละลาย PDO โดยแพทย์',
+    description:
+      'โปรแกรมร้อยไหมกระชับใบหน้าด้วยไหมละลาย PDO ประเมินจำนวนเส้นและตำแหน่งโดยแพทย์ตามโครงหน้าของแต่ละบุคคล',
+    // TODO: no hero photo in Cloudinary yet, so this page ships without an OG image.
+    // Upload one and set `heroImage` to give it a link preview.
+    items: [
+      { name: 'ไหมก้างปลา PDO', detail: '4 เส้น', unit: 'ครั้ง' },
+      { name: 'ไหมก้างปลา PDO', detail: '6 เส้น', unit: 'ครั้ง' },
+      { name: 'ไหมก้างปลา PDO', detail: '8 เส้น', unit: 'ครั้ง' },
+    ],
+  },
+  {
+    slug: 'mesotherapy',
+    title: 'เมโสบำรุงผิวและเมโสแฟต',
+    titleEn: 'Mesotherapy',
+    shortDescription: 'เมโสบำรุงผิวและเมโสสลายไขมันเฉพาะจุด โดยแพทย์',
+    description:
+      'โปรแกรมเมโสเธอราปีของ Kazumi Clinic ทั้งเมโสบำรุงผิวและเมโสสลายไขมันเฉพาะจุด เลือกสูตรและประเมินความเหมาะสมโดยแพทย์',
+    // TODO: no hero photo in Cloudinary yet, so this page ships without an OG image.
+    // Upload one and set `heroImage` to give it a link preview.
+    items: [
+      { name: 'NCTF 135 HA + Oxelle', detail: 'โปรแกรมคู่', unit: 'ครั้ง' },
+      {
+        name: 'White Complex',
+        detail: 'Nexus Pharma',
+        benefits: ['ฟื้นฟูผิว ลดริ้วรอย ฝ้า กระ ด้วยกลูต้าไธโอนบริสุทธิ์'],
+        unit: 'ครั้ง',
+      },
+      { name: 'เมโสบำรุงผิว', detail: 'เลือกสูตรตามสภาพผิว', unit: 'ครั้ง' },
+      { name: 'เมโสสลายไขมันเฉพาะจุด', detail: 'แก้ม / เหนียง', unit: 'ครั้ง' },
+    ],
+  },
+  {
+    slug: 'acne-care',
+    title: 'ดูแลสิวและหลุมสิว',
+    titleEn: 'Acne & Acne Scar Care',
+    shortDescription: 'โปรแกรมรักษาสิวและฟื้นฟูหลุมสิว ประเมินโดยแพทย์',
+    description:
+      'โปรแกรมดูแลสิวและหลุมสิวของ Kazumi Clinic แบ่งระดับตามความรุนแรงของปัญหา ประเมินและออกแบบแผนการรักษาโดยแพทย์',
+    // TODO: no hero photo in Cloudinary yet, so this page ships without an OG image.
+    // Upload one and set `heroImage` to give it a link preview.
+    items: [
+      { name: 'โปรแกรมดูแลสิว', detail: 'แบ่งระดับตามความรุนแรง', unit: 'ครั้ง' },
+      { name: 'โปรแกรมฟื้นฟูหลุมสิว', detail: 'ประเมินโดยแพทย์', unit: 'ครั้ง' },
+    ],
+  },
+  {
+    slug: 'laser-hifu',
+    title: 'เลเซอร์และยกกระชับ',
+    titleEn: 'Laser & HIFU Lifting',
+    shortDescription: 'ยกกระชับผิวด้วยเครื่องมือแพทย์ HIFU',
+    description:
+      'โปรแกรมยกกระชับผิวหน้าด้วยเครื่องมือแพทย์ HIFU และเลเซอร์ ประเมินระดับพลังงานและตำแหน่งที่เหมาะสมโดยแพทย์',
+    // TODO: no hero photo in Cloudinary yet, so this page ships without an OG image.
+    // Upload one and set `heroImage` to give it a link preview.
+    items: [{ name: 'HIFU ยกกระชับผิวหน้า', detail: 'ประเมินโดยแพทย์', unit: 'ครั้ง' }],
   },
 ];
 

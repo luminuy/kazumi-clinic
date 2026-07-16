@@ -82,6 +82,9 @@ export default function AboutPage() {
               </p>
               <h2 className="mt-2 font-serif text-4xl text-olive-deep md:text-5xl">{doctor.name}</h2>
               <p className="mt-5 leading-relaxed text-ink/70">{doctor.summary}</p>
+              <p className="mt-3 text-xs text-ink/50">
+                {doctor.nameTh} · ใบประกอบวิชาชีพเวชกรรมเลขที่ {doctor.licenseNo}
+              </p>
 
               <div className="mt-8 grid gap-6 sm:grid-cols-2">
                 <div>

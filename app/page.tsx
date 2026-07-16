@@ -28,13 +28,23 @@ import { cn } from '@/lib/utils';
 
 const faqs = [
   {
-    question: 'Kazumi Clinic ให้บริการอะไรบ้าง?',
+    question: `${site.name} ให้บริการอะไรบ้าง?`,
     answer:
-      'Kazumi Clinic ให้บริการฟิลเลอร์ โบท็อกซ์ สกินบูสเตอร์ คอลลาเจนบูสเตอร์ และ IV Drip วิตามิน โดยแพทย์เป็นผู้ประเมินก่อนรับบริการ',
+      `${site.name} ให้บริการ${serviceCategories.map((c) => c.title).join(' ')} โดยแพทย์เป็นผู้ประเมินก่อนรับบริการ`,
   },
   {
     question: 'คลินิกเปิดกี่โมงถึงกี่โมง?',
     answer: `${site.hoursDisplay.weekdays} และ${site.hoursDisplay.sunday}`,
+  },
+  {
+    question: 'คลินิกอยู่ที่ไหน?',
+    answer: `${site.name} ตั้งอยู่ที่ ${site.addressFull} ใบอนุญาตสถานพยาบาลเลขที่ ${site.license}`,
+  },
+  {
+    question: 'ใครเป็นผู้ทำหัตถการ?',
+    answer: `หัตถการดำเนินการโดยแพทย์ผู้มีใบประกอบวิชาชีพเวชกรรม — ${site.doctors
+      .map((d) => `${d.name} (เลขที่ ${d.licenseNo})`)
+      .join(', ')}`,
   },
   {
     question: 'จองคิวได้ที่ไหน?',
@@ -73,16 +83,23 @@ export default function HomePage() {
               <span className="h-px w-10 bg-clay" />
               สถานเสริมความงาม · สุขุมวิท กรุงเทพฯ
             </div>
-            <h1 className="mt-8 font-serif text-[13vw] leading-[0.95] tracking-tight text-olive-deep sm:text-6xl md:text-[3.75rem] lg:text-7xl">
-              Where balance
-              <br />
-              <span className="text-clay">purity</span> becomes
-              <br />
-              eternal beauty.
+            <h1 className="mt-8">
+              <span
+                lang="en"
+                className="block font-serif text-[13vw] leading-[0.95] tracking-tight text-olive-deep sm:text-6xl md:text-[3.75rem] lg:text-7xl"
+              >
+                Where balance
+                <br />
+                <span className="text-clay">purity</span> becomes
+                <br />
+                eternal beauty.
+              </span>
+              <span className="mt-7 block max-w-md text-sm font-normal leading-relaxed text-ink/70">
+                {site.description}
+              </span>
             </h1>
-            <p className="mt-8 max-w-md text-sm leading-relaxed text-ink/70">
-              純粋さは永遠の美へ — {site.taglineTh} ดูแลทุกหัตถการโดยแพทย์
-              ในบรรยากาศคลินิกที่สงบและเป็นส่วนตัว
+            <p className="mt-5 font-serif text-sm italic tracking-wide text-olive-light">
+              <span lang="ja">{site.taglineJa}</span> — <span lang="en">{site.taglineTh}</span>
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-4">
               <Button
@@ -174,6 +191,9 @@ export default function HomePage() {
             <div className="absolute inset-x-4 bottom-4 rounded-2xl bg-cream/90 p-4 backdrop-blur">
               <p className="font-serif text-xl text-olive-deep">{doctor.name}</p>
               <p className="mt-0.5 text-xs text-ink/55">{doctor.role}</p>
+              <p className="mt-1 text-[0.68rem] text-ink/45">
+                ใบประกอบวิชาชีพเวชกรรมเลขที่ {site.doctors[0].licenseNo}
+              </p>
             </div>
           </Reveal>
 

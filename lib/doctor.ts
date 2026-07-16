@@ -2,6 +2,8 @@
 // date of birth, personal phone number, and email out of the website.
 export const doctor = {
   name: 'Dr. Pratch Achawanitkun',
+  nameTh: 'นายแพทย์ปราชญ์ อาชวนิจกุล',
+  licenseNo: 'ว.75302',
   givenName: 'Pratch',
   familyName: 'Achawanitkun',
   role: 'แพทย์ด้านเวชศาสตร์ความงาม',

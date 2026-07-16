@@ -20,13 +20,13 @@ export const site = {
     line1: '1558 โครงการไดมอนด์คอนโด',
     street: 'ถนนสุขุมวิท',
     subdistrict: 'แขวงพระโขนงเหนือ',
-    district: 'เขตคลองเตย',
+    district: 'เขตวัฒนา',
     province: 'กรุงเทพมหานคร',
     postalCode: '10110',
     country: 'TH',
   },
   addressFull:
-    '1558 โครงการไดมอนด์คอนโด ถนนสุขุมวิท แขวงพระโขนงเหนือ เขตคลองเตย กรุงเทพมหานคร 10110',
+    '1558 โครงการไดมอนด์คอนโด ถนนสุขุมวิท แขวงพระโขนงเหนือ เขตวัฒนา กรุงเทพมหานคร 10110',
   mapsUrl:
     'https://www.google.com/maps/search/?api=1&query=Kazumi%20Clinic%201558%20Sukhumvit%20Road%20Bangkok',
   mapsEmbedUrl:
@@ -36,6 +36,14 @@ export const site = {
     lng: 100.59685397496709,
   },
   license: 'มสพ.สบส.338/2569',
+  doctors: [
+    {
+      name: 'นายแพทย์ปราชญ์ อาชวนิจกุล',
+      nickname: 'คุณหมอโอ๊ต',
+      licenseNo: 'ว.75302',
+      role: 'ผู้ออกแบบโปรแกรมฟิลเลอร์ปรับรูปหน้า',
+    },
+  ],
   hours: [
     { day: 'Monday', open: '09:00', close: '22:00' },
     { day: 'Tuesday', open: '09:00', close: '22:00' },
