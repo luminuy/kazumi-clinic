@@ -1,14 +1,15 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowUpRight, ArrowRight, MapPin, Clock, Phone } from 'lucide-react';
+import { ArrowUpRight, ArrowRight, MapPin, Clock, Phone, CircleHelp } from 'lucide-react';
 import { site } from '@/lib/site';
-import { serviceCategories } from '@/lib/services';
+import { serviceCategories, type ServiceCategory } from '@/lib/services';
 import { faqSchema } from '@/lib/schema';
 import { cloudAssets } from '@/lib/cloud';
 import { Button } from '@/components/ui/button';
 import { ServiceIcon } from '@/components/service-icon';
 import { Reveal } from '@/components/reveal';
 import { Marquee } from '@/components/marquee';
+import { cn } from '@/lib/utils';
 
 const faqs = [
   {
@@ -25,6 +26,16 @@ const faqs = [
     answer: `จองคิวผ่าน LINE Official Account ได้ที่ ${site.lineUrl} หรือโทร ${site.phone}`,
   },
 ];
+
+// Desktop bento placement — a tall feature for the first photo category, two stacked
+// beside it, then a wide pair along the bottom. Order follows serviceCategories.
+const gridSpan: Record<string, string> = {
+  filler: 'md:col-span-7 md:row-span-2',
+  botox: 'md:col-span-5',
+  'iv-drip': 'md:col-span-5',
+  'skin-booster': 'md:col-span-7',
+  'collagen-booster': 'md:col-span-5',
+};
 
 export default function HomePage() {
   return (
@@ -93,7 +104,7 @@ export default function HomePage() {
         />
       </div>
 
-      {/* ── Services ──────────────────────────────────────────── */}
+      {/* ── Services — photo-led bento ───────────────────────── */}
       <section className="mx-auto max-w-6xl px-6 py-24">
         <Reveal className="flex items-end justify-between gap-6">
           <div>
@@ -108,53 +119,58 @@ export default function HomePage() {
           </Link>
         </Reveal>
 
-        <div className="mt-14 divide-y divide-olive/15 border-y border-olive/15">
+        <div className="mt-14 grid grid-cols-1 gap-5 md:grid-cols-12 md:auto-rows-[13rem]">
           {serviceCategories.map((c, i) => (
-            <Reveal key={c.slug} delay={i * 60}>
-              <Link
-                href={`/${c.slug}`}
-                className="group flex items-center gap-6 py-7 transition-colors hover:bg-cream/60"
-              >
-                <span className="w-10 font-serif text-sm text-olive-light">
-                  {String(i + 1).padStart(2, '0')}
-                </span>
-                <ServiceIcon
-                  slug={c.slug}
-                  className="size-6 shrink-0 text-olive transition-transform group-hover:scale-110"
-                />
-                <div className="min-w-0 flex-1">
-                  <p className="font-serif text-2xl text-olive-deep">{c.title}</p>
-                  <p className="mt-1 truncate text-sm text-ink/60">{c.shortDescription}</p>
-                </div>
-                <span className="hidden text-xs uppercase tracking-widest text-olive-light md:block">
-                  {c.titleEn}
-                </span>
-                <ArrowUpRight className="size-6 shrink-0 text-olive-light transition-transform group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-olive" />
-              </Link>
+            <Reveal
+              key={c.slug}
+              delay={i * 70}
+              className={cn('min-h-[16rem] md:min-h-0', gridSpan[c.slug])}
+            >
+              {c.heroImage ? (
+                <PhotoServiceCard category={c} index={i + 1} />
+              ) : (
+                <TextServiceCard category={c} index={i + 1} />
+              )}
             </Reveal>
           ))}
         </div>
       </section>
 
-      {/* ── Philosophy strip ──────────────────────────────────── */}
-      <section className="bg-olive-deep px-6 py-28 text-sand">
-        <div className="mx-auto max-w-5xl">
-          <Reveal>
+      {/* ── Editorial spread ──────────────────────────────────── */}
+      <section className="bg-olive-deep px-6 py-24 text-sand md:py-28">
+        <div className="mx-auto grid max-w-6xl gap-12 md:grid-cols-2 md:items-center md:gap-16">
+          <Reveal className="order-2 md:order-1">
             <span className="text-xs uppercase tracking-[0.3em] text-sand/50">(02) ปรัชญา</span>
             <p className="mt-8 font-serif text-3xl leading-snug md:text-5xl md:leading-[1.15]">
               ความงามที่แท้จริงเกิดจาก
-              <span className="text-clay"> ความสมดุลและความบริสุทธิ์</span> —
-              เราเชื่อในการปรับแต่งอย่างพอดี ให้ผลลัพธ์ที่เป็นธรรมชาติที่สุด
+              <span className="text-clay"> ความสมดุลและความบริสุทธิ์</span>
             </p>
-            <p className="mt-8 text-sm text-sand/50">純粋さは永遠の美へ</p>
+            <p className="mt-6 max-w-md text-sm leading-relaxed text-sand/70">
+              เราเชื่อในการปรับแต่งอย่างพอดี ให้ผลลัพธ์ที่เป็นธรรมชาติที่สุด
+              ดูแลโดยแพทย์ผู้เชี่ยวชาญ ในบรรยากาศคลินิกที่สงบและเป็นส่วนตัว
+            </p>
+            <p className="mt-8 font-serif italic text-sand/40">純粋さは永遠の美へ</p>
+          </Reveal>
+          <Reveal
+            delay={100}
+            className="relative order-1 aspect-[4/5] overflow-hidden rounded-2xl md:order-2 md:aspect-[3/4]"
+          >
+            <Image
+              src={cloudAssets.heroIvDrip2}
+              alt=""
+              aria-hidden="true"
+              fill
+              sizes="(min-width: 768px) 40vw, 90vw"
+              className="object-cover"
+            />
           </Reveal>
         </div>
       </section>
 
       {/* ── Hours / FAQ ───────────────────────────────────────── */}
       <section className="mx-auto max-w-6xl px-6 py-24">
-        <div className="grid gap-16 md:grid-cols-2">
-          <Reveal>
+        <div className="grid gap-6 md:grid-cols-2">
+          <Reveal className="rounded-2xl border border-olive/15 bg-cream p-8 md:p-10">
             <span className="text-xs uppercase tracking-[0.3em] text-olive-light">
               (03) เวลาทำการ &amp; ที่อยู่
             </span>
@@ -178,15 +194,18 @@ export default function HomePage() {
             </ul>
           </Reveal>
 
-          <Reveal delay={80}>
+          <Reveal delay={80} className="rounded-2xl border border-olive/15 bg-cream p-8 md:p-10">
             <span className="text-xs uppercase tracking-[0.3em] text-olive-light">
               (04) คำถามที่พบบ่อย
             </span>
-            <dl className="mt-8 divide-y divide-olive/15 border-t border-olive/15">
+            <dl className="mt-8 divide-y divide-olive/15">
               {faqs.map((f) => (
-                <div key={f.question} className="py-5">
-                  <dt className="font-serif text-lg text-olive-deep">{f.question}</dt>
-                  <dd className="mt-2 text-sm text-ink/70">{f.answer}</dd>
+                <div key={f.question} className="py-5 first:pt-0 last:pb-0">
+                  <dt className="flex items-start gap-2 font-serif text-lg text-olive-deep">
+                    <CircleHelp className="mt-1 size-4 shrink-0 text-olive-light" />
+                    {f.question}
+                  </dt>
+                  <dd className="mt-2 pl-6 text-sm text-ink/70">{f.answer}</dd>
                 </div>
               ))}
             </dl>
@@ -195,8 +214,9 @@ export default function HomePage() {
       </section>
 
       {/* ── CTA ───────────────────────────────────────────────── */}
-      <section className="border-t border-olive/15 bg-clay/25 px-6 py-24 text-center">
-        <Reveal>
+      <section className="relative overflow-hidden border-t border-olive/15 bg-clay/25 px-6 py-24 text-center">
+        <FlowerMark className="pointer-events-none absolute left-1/2 top-1/2 size-[42rem] -translate-x-1/2 -translate-y-1/2 text-olive/[0.06]" />
+        <Reveal className="relative">
           <h2 className="mx-auto max-w-2xl font-serif text-4xl text-olive-deep md:text-5xl">
             พร้อมเริ่มดูแลผิวของคุณแล้วหรือยัง?
           </h2>
@@ -211,5 +231,82 @@ export default function HomePage() {
         </Reveal>
       </section>
     </>
+  );
+}
+
+function PhotoServiceCard({ category, index }: { category: ServiceCategory; index: number }) {
+  return (
+    <Link
+      href={`/${category.slug}`}
+      className="group relative block h-full overflow-hidden rounded-2xl"
+    >
+      <Image
+        src={category.heroImage!}
+        alt=""
+        aria-hidden="true"
+        fill
+        sizes="(min-width: 768px) 50vw, 100vw"
+        className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-olive-deep/90 via-olive-deep/10 to-transparent transition-colors group-hover:from-olive-deep/95" />
+      <div className="relative flex h-full flex-col justify-between p-6">
+        <span className="font-serif text-sm text-sand/60">{String(index).padStart(2, '0')}</span>
+        <div>
+          <p className="text-xs uppercase tracking-[0.25em] text-clay">{category.titleEn}</p>
+          <p className="mt-1 flex items-center gap-2 font-serif text-2xl text-sand md:text-3xl">
+            {category.title}
+            <ArrowUpRight className="size-5 shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          </p>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+function TextServiceCard({ category, index }: { category: ServiceCategory; index: number }) {
+  return (
+    <Link
+      href={`/${category.slug}`}
+      className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl bg-olive-deep p-6 text-sand"
+    >
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute -right-3 -top-8 select-none font-serif text-[8rem] leading-none text-sand/[0.06]"
+      >
+        {String(index).padStart(2, '0')}
+      </span>
+      <ServiceIcon
+        slug={category.slug}
+        className="relative size-7 text-clay transition-transform group-hover:scale-110"
+      />
+      <div className="relative">
+        <p className="text-xs uppercase tracking-[0.25em] text-sand/50">{category.titleEn}</p>
+        <p className="mt-1 flex items-center gap-2 font-serif text-2xl text-sand">
+          {category.title}
+          <ArrowUpRight className="size-5 shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+        </p>
+        <p className="mt-2 text-sm text-sand/60">{category.shortDescription}</p>
+      </div>
+    </Link>
+  );
+}
+
+// Decorative echo of the brand mark — six overlapping petals, used as a faint
+// background texture rather than a literal logo reproduction.
+function FlowerMark({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 200 200" fill="none" className={className} aria-hidden="true">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <ellipse
+          key={i}
+          cx="100"
+          cy="60"
+          rx="28"
+          ry="44"
+          fill="currentColor"
+          transform={`rotate(${i * 60} 100 100)`}
+        />
+      ))}
+    </svg>
   );
 }
