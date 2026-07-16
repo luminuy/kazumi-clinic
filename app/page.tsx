@@ -52,8 +52,8 @@ const faqs = [
   },
 ];
 
-// Desktop bento placement — a tall feature for the first photo category, two stacked
-// beside it, then a wide pair along the bottom. Order follows serviceCategories.
+// The first five services are the clinic's signature menu and get the visual bento treatment.
+// The newer categories live in an editorial index below so every title stays readable.
 const gridSpan: Record<string, string> = {
   filler: 'md:col-span-7 md:row-span-2',
   botox: 'md:col-span-5',
@@ -61,6 +61,9 @@ const gridSpan: Record<string, string> = {
   'skin-booster': 'md:col-span-7',
   'collagen-booster': 'md:col-span-5',
 };
+
+const signatureCategories = serviceCategories.filter((category) => gridSpan[category.slug]);
+const additionalCategories = serviceCategories.filter((category) => !gridSpan[category.slug]);
 
 export const revalidate = 3600;
 
@@ -144,35 +147,99 @@ export default function HomePage() {
         />
       </div>
 
-      {/* ── Services — photo-led bento ───────────────────────── */}
-      <section className="mx-auto max-w-6xl px-6 py-24">
-        <Reveal className="flex items-end justify-between gap-6">
-          <div>
-            <span className="text-xs uppercase tracking-[0.3em] text-olive-light">(01) บริการ</span>
-            <h2 className="mt-3 font-serif text-4xl text-olive-deep md:text-5xl">บริการของเรา</h2>
-          </div>
-          <Link
-            href="/services"
-            className="hidden items-center gap-1 text-sm text-olive hover:text-olive-deep sm:flex"
-          >
-            ดูทั้งหมด <ArrowRight className="size-4" />
-          </Link>
-        </Reveal>
+      {/* ── Services — signature bento + editorial index ─────── */}
+      <section className="relative overflow-hidden border-y border-olive/10 bg-cream">
+        <FlowerMark className="pointer-events-none absolute -right-48 top-20 hidden size-[38rem] text-olive/[0.035] lg:block" />
+        <div className="relative mx-auto max-w-6xl px-6 py-24 md:py-32">
+          <Reveal className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-end lg:gap-16">
+            <div>
+              <div className="flex items-center gap-3 text-xs uppercase tracking-[0.3em] text-olive-light">
+                <span className="h-px w-10 bg-clay" />
+                01 / Treatment menu
+              </div>
+              <h2 className="mt-6 font-serif text-5xl leading-[0.92] tracking-tight text-olive-deep sm:text-6xl md:text-7xl">
+                บริการ
+                <br />
+                <span className="text-clay">ของเรา.</span>
+              </h2>
+            </div>
+            <div className="flex max-w-xl flex-col items-start gap-6 lg:pb-1">
+              <p className="text-sm leading-relaxed text-ink/65 md:text-base">
+                โปรแกรมดูแลความงามที่ออกแบบให้เหมาะกับเป้าหมายและสภาพผิวของแต่ละคน
+                เริ่มต้นด้วยการประเมินโดยแพทย์ ก่อนเลือกแนวทางที่พอดีและเป็นธรรมชาติ
+              </p>
+              <div className="flex flex-wrap items-center gap-4">
+                <Link
+                  href="/services"
+                  className="group inline-flex items-center gap-2 rounded-full bg-olive-deep px-5 py-3 text-sm text-sand transition-colors hover:bg-olive"
+                >
+                  ดูบริการทั้งหมด <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                </Link>
+                <span className="text-xs uppercase tracking-[0.2em] text-olive-light">
+                  {serviceCategories.length} โปรแกรมดูแล
+                </span>
+              </div>
+            </div>
+          </Reveal>
 
-        <div className="mt-14 grid grid-cols-1 gap-5 md:grid-cols-12 md:auto-rows-[13rem]">
-          {serviceCategories.map((c, i) => (
-            <Reveal
-              key={c.slug}
-              delay={i * 70}
-              className={cn('min-h-[16rem] md:min-h-0', gridSpan[c.slug])}
-            >
-              {c.heroImage ? (
-                <PhotoServiceCard category={c} index={i + 1} />
-              ) : (
-                <TextServiceCard category={c} index={i + 1} />
-              )}
+          <div className="mt-16 grid grid-cols-1 gap-4 md:grid-cols-12 md:auto-rows-[11rem]">
+            {signatureCategories.map((category, index) => (
+              <Reveal
+                key={category.slug}
+                delay={index * 70}
+                className={cn('min-h-[17rem] md:min-h-0', gridSpan[category.slug])}
+              >
+                {category.heroImage ? (
+                  <PhotoServiceCard category={category} index={index + 1} />
+                ) : (
+                  <TextServiceCard category={category} index={index + 1} />
+                )}
+              </Reveal>
+            ))}
+          </div>
+
+          {additionalCategories.length > 0 && (
+            <Reveal className="mt-20 grid gap-8 border-t border-olive/15 pt-10 lg:grid-cols-[0.7fr_1.3fr] lg:gap-16">
+              <div>
+                <div className="flex items-center gap-3 text-xs uppercase tracking-[0.3em] text-olive-light">
+                  <span className="h-px w-8 bg-clay" />
+                  02 / More care
+                </div>
+                <h3 className="mt-5 font-serif text-3xl leading-tight text-olive-deep md:text-4xl">
+                  ดูแลเพิ่มเติม
+                </h3>
+                <p className="mt-4 max-w-xs text-sm leading-relaxed text-ink/60">
+                  ทางเลือกสำหรับการดูแลผิวและรูปหน้าในรายละเอียดที่มากขึ้น
+                </p>
+              </div>
+
+              <div className="grid gap-x-8 sm:grid-cols-2">
+                {additionalCategories.map((category, index) => (
+                  <Link
+                    key={category.slug}
+                    href={`/${category.slug}`}
+                    className="group flex min-h-[9.5rem] items-start gap-4 border-b border-olive/15 py-5 transition-colors first:border-t first:border-olive/15"
+                  >
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-full border border-olive/15 text-olive transition-colors group-hover:border-clay group-hover:bg-clay">
+                      <ServiceIcon slug={category.slug} className="size-4" />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="flex items-start justify-between gap-2 text-[0.65rem] uppercase tracking-[0.2em] text-olive-light">
+                        {String(signatureCategories.length + index + 1).padStart(2, '0')} · {category.titleEn}
+                        <ArrowUpRight className="size-4 shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                      </span>
+                      <span className="mt-2 block font-serif text-xl leading-tight text-olive-deep">
+                        {category.title}
+                      </span>
+                      <span className="mt-2 block text-xs leading-relaxed text-ink/55">
+                        {category.shortDescription}
+                      </span>
+                    </span>
+                  </Link>
+                ))}
+              </div>
             </Reveal>
-          ))}
+          )}
         </div>
       </section>
 
@@ -447,12 +514,12 @@ function PhotoServiceCard({ category, index }: { category: ServiceCategory; inde
   return (
     <Link
       href={`/${category.slug}`}
-      className="group relative block h-full overflow-hidden rounded-2xl"
+      className="group relative block h-full overflow-hidden rounded-[1.5rem]"
     >
       <Image
         src={category.heroImage!}
-        alt=""
-        aria-hidden="true"
+        alt={category.heroAlt ?? ''}
+        aria-hidden={category.heroAlt ? undefined : 'true'}
         fill
         sizes="(min-width: 768px) 50vw, 100vw"
         className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
@@ -479,7 +546,7 @@ function TextServiceCard({ category, index }: { category: ServiceCategory; index
   return (
     <Link
       href={`/${category.slug}`}
-      className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl bg-olive-deep p-6 text-sand"
+      className="group relative flex h-full flex-col justify-between overflow-hidden rounded-[1.5rem] bg-olive-deep p-7 text-sand transition-colors duration-300 hover:bg-olive"
     >
       <span
         aria-hidden="true"
@@ -487,10 +554,9 @@ function TextServiceCard({ category, index }: { category: ServiceCategory; index
       >
         {String(index).padStart(2, '0')}
       </span>
-      <ServiceIcon
-        slug={category.slug}
-        className="relative size-7 text-clay transition-transform group-hover:scale-110"
-      />
+      <span className="relative flex size-11 items-center justify-center rounded-full border border-clay/30 text-clay transition-colors group-hover:border-clay group-hover:bg-clay group-hover:text-olive-deep">
+        <ServiceIcon slug={category.slug} className="size-5 transition-transform group-hover:scale-110" />
+      </span>
       <div className="relative">
         <p className="text-xs uppercase tracking-[0.25em] text-sand/50">{category.titleEn}</p>
         <p className="mt-1 flex items-center gap-2 font-serif text-2xl text-sand">
