@@ -1,8 +1,10 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowUpRight, ArrowRight, MapPin, Clock, Phone } from 'lucide-react';
 import { site } from '@/lib/site';
 import { serviceCategories } from '@/lib/services';
 import { faqSchema } from '@/lib/schema';
+import { cloudAssets } from '@/lib/cloud';
 import { Button } from '@/components/ui/button';
 import { ServiceIcon } from '@/components/service-icon';
 import { Reveal } from '@/components/reveal';
@@ -35,7 +37,18 @@ export default function HomePage() {
 
       {/* ── Hero ──────────────────────────────────────────────── */}
       <section className="relative flex min-h-[88vh] flex-col justify-between overflow-hidden bg-olive-deep px-6 pb-10 pt-24 text-sand">
-        <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center">
+        <Image
+          src={cloudAssets.heroHome}
+          alt=""
+          aria-hidden="true"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover opacity-90"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-olive-deep via-olive-deep/85 to-olive-deep/50" />
+
+        <div className="relative mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center">
           <div className="flex items-center gap-3 text-xs uppercase tracking-[0.35em] text-sand/60">
             <span className="h-px w-10 bg-clay" />
             สถานเสริมความงาม · สุขุมวิท กรุงเทพฯ
