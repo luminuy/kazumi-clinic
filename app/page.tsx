@@ -4,7 +4,7 @@ import { ArrowUpRight, ArrowRight, MapPin, Clock, Phone, CircleHelp } from 'luci
 import { site } from '@/lib/site';
 import { serviceCategories, type ServiceCategory } from '@/lib/services';
 import { faqSchema } from '@/lib/schema';
-import { cloudAssets } from '@/lib/cloud';
+import { cloudAssets, heroHomePortrait } from '@/lib/cloud';
 import { Button } from '@/components/ui/button';
 import { ServiceIcon } from '@/components/service-icon';
 import { Reveal } from '@/components/reveal';
@@ -47,51 +47,55 @@ export default function HomePage() {
       />
 
       {/* ── Hero ──────────────────────────────────────────────── */}
-      <section className="relative flex min-h-[88vh] flex-col justify-between overflow-hidden bg-olive-deep px-6 pb-10 pt-24 text-sand">
-        <Image
-          src={cloudAssets.heroHome}
-          alt=""
-          aria-hidden="true"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover opacity-90"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-olive-deep via-olive-deep/85 to-olive-deep/50" />
-
-        <div className="relative mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center">
-          <div className="flex items-center gap-3 text-xs uppercase tracking-[0.35em] text-sand/60">
-            <span className="h-px w-10 bg-clay" />
-            สถานเสริมความงาม · สุขุมวิท กรุงเทพฯ
+      <section className="bg-cream">
+        <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 md:grid-cols-[1fr_0.85fr] md:gap-14 md:py-24">
+          <div>
+            <div className="flex items-center gap-3 text-xs uppercase tracking-[0.35em] text-olive-light">
+              <span className="h-px w-10 bg-clay" />
+              สถานเสริมความงาม · สุขุมวิท กรุงเทพฯ
+            </div>
+            <h1 className="mt-8 font-serif text-[13vw] leading-[0.95] tracking-tight text-olive-deep sm:text-6xl md:text-[3.75rem] lg:text-7xl">
+              Where balance
+              <br />
+              <span className="text-clay">purity</span> becomes
+              <br />
+              eternal beauty.
+            </h1>
+            <p className="mt-8 max-w-md text-sm leading-relaxed text-ink/70">
+              純粋さは永遠の美へ — {site.taglineTh} ดูแลทุกหัตถการโดยแพทย์ผู้เชี่ยวชาญ
+              ในบรรยากาศคลินิกที่สงบและเป็นส่วนตัว
+            </p>
+            <div className="mt-10 flex flex-wrap items-center gap-4">
+              <Button
+                render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
+                size="lg"
+                className="rounded-full bg-line px-8 text-white hover:bg-line/90"
+              >
+                จองคิวผ่าน LINE
+                <ArrowUpRight className="size-4" />
+              </Button>
+              <Button
+                render={<Link href="/services" />}
+                variant="outline"
+                size="lg"
+                className="rounded-full border-olive/25 bg-transparent text-olive-deep hover:bg-olive/5"
+              >
+                ดูบริการทั้งหมด
+              </Button>
+            </div>
           </div>
-          <h1 className="mt-8 max-w-4xl font-serif text-[13vw] leading-[0.92] tracking-tight sm:text-7xl md:text-8xl">
-            Where balance
-            <br />
-            <span className="text-clay">purity</span> becomes
-            <br />
-            eternal beauty.
-          </h1>
-          <p className="mt-8 max-w-md text-sm leading-relaxed text-sand/70">
-            純粋さは永遠の美へ — {site.taglineTh} ดูแลทุกหัตถการโดยแพทย์ผู้เชี่ยวชาญ
-            ในบรรยากาศคลินิกที่สงบและเป็นส่วนตัว
-          </p>
-          <div className="mt-10 flex flex-wrap items-center gap-4">
-            <Button
-              render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
-              size="lg"
-              className="rounded-full bg-line px-8 text-white hover:bg-line/90"
-            >
-              จองคิวผ่าน LINE
-              <ArrowUpRight className="size-4" />
-            </Button>
-            <Button
-              render={<Link href="/services" />}
-              variant="outline"
-              size="lg"
-              className="rounded-full border-sand/30 bg-transparent text-sand hover:bg-sand/10 hover:text-sand"
-            >
-              ดูบริการทั้งหมด
-            </Button>
+
+          <div className="relative aspect-square overflow-hidden rounded-[2rem]">
+            <Image
+              src={heroHomePortrait}
+              alt=""
+              aria-hidden="true"
+              fill
+              priority
+              fetchPriority="high"
+              sizes="(min-width: 768px) 45vw, 90vw"
+              className="object-cover"
+            />
           </div>
         </div>
       </section>
