@@ -5,8 +5,9 @@ import { ArrowUpRight, Clock, MapPin, Phone } from 'lucide-react';
 import { site } from '@/lib/site';
 import { doctor } from '@/lib/doctor';
 import { cloudAssets } from '@/lib/cloud';
-import { getImageOverrides, getOgImage } from '@/lib/site-images-store';
+import { getImageOverrides } from '@/lib/site-images-store';
 import { categoryImageKey, posterKeyByDefaultId } from '@/lib/site-images';
+import { siteSocialImage } from '@/lib/metadata-images';
 import { promotionPosters } from '@/lib/promotions';
 import { serviceCategories, type ServiceCategory } from '@/lib/services';
 import { serviceCategoryListSchema, breadcrumbSchema } from '@/lib/schema';
@@ -14,18 +15,32 @@ import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
 import { PromotionCarousel } from '@/components/promotion-carousel';
 
+const pageTitle = 'บริการ / หัตถการ';
+const pageDescription = `บริการและหัตถการทั้งหมดของ ${site.name} — ฟิลเลอร์ โบท็อกซ์ สกินบูสเตอร์ คอลลาเจนบูสเตอร์ และ IV Drip วิตามิน ดูแลโดยแพทย์`;
+
 export async function generateMetadata(): Promise<Metadata> {
-  const ogImage = await getOgImage('hero-filler');
+  // This is the same slot rendered as the page hero, so an admin replacement updates both.
+  const socialImage = await siteSocialImage(
+    'hero-iv-drip-2',
+    `${site.name} บริการและหัตถการ`,
+  );
+
   return {
-    title: 'บริการ / หัตถการ',
-    description: `บริการและหัตถการทั้งหมดของ ${site.name} — ฟิลเลอร์ โบท็อกซ์ สกินบูสเตอร์ คอลลาเจนบูสเตอร์ และ IV Drip วิตามิน ดูแลโดยแพทย์`,
+    title: pageTitle,
+    description: pageDescription,
     alternates: { canonical: `${site.url}/services` },
     openGraph: {
-      title: `บริการ / หัตถการ — ${site.name}`,
-      description: site.description,
+      title: `${pageTitle} — ${site.name}`,
+      description: pageDescription,
       url: `${site.url}/services`,
       type: 'website',
-      images: [{ url: ogImage, width: 1200, height: 630 }],
+      images: [socialImage],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${pageTitle} — ${site.name}`,
+      description: pageDescription,
+      images: [socialImage.url],
     },
   };
 }

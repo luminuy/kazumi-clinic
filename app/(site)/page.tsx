@@ -18,9 +18,10 @@ import { site } from '@/lib/site';
 import { doctor } from '@/lib/doctor';
 import { serviceCategories } from '@/lib/services';
 import { faqSchema, homePageSchema } from '@/lib/schema';
-import { cld, cloudAssets, heroHomePortrait } from '@/lib/cloud';
-import { getImageOverrides, getOgImage } from '@/lib/site-images-store';
+import { cloudAssets, heroHomePortrait } from '@/lib/cloud';
+import { getImageOverrides } from '@/lib/site-images-store';
 import { categoryImageKey, posterKeyByDefaultId } from '@/lib/site-images';
+import { siteSocialImage } from '@/lib/metadata-images';
 import { promotionPosters } from '@/lib/promotions';
 import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/reveal';
@@ -30,8 +31,13 @@ import { PromotionCarousel } from '@/components/promotion-carousel';
 const homeTitle = 'คลินิกความงามสุขุมวิท กรุงเทพฯ | Kazumi Clinic';
 const homeDescription =
   'Kazumi Clinic คลินิกความงามย่านสุขุมวิท กรุงเทพฯ ให้บริการฟิลเลอร์ โบท็อกซ์ IV Drip วิตามิน สกินบูสเตอร์ และคอลลาเจนบูสเตอร์ โดยแพทย์ประเมินและวางแผนการดูแลเฉพาะบุคคล';
+
 export async function generateMetadata(): Promise<Metadata> {
-  const homeOgImage = await getOgImage('hero-home');
+  const socialImage = await siteSocialImage(
+    'hero-home',
+    `${site.name} คลินิกความงามสุขุมวิท`,
+  );
+
   return {
     title: homeTitle,
     description: homeDescription,
@@ -43,15 +49,13 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: site.name,
       type: 'website',
       locale: 'th_TH',
-      images: [
-        { url: homeOgImage, width: 1200, height: 630, alt: `${site.name} คลินิกความงามสุขุมวิท` },
-      ],
+      images: [socialImage],
     },
     twitter: {
       card: 'summary_large_image',
       title: homeTitle,
       description: homeDescription,
-      images: [homeOgImage],
+      images: [socialImage.url],
     },
   };
 }
@@ -117,7 +121,9 @@ export default async function HomePage() {
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(homePageSchema(pick('hero-home', cloudAssets.heroHome))),
+          __html: JSON.stringify(
+            homePageSchema(pick('hero-home', cloudAssets.heroHome)),
+          ),
         }}
       />
 

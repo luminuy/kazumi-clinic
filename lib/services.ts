@@ -2,7 +2,7 @@
 // Prices where present came from clinic promo posters — confirm the standard (non-promo) price
 // list with the clinic before treating them as permanent (see CLAUDE.md §0.2). Items without a
 // price (e.g. IV Drip programs) render as "สอบถามราคา" until the clinic publishes one.
-import { cld, cloudAssets } from './cloud';
+import { cloudAssets } from './cloud';
 
 export type ServiceItem = {
   name: string;
@@ -26,7 +26,7 @@ export type ServiceCategory = {
   description: string;
   /**
    * Cloudinary public ID for the category page's PageHero background, if one exists.
-   * Also the source of the page's OG image — see `serviceOgImage`.
+   * Also the fallback source of the page's OG image when no admin override exists.
    */
   heroImage?: string;
   /** Describes what `heroImage` actually shows — required alongside it (CLAUDE.md §8). */
@@ -65,8 +65,8 @@ export const serviceCategories: ServiceCategory[] = [
     shortDescription: 'ลดริ้วรอย ปรับรูปหน้า กรามเรียว ด้วยโบท็อกซ์คุณภาพสูง',
     description:
       'ฉีดโบทูลินั่มท็อกซินโดยแพทย์ ลดริ้วรอยบนใบหน้า ปรับกราม ลดเหงื่อ และกำหนดขนาดยาเฉพาะบุคคล',
-    // TODO: no hero photo in Cloudinary yet, so this page ships without an OG image.
-    // Upload one and set `heroImage` to give it a link preview.
+    // No clinic-supplied hero yet; image listings intentionally render the category icon instead
+    // of borrowing an unrelated treatment photo.
     items: [{ name: 'Botulinum Toxin Neuro', detail: '100 U', priceFrom: 8990, unit: 'ครั้ง' }],
   },
   {
@@ -252,14 +252,4 @@ export const serviceCategories: ServiceCategory[] = [
 
 export function getServiceBySlug(slug: string) {
   return serviceCategories.find((c) => c.slug === slug);
-}
-
-/**
- * The category's OG/Twitter image: its hero photo cropped to the 1200x630 social ratio.
- * `undefined` for categories with no hero photo uploaded yet — those pages ship without an
- * OG image rather than reusing the homepage's, which CLAUDE.md §12 forbids.
- */
-export function serviceOgImage(category: ServiceCategory) {
-  if (!category.heroImage) return undefined;
-  return cld(category.heroImage, { width: 1200, height: 630, crop: 'fill', gravity: 'auto' });
 }

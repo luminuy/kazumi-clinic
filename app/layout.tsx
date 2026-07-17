@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { EB_Garamond, Noto_Sans_Thai } from 'next/font/google';
 import { site } from '@/lib/site';
-import { getOgImage } from '@/lib/site-images-store';
+import { siteSocialImage } from '@/lib/metadata-images';
 import { cn } from '@/lib/utils';
 import './globals.css';
 
@@ -19,7 +19,11 @@ const sans = Noto_Sans_Thai({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const ogDefault = await getOgImage('hero-home');
+  const socialImage = await siteSocialImage(
+    'hero-home',
+    `${site.name} คลินิกความงามสุขุมวิท`,
+  );
+
   return {
     metadataBase: new URL(site.url),
     title: {
@@ -40,13 +44,13 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: site.name,
       type: 'website',
       locale: 'th_TH',
-      images: [{ url: ogDefault, width: 1200, height: 630 }],
+      images: [socialImage],
     },
     twitter: {
       card: 'summary_large_image',
       title: site.name,
       description: site.description,
-      images: [ogDefault],
+      images: [socialImage.url],
     },
   };
 }

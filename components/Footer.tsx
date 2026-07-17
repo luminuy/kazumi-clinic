@@ -6,7 +6,7 @@ import { navItems } from '@/lib/nav';
 
 const legalLabels = ['Privacy Policy', 'Terms of Service', 'Career'];
 
-export default function Footer() {
+export default function Footer({ logoMark }: { logoMark: string }) {
   return (
     <footer className="border-t border-olive/10 bg-[#e4e3db] text-olive-deep">
       <div className="mx-auto max-w-7xl px-5 py-12 sm:px-10 md:px-14 md:py-16 lg:px-20">
@@ -18,7 +18,7 @@ export default function Footer() {
               aria-label="Kazumi Clinic หน้าหลัก"
             >
               <Image
-                src={site.logoMark}
+                src={logoMark}
                 alt="Kazumi Clinic"
                 width={30}
                 height={30}

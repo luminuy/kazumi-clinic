@@ -67,7 +67,7 @@ revalidatePath() เฉพาะหน้าที่ใช้รูปนั้
 1. อัปไฟล์ขึ้น Cloudinary (ดูวิธีข้างล่าง) → ได้ public id
 2. เพิ่มใน `cloudAssets` — [lib/cloud.ts](../lib/cloud.ts)
 3. เพิ่ม key + entry ใน `siteImages` — [lib/site-images.ts](../lib/site-images.ts)
-4. เพิ่ม path ที่ต้อง revalidate ใน `pathsFor()` — [app/api/admin/images/route.ts](../app/api/admin/images/route.ts)
+4. เพิ่มทุก path ที่ใช้รูปนั้นใน `REVALIDATION_TARGETS` — [app/api/admin/images/route.ts](../app/api/admin/images/route.ts) (TypeScript จะฟ้องถ้าเพิ่ม key แล้วลืม mapping)
 
 **แล้วต้องทำให้หน้าที่ใช้รูปนั้นอ่าน override ด้วย** ไม่งั้นเปลี่ยนใน admin แล้วเว็บไม่เปลี่ยน:
 
@@ -119,13 +119,11 @@ next/image ขอ candidate ถึง `w_3840` · ถ้าไม่มี crop 
 
 ---
 
-## OG image + JSON-LD
+## สถานะระบบ metadata
 
-รูป OG ทุกหน้าและรูปใน `clinicSchema` / `homePageSchema` **อ่าน override แล้ว** — เปลี่ยน hero ใน /admin แล้วรูปที่แชร์ลง LINE/FB เปลี่ยนตาม
-
-> ⚠️ **ห้ามใช้ `const ogImage = cld(...)` ระดับโมดูล** — const ถูก evaluate ครั้งเดียวตอน build แล้วแช่รูปเดิมไว้ตลอดกาล · ต้องเรียก `getOgImage(key)` ใน **async `generateMetadata`** เสมอ (ทุกหน้าใน `app/(site)/` ทำแบบนี้แล้ว ใช้เป็นตัวอย่างได้)
-
-เหตุผลเดียวกันกับที่ `clinicSchema` / `homePageSchema` / `doctorSchema` ต้องเป็น **ฟังก์ชันรับ public id** ไม่ใช่ const
+- OG/Twitter image ทุกหน้าที่มี social preview อ่าน image slot จาก D1 ผ่าน async `generateMetadata`
+- `clinicSchema.image` / `clinicSchema.logo` และ `homePageSchema.primaryImageOfPage` อ่าน image slot เดียวกับหน้าเว็บ
+- Header/Footer อ่าน `brand-mark` override จริง ไม่ใช่ค่า default ที่ compile ค้างไว้
 
 ## ยังไม่ได้ทำ
 

@@ -1,7 +1,7 @@
 import { getCloudflareContext } from '@opennextjs/cloudflare';
 import type { D1Database } from '@cloudflare/workers-types';
+import { cache } from 'react';
 import { siteImages, type SiteImageKey } from './site-images';
-import { cld } from './cloud';
 
 /**
  * Resolves the Cloudinary public ID for each image slot: whatever the clinic uploaded through
@@ -12,8 +12,6 @@ import { cld } from './cloud';
  * bindings at all, and a clinic website should render its shipped photos rather than 500 if the
  * database is briefly unreachable.
  */
-
-export const SITE_IMAGES_TAG = 'site-images';
 
 const defaults = new Map(siteImages.map((image) => [image.key, image.defaultPublicId]));
 
@@ -28,8 +26,11 @@ async function db() {
   }
 }
 
-/** Every override the clinic has saved, keyed by slot. Empty when D1 is unavailable. */
-export async function getImageOverrides(): Promise<Map<string, Row>> {
+/**
+ * Every override the clinic has saved, keyed by slot. Empty when D1 is unavailable.
+ * React cache deduplicates metadata + page reads within one server render.
+ */
+export const getImageOverrides = cache(async (): Promise<Map<string, Row>> => {
   const binding = await db();
   if (!binding) return new Map();
   try {
@@ -40,7 +41,7 @@ export async function getImageOverrides(): Promise<Map<string, Row>> {
   } catch {
     return new Map();
   }
-}
+});
 
 /** The public ID to render for one slot. */
 export async function getImage(key: SiteImageKey): Promise<string> {
@@ -67,16 +68,4 @@ export async function resetImage(key: SiteImageKey) {
   const binding = await db();
   if (!binding) throw new Error('D1 binding NEXT_TAG_CACHE_D1 is not available');
   await binding.prepare('DELETE FROM site_images WHERE key = ?1').bind(key).run();
-}
-
-/**
- * The 1200x630 OG image for a slot, resolved through the override layer.
- *
- * Pages must call this from `generateMetadata`, not a module-level const: a const is evaluated
- * once at build and would keep sharing the shipped photo to LINE and Facebook long after the
- * clinic replaced it.
- */
-export async function getOgImage(key: SiteImageKey) {
-  const publicId = await getImage(key);
-  return cld(publicId, { width: 1200, height: 630, crop: 'fill', gravity: 'auto' });
 }

@@ -14,7 +14,7 @@ import {
   SheetClose,
 } from '@/components/ui/sheet';
 
-export default function Header() {
+export default function Header({ logoMark }: { logoMark: string }) {
   const serviceGroups = resolvedServiceNavGroups();
 
   return (
@@ -26,7 +26,7 @@ export default function Header() {
           className="group flex items-center gap-3 text-olive-deep"
         >
           <Image
-            src={site.logoMark}
+            src={logoMark}
             alt="Kazumi Clinic"
             width={36}
             height={36}
