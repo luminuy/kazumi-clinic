@@ -62,12 +62,13 @@ revalidatePath() เฉพาะหน้าที่ใช้รูปนั้
 
 ---
 
-## เพิ่มรูปใหม่ให้ /admin จัดการได้ ต้องทำครบ 4 ที่
+## เพิ่มรูปใหม่ให้ /admin จัดการได้ ต้องทำครบ 5 จุด
 
 1. อัปไฟล์ขึ้น Cloudinary (ดูวิธีข้างล่าง) → ได้ public id
 2. เพิ่มใน `cloudAssets` — [lib/cloud.ts](../lib/cloud.ts)
 3. เพิ่ม key + entry ใน `siteImages` — [lib/site-images.ts](../lib/site-images.ts)
-4. เพิ่มทุก path ที่ใช้รูปนั้นใน `REVALIDATION_TARGETS` — [app/api/admin/images/route.ts](../app/api/admin/images/route.ts) (TypeScript จะฟ้องถ้าเพิ่ม key แล้วลืม mapping)
+4. ทำให้ Server Component/metadata ที่ใช้รูปนั้นอ่านผ่าน `getImage()` หรือ `getImageOverrides()` แล้วค่อยส่ง public ID ให้ Client Component
+5. เพิ่มทุก path ที่ใช้รูปนั้นใน `REVALIDATION_TARGETS` — [app/api/admin/images/route.ts](../app/api/admin/images/route.ts) (TypeScript จะฟ้องถ้าเพิ่ม key แล้วลืม mapping)
 
 **แล้วต้องทำให้หน้าที่ใช้รูปนั้นอ่าน override ด้วย** ไม่งั้นเปลี่ยนใน admin แล้วเว็บไม่เปลี่ยน:
 
@@ -77,6 +78,8 @@ const src = overrides.get('my-key')?.public_id ?? cloudAssets.myDefault;
 ```
 
 client component ห้าม import override layer เอง — ให้ server component resolve แล้วส่งเป็น prop (ดู `ServiceAtlas`, `PromotionCarousel`)
+
+ถ้ารูปถูกใช้เป็น social preview ให้เรียก `siteSocialImage(key)` ภายใน **async `generateMetadata`** และใช้ URL เดียวกันทั้ง OpenGraph/Twitter ห้ามเขียน `const ogImage = cld(...)` ระดับโมดูล เพราะค่านั้นถูก freeze ตั้งแต่ build
 
 ---
 
@@ -122,8 +125,21 @@ next/image ขอ candidate ถึง `w_3840` · ถ้าไม่มี crop 
 ## สถานะระบบ metadata
 
 - OG/Twitter image ทุกหน้าที่มี social preview อ่าน image slot จาก D1 ผ่าน async `generateMetadata`
+- หน้า `/services` ใช้ `hero-iv-drip-2` ทั้ง hero, OG และ Twitter; ห้ามย้อนกลับไปใช้ `hero-filler` หรือ homepage default
 - `clinicSchema.image` / `clinicSchema.logo` และ `homePageSchema.primaryImageOfPage` อ่าน image slot เดียวกับหน้าเว็บ
 - Header/Footer อ่าน `brand-mark` override จริง ไม่ใช่ค่า default ที่ compile ค้างไว้
+- `getImageOverrides()` ครอบด้วย React `cache()` เพื่อให้ metadata/layout/page ใน render เดียวกันแชร์ D1 read
+
+## Checklist เมื่อแตะรูป
+
+- [ ] รูปจริงบนหน้าอ่าน override และมี fallback ถูก slot
+- [ ] Alt text บรรยายสิ่งที่เห็นหลังเปิดรูปดู ไม่เดาจากชื่อไฟล์
+- [ ] OG และ Twitter ใช้ image slot เดียวกับหน้าจริง
+- [ ] JSON-LD ที่อ้างรูป/โลโก้รับ resolved public ID ไม่อ่าน default ค้าง
+- [ ] Header/Footer อัปเดตด้วยถ้าเป็น brand slot
+- [ ] `REVALIDATION_TARGETS` ครบทุกหน้าที่ใช้ slot รวมหน้า `/services`
+- [ ] หน้า SSG/ISR มี `revalidate` และทดสอบหลัง admin save/reset
+- [ ] Production ตรวจด้วย cache-busting URL; local dev ไม่มี D1/KV จึงพิสูจน์ override ไม่ได้
 
 ## ยังไม่ได้ทำ
 

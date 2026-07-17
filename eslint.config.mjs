@@ -10,9 +10,17 @@ const compat = new FlatCompat({ baseDirectory: dirname(fileURLToPath(import.meta
 
 const config = [
   {
-    // Build output and vendored deps: linting them is noise, and .open-next/ is generated
-    // bundles that would take minutes and report nothing actionable.
-    ignores: ['.next/**', '.open-next/**', 'node_modules/**', 'next-env.d.ts', 'public/**'],
+    // Build output, tool-managed worktrees, and vendored deps are not project source.
+    // Scanning transient Wrangler files inside a nested worktree can also race their cleanup.
+    ignores: [
+      '.next/**',
+      '.open-next/**',
+      '.wrangler/**',
+      '.claude/worktrees/**',
+      'node_modules/**',
+      'next-env.d.ts',
+      'public/**',
+    ],
   },
   ...compat.extends('next/core-web-vitals', 'next/typescript'),
   {
