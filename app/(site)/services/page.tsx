@@ -4,31 +4,27 @@ import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { site } from '@/lib/site';
 import { cld, cloudAssets } from '@/lib/cloud';
-import { getImageOverrides } from '@/lib/site-images-store';
+import { getImageOverrides, getOgImage } from '@/lib/site-images-store';
 import { categoryImageKey } from '@/lib/site-images';
 import { getServiceBySlug, serviceCategories, type ServiceCategory } from '@/lib/services';
 import { serviceCategoryListSchema, breadcrumbSchema } from '@/lib/schema';
 import { Reveal } from '@/components/reveal';
 
-const ogImage = cld(cloudAssets.heroFiller, {
-  width: 1200,
-  height: 630,
-  crop: 'fill',
-  gravity: 'auto',
-});
-
-export const metadata: Metadata = {
-  title: 'บริการ / หัตถการ',
-  description: `บริการและหัตถการทั้งหมดของ ${site.name} — ฟิลเลอร์ โบท็อกซ์ สกินบูสเตอร์ คอลลาเจนบูสเตอร์ และ IV Drip วิตามิน ดูแลโดยแพทย์`,
-  alternates: { canonical: `${site.url}/services` },
-  openGraph: {
-    title: `บริการ / หัตถการ — ${site.name}`,
-    description: site.description,
-    url: `${site.url}/services`,
-    type: 'website',
-    images: [{ url: ogImage, width: 1200, height: 630 }],
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const ogImage = await getOgImage('hero-filler');
+  return {
+    title: 'บริการ / หัตถการ',
+    description: `บริการและหัตถการทั้งหมดของ ${site.name} — ฟิลเลอร์ โบท็อกซ์ สกินบูสเตอร์ คอลลาเจนบูสเตอร์ และ IV Drip วิตามิน ดูแลโดยแพทย์`,
+    alternates: { canonical: `${site.url}/services` },
+    openGraph: {
+      title: `บริการ / หัตถการ — ${site.name}`,
+      description: site.description,
+      url: `${site.url}/services`,
+      type: 'website',
+      images: [{ url: ogImage, width: 1200, height: 630 }],
+    },
+  };
+}
 
 const featuredServiceSlugs = ['filler', 'botox', 'skin-booster'] as const;
 

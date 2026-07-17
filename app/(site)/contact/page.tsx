@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { MapPin, Phone, Clock, MessageCircle, AtSign, Navigation } from 'lucide-react';
 import { site } from '@/lib/site';
-import { cld, cloudAssets } from '@/lib/cloud';
+import { getOgImage } from '@/lib/site-images-store';
 import { breadcrumbSchema } from '@/lib/schema';
 import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/reveal';
@@ -10,25 +10,21 @@ import { PageHero } from '@/components/page-hero';
 // Derived from the Cloudinary hero rather than a file in public/ — the previous
 // `/images/og/contact.jpg` was never actually added, so every share of this page
 // rendered with no preview image at all.
-const ogImage = cld(cloudAssets.heroIvDrip2, {
-  width: 1200,
-  height: 630,
-  crop: 'fill',
-  gravity: 'auto',
-});
-
-export const metadata: Metadata = {
-  title: 'ติดต่อเรา',
-  description: `ที่อยู่ เบอร์โทร และเวลาทำการของ ${site.name} ย่านสุขุมวิท กรุงเทพฯ`,
-  alternates: { canonical: `${site.url}/contact` },
-  openGraph: {
-    title: `ติดต่อเรา — ${site.name}`,
-    description: site.description,
-    url: `${site.url}/contact`,
-    type: 'website',
-    images: [{ url: ogImage, width: 1200, height: 630 }],
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const ogImage = await getOgImage('hero-iv-drip-2');
+  return {
+    title: 'ติดต่อเรา',
+    description: `ที่อยู่ เบอร์โทร และเวลาทำการของ ${site.name} ย่านสุขุมวิท กรุงเทพฯ`,
+    alternates: { canonical: `${site.url}/contact` },
+    openGraph: {
+      title: `ติดต่อเรา — ${site.name}`,
+      description: site.description,
+      url: `${site.url}/contact`,
+      type: 'website',
+      images: [{ url: ogImage, width: 1200, height: 630 }],
+    },
+  };
+}
 
 export default function ContactPage() {
   const breadcrumb = breadcrumbSchema([
