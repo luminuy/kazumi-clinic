@@ -65,8 +65,8 @@ export const serviceCategories: ServiceCategory[] = [
     shortDescription: 'ลดริ้วรอย ปรับรูปหน้า กรามเรียว ด้วยโบท็อกซ์คุณภาพสูง',
     description:
       'ฉีดโบทูลินั่มท็อกซินโดยแพทย์ ลดริ้วรอยบนใบหน้า ปรับกราม ลดเหงื่อ และกำหนดขนาดยาเฉพาะบุคคล',
-    heroImage: cloudAssets.heroIvDrip3,
-    heroAlt: 'ภาพใบหน้าด้านข้างของผู้หญิงในแสงธรรมชาติ พื้นหลังสีเขียว',
+    // No clinic-supplied hero yet; image listings intentionally render the category icon instead
+    // of borrowing an unrelated treatment photo.
     items: [{ name: 'Botulinum Toxin Neuro', detail: '100 U', priceFrom: 8990, unit: 'ครั้ง' }],
   },
   {

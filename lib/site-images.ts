@@ -71,7 +71,7 @@ export const siteImages: SiteImageSpec[] = [
   {
     key: 'hero-iv-drip-1',
     label: 'รูปหัวหน้า IV Drip',
-    where: '/iv-drip · การ์ด IV Drip บนหน้าแรก · OG หน้ารีวิว',
+    where: '/iv-drip · การ์ด IV Drip บนหน้าแรกและ /services · OG หน้ารีวิว',
     defaultPublicId: cloudAssets.heroIvDrip1,
     ratioHint: 'แนวตั้ง',
   },
@@ -84,8 +84,8 @@ export const siteImages: SiteImageSpec[] = [
   },
   {
     key: 'hero-iv-drip-3',
-    label: 'รูปบริการโบท็อกซ์',
-    where: '/botox · การ์ดโบท็อกซ์บน /services และหน้าแรก',
+    label: 'รูปสำรอง IV Drip',
+    where: 'ยังไม่ได้ใช้ที่ไหน',
     defaultPublicId: cloudAssets.heroIvDrip3,
     ratioHint: 'แนวตั้ง',
   },
@@ -99,7 +99,7 @@ export const siteImages: SiteImageSpec[] = [
   {
     key: 'doctor-pratch',
     label: 'รูปคุณหมอ',
-    where: 'หน้าแรก · /about · รูปใน Person JSON-LD',
+    where: 'หน้าแรก · /about · /services · รูปใน Person JSON-LD',
     defaultPublicId: cloudAssets.doctorPratch,
     ratioHint: 'แนวตั้ง 4:5 — เห็นหน้าชัด อยู่กลางเฟรม',
   },
@@ -113,49 +113,49 @@ export const siteImages: SiteImageSpec[] = [
   {
     key: 'promo-active-refresh',
     label: 'โปสเตอร์โปรฯ Active & Refresh',
-    where: '/promotions · โปสเตอร์บนหน้าแรก',
+    where: '/promotions · โปสเตอร์บนหน้าแรกและ /services',
     defaultPublicId: cloudAssets.promoActiveRefresh,
     ratioHint: 'แนวตั้ง 4:5 (โปสเตอร์)',
   },
   {
     key: 'promo-filler-neura',
     label: 'โปสเตอร์โปรฯ Filler Neura',
-    where: '/promotions · โปสเตอร์แนะนำบนหน้าแรกและ /services',
+    where: '/promotions · โปสเตอร์บนหน้าแรกและ /services',
     defaultPublicId: cloudAssets.promoFillerNeura,
     ratioHint: 'แนวตั้ง 4:5 (โปสเตอร์)',
   },
   {
     key: 'promo-karisma-collagen',
     label: 'โปสเตอร์โปรฯ Karisma Collagen',
-    where: '/promotions · โปสเตอร์บนหน้าแรก',
+    where: '/promotions · โปสเตอร์บนหน้าแรกและ /services',
     defaultPublicId: cloudAssets.promoKarismaCollagen,
     ratioHint: 'แนวตั้ง 4:5 (โปสเตอร์)',
   },
   {
     key: 'promo-oxelle-skin-booster',
     label: 'โปสเตอร์โปรฯ Oxelle Skin Booster',
-    where: '/promotions · โปสเตอร์บนหน้าแรก',
+    where: '/promotions · โปสเตอร์บนหน้าแรกและ /services',
     defaultPublicId: cloudAssets.promoOxelleSkinBooster,
     ratioHint: 'แนวตั้ง 4:5 (โปสเตอร์)',
   },
   {
     key: 'promo-radiant-bright',
     label: 'โปสเตอร์โปรฯ Radiant Bright',
-    where: '/promotions · โปสเตอร์บนหน้าแรก',
+    where: '/promotions · โปสเตอร์บนหน้าแรกและ /services',
     defaultPublicId: cloudAssets.promoRadiantBright,
     ratioHint: 'แนวตั้ง 4:5 (โปสเตอร์)',
   },
   {
     key: 'promo-signature-flawless',
     label: 'โปสเตอร์โปรฯ Signature Flawless',
-    where: '/promotions · โปสเตอร์บนหน้าแรก',
+    where: '/promotions · โปสเตอร์บนหน้าแรกและ /services',
     defaultPublicId: cloudAssets.promoSignatureFlawless,
     ratioHint: 'แนวตั้ง 4:5 (โปสเตอร์)',
   },
   {
     key: 'promo-velvet-glow',
     label: 'โปสเตอร์โปรฯ Velvet Glow',
-    where: '/promotions · โปสเตอร์บนหน้าแรก',
+    where: '/promotions · โปสเตอร์บนหน้าแรกและ /services',
     defaultPublicId: cloudAssets.promoVelvetGlow,
     ratioHint: 'แนวตั้ง 4:5 (โปสเตอร์)',
   },
@@ -178,7 +178,6 @@ export const siteImageKeys = siteImages.map((image) => image.key);
  */
 export const categoryImageKey: Record<string, SiteImageKey> = {
   filler: 'hero-filler',
-  botox: 'hero-iv-drip-3',
   'iv-drip': 'hero-iv-drip-1',
   'skin-booster': 'hero-skin-booster',
 };

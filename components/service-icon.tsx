@@ -23,7 +23,15 @@ const icons: Record<string, LucideIcon> = {
   'laser-hifu': Waves,
 };
 
-export function ServiceIcon({ slug, className }: { slug: string; className?: string }) {
+export function ServiceIcon({
+  slug,
+  className,
+  strokeWidth,
+}: {
+  slug: string;
+  className?: string;
+  strokeWidth?: number;
+}) {
   const Icon = icons[slug] ?? Sparkles;
-  return <Icon className={className} />;
+  return <Icon className={className} strokeWidth={strokeWidth} />;
 }
