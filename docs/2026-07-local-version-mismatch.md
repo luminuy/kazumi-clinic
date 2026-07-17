@@ -2,6 +2,8 @@
 
 วันที่: 16 กรกฎาคม 2026 (เดือนกรกฎาคม 2569)
 
+> เอกสารนี้เป็นบันทึกเหตุการณ์ ค่า commit ด้านล่างเป็นค่าประวัติศาสตร์ ไม่ใช่ commit ล่าสุดของโปรเจกต์ กฎปัจจุบันคือ fetch `origin/main` สดและระบุให้ชัดว่ากำลังตรวจ main หรือ feature branch
+
 ## อาการ
 
 เปิด `http://localhost:3002/` แล้วเห็นหน้าแรกเวอร์ชันเดิม ขณะที่หน้าใน PR/เวอร์ชันที่ merge แล้วเป็น hero แบบ editorial รุ่นใหม่
@@ -20,25 +22,30 @@ dev server ที่พอร์ต 3002 อ่านไฟล์จาก worki
 4. ตรวจซ้ำให้ `HEAD` และ `origin/main` เป็น commit เดียวกัน
 5. reload หน้า local และตรวจ marker ของเวอร์ชันใหม่ เช่น `.hero-section`
 
-## กฎป้องกันไม่ให้เกิดซ้ำ
+## กฎป้องกันไม่ให้เกิดซ้ำ (ฉบับปัจจุบัน)
 
-ก่อนเปิดหรือส่งต่อ local preview หลัง merge ทุกครั้ง:
+ก่อนอ้างว่าโค้ดหรือ preview เป็น “เวอร์ชันล่าสุด”:
 
 ```bash
 git fetch origin main
+git branch --show-current
+git status --short
 git rev-parse --short HEAD
 git rev-parse --short origin/main
 ```
 
-ถ้า commit ไม่ตรงกัน ให้หยุดเปิด preview แล้ว sync ก่อน:
+- ถ้าตรวจ **main**: อ่านจาก `git show origin/main:<path>` หรือใช้ clean worktree ที่สร้างจาก `origin/main`; local `main` ที่ล้าหลังให้ fast-forward ด้วย `git pull --ff-only` เมื่อไม่มี tracked changes
+- ถ้าตรวจ **feature branch**: `HEAD` ไม่จำเป็นต้องเท่ากับ `origin/main`; ให้ตรวจว่า branch รวม main ล่าสุดแล้วด้วยคำสั่งด้านล่าง
+- ถ้า main ถูก checkout อยู่ใน worktree อื่น ห้าม force checkout/reset; ใช้ `git show origin/main:<path>` หรือสร้าง worktree ใหม่
+- ถ้า working tree มี tracked changes ห้าม rebase/เปลี่ยน branch ก่อนระบุว่าไฟล์เป็นของใครและเก็บงานให้ปลอดภัย
 
 ```bash
-git status --short
-git rebase origin/main
+git merge-base --is-ancestor origin/main HEAD
+echo $?  # 0 = branch มี origin/main ล่าสุดอยู่แล้ว
 ```
 
-จากนั้นค่อย reload browser และตรวจ URL/branch/commit อีกครั้ง ไม่ควรสรุปจากภาพใน browser เพียงอย่างเดียวว่าเป็นเวอร์ชันล่าสุด
+จากนั้นค่อยเปิด preview โดยรายงาน branch + commit + URL ให้ชัด และตรวจ marker จาก HTML/DOM จริง ไม่สรุปจากภาพใน browser เพียงอย่างเดียว
 
 ## บทเรียน
 
-การ merge สำเร็จบน remote ไม่ได้แปลว่า working tree ของ local จะอัปเดตตามเสมอ โดยเฉพาะเมื่อ CLI สลับ branch หลัง merge หรือ local มี commit ที่ remote ไม่มี การตรวจ commit ให้ตรงกันเป็นขั้นตอนบังคับก่อน QA ทุกครั้ง
+การ merge สำเร็จบน remote ไม่ได้แปลว่า working tree ของ local จะอัปเดตตามเสมอ และ “ล่าสุด” มีความหมายต่างกันระหว่าง main กับ feature branch การ QA ต้องระบุ ref ที่ตรวจ ไม่ใช้ไฟล์ที่บังเอิญเปิดอยู่บนดิสก์เป็นตัวแทนของ `origin/main`

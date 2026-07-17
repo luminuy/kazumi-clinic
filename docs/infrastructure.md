@@ -17,6 +17,13 @@
 | CI/CD | **ไม่มี** — ไม่มี `.github/workflows`, ไม่มี Cloudflare Git integration · `gh pr checks` ตอบ `no checks reported` เป็นปกติ |
 | วิธี deploy | `pnpm cf:deploy` **ด้วยมือเท่านั้น** · merge เข้า main ไม่ deploy อะไรทั้งสิ้น |
 
+### Workflow หลัง merge
+
+- งานที่เปลี่ยน public site/Worker และ user ไม่ได้ห้าม deploy: หลัง merge ให้ agent รัน `pnpm cf:deploy` ต่อเองตาม [CLAUDE.md](../CLAUDE.md) §0
+- งานเอกสารล้วนไม่ต้อง deploy เพราะไม่มี runtime artifact เปลี่ยน
+- ห้ามรายงานว่า deploy สำเร็จจน Wrangler แสดง `Current Version ID`; จากนั้นยิง URL จริงแบบ cache-busting และต้องได้ HTTP 200
+- `Current Version ID` เปลี่ยนทุก deploy จึงห้ามบันทึกเลขล่าสุดแบบถาวรในเอกสารนี้ ให้รายงานจาก output ของงานนั้นเท่านั้น
+
 ### โดเมนจริง — ยังไม่ได้ใช้
 
 `kazumiclinic.com` **ถูกจดไปแล้ว** แต่คลินิกบอกว่าไม่ได้ซื้อ — ยังไม่ยืนยันว่าเป็นของใคร
