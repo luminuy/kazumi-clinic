@@ -27,6 +27,7 @@ export type SiteImageKey =
   | 'hero-laser-hifu'
   | 'thread-lift-product'
   | 'mesotherapy-treatment'
+  | 'iv-drip-booking'
   | 'item-filler-neura-deep-1cc'
   | 'item-filler-neura-deep-3cc'
   | 'item-filler-neura-volume-1cc'
@@ -173,6 +174,13 @@ export const siteImages: SiteImageSpec[] = [
     label: 'รูปบรรยากาศการรักษา (เมโส)',
     where: '/mesotherapy — รูปในส่วน Ready for your transformation',
     ratioHint: 'จัตุรัส · ยังไม่มีรูป อัปแล้วจะขึ้นแทนกล่องไอคอน',
+  },
+  // รูปที่สองของหน้า IV Drip (คนละใบกับ hero-iv-drip-1 ที่เป็นรูปหัวหน้า)
+  {
+    key: 'iv-drip-booking',
+    label: 'รูปบรรยากาศการรักษา (IV Drip)',
+    where: '/iv-drip — รูปในส่วน Begin Your Journey',
+    ratioHint: 'แนวตั้ง · ยังไม่มีรูป อัปแล้วจะขึ้นแทนกล่องไอคอน',
   },
   // ── รูปผลิตภัณฑ์รายตัวบนหน้า /filler ────────────────────────────────
   // ยังไม่มีรูปสักใบ — การ์ดจะขึ้นกล่องไอคอนไปก่อนจนกว่าคลินิกจะอัป
