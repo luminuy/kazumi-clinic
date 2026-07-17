@@ -15,10 +15,16 @@ export type SiteImageKey =
   | 'brand-logo'
   | 'hero-home'
   | 'hero-filler'
+  | 'hero-botox'
   | 'hero-iv-drip-1'
   | 'hero-iv-drip-2'
   | 'hero-iv-drip-3'
   | 'hero-skin-booster'
+  | 'hero-collagen-booster'
+  | 'hero-thread-lift'
+  | 'hero-mesotherapy'
+  | 'hero-acne-care'
+  | 'hero-laser-hifu'
   | 'doctor-pratch'
   | 'og-about'
   | 'promo-active-refresh'
@@ -34,7 +40,15 @@ export type SiteImageSpec = {
   /** Shown in /admin so the clinic knows which picture they're replacing. */
   label: string;
   where: string;
-  defaultPublicId: string;
+  /**
+   * The Cloudinary public ID shipped with the code, when there is one.
+   *
+   * Optional because six service categories have no photo yet. A slot with no default still
+   * belongs here: without one, /admin has no card for that category and the clinic *cannot*
+   * upload a photo at all — which is why those pages showed an empty panel with no way to fix
+   * it. The page falls back to its tonal icon panel until an upload lands in D1.
+   */
+  defaultPublicId?: string;
   /** Guidance for the uploader — these are the shapes each slot is actually cropped to. */
   ratioHint: string;
 };
@@ -69,6 +83,12 @@ export const siteImages: SiteImageSpec[] = [
     ratioHint: 'แนวตั้ง',
   },
   {
+    key: 'hero-botox',
+    label: 'รูปหัวหน้าโบท็อกซ์',
+    where: '/botox · การ์ดโบท็อกซ์บน /services',
+    ratioHint: 'แนวตั้ง 1:1.618 — ยังไม่มีรูป อัปแล้วจะขึ้นแทนกล่องไอคอน',
+  },
+  {
     key: 'hero-iv-drip-1',
     label: 'รูปหัวหน้า IV Drip',
     where: '/iv-drip · การ์ด IV Drip บนหน้าแรกและ /services · OG หน้ารีวิว',
@@ -95,6 +115,39 @@ export const siteImages: SiteImageSpec[] = [
     where: '/skin-booster · การ์ดบนหน้าแรกและ /services · OG หน้าโปรโมชั่น',
     defaultPublicId: cloudAssets.heroSkinBooster,
     ratioHint: 'แนวนอน',
+  },
+  // ── หมวดที่ยังไม่มีรูปจริง ─────────────────────────────────────────────
+  // ไม่มี defaultPublicId: หน้าจะขึ้นกล่องไอคอนไปก่อนจนกว่าคลินิกจะอัปรูป
+  // การมี slot คือสิ่งเดียวที่ทำให้ /admin อัปรูปให้หมวดพวกนี้ได้
+  {
+    key: 'hero-collagen-booster',
+    label: 'รูปหัวหน้าคอลลาเจนบูสเตอร์',
+    where: '/collagen-booster · การ์ดบน /services',
+    ratioHint: 'แนวตั้ง 1:1.618 — ยังไม่มีรูป อัปแล้วจะขึ้นแทนกล่องไอคอน',
+  },
+  {
+    key: 'hero-thread-lift',
+    label: 'รูปหัวหน้าร้อยไหม',
+    where: '/thread-lift · การ์ดบน /services',
+    ratioHint: 'แนวตั้ง 1:1.618 — ยังไม่มีรูป อัปแล้วจะขึ้นแทนกล่องไอคอน',
+  },
+  {
+    key: 'hero-mesotherapy',
+    label: 'รูปหัวหน้าเมโสเธอราปี',
+    where: '/mesotherapy · การ์ดบน /services',
+    ratioHint: 'แนวตั้ง 1:1.618 — ยังไม่มีรูป อัปแล้วจะขึ้นแทนกล่องไอคอน',
+  },
+  {
+    key: 'hero-acne-care',
+    label: 'รูปหัวหน้าดูแลสิว',
+    where: '/acne-care · การ์ดบน /services',
+    ratioHint: 'แนวตั้ง 1:1.618 — ยังไม่มีรูป อัปแล้วจะขึ้นแทนกล่องไอคอน',
+  },
+  {
+    key: 'hero-laser-hifu',
+    label: 'รูปหัวหน้าเลเซอร์และ HIFU',
+    where: '/laser-hifu · การ์ดบน /services',
+    ratioHint: 'แนวตั้ง 1:1.618 — ยังไม่มีรูป อัปแล้วจะขึ้นแทนกล่องไอคอน',
   },
   {
     key: 'doctor-pratch',
@@ -178,8 +231,14 @@ export const siteImageKeys = siteImages.map((image) => image.key);
  */
 export const categoryImageKey: Record<string, SiteImageKey> = {
   filler: 'hero-filler',
+  botox: 'hero-botox',
   'iv-drip': 'hero-iv-drip-1',
   'skin-booster': 'hero-skin-booster',
+  'collagen-booster': 'hero-collagen-booster',
+  'thread-lift': 'hero-thread-lift',
+  mesotherapy: 'hero-mesotherapy',
+  'acne-care': 'hero-acne-care',
+  'laser-hifu': 'hero-laser-hifu',
 };
 
 /** Which slot backs each promotion poster, by its default public ID. */

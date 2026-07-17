@@ -4,7 +4,12 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowUpRight, ShieldCheck, Stethoscope } from 'lucide-react';
 import { site } from '@/lib/site';
-import { serviceCategories, getServiceBySlug, type ServiceItem } from '@/lib/services';
+import {
+  serviceCategories,
+  getServiceBySlug,
+  type ServiceCategory,
+  type ServiceItem,
+} from '@/lib/services';
 import { serviceItemListSchema, breadcrumbSchema } from '@/lib/schema';
 import { getImage, getImageOverrides } from '@/lib/site-images-store';
 import { socialImage } from '@/lib/metadata-images';
@@ -91,8 +96,10 @@ function TreatmentItem({
   headingLevel: 'h3' | 'h4';
 }) {
   return (
-    <article className="border border-olive/15 bg-sand p-6 sm:p-8">
-      <Heading className="font-serif text-xl text-olive-deep">{item.name}</Heading>
+    // Open, not boxed: the reference keeps this column as editorial type on the page rather than
+    // a card. Multi-item categories get a hairline rule between items instead (see the list).
+    <article>
+      <Heading className="font-serif text-2xl text-olive-deep">{item.name}</Heading>
       {item.tagline && (
         <p lang="en" className="mt-1 font-serif text-sm italic text-olive-light">
           {item.tagline}
@@ -131,6 +138,32 @@ function TreatmentItem({
         </ItemSpec>
       </dl>
     </article>
+  );
+}
+
+/** The reference puts the booking CTA under the specs in the left column, not in the side panel. */
+function BookingCta({ service, hasPrice }: { service: ServiceCategory; hasPrice: boolean }) {
+  return (
+    <div className="mt-10">
+      <a
+        href={site.lineUrl}
+        target="_blank"
+        rel="noopener"
+        className="block w-full bg-olive-deep py-4 text-center text-[0.7rem] uppercase tracking-[0.18em] text-sand transition-opacity duration-200 hover:opacity-90 active:scale-[0.99]"
+      >
+        จองคิว {service.title} ผ่าน LINE
+      </a>
+      {hasPrice && (
+        <p className="mt-4 text-center text-[0.66rem] leading-[1.8] text-ink/45">
+          ราคาที่แสดงอาจมีการเปลี่ยนแปลง
+          กรุณาสอบถามราคาปัจจุบันและเงื่อนไขกับคลินิกก่อนเข้ารับบริการ
+        </p>
+      )}
+      <p className="mt-2 text-center text-[0.66rem] leading-[1.8] text-ink/45">
+        *ทุกหัตถการไม่แนะนำสำหรับผู้มีอายุต่ำกว่า 18 ปี · ผลลัพธ์แตกต่างกันในแต่ละบุคคล
+        ขึ้นอยู่กับการประเมินของแพทย์
+      </p>
+    </div>
   );
 }
 
@@ -288,23 +321,32 @@ export default async function ServiceCategoryPage({ params }: Props) {
                         </h3>
                       </Reveal>
                     )}
-                    <div className="space-y-5">
+                    {/* A hairline between items is all the separation an unboxed list needs;
+                        a single-item category never draws one, matching the reference. */}
+                    <div className="space-y-8">
                       {items.map((item, i) => (
                         <Reveal key={`${item.name}-${item.detail ?? ''}`} delay={i * 50}>
-                          {/* Items sit one level under their collection heading when they have
-                              one, so the outline stays contiguous either way. */}
-                          <TreatmentItem item={item} headingLevel={collection ? 'h4' : 'h3'} />
+                          <div className={i > 0 ? 'border-t border-olive/10 pt-8' : undefined}>
+                            {/* Items sit one level under their collection heading when they have
+                                one, so the outline stays contiguous either way. */}
+                            <TreatmentItem item={item} headingLevel={collection ? 'h4' : 'h3'} />
+                          </div>
                         </Reveal>
                       ))}
                     </div>
                   </div>
                 ))}
               </div>
+
+              <Reveal>
+                <BookingCta service={service} hasPrice={hasPrice} />
+              </Reveal>
             </div>
 
             {/* The reference floats a blurred "glass" card here. docs/design.md rules out
                 glassmorphism and heavy shadows, so the same composition is rendered as a tonal
-                panel with a hairline rule and an offset square behind it. */}
+                panel with a hairline rule and an offset square behind it. It stays a quote —
+                the CTA and the caveats live under the specs, where the reference puts them. */}
             <Reveal className="md:col-span-5" delay={60}>
               <aside className="md:sticky md:top-24">
                 {/* This wrapper is what the offset square anchors to. Hanging it off <aside>
@@ -334,26 +376,6 @@ export default async function ServiceCategoryPage({ params }: Props) {
                         The Kazumi Discipline
                       </p>
                     </div>
-
-                    <a
-                      href={site.lineUrl}
-                      target="_blank"
-                      rel="noopener"
-                      className="mt-8 block w-full bg-olive-deep py-4 text-center text-[0.7rem] uppercase tracking-[0.18em] text-sand transition-opacity duration-200 hover:opacity-90 active:scale-[0.98]"
-                    >
-                      จองคิว {service.title} ผ่าน LINE
-                    </a>
-
-                    {hasPrice && (
-                      <p className="mt-5 text-[0.66rem] leading-[1.8] text-ink/45">
-                        ราคาที่แสดงอาจมีการเปลี่ยนแปลง
-                        กรุณาสอบถามราคาปัจจุบันและเงื่อนไขกับคลินิกก่อนเข้ารับบริการ
-                      </p>
-                    )}
-                    <p className="mt-3 text-[0.66rem] leading-[1.8] text-ink/45">
-                      *ทุกหัตถการไม่แนะนำสำหรับผู้มีอายุต่ำกว่า 18 ปี ·
-                      ผลลัพธ์แตกต่างกันในแต่ละบุคคล ขึ้นอยู่กับการประเมินของแพทย์
-                    </p>
                   </div>
                   <span
                     aria-hidden="true"
