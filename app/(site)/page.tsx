@@ -20,6 +20,8 @@ import { serviceCategories } from '@/lib/services';
 import { faqSchema, homePageSchema } from '@/lib/schema';
 import { cld, cloudAssets, heroHomePortrait } from '@/lib/cloud';
 import { getImageOverrides } from '@/lib/site-images-store';
+import { categoryImageKey, posterKeyByDefaultId } from '@/lib/site-images';
+import { promotionPosters } from '@/lib/promotions';
 import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/reveal';
 import { ServiceAtlas } from '@/components/service-atlas';
@@ -90,6 +92,19 @@ export default async function HomePage() {
   const heroSrc = overrides.has('hero-home') ? pick('hero-home', '') : heroHomePortrait;
   const philosophySrc = pick('hero-iv-drip-2', cloudAssets.heroIvDrip2);
   const doctorSrc = pick('doctor-pratch', doctor.image);
+
+  // Service cards and promotion posters resolve here, in the server component, so the client
+  // components stay free of the override layer and the D1 read happens once per render.
+  const heroOverrides: Record<string, string> = {};
+  for (const [slug, key] of Object.entries(categoryImageKey)) {
+    const override = overrides.get(key)?.public_id;
+    if (override) heroOverrides[slug] = override;
+  }
+  const posters = promotionPosters.map((poster) => {
+    const key = posterKeyByDefaultId.get(poster.src);
+    const override = key ? overrides.get(key)?.public_id : undefined;
+    return override ? { ...poster, src: override } : poster;
+  });
   return (
     <>
       <script
@@ -195,7 +210,7 @@ export default async function HomePage() {
           aria-hidden="true"
         />
         <div className="relative mx-auto max-w-7xl">
-          <ServiceAtlas />
+          <ServiceAtlas heroOverrides={heroOverrides} />
         </div>
       </section>
 
@@ -351,7 +366,7 @@ export default async function HomePage() {
           </Reveal>
 
           <Reveal className="mt-14">
-            <PromotionCarousel />
+            <PromotionCarousel posters={posters} />
           </Reveal>
         </div>
       </section>

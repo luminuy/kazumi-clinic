@@ -10,6 +10,8 @@ import {
   type ServiceItem,
 } from '@/lib/services';
 import { serviceItemListSchema, breadcrumbSchema } from '@/lib/schema';
+import { getImageOverrides } from '@/lib/site-images-store';
+import { categoryImageKey } from '@/lib/site-images';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -32,6 +34,11 @@ function groupItems(items: ServiceItem[]) {
   }
   return groups;
 }
+
+// ISR, not a one-shot build: these pages read the clinic's image overrides, so they have to be
+// regenerable. /api/admin/images revalidates the affected paths on save; this hourly window is
+// the backstop for when that call is the thing that failed.
+export const revalidate = 3600;
 
 export function generateStaticParams() {
   return serviceCategories.map((c) => ({ category: c.slug }));
@@ -73,6 +80,11 @@ export default async function ServiceCategoryPage({ params }: Props) {
   const service = getServiceBySlug(category);
   if (!service) notFound();
 
+  // A hero the clinic replaced through /admin wins over the one compiled into lib/services.ts.
+  const overrides = await getImageOverrides();
+  const slotKey = categoryImageKey[service.slug];
+  const heroImage = (slotKey && overrides.get(slotKey)?.public_id) || service.heroImage;
+
   const breadcrumb = breadcrumbSchema([
     { name: 'หน้าหลัก', path: '/' },
     { name: service.title, path: `/${service.slug}` },
@@ -95,7 +107,7 @@ export default async function ServiceCategoryPage({ params }: Props) {
         eyebrow={service.titleEn}
         title={service.title}
         lead={service.description}
-        image={service.heroImage}
+        image={heroImage}
         imageAlt={service.heroAlt}
         breadcrumb={[
           { name: 'หน้าหลัก', href: '/' },
