@@ -35,6 +35,8 @@ export type SiteImageKey =
   | 'item-filler-lip-neura-deep-1cc'
   | 'item-filler-resty-1cc'
   | 'doctor-pratch'
+  | 'about-hero'
+  | 'about-interior'
   | 'og-about'
   | 'promo-active-refresh'
   | 'promo-filler-neura'
@@ -226,6 +228,19 @@ export const siteImages: SiteImageSpec[] = [
     where: 'หน้าแรก · /about · /services · รูปใน Person JSON-LD',
     defaultPublicId: cloudAssets.doctorPratch,
     ratioHint: 'แนวตั้ง 4:5 — เห็นหน้าชัด อยู่กลางเฟรม',
+  },
+  // รูปบนหน้า /about เอง (คนละใบกับ og-about ที่เป็นรูปตอนแชร์ลิงก์)
+  {
+    key: 'about-hero',
+    label: 'รูปหัวหน้าเกี่ยวกับเรา',
+    where: '/about — รูปใหญ่ในส่วนหัว',
+    ratioHint: 'แนวตั้ง 4:5 · ยังไม่มีรูป อัปแล้วจะขึ้นแทนกล่องไอคอน',
+  },
+  {
+    key: 'about-interior',
+    label: 'รูปบรรยากาศคลินิก (เกี่ยวกับเรา)',
+    where: '/about — รูปเต็มความกว้างช่วงกลางหน้า',
+    ratioHint: 'แนวนอน · ยังไม่มีรูป อัปแล้วจะขึ้นแทนกล่องไอคอน',
   },
   {
     key: 'og-about',
