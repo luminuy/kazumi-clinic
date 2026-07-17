@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { Menu, MessageCircle, ChevronDown, ArrowRight } from 'lucide-react';
 import { site } from '@/lib/site';
 import { navItems, resolvedServiceNavGroups } from '@/lib/nav';
-import { logoIconUrl } from '@/lib/cloud';
 import { Button } from '@/components/ui/button';
 import { ServiceIcon } from '@/components/service-icon';
 import {
@@ -22,11 +21,23 @@ export default function Header() {
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <Link
           href="/"
-          className="flex items-center gap-2.5 font-serif text-xl tracking-widest text-olive-deep"
+          aria-label="Kazumi Clinic หน้าหลัก"
+          className="group flex items-center gap-3 text-olive-deep"
         >
-          {/* eslint-disable-next-line @next/next/no-img-element -- fixed 96x96 crop from Cloudinary, no next/image benefit */}
-          <img src={logoIconUrl} alt="Kazumi Clinic" width={36} height={36} className="size-9" />
-          KAZUMI <span className="align-top text-sm">CLINIC</span>
+          {/* eslint-disable-next-line @next/next/no-img-element -- the local brand mark is a fixed, pre-cropped asset */}
+          <img
+            src={site.logoMark}
+            alt="Kazumi Clinic"
+            width={36}
+            height={36}
+            className="size-9 rounded-[0.35rem] object-cover ring-1 ring-olive/10 transition-transform duration-300 group-hover:scale-[1.03]"
+          />
+          <span className="flex flex-col font-serif leading-none tracking-[0.18em]">
+            <span className="text-[1.08rem]">KAZUMI</span>
+            <span className="mt-1 pl-0.5 text-[0.56rem] tracking-[0.34em] text-olive/75">
+              CLINIC
+            </span>
+          </span>
         </Link>
 
         {/* `group` + focus-within drives the mega dropdown with no JS — this stays a Server

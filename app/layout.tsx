@@ -28,6 +28,11 @@ export const metadata: Metadata = {
   },
   description: site.description,
   alternates: { canonical: site.url },
+  icons: {
+    icon: [{ url: '/icon.png', type: 'image/png', sizes: '64x64' }],
+    shortcut: ['/icon.png'],
+    apple: [{ url: '/apple-icon.png', type: 'image/png', sizes: '180x180' }],
+  },
   openGraph: {
     title: site.name,
     description: site.description,
