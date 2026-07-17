@@ -3,32 +3,43 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { site } from '@/lib/site';
-import { cld, cloudAssets } from '@/lib/cloud';
+import { cloudAssets } from '@/lib/cloud';
 import { getImageOverrides } from '@/lib/site-images-store';
 import { categoryImageKey } from '@/lib/site-images';
+import { siteSocialImage } from '@/lib/metadata-images';
 import { getServiceBySlug, serviceCategories, type ServiceCategory } from '@/lib/services';
 import { serviceCategoryListSchema, breadcrumbSchema } from '@/lib/schema';
 import { Reveal } from '@/components/reveal';
 
-const ogImage = cld(cloudAssets.heroFiller, {
-  width: 1200,
-  height: 630,
-  crop: 'fill',
-  gravity: 'auto',
-});
+const pageTitle = 'บริการ / หัตถการ';
+const pageDescription = `บริการและหัตถการทั้งหมดของ ${site.name} — ฟิลเลอร์ โบท็อกซ์ สกินบูสเตอร์ คอลลาเจนบูสเตอร์ และ IV Drip วิตามิน ดูแลโดยแพทย์`;
 
-export const metadata: Metadata = {
-  title: 'บริการ / หัตถการ',
-  description: `บริการและหัตถการทั้งหมดของ ${site.name} — ฟิลเลอร์ โบท็อกซ์ สกินบูสเตอร์ คอลลาเจนบูสเตอร์ และ IV Drip วิตามิน ดูแลโดยแพทย์`,
-  alternates: { canonical: `${site.url}/services` },
-  openGraph: {
-    title: `บริการ / หัตถการ — ${site.name}`,
-    description: site.description,
-    url: `${site.url}/services`,
-    type: 'website',
-    images: [{ url: ogImage, width: 1200, height: 630 }],
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  // This is the same slot rendered as the page hero, so an admin replacement updates both.
+  const socialImage = await siteSocialImage(
+    'hero-iv-drip-2',
+    `${site.name} บริการและหัตถการ`,
+  );
+
+  return {
+    title: pageTitle,
+    description: pageDescription,
+    alternates: { canonical: `${site.url}/services` },
+    openGraph: {
+      title: `${pageTitle} — ${site.name}`,
+      description: pageDescription,
+      url: `${site.url}/services`,
+      type: 'website',
+      images: [socialImage],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${pageTitle} — ${site.name}`,
+      description: pageDescription,
+      images: [socialImage.url],
+    },
+  };
+}
 
 const featuredServiceSlugs = ['filler', 'botox', 'skin-booster'] as const;
 
@@ -40,7 +51,7 @@ const featuredImageFallbacks: Record<(typeof featuredServiceSlugs)[number], stri
 
 const featuredImageAlts: Record<(typeof featuredServiceSlugs)[number], string> = {
   filler: 'ภาพใบหน้าด้านข้างของผู้หญิงในแสงธรรมชาติ',
-  botox: 'ผู้หญิงกำลังรับการดูแลผิวหน้าในคลินิก',
+  botox: 'ภาพใบหน้าด้านข้างของผู้หญิงในแสงธรรมชาติ พื้นหลังสีเขียว',
   'skin-booster': 'ภาพผิวหน้าผู้หญิงท่ามกลางแสงและเงาใบไม้',
 };
 

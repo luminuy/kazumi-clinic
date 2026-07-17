@@ -1,37 +1,43 @@
 import type { Metadata } from 'next';
 import { MessageCircle, Sparkles } from 'lucide-react';
 import { site } from '@/lib/site';
-import { cld, cloudAssets } from '@/lib/cloud';
 import { activePromotions } from '@/lib/promotions';
 import { breadcrumbSchema } from '@/lib/schema';
+import { siteSocialImage } from '@/lib/metadata-images';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Reveal } from '@/components/reveal';
 import { PageHero } from '@/components/page-hero';
 
-// Derived from the Cloudinary hero rather than a file in public/ — the previous
-// `/images/og/promotions.jpg` was never actually added, so every share of this page
-// rendered with no preview image at all.
-const ogImage = cld(cloudAssets.heroSkinBooster, {
-  width: 1200,
-  height: 630,
-  crop: 'fill',
-  gravity: 'auto',
-});
+const pageTitle = 'โปรโมชั่น / แพ็กเกจ';
+const pageDescription = `โปรโมชั่นและแพ็กเกจราคาพิเศษของ ${site.name} — ฟิลเลอร์ โบท็อกซ์ สกินบูสเตอร์ และ IV Drip วิตามิน`;
 
-export const metadata: Metadata = {
-  title: 'โปรโมชั่น / แพ็กเกจ',
-  description: `โปรโมชั่นและแพ็กเกจราคาพิเศษของ ${site.name} — ฟิลเลอร์ โบท็อกซ์ สกินบูสเตอร์ และ IV Drip วิตามิน`,
-  alternates: { canonical: `${site.url}/promotions` },
-  openGraph: {
-    title: `โปรโมชั่น / แพ็กเกจ — ${site.name}`,
-    description: site.description,
-    url: `${site.url}/promotions`,
-    type: 'website',
-    images: [{ url: ogImage, width: 1200, height: 630 }],
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const socialImage = await siteSocialImage(
+    'hero-skin-booster',
+    `${site.name} โปรโมชั่นและแพ็กเกจ`,
+  );
+
+  return {
+    title: pageTitle,
+    description: pageDescription,
+    alternates: { canonical: `${site.url}/promotions` },
+    openGraph: {
+      title: `${pageTitle} — ${site.name}`,
+      description: pageDescription,
+      url: `${site.url}/promotions`,
+      type: 'website',
+      images: [socialImage],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${pageTitle} — ${site.name}`,
+      description: pageDescription,
+      images: [socialImage.url],
+    },
+  };
+}
 
 // ISR: promos are date-gated, so re-render hourly instead of freezing at build time —
 // an expired promo drops off within the hour without a redeploy.

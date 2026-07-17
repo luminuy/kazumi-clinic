@@ -67,7 +67,7 @@ revalidatePath() เฉพาะหน้าที่ใช้รูปนั้
 1. อัปไฟล์ขึ้น Cloudinary (ดูวิธีข้างล่าง) → ได้ public id
 2. เพิ่มใน `cloudAssets` — [lib/cloud.ts](../lib/cloud.ts)
 3. เพิ่ม key + entry ใน `siteImages` — [lib/site-images.ts](../lib/site-images.ts)
-4. เพิ่ม path ที่ต้อง revalidate ใน `pathsFor()` — [app/api/admin/images/route.ts](../app/api/admin/images/route.ts)
+4. เพิ่มทุก path ที่ใช้รูปนั้นใน `REVALIDATION_TARGETS` — [app/api/admin/images/route.ts](../app/api/admin/images/route.ts) (TypeScript จะฟ้องถ้าเพิ่ม key แล้วลืม mapping)
 
 **แล้วต้องทำให้หน้าที่ใช้รูปนั้นอ่าน override ด้วย** ไม่งั้นเปลี่ยนใน admin แล้วเว็บไม่เปลี่ยน:
 
@@ -119,8 +119,13 @@ next/image ขอ candidate ถึง `w_3840` · ถ้าไม่มี crop 
 
 ---
 
+## สถานะระบบ metadata
+
+- OG/Twitter image ทุกหน้าที่มี social preview อ่าน image slot จาก D1 ผ่าน async `generateMetadata`
+- `clinicSchema.image` / `clinicSchema.logo` และ `homePageSchema.primaryImageOfPage` อ่าน image slot เดียวกับหน้าเว็บ
+- Header/Footer อ่าน `brand-mark` override จริง ไม่ใช่ค่า default ที่ compile ค้างไว้
+
 ## ยังไม่ได้ทำ
 
-- **OG image + `homePageSchema.primaryImageOfPage`** ยังใช้ค่า default เพราะเป็น `metadata` const ต้องแปลงเป็น async `generateMetadata` → **เปลี่ยน hero แล้วแชร์ลง LINE/FB ยังได้รูปเก่า**
 - `cloudAssets.logo` (`kazumi-clinic/logo`) ไม่มีใครใช้แล้ว — เหลือไว้เฉย ๆ
 - id ที่เป็น orphan: `promo-velvet-glow`, `promo-karisma-collagen` (เก็บภาพสลับกัน) — ลบใน media library ได้

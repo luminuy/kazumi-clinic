@@ -26,20 +26,42 @@ const uploadSchema = z.object({
 
 const resetSchema = z.object({ key: z.enum(siteImageKeys as [SiteImageKey, ...SiteImageKey[]]) });
 
-/** Pages that render a given slot, so a save refreshes exactly what changed and nothing else. */
-function pathsFor(key: SiteImageKey): string[] {
-  // The brand mark is in the header and footer of every page; the full logo only feeds JSON-LD.
-  if (key === 'brand-mark')
-    return ['/', '/about', '/services', '/promotions', '/reviews', '/contact'];
-  if (key === 'brand-logo') return ['/'];
-  if (key === 'hero-home' || key === 'hero-iv-drip-2') return ['/'];
-  if (key === 'doctor-pratch') return ['/', '/about'];
-  if (key === 'og-about') return ['/about'];
-  if (key.startsWith('promo-')) return ['/', '/promotions'];
-  if (key === 'hero-filler') return ['/', '/filler'];
-  if (key === 'hero-iv-drip-1') return ['/', '/iv-drip'];
-  if (key === 'hero-skin-booster') return ['/', '/skin-booster'];
-  return ['/'];
+type RevalidationTarget = { path: string; type?: 'layout' | 'page' };
+
+/**
+ * Every route that consumes each slot. The `Record` annotation deliberately makes this exhaustive:
+ * adding an admin image without defining its invalidation targets is now a type error instead of
+ * a stale production page waiting for somebody to notice it.
+ */
+const REVALIDATION_TARGETS: Record<SiteImageKey, readonly RevalidationTarget[]> = {
+  'brand-mark': [{ path: '/', type: 'layout' }],
+  'brand-logo': [{ path: '/', type: 'layout' }],
+  'hero-home': [{ path: '/', type: 'layout' }],
+  'hero-filler': [{ path: '/' }, { path: '/filler' }, { path: '/services' }],
+  'hero-iv-drip-1': [{ path: '/' }, { path: '/iv-drip' }, { path: '/reviews' }],
+  'hero-iv-drip-2': [{ path: '/' }, { path: '/services' }, { path: '/contact' }],
+  'hero-iv-drip-3': [{ path: '/' }, { path: '/botox' }, { path: '/services' }],
+  'hero-skin-booster': [
+    { path: '/' },
+    { path: '/skin-booster' },
+    { path: '/services' },
+    { path: '/promotions' },
+  ],
+  'doctor-pratch': [{ path: '/' }, { path: '/about' }],
+  'og-about': [{ path: '/about' }],
+  'promo-active-refresh': [{ path: '/' }, { path: '/promotions' }],
+  'promo-filler-neura': [{ path: '/' }, { path: '/promotions' }, { path: '/services' }],
+  'promo-karisma-collagen': [{ path: '/' }, { path: '/promotions' }],
+  'promo-oxelle-skin-booster': [{ path: '/' }, { path: '/promotions' }],
+  'promo-radiant-bright': [{ path: '/' }, { path: '/promotions' }],
+  'promo-signature-flawless': [{ path: '/' }, { path: '/promotions' }],
+  'promo-velvet-glow': [{ path: '/' }, { path: '/promotions' }],
+};
+
+function revalidateImage(key: SiteImageKey) {
+  for (const target of REVALIDATION_TARGETS[key]) {
+    revalidatePath(target.path, target.type);
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -58,7 +80,7 @@ export async function POST(request: NextRequest) {
     // is live. Old versions stay in Cloudinary — cheap, and it means a bad upload is undoable.
     const upload = await uploadToCloudinary(file, `${key}-${Date.now()}`);
     await setImage(key, upload.publicId, email);
-    for (const path of pathsFor(key)) revalidatePath(path);
+    revalidateImage(key);
     return NextResponse.json({ ok: true, ...upload });
   } catch (error) {
     return NextResponse.json(
@@ -77,7 +99,7 @@ export async function DELETE(request: NextRequest) {
 
   try {
     await resetImage(parsed.data.key);
-    for (const path of pathsFor(parsed.data.key)) revalidatePath(path);
+    revalidateImage(parsed.data.key);
     return NextResponse.json({ ok: true });
   } catch (error) {
     return NextResponse.json(

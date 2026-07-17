@@ -2,31 +2,38 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import { Award, Languages, ShieldCheck, Sparkles, Stethoscope } from 'lucide-react';
 import { site } from '@/lib/site';
-import { cld, cloudAssets } from '@/lib/cloud';
 import { doctor } from '@/lib/doctor';
 import { breadcrumbSchema, doctorSchema } from '@/lib/schema';
 import { getImageOverrides } from '@/lib/site-images-store';
+import { siteSocialImage } from '@/lib/metadata-images';
 import { Reveal } from '@/components/reveal';
 import { PageHero, SectionLabel } from '@/components/page-hero';
 
-export const metadata: Metadata = {
-  title: 'เกี่ยวกับเรา / แพทย์',
-  description: `รู้จัก ${site.name} สถานเสริมความงามย่านสุขุมวิท กรุงเทพฯ และ ${doctor.name} ${doctor.role} ใบอนุญาตสถานพยาบาลเลขที่ ${site.license}`,
-  alternates: { canonical: `${site.url}/about` },
-  openGraph: {
-    title: `เกี่ยวกับเรา — ${site.name}`,
-    description: site.description,
-    url: `${site.url}/about`,
-    type: 'website',
-    images: [
-      {
-        url: cld(cloudAssets.ogAbout, { width: 1200, height: 630, crop: 'fill' }),
-        width: 1200,
-        height: 630,
-      },
-    ],
-  },
-};
+const pageTitle = 'เกี่ยวกับเรา / แพทย์';
+const pageDescription = `รู้จัก ${site.name} สถานเสริมความงามย่านสุขุมวิท กรุงเทพฯ และ ${doctor.name} ${doctor.role} ใบอนุญาตสถานพยาบาลเลขที่ ${site.license}`;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const socialImage = await siteSocialImage('og-about', `เกี่ยวกับ ${site.name}`);
+
+  return {
+    title: pageTitle,
+    description: pageDescription,
+    alternates: { canonical: `${site.url}/about` },
+    openGraph: {
+      title: `เกี่ยวกับเรา — ${site.name}`,
+      description: pageDescription,
+      url: `${site.url}/about`,
+      type: 'website',
+      images: [socialImage],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `เกี่ยวกับเรา — ${site.name}`,
+      description: pageDescription,
+      images: [socialImage.url],
+    },
+  };
+}
 
 export default async function AboutPage() {
   const overrides = await getImageOverrides();

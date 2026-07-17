@@ -1,5 +1,6 @@
 import { getCloudflareContext } from '@opennextjs/cloudflare';
 import type { D1Database } from '@cloudflare/workers-types';
+import { cache } from 'react';
 import { siteImages, type SiteImageKey } from './site-images';
 
 /**
@@ -11,8 +12,6 @@ import { siteImages, type SiteImageKey } from './site-images';
  * bindings at all, and a clinic website should render its shipped photos rather than 500 if the
  * database is briefly unreachable.
  */
-
-export const SITE_IMAGES_TAG = 'site-images';
 
 const defaults = new Map(siteImages.map((image) => [image.key, image.defaultPublicId]));
 
@@ -27,8 +26,11 @@ async function db() {
   }
 }
 
-/** Every override the clinic has saved, keyed by slot. Empty when D1 is unavailable. */
-export async function getImageOverrides(): Promise<Map<string, Row>> {
+/**
+ * Every override the clinic has saved, keyed by slot. Empty when D1 is unavailable.
+ * React cache deduplicates metadata + page reads within one server render.
+ */
+export const getImageOverrides = cache(async (): Promise<Map<string, Row>> => {
   const binding = await db();
   if (!binding) return new Map();
   try {
@@ -39,7 +41,7 @@ export async function getImageOverrides(): Promise<Map<string, Row>> {
   } catch {
     return new Map();
   }
-}
+});
 
 /** The public ID to render for one slot. */
 export async function getImage(key: SiteImageKey): Promise<string> {
