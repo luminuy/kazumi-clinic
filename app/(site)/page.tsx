@@ -19,7 +19,7 @@ import { doctor } from '@/lib/doctor';
 import { serviceCategories } from '@/lib/services';
 import { faqSchema, homePageSchema } from '@/lib/schema';
 import { cld, cloudAssets, heroHomePortrait } from '@/lib/cloud';
-import { getImageOverrides } from '@/lib/site-images-store';
+import { getImageOverrides, getOgImage } from '@/lib/site-images-store';
 import { categoryImageKey, posterKeyByDefaultId } from '@/lib/site-images';
 import { promotionPosters } from '@/lib/promotions';
 import { Button } from '@/components/ui/button';
@@ -30,30 +30,31 @@ import { PromotionCarousel } from '@/components/promotion-carousel';
 const homeTitle = 'คลินิกความงามสุขุมวิท กรุงเทพฯ | Kazumi Clinic';
 const homeDescription =
   'Kazumi Clinic คลินิกความงามย่านสุขุมวิท กรุงเทพฯ ให้บริการฟิลเลอร์ โบท็อกซ์ IV Drip วิตามิน สกินบูสเตอร์ และคอลลาเจนบูสเตอร์ โดยแพทย์ประเมินและวางแผนการดูแลเฉพาะบุคคล';
-const homeOgImage = cld(cloudAssets.heroHome, { width: 1200, height: 630, crop: 'fill' });
-
-export const metadata: Metadata = {
-  title: homeTitle,
-  description: homeDescription,
-  alternates: { canonical: site.url },
-  openGraph: {
+export async function generateMetadata(): Promise<Metadata> {
+  const homeOgImage = await getOgImage('hero-home');
+  return {
     title: homeTitle,
     description: homeDescription,
-    url: site.url,
-    siteName: site.name,
-    type: 'website',
-    locale: 'th_TH',
-    images: [
-      { url: homeOgImage, width: 1200, height: 630, alt: `${site.name} คลินิกความงามสุขุมวิท` },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: homeTitle,
-    description: homeDescription,
-    images: [homeOgImage],
-  },
-};
+    alternates: { canonical: site.url },
+    openGraph: {
+      title: homeTitle,
+      description: homeDescription,
+      url: site.url,
+      siteName: site.name,
+      type: 'website',
+      locale: 'th_TH',
+      images: [
+        { url: homeOgImage, width: 1200, height: 630, alt: `${site.name} คลินิกความงามสุขุมวิท` },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: homeTitle,
+      description: homeDescription,
+      images: [homeOgImage],
+    },
+  };
+}
 
 const faqs = [
   {
@@ -115,7 +116,9 @@ export default async function HomePage() {
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(homePageSchema) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(homePageSchema(pick('hero-home', cloudAssets.heroHome))),
+        }}
       />
 
       {/* ── Hero ──────────────────────────────────────────────── */}

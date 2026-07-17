@@ -16,52 +16,54 @@ const dayMap: Record<string, string> = {
   Sunday: 'Sunday',
 };
 
-export const clinicSchema = {
-  '@context': 'https://schema.org',
-  '@type': ['MedicalBusiness', 'HealthAndBeautyBusiness'],
-  '@id': `${site.url}/#business`,
-  name: site.name,
-  alternateName: site.nameTh,
-  description: site.description,
-  url: site.url,
-  telephone: site.phoneIntl,
-  priceRange: '$$',
-  image: cld(cloudAssets.heroHome, { width: 1200, height: 630, crop: 'fill' }),
-  logo: cld(site.logo, { width: 512, height: 512, crop: 'fit' }),
-  hasMap: site.mapsUrl,
-  areaServed: {
-    '@type': 'Place',
-    name: 'สุขุมวิท เขตวัฒนา กรุงเทพมหานคร',
-  },
-  address: {
-    '@type': 'PostalAddress',
-    streetAddress: `${site.address.line1} ${site.address.street}`,
-    addressLocality: site.address.district,
-    addressRegion: site.address.province,
-    postalCode: site.address.postalCode,
-    addressCountry: site.address.country,
-  },
-  geo: {
-    '@type': 'GeoCoordinates',
-    latitude: site.geo.lat,
-    longitude: site.geo.lng,
-  },
-  openingHoursSpecification: site.hours.map((h) => ({
-    '@type': 'OpeningHoursSpecification',
-    dayOfWeek: dayMap[h.day],
-    opens: h.open,
-    closes: h.close,
-  })),
-  // The clinic's licensed physicians — `identifier` carries the แพทยสภา ว. number, which is
-  // the credential a search engine (or a patient) can actually verify us on.
-  employee: site.doctors.map((doctor) => ({
-    '@type': 'Physician',
-    name: doctor.name,
-    jobTitle: doctor.role,
-    identifier: doctor.licenseNo,
-  })),
-  sameAs: [site.facebook, site.instagram, site.lineUrl].filter(Boolean),
-};
+export function clinicSchema(heroPublicId: string = cloudAssets.heroHome) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': ['MedicalBusiness', 'HealthAndBeautyBusiness'],
+    '@id': `${site.url}/#business`,
+    name: site.name,
+    alternateName: site.nameTh,
+    description: site.description,
+    url: site.url,
+    telephone: site.phoneIntl,
+    priceRange: '$$',
+    image: cld(heroPublicId, { width: 1200, height: 630, crop: 'fill' }),
+    logo: cld(site.logo, { width: 512, height: 512, crop: 'fit' }),
+    hasMap: site.mapsUrl,
+    areaServed: {
+      '@type': 'Place',
+      name: 'สุขุมวิท เขตวัฒนา กรุงเทพมหานคร',
+    },
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: `${site.address.line1} ${site.address.street}`,
+      addressLocality: site.address.district,
+      addressRegion: site.address.province,
+      postalCode: site.address.postalCode,
+      addressCountry: site.address.country,
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: site.geo.lat,
+      longitude: site.geo.lng,
+    },
+    openingHoursSpecification: site.hours.map((h) => ({
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: dayMap[h.day],
+      opens: h.open,
+      closes: h.close,
+    })),
+    // The clinic's licensed physicians — `identifier` carries the แพทยสภา ว. number, which is
+    // the credential a search engine (or a patient) can actually verify us on.
+    employee: site.doctors.map((doctor) => ({
+      '@type': 'Physician',
+      name: doctor.name,
+      jobTitle: doctor.role,
+      identifier: doctor.licenseNo,
+    })),
+    sameAs: [site.facebook, site.instagram, site.lineUrl].filter(Boolean),
+  };
+}
 
 export const websiteSchema = {
   '@context': 'https://schema.org',
@@ -73,23 +75,25 @@ export const websiteSchema = {
   publisher: { '@id': `${site.url}/#business` },
 };
 
-export const homePageSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'WebPage',
-  '@id': `${site.url}/#webpage`,
-  name: `${site.name} — คลินิกความงามสุขุมวิท กรุงเทพฯ`,
-  url: site.url,
-  description: site.description,
-  inLanguage: 'th-TH',
-  isPartOf: { '@id': `${site.url}/#website` },
-  about: { '@id': `${site.url}/#business` },
-  primaryImageOfPage: {
-    '@type': 'ImageObject',
-    url: cld(cloudAssets.heroHome, { width: 1200, height: 630, crop: 'fill' }),
-    width: 1200,
-    height: 630,
-  },
-};
+export function homePageSchema(heroPublicId: string = cloudAssets.heroHome) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': `${site.url}/#webpage`,
+    name: `${site.name} — คลินิกความงามสุขุมวิท กรุงเทพฯ`,
+    url: site.url,
+    description: site.description,
+    inLanguage: 'th-TH',
+    isPartOf: { '@id': `${site.url}/#website` },
+    about: { '@id': `${site.url}/#business` },
+    primaryImageOfPage: {
+      '@type': 'ImageObject',
+      url: cld(heroPublicId, { width: 1200, height: 630, crop: 'fill' }),
+      width: 1200,
+      height: 630,
+    },
+  };
+}
 
 export function doctorSchema(imagePublicId: string = doctor.image) {
   return {

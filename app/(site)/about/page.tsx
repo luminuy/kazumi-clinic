@@ -5,28 +5,30 @@ import { site } from '@/lib/site';
 import { cld, cloudAssets } from '@/lib/cloud';
 import { doctor } from '@/lib/doctor';
 import { breadcrumbSchema, doctorSchema } from '@/lib/schema';
-import { getImageOverrides } from '@/lib/site-images-store';
+import { getImageOverrides, getOgImage } from '@/lib/site-images-store';
 import { Reveal } from '@/components/reveal';
 import { PageHero, SectionLabel } from '@/components/page-hero';
 
-export const metadata: Metadata = {
-  title: 'เกี่ยวกับเรา / แพทย์',
-  description: `รู้จัก ${site.name} สถานเสริมความงามย่านสุขุมวิท กรุงเทพฯ และ ${doctor.name} ${doctor.role} ใบอนุญาตสถานพยาบาลเลขที่ ${site.license}`,
-  alternates: { canonical: `${site.url}/about` },
-  openGraph: {
-    title: `เกี่ยวกับเรา — ${site.name}`,
-    description: site.description,
-    url: `${site.url}/about`,
-    type: 'website',
-    images: [
-      {
-        url: cld(cloudAssets.ogAbout, { width: 1200, height: 630, crop: 'fill' }),
-        width: 1200,
-        height: 630,
-      },
-    ],
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: 'เกี่ยวกับเรา / แพทย์',
+    description: `รู้จัก ${site.name} สถานเสริมความงามย่านสุขุมวิท กรุงเทพฯ และ ${doctor.name} ${doctor.role} ใบอนุญาตสถานพยาบาลเลขที่ ${site.license}`,
+    alternates: { canonical: `${site.url}/about` },
+    openGraph: {
+      title: `เกี่ยวกับเรา — ${site.name}`,
+      description: site.description,
+      url: `${site.url}/about`,
+      type: 'website',
+      images: [
+        {
+          url: await getOgImage('og-about'),
+          width: 1200,
+          height: 630,
+        },
+      ],
+    },
+  };
+}
 
 export default async function AboutPage() {
   const overrides = await getImageOverrides();
