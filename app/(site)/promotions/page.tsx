@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { MessageCircle, Sparkles } from 'lucide-react';
 import { site } from '@/lib/site';
-import { cld, cloudAssets } from '@/lib/cloud';
+import { getOgImage } from '@/lib/site-images-store';
 import { activePromotions } from '@/lib/promotions';
 import { breadcrumbSchema } from '@/lib/schema';
 import { Button } from '@/components/ui/button';
@@ -13,25 +13,21 @@ import { PageHero } from '@/components/page-hero';
 // Derived from the Cloudinary hero rather than a file in public/ — the previous
 // `/images/og/promotions.jpg` was never actually added, so every share of this page
 // rendered with no preview image at all.
-const ogImage = cld(cloudAssets.heroSkinBooster, {
-  width: 1200,
-  height: 630,
-  crop: 'fill',
-  gravity: 'auto',
-});
-
-export const metadata: Metadata = {
-  title: 'โปรโมชั่น / แพ็กเกจ',
-  description: `โปรโมชั่นและแพ็กเกจราคาพิเศษของ ${site.name} — ฟิลเลอร์ โบท็อกซ์ สกินบูสเตอร์ และ IV Drip วิตามิน`,
-  alternates: { canonical: `${site.url}/promotions` },
-  openGraph: {
-    title: `โปรโมชั่น / แพ็กเกจ — ${site.name}`,
-    description: site.description,
-    url: `${site.url}/promotions`,
-    type: 'website',
-    images: [{ url: ogImage, width: 1200, height: 630 }],
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const ogImage = await getOgImage('hero-skin-booster');
+  return {
+    title: 'โปรโมชั่น / แพ็กเกจ',
+    description: `โปรโมชั่นและแพ็กเกจราคาพิเศษของ ${site.name} — ฟิลเลอร์ โบท็อกซ์ สกินบูสเตอร์ และ IV Drip วิตามิน`,
+    alternates: { canonical: `${site.url}/promotions` },
+    openGraph: {
+      title: `โปรโมชั่น / แพ็กเกจ — ${site.name}`,
+      description: site.description,
+      url: `${site.url}/promotions`,
+      type: 'website',
+      images: [{ url: ogImage, width: 1200, height: 630 }],
+    },
+  };
+}
 
 // ISR: promos are date-gated, so re-render hourly instead of freezing at build time —
 // an expired promo drops off within the hour without a redeploy.

@@ -119,8 +119,15 @@ next/image ขอ candidate ถึง `w_3840` · ถ้าไม่มี crop 
 
 ---
 
+## OG image + JSON-LD
+
+รูป OG ทุกหน้าและรูปใน `clinicSchema` / `homePageSchema` **อ่าน override แล้ว** — เปลี่ยน hero ใน /admin แล้วรูปที่แชร์ลง LINE/FB เปลี่ยนตาม
+
+> ⚠️ **ห้ามใช้ `const ogImage = cld(...)` ระดับโมดูล** — const ถูก evaluate ครั้งเดียวตอน build แล้วแช่รูปเดิมไว้ตลอดกาล · ต้องเรียก `getOgImage(key)` ใน **async `generateMetadata`** เสมอ (ทุกหน้าใน `app/(site)/` ทำแบบนี้แล้ว ใช้เป็นตัวอย่างได้)
+
+เหตุผลเดียวกันกับที่ `clinicSchema` / `homePageSchema` / `doctorSchema` ต้องเป็น **ฟังก์ชันรับ public id** ไม่ใช่ const
+
 ## ยังไม่ได้ทำ
 
-- **OG image + `homePageSchema.primaryImageOfPage`** ยังใช้ค่า default เพราะเป็น `metadata` const ต้องแปลงเป็น async `generateMetadata` → **เปลี่ยน hero แล้วแชร์ลง LINE/FB ยังได้รูปเก่า**
 - `cloudAssets.logo` (`kazumi-clinic/logo`) ไม่มีใครใช้แล้ว — เหลือไว้เฉย ๆ
 - id ที่เป็น orphan: `promo-velvet-glow`, `promo-karisma-collagen` (เก็บภาพสลับกัน) — ลบใน media library ได้

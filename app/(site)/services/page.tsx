@@ -3,37 +3,37 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowDown, ArrowUpRight } from 'lucide-react';
 import { site } from '@/lib/site';
-import { cld, cloudAssets } from '@/lib/cloud';
+import { cloudAssets } from '@/lib/cloud';
+import { getOgImage } from '@/lib/site-images-store';
 import { serviceCategories, type ServiceCategory } from '@/lib/services';
 import { serviceCategoryListSchema, breadcrumbSchema } from '@/lib/schema';
 import { Reveal } from '@/components/reveal';
 
-const ogImage = cld(cloudAssets.heroFiller, {
-  width: 1200,
-  height: 630,
-  crop: 'fill',
-  gravity: 'auto',
-});
-
-export const metadata: Metadata = {
-  title: 'บริการ / หัตถการ',
-  description: `บริการและหัตถการทั้งหมดของ ${site.name} — ฟิลเลอร์ โบท็อกซ์ สกินบูสเตอร์ คอลลาเจนบูสเตอร์ และ IV Drip วิตามิน ดูแลโดยแพทย์`,
-  alternates: { canonical: `${site.url}/services` },
-  openGraph: {
-    title: `บริการ / หัตถการ — ${site.name}`,
-    description: site.description,
-    url: `${site.url}/services`,
-    type: 'website',
-    images: [{ url: ogImage, width: 1200, height: 630 }],
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const ogImage = await getOgImage('hero-filler');
+  return {
+    title: 'บริการ / หัตถการ',
+    description: `บริการและหัตถการทั้งหมดของ ${site.name} — ฟิลเลอร์ โบท็อกซ์ สกินบูสเตอร์ คอลลาเจนบูสเตอร์ และ IV Drip วิตามิน ดูแลโดยแพทย์`,
+    alternates: { canonical: `${site.url}/services` },
+    openGraph: {
+      title: `บริการ / หัตถการ — ${site.name}`,
+      description: site.description,
+      url: `${site.url}/services`,
+      type: 'website',
+      images: [{ url: ogImage, width: 1200, height: 630 }],
+    },
+  };
+}
 
 const editorialImages: Record<string, { src: string; alt: string }> = {
   filler: { src: cloudAssets.heroFiller, alt: 'ใบหน้าด้านข้างของผู้หญิงในแสงธรรมชาติ' },
   botox: { src: cloudAssets.heroIvDrip3, alt: 'ผู้หญิงกำลังรับการดูแลผิวหน้าโดยผู้เชี่ยวชาญ' },
   'iv-drip': { src: cloudAssets.heroIvDrip1, alt: 'ใบหน้าผู้หญิงในแสงนุ่ม ผิวดูกระจ่างใส' },
   'skin-booster': { src: cloudAssets.heroSkinBooster, alt: 'ใบหน้าผู้หญิงท่ามกลางแสงและเงาใบไม้' },
-  'collagen-booster': { src: cloudAssets.heroIvDrip2, alt: 'ภาพผู้หญิงในบรรยากาศสงบและแสงธรรมชาติ' },
+  'collagen-booster': {
+    src: cloudAssets.heroIvDrip2,
+    alt: 'ภาพผู้หญิงในบรรยากาศสงบและแสงธรรมชาติ',
+  },
   'thread-lift': { src: cloudAssets.heroFiller, alt: 'ใบหน้าด้านข้างของผู้หญิง เห็นแนวกรอบหน้า' },
   mesotherapy: { src: cloudAssets.heroIvDrip3, alt: 'การดูแลผิวหน้าในบรรยากาศของคลินิก' },
   'acne-care': { src: cloudAssets.heroSkinBooster, alt: 'ภาพผิวหน้าผู้หญิงในแสงธรรมชาติ' },
@@ -133,7 +133,8 @@ export default function ServicesPage() {
               <span className="italic text-olive-light">around you.</span>
             </h1>
             <p className="mt-7 max-w-md text-sm leading-[1.9] text-ink/65 sm:text-base">
-              บริการความงามที่เริ่มจากการรับฟังและประเมินโดยแพทย์ เพื่อเลือกแนวทางที่เหมาะกับแต่ละบุคคล
+              บริการความงามที่เริ่มจากการรับฟังและประเมินโดยแพทย์
+              เพื่อเลือกแนวทางที่เหมาะกับแต่ละบุคคล
             </p>
             <a
               href="#treatments"
@@ -166,11 +167,16 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      <section id="treatments" className="scroll-mt-24 bg-background px-5 py-24 sm:px-10 md:px-12 md:py-32 lg:px-16">
+      <section
+        id="treatments"
+        className="scroll-mt-24 bg-background px-5 py-24 sm:px-10 md:px-12 md:py-32 lg:px-16"
+      >
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-8 pb-12 sm:grid-cols-12 sm:items-end md:pb-16">
             <div className="sm:col-span-7">
-              <p className="text-[0.65rem] uppercase tracking-[0.3em] text-olive-light">Treatment index</p>
+              <p className="text-[0.65rem] uppercase tracking-[0.3em] text-olive-light">
+                Treatment index
+              </p>
               <h2 className="mt-5 font-serif text-4xl leading-none tracking-[-0.035em] text-olive-deep sm:text-5xl md:text-6xl">
                 บริการของเรา
               </h2>
@@ -190,7 +196,9 @@ export default function ServicesPage() {
       <section className="bg-olive-deep px-5 py-20 text-sand sm:px-10 md:px-12 md:py-28 lg:px-16">
         <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-12 md:items-end">
           <div className="md:col-span-7">
-            <p className="text-[0.65rem] uppercase tracking-[0.3em] text-sand/45">Personal consultation</p>
+            <p className="text-[0.65rem] uppercase tracking-[0.3em] text-sand/45">
+              Personal consultation
+            </p>
             <h2 className="mt-5 max-w-2xl font-serif text-4xl leading-[1.05] tracking-[-0.035em] sm:text-5xl md:text-6xl">
               ไม่แน่ใจว่าควรเริ่มจากบริการไหน?
             </h2>

@@ -1,6 +1,7 @@
 import { getCloudflareContext } from '@opennextjs/cloudflare';
 import type { D1Database } from '@cloudflare/workers-types';
 import { siteImages, type SiteImageKey } from './site-images';
+import { cld } from './cloud';
 
 /**
  * Resolves the Cloudinary public ID for each image slot: whatever the clinic uploaded through
@@ -66,4 +67,16 @@ export async function resetImage(key: SiteImageKey) {
   const binding = await db();
   if (!binding) throw new Error('D1 binding NEXT_TAG_CACHE_D1 is not available');
   await binding.prepare('DELETE FROM site_images WHERE key = ?1').bind(key).run();
+}
+
+/**
+ * The 1200x630 OG image for a slot, resolved through the override layer.
+ *
+ * Pages must call this from `generateMetadata`, not a module-level const: a const is evaluated
+ * once at build and would keep sharing the shipped photo to LINE and Facebook long after the
+ * clinic replaced it.
+ */
+export async function getOgImage(key: SiteImageKey) {
+  const publicId = await getImage(key);
+  return cld(publicId, { width: 1200, height: 630, crop: 'fill', gravity: 'auto' });
 }

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { ExternalLink, MessageCircle, Star } from 'lucide-react';
 import { site } from '@/lib/site';
-import { cld, cloudAssets } from '@/lib/cloud';
+import { getOgImage } from '@/lib/site-images-store';
 import { breadcrumbSchema } from '@/lib/schema';
 import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/reveal';
@@ -10,25 +10,21 @@ import { PageHero } from '@/components/page-hero';
 // Derived from the Cloudinary hero rather than a file in public/ — the previous
 // `/images/og/reviews.jpg` was never actually added, so every share of this page
 // rendered with no preview image at all.
-const ogImage = cld(cloudAssets.heroIvDrip1, {
-  width: 1200,
-  height: 630,
-  crop: 'fill',
-  gravity: 'auto',
-});
-
-export const metadata: Metadata = {
-  title: 'รีวิว / ผลลัพธ์ก่อน-หลัง',
-  description: `รีวิวและผลลัพธ์ก่อน-หลังทำหัตถการที่ ${site.name} ย่านสุขุมวิท กรุงเทพฯ`,
-  alternates: { canonical: `${site.url}/reviews` },
-  openGraph: {
-    title: `รีวิว / ผลลัพธ์ก่อน-หลัง — ${site.name}`,
-    description: site.description,
-    url: `${site.url}/reviews`,
-    type: 'website',
-    images: [{ url: ogImage, width: 1200, height: 630 }],
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const ogImage = await getOgImage('hero-iv-drip-1');
+  return {
+    title: 'รีวิว / ผลลัพธ์ก่อน-หลัง',
+    description: `รีวิวและผลลัพธ์ก่อน-หลังทำหัตถการที่ ${site.name} ย่านสุขุมวิท กรุงเทพฯ`,
+    alternates: { canonical: `${site.url}/reviews` },
+    openGraph: {
+      title: `รีวิว / ผลลัพธ์ก่อน-หลัง — ${site.name}`,
+      description: site.description,
+      url: `${site.url}/reviews`,
+      type: 'website',
+      images: [{ url: ogImage, width: 1200, height: 630 }],
+    },
+  };
+}
 
 // NOTE: This page is an intentional scaffold. Reviews and before/after images must be REAL
 // content supplied and consented to by actual patients — never fabricated (see CLAUDE.md §0.2).
