@@ -13,7 +13,7 @@ import {
 import { serviceItemListSchema, breadcrumbSchema } from '@/lib/schema';
 import { getImage, getImageOverrides } from '@/lib/site-images-store';
 import { socialImage } from '@/lib/metadata-images';
-import { categoryImageKey } from '@/lib/site-images';
+import { categoryImageKey, itemImageKey } from '@/lib/site-images';
 import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
 import { FillerServicePage } from '@/components/filler-service-page';
@@ -186,11 +186,20 @@ export default async function ServiceCategoryPage({ params }: Props) {
     { name: service.title, path: `/${service.slug}` },
   ]);
 
+  // Per-item product shots for the filler cards. Resolved here, in the server component, so the
+  // page component never touches the override layer — same rule the atlas and carousel follow.
+  const itemImages: Record<string, string> = {};
+  for (const item of service.items) {
+    const key = item.id ? itemImageKey[item.id] : undefined;
+    const publicId = key ? overrides.get(key)?.public_id : undefined;
+    if (item.id && publicId) itemImages[item.id] = publicId;
+  }
+
   // Filler keeps its own bespoke page (#54); every other category renders this shared editorial
   // template. Both are the same visual language, so they read as one site rather than compete.
   const pageContent =
     service.slug === 'filler' && heroImage ? (
-      <FillerServicePage service={service} heroImage={heroImage} />
+      <FillerServicePage service={service} heroImage={heroImage} itemImages={itemImages} />
     ) : (
       <div className="bg-sand">
         {/* ── Hero ─────────────────────────────────────────────── */}
