@@ -18,6 +18,7 @@ import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
 import { FillerServicePage } from '@/components/filler-service-page';
 import { ThreadLiftServicePage } from '@/components/thread-lift-service-page';
+import { MesotherapyServicePage } from '@/components/mesotherapy-service-page';
 
 type Props = { params: Promise<{ category: string }> };
 
@@ -210,6 +211,12 @@ export default async function ServiceCategoryPage({ params }: Props) {
         service={service}
         heroImage={heroImage}
         productImage={overrides.get('thread-lift-product')?.public_id}
+      />
+    ) : service.slug === 'mesotherapy' ? (
+      <MesotherapyServicePage
+        service={service}
+        heroImage={heroImage}
+        treatmentImage={overrides.get('mesotherapy-treatment')?.public_id}
       />
     ) : (
       <div className="bg-sand">
