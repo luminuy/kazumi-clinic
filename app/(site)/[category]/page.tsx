@@ -19,6 +19,7 @@ import { ServiceIcon } from '@/components/service-icon';
 import { FillerServicePage } from '@/components/filler-service-page';
 import { ThreadLiftServicePage } from '@/components/thread-lift-service-page';
 import { MesotherapyServicePage } from '@/components/mesotherapy-service-page';
+import { IvDripServicePage } from '@/components/iv-drip-service-page';
 
 type Props = { params: Promise<{ category: string }> };
 
@@ -217,6 +218,12 @@ export default async function ServiceCategoryPage({ params }: Props) {
         service={service}
         heroImage={heroImage}
         treatmentImage={overrides.get('mesotherapy-treatment')?.public_id}
+      />
+    ) : service.slug === 'iv-drip' ? (
+      <IvDripServicePage
+        service={service}
+        heroImage={heroImage}
+        treatmentImage={overrides.get('iv-drip-booking')?.public_id}
       />
     ) : (
       <div className="bg-sand">
