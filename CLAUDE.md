@@ -62,7 +62,7 @@ Stack: Next.js App Router (React 19) + TypeScript + Tailwind CSS v4 + shadcn/ui 
 
 ก่อน commit/push **ต้อง** ตรวจให้ครบ:
 
-- [ ] `pnpm lint` ผ่าน
+- [ ] `pnpm lint` ผ่าน (exit 0) — เพิ่งใช้งานได้จริง 2026-07-17 ก่อนหน้านั้นมันไม่เคย lint อะไรเลย (ดู §0.5)
 - [ ] `pnpm typecheck` ผ่าน
 - [ ] `pnpm build` ผ่าน (static params ของ `/[category]` ต้อง generate ครบทุก slug ใน `lib/services.ts`)
 - [ ] `git status` — ไม่มีไฟล์ untracked แปลกปลอม (`.DS_Store`, `* 2.*`, ฯลฯ) ก่อน push
@@ -127,6 +127,11 @@ Stack: Next.js App Router (React 19) + TypeScript + Tailwind CSS v4 + shadcn/ui 
 
 - 2026-07-17 — **แก้เฉพาะสิ่งที่เห็นบนหน้า แต่ไม่ไล่ end-to-end = ทิ้งบั๊กไว้ใน metadata/admin/cache** · หน้า `/services` เคยใช้รูป hero ที่เปลี่ยนผ่าน `/admin` ได้ แต่ OG/Twitter ยังเป็น `const ogImage = cld(...)` ที่ถูก freeze ตอน build; Header/Footer และ JSON-LD logo ก็ยังอ่านค่า default; revalidation map ไม่ครอบทุกหน้าที่ใช้ slot เดียวกัน → **กฎ: งานที่แตะรูปต้อง audit ทั้งสายเสมอ**: page render → OG → Twitter → JSON-LD → Header/Footer (ถ้าเกี่ยว) → admin slot → D1 override → `REVALIDATION_TARGETS` → ISR/runtime verification · ห้ามปิดงานเพียงเพราะภาพบนหน้าที่ user ส่งมาดูถูกแล้ว และห้ามสร้าง Cloudinary URL สำหรับรูปที่ admin เปลี่ยนได้ด้วย module-level const
 - 2026-07-17 — **เอกสารเก่าที่ขัดกับ implementation ทำให้ agent ทำผิดซ้ำ** · README/CLAUDE ยังระบุ R2, 5 หมวดบริการ, `ogImage` field และ local `cf:preview` ทั้งที่ production ใช้ KV, มี 9 หมวด, metadata อ่าน image slot และเครื่องนี้รัน workerd ไม่ได้ → **กฎ: เมื่อ architecture/data/workflow เปลี่ยน ต้องค้นทุก `.md` หา keyword เก่าและแก้ใน PR เดียวกัน**; ข้อเท็จจริงเรื่อง runtime ให้ยึด `package.json`, `open-next.config.ts`, `wrangler.jsonc`, `lib/services.ts` และ `origin/main` ก่อน prose เสมอ
+- 2026-07-17 — **"คำสั่งที่พังมานาน" ถูกเข้าใจเป็น "นิสัยของ repo" แทนที่จะเป็นบั๊ก — quality gate เลยตายเงียบหลายเดือน** · `pnpm lint` (= `eslint .`) พังทุกครั้งด้วย error ชี้ไป migration guide ของ ESLint · สาเหตุจริง: **ไม่มีไฟล์ eslint config เลยสักไฟล์** และ ESLint 9 อ่านเฉพาะ flat config → มัน exit 2 ตั้งแต่ก่อนจะ lint อะไร แปลว่า **repo นี้ไม่เคย lint สักบรรทัดเดียว** · เพราะ checklist §0.3 บังคับแค่ typecheck + build ทุกคนเลยเดินผ่านมันไปโดยคิดว่า "มันเป็นแบบนี้แหละ" · พอใส่ `eslint.config.mjs` (FlatCompat เพราะ eslint-config-next 15.5 ยังเป็น eslintrc) มันเจอทันที 1 error + 18 warning ที่ค้างมานาน
+  → **กฎ: คำสั่งใน `package.json` ที่ fail ต้องหาสาเหตุจริงก่อนเสมอ ห้ามสรุปว่า "พังอยู่แล้ว/พังมาก่อน" แล้วเดินผ่าน** — "พังมาก่อน" อธิบายว่า*ใครทำ* ไม่ได้อธิบายว่า*ทำไม* · script ที่ fail ทุกครั้ง = gate ที่ไม่ได้ทำงาน ไม่ใช่ gate ที่เข้มงวด
+  → **กฎ: rule ที่ `eslint-disable` อ้างถึง ต้องเปิดใช้จริง** — ตอนเปิด lint ได้ พบว่า directive `react/no-danger` ทั้ง 8 จุดรายงานเป็น "unused" เพราะ `next/core-web-vitals` ไม่เคยเปิด rule นั้น · **ห้ามลบ directive ตาม label "unused"** (§0.5 เตือนไว้แล้ว) — ให้เปิด rule ที่มันอ้างถึงแทน ไม่งั้นคือลบ convention ที่ §12 เขียนไว้เองทิ้ง
+- 2026-07-17 — **เว็บ deploy จริงแล้ว — ข้อความ "ไม่เคย deploy" ในไฟล์นี้หมดอายุแล้ว** · `wrangler deployments list` **ไม่ว่างอีกต่อไป** (ตรวจ 2026-07-17: มี deploy หลายครั้งตั้งแต่ 02:09 น.) และ `https://kazumi-clinic.bankjack10452.workers.dev/services` ตอบ **200** จริง · แต่ `kazumiclinic.com` ยัง **ไม่ตอบ (000)** → โดเมนจริงยังไม่ขึ้น, `SITE_ENV=preview` จึงยังต้องอยู่ และ robots.txt ยัง `Disallow: /` ทั้งไซต์ (ตรวจแล้วว่าทำงานจริง)
+  → บทเรียน 2026-07-16 ด้านล่างที่เขียนว่า "ไม่เคย deploy เลยสักครั้ง" **ยังคงไว้ในฐานะบันทึกประวัติ** และ*กฎ*ของมัน (ต้องยิงคำสั่งตรวจก่อนพูด) ยังใช้ได้เต็มร้อย — แต่ **ห้ามอ่านมันเป็นสถานะปัจจุบัน** · นี่คือตัวอย่างของกฎนั้นเอง: ไฟล์นี้บอกว่าไม่เคย deploy, ของจริงตรงข้าม — **ตรวจก่อนพูดทุกครั้ง**
 - 2026-07-17 — **ไฟล์ที่เปิดจากดิสก์ ≠ ไฟล์บน main — audit ผิดตัวแล้วรายงานว่าคนอื่นมีบั๊ก** · ผม audit `CLAUDE.md` ของ littlesmileflower โดย `Read` จากโฟลเดอร์เขาตรง ๆ แล้วรายงาน user ว่า "ต้นฉบับยังมี 3 บั๊กค้างอยู่" · พอ user สั่งให้ไปแก้ให้ ถึงรู้ว่าสำเนาบนดิสก์นั้นอยู่บน branch ค้างเก่า (`fix/confirmed-no-price-empty-card`, 315 บรรทัด) ส่วน **main ของเขาแก้ครบทั้ง 3 ข้อไปแล้ว** (398 บรรทัด, refactor ใหญ่, มี `docs/lessons.md` + `pnpm run seo:check` ที่เราไม่มีด้วยซ้ำ) → ผมกล่าวหาเขาผิด ๆ และเกือบเปิด PR "แก้" สิ่งที่ไม่พัง
   → **กฎ: ก่อนสรุปสถานะโค้ดของ repo ใด (โดยเฉพาะ repo อื่น) ต้องอ่านจาก ref ที่ระบุชัดเสมอ** — `git -C <repo> show origin/main:path` หรือ `git fetch` + worktree จาก `origin/main` · **ห้าม `Read` ไฟล์จาก working copy แล้วเรียกมันว่า "โค้ดของโปรเจกต์นั้น"** เพราะ working copy อาจอยู่บน branch อื่น มี uncommitted changes หรือค้างหลัง main เป็นเดือน · เช็คก่อนเสมอ: `git -C <repo> branch --show-current` + `git -C <repo> status --short`
   → เป็นบั๊กชุดเดียวกับ 2026-07-16 ที่ผมเปิด local dev server ให้ user ดูแล้วบอกว่า "เวอร์ชันล่าสุด" ทั้งที่ worktree ค้างอยู่ 2 commit หลัง main · **"ล่าสุด" ต้องเทียบกับ `origin/main` ที่ fetch สด ไม่ใช่สิ่งที่บังเอิญอยู่ในโฟลเดอร์**
@@ -306,7 +311,7 @@ provider: { '@id': `${site.url}/#business` }   // ✓ ถูก
 - [ ] ถ้าเพิ่ม/ย้ายจุดใช้รูป — `REVALIDATION_TARGETS` ใน `app/api/admin/images/route.ts` ครบทุกหน้าที่ได้รับผล
 - [ ] เพิ่ม URL/service ใหม่ใน `lib/services.ts` (sitemap อ่านจากตรงนี้)
 - [ ] `pnpm lint` ผ่าน
-- [ ] `pnpm typecheck` ผ่าน (script ของ repo เท่านั้น — ห้าม `npx tsc --noEmit` ลอย ๆ ดู §0.5)
+- [ ] `pnpm typecheck` ผ่าน (script ของ repo เท่านั้น — ห้าม `npx tsc --noEmit` / `npx eslint` ลอย ๆ ดู §0.5)
 - [ ] **JSON-LD ที่แก้/เพิ่ม ผ่าน [Schema.org Validator](https://validator.schema.org/) และ [Rich Results Test](https://search.google.com/test/rich-results) อย่างน้อย 1 หน้า** — ค่า enum ต้องเช็คกับ doc ของ Google ไม่ใช่ schema.org (ดู §0.5)
 - [ ] เนื้อหาทางการแพทย์ผ่านการตรวจตามข้อ 0.2
 
@@ -315,7 +320,7 @@ provider: { '@id': `${site.url}/#business` }   // ✓ ถูก
 ## 11. Cloudflare / OpenNext — ข้อควรระวัง
 
 - `open-next.config.ts` ต้องมี `queue: doQueue` และ `tagCache: d1NextTagCache` เสมอ — ถ้าปล่อย default จะได้ dummy queue ที่ throw `"Dummy queue is not implemented"` ตอน revalidate พื้นหลัง ทำให้หน้า stale ไม่มีวัน regenerate (ดู [open-next.config.ts](open-next.config.ts))
-- Incremental cache ปัจจุบันใช้ `kvIncrementalCache` เพราะบัญชียังไม่เปิด R2; binding ที่ต้องมีใน [wrangler.jsonc](wrangler.jsonc): `NEXT_CACHE_DO_QUEUE` (Durable Object), `NEXT_INC_CACHE_KV` (KV), `NEXT_TAG_CACHE_D1` (D1) และ `WORKER_SELF_REFERENCE` (Service) — resource จริงถูกสร้างและใส่ ID แล้ว ห้ามรันคำสั่งสร้างซ้ำ
+- Incremental cache ปัจจุบันใช้ `kvIncrementalCache` เพราะบัญชียังไม่เปิด R2 (API code 10042 — ต้องไปกดเปิดใน dashboard); binding ที่ต้องมีใน [wrangler.jsonc](wrangler.jsonc): `NEXT_CACHE_DO_QUEUE` (Durable Object), `NEXT_INC_CACHE_KV` (KV), `NEXT_TAG_CACHE_D1` (D1) และ `WORKER_SELF_REFERENCE` (Service) — resource จริงถูกสร้างและใส่ ID แล้ว ห้ามรันคำสั่งสร้างซ้ำ
 - งานที่แตะ cache/ISR/revalidation — verify ที่ runtime observability (`wrangler tail`) เสมอ ไม่ใช่แค่ HTTP 200 — async error จาก background revalidation ไม่โผล่ใน response
 
 ---
