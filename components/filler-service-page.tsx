@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, Check, MessageCircle, ShieldCheck } from 'lucide-react';
+import { ArrowRight, FlaskConical, MessageCircle, ShieldCheck, Syringe } from 'lucide-react';
 import type { ServiceCategory } from '@/lib/services';
 import { doctor } from '@/lib/doctor';
 import { site } from '@/lib/site';
@@ -11,21 +11,30 @@ import { SectionLabel } from '@/components/page-hero';
 export function FillerServicePage({
   service,
   heroImage,
+  itemImages = {},
 }: {
   service: ServiceCategory;
   heroImage: string;
+  /** ServiceItem.id → Cloudinary public ID, resolved from /admin by the server component. */
+  itemImages?: Record<string, string>;
 }) {
   return (
     <div className="overflow-hidden bg-sand">
       <section className="px-6 pb-20 pt-28 md:px-10 md:pb-28 md:pt-36">
         <div className="mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-7">
-            <nav aria-label="Breadcrumb" className="mb-12 flex items-center gap-2 text-xs text-ink/50">
+            <nav
+              aria-label="Breadcrumb"
+              className="mb-12 flex items-center gap-2 text-xs text-ink/50"
+            >
               <Link href="/" className="transition-colors duration-150 hover:text-olive-deep">
                 หน้าหลัก
               </Link>
               <span aria-hidden="true">/</span>
-              <Link href="/services" className="transition-colors duration-150 hover:text-olive-deep">
+              <Link
+                href="/services"
+                className="transition-colors duration-150 hover:text-olive-deep"
+              >
                 บริการ
               </Link>
               <span aria-hidden="true">/</span>
@@ -46,11 +55,13 @@ export function FillerServicePage({
             <div className="mt-10 flex flex-col gap-4 border-t border-olive/20 pt-6 text-sm text-olive-deep sm:flex-row sm:gap-10">
               <span className="flex items-center gap-2.5">
                 <ShieldCheck className="size-4" aria-hidden="true" />
-                ประเมินโดยแพทย์ก่อนรับบริการ
+                Doctor Assessed
               </span>
+              {/* "Premium Hyaluronic Acid" restates the category description we already publish
+                  ("ฟิลเลอร์กรดไฮยาลูรอนิกจากแบรนด์คุณภาพ") — not a new claim. */}
               <span className="flex items-center gap-2.5">
-                <Check className="size-4" aria-hidden="true" />
-                ฟิลเลอร์กรดไฮยาลูรอนิก
+                <FlaskConical className="size-4" aria-hidden="true" />
+                Premium Hyaluronic Acid
               </span>
             </div>
           </div>
@@ -67,7 +78,10 @@ export function FillerServicePage({
                 className="object-cover"
               />
             </div>
-            <div className="absolute -bottom-8 -left-8 -z-0 h-40 w-40 border-b border-l border-olive/25 md:h-52 md:w-52" aria-hidden="true" />
+            <div
+              className="absolute -bottom-8 -left-8 -z-0 h-40 w-40 border-b border-l border-olive/25 md:h-52 md:w-52"
+              aria-hidden="true"
+            />
           </div>
         </div>
       </section>
@@ -94,45 +108,89 @@ export function FillerServicePage({
               </h2>
             </div>
             <p className="text-sm leading-[1.8] text-ink/60 md:text-right">
-              รายการและขนาดผลิตภัณฑ์ที่คลินิกมีให้บริการ แพทย์จะเป็นผู้ประเมินความเหมาะสมก่อนทำหัตถการ
+              รายการและขนาดผลิตภัณฑ์ที่คลินิกมีให้บริการ
+              แพทย์จะเป็นผู้ประเมินความเหมาะสมก่อนทำหัตถการ
             </p>
           </Reveal>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3">
-            {service.items.map((item, index) => (
-              <Reveal
-                key={`${item.name}-${item.detail ?? ''}`}
-                delay={(index % 3) * 60}
-                className="border-b border-olive/20 py-10 md:px-8 md:first:pl-0 lg:[&:nth-child(3n+1)]:pl-0 lg:[&:nth-child(3n)]:pr-0"
-              >
-                <article className="flex h-full flex-col">
-                  <span className="font-serif text-5xl italic text-olive/20" aria-hidden="true">
-                    {String(index + 1).padStart(2, '0')}
-                  </span>
-                  <div className="mt-10 min-h-24 border-l border-clay pl-5">
-                    <h3 className="font-serif text-2xl leading-tight text-olive-deep">{item.name}</h3>
+          <div className="mt-12 grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
+            {service.items.map((item, index) => {
+              const productImage = item.id ? itemImages[item.id] : undefined;
+              return (
+                <Reveal
+                  key={item.id ?? `${item.name}-${item.detail ?? ''}`}
+                  delay={(index % 3) * 60}
+                >
+                  <article className="flex h-full flex-col">
+                    <div className="relative aspect-square overflow-hidden border border-olive/10 bg-cream">
+                      {productImage ? (
+                        <Image
+                          src={productImage}
+                          // The clinic picks this photo; we can't describe what it shows, and the
+                          // product name sits right beside it — so it's decorative, not informative.
+                          alt=""
+                          aria-hidden="true"
+                          fill
+                          sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 88vw"
+                          className="object-cover"
+                        />
+                      ) : (
+                        <span
+                          aria-hidden="true"
+                          className="absolute inset-0 flex items-center justify-center"
+                        >
+                          <Syringe className="size-8 text-olive/20" strokeWidth={0.75} />
+                        </span>
+                      )}
+                    </div>
+
+                    <h3 className="mt-6 font-serif text-2xl leading-tight text-olive-deep">
+                      {item.name}
+                    </h3>
                     {item.detail && (
-                      <p className="mt-2 text-xs uppercase tracking-[0.16em] text-ink/50">
+                      <p className="mt-1.5 text-[0.68rem] uppercase tracking-[0.16em] text-ink/45">
                         {item.detail}
                       </p>
                     )}
-                  </div>
-                  <div className="mt-10 flex items-end justify-between gap-4">
-                    <span className="text-xs uppercase tracking-[0.18em] text-ink/45">ราคาโปรโมชัน</span>
-                    <p className="font-serif text-3xl text-olive-deep">
-                      {item.priceFrom !== undefined ? item.priceFrom.toLocaleString('th-TH') : 'สอบถาม'}
-                      {item.priceFrom !== undefined && (
-                        <span className="ml-2 font-sans text-xs tracking-wide text-ink/50">บาท / {item.unit}</span>
-                      )}
-                    </p>
-                  </div>
-                </article>
-              </Reveal>
-            ))}
+
+                    <div className="mt-6 flex items-baseline justify-between gap-3 border-t border-olive/15 pt-5">
+                      {/* §0.2: a promo price has to say it's a promo. The reference drops this
+                          label and shows a bare number — that's the one thing we can't copy. */}
+                      <span className="text-[0.62rem] uppercase tracking-[0.16em] text-ink/45">
+                        ราคาโปรโมชัน
+                      </span>
+                      <p className="font-serif text-2xl text-olive-deep">
+                        {item.priceFrom !== undefined ? (
+                          <>
+                            {item.priceFrom.toLocaleString('th-TH')}
+                            <span className="ml-1.5 font-sans text-[0.62rem] tracking-wide text-ink/50">
+                              บาท / {item.unit}
+                            </span>
+                          </>
+                        ) : (
+                          <span className="font-sans text-sm text-ink/60">สอบถามราคา</span>
+                        )}
+                      </p>
+                    </div>
+
+                    <a
+                      href={site.lineUrl}
+                      target="_blank"
+                      rel="noopener"
+                      aria-label={`จอง ${item.name}${item.detail ? ` ${item.detail}` : ''} ผ่าน LINE`}
+                      className="mt-auto block border border-olive-deep px-4 py-3.5 pt-3.5 text-center text-[0.66rem] uppercase tracking-[0.18em] text-olive-deep transition-colors duration-200 hover:bg-olive-deep hover:text-sand active:scale-[0.98]"
+                    >
+                      Book Session
+                    </a>
+                  </article>
+                </Reveal>
+              );
+            })}
           </div>
 
-          <p className="mt-8 border-l border-olive/30 pl-5 text-xs leading-relaxed text-ink/50">
-            *ราคาโปรโมชัน โปรดสอบถามช่วงเวลาและเงื่อนไขล่าสุดกับคลินิกก่อนรับบริการ · ทุกหัตถการไม่แนะนำสำหรับผู้มีอายุต่ำกว่า 18 ปี · ผลลัพธ์แตกต่างกันในแต่ละบุคคล
+          <p className="mt-14 bg-cream px-6 py-5 text-center text-xs italic leading-relaxed text-ink/50">
+            *ราคาโปรโมชัน โปรดสอบถามช่วงเวลาและเงื่อนไขล่าสุดกับคลินิกก่อนรับบริการ ·
+            ทุกหัตถการไม่แนะนำสำหรับผู้มีอายุต่ำกว่า 18 ปี · ผลลัพธ์แตกต่างกันในแต่ละบุคคล
           </p>
         </div>
       </section>
@@ -141,41 +199,46 @@ export function FillerServicePage({
         <Reveal className="mx-auto grid max-w-6xl gap-10 md:grid-cols-12 md:items-end">
           <div className="md:col-span-7">
             <SectionLabel index={3}>Doctor-led assessment</SectionLabel>
-            <h2 className="mt-5 font-serif text-4xl text-olive-deep md:text-5xl">ดูแลและประเมินโดยแพทย์</h2>
+            <h2 className="mt-5 font-serif text-4xl text-olive-deep md:text-5xl">
+              ดูแลและประเมินโดยแพทย์
+            </h2>
             <p className="mt-6 max-w-2xl text-sm leading-[1.9] text-ink/65">{doctor.summary}</p>
           </div>
           <div className="border-l border-olive/25 pl-6 md:col-span-5">
             <p className="font-serif text-2xl text-olive-deep">{doctor.nameTh}</p>
-            <p className="mt-2 text-sm text-ink/60">{doctor.role} · ใบประกอบวิชาชีพ {doctor.licenseNo}</p>
+            <p className="mt-2 text-sm text-ink/60">
+              {doctor.role} · ใบประกอบวิชาชีพ {doctor.licenseNo}
+            </p>
             <p className="mt-2 text-xs text-ink/45">ใบอนุญาตสถานพยาบาล {site.license}</p>
           </div>
         </Reveal>
       </section>
 
       <section className="bg-olive-deep px-6 py-24 text-sand md:px-10 md:py-32">
-        <Reveal className="mx-auto grid max-w-6xl gap-12 md:grid-cols-12 md:items-end">
-          <div className="md:col-span-8">
-            <p className="section-eyebrow section-eyebrow--dark">Medical consultation</p>
-            <h2 className="mt-6 font-serif text-5xl leading-[0.95] tracking-tight md:text-7xl">
-              เริ่มต้นด้วยการประเมิน
-              <span className="block italic text-clay">อย่างเหมาะสมกับคุณ</span>
-            </h2>
-            <p className="mt-7 max-w-2xl text-sm leading-[1.9] text-sand/65">
-              ติดต่อทีมงานเพื่อจองคิวปรึกษาแพทย์และสอบถามรายละเอียดบริการฟิลเลอร์
-            </p>
-          </div>
-          <div className="flex flex-col gap-3 md:col-span-4">
+        <Reveal className="mx-auto max-w-6xl">
+          <p className="section-eyebrow section-eyebrow--dark">Medical consultation</p>
+          <h2
+            lang="en"
+            className="mt-6 max-w-3xl font-serif text-5xl leading-[1.05] tracking-tight md:text-6xl"
+          >
+            Ready for your transformation?
+          </h2>
+          <p className="mt-7 max-w-xl text-sm leading-[1.9] text-sand/65">
+            จองคิวเพื่อประเมินโครงหน้าและปรึกษาแพทย์ได้โดยตรงผ่าน LINE Official Account
+            ทีมงานของเราพร้อมดูแลคุณในทุกขั้นตอน
+          </p>
+          <div className="mt-10 flex flex-col gap-3 sm:flex-row">
             <Button
               render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
-              className="h-14 rounded-none bg-sand px-6 text-olive-deep transition-[transform,background-color] duration-150 hover:bg-cream active:scale-[0.97]"
+              className="h-14 rounded-none bg-sand px-8 text-olive-deep transition-[transform,background-color] duration-150 hover:bg-cream active:scale-[0.97]"
             >
               <MessageCircle className="size-4" />
-              จองคิวฟิลเลอร์ผ่าน LINE
+              จองคิว {service.title} ผ่าน LINE
             </Button>
             <Button
               render={<Link href="/services" />}
               variant="outline"
-              className="h-14 rounded-none border-sand/35 bg-transparent px-6 text-sand transition-[transform,background-color] duration-150 hover:bg-sand/10 hover:text-sand active:scale-[0.97]"
+              className="h-14 rounded-none border-sand/35 bg-transparent px-8 text-sand transition-[transform,background-color] duration-150 hover:bg-sand/10 hover:text-sand active:scale-[0.97]"
             >
               ดูบริการอื่น <ArrowRight className="size-4" />
             </Button>
