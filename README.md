@@ -1,107 +1,125 @@
 # Kazumi Clinic — เว็บไซต์คลินิกความงาม
 
-เว็บไซต์ทางการของ **Kazumi Clinic (คาซึมิ คลินิก)** สถานเสริมความงามย่านสุขุมวิท กรุงเทพฯ ให้บริการหัตถการโดยแพทย์ — ฟิลเลอร์ โบท็อกซ์ สกินบูสเตอร์ คอลลาเจนบูสเตอร์ และ IV Drip วิตามิน
+เว็บไซต์การตลาดและแนะนำบริการของ **Kazumi Clinic (คาซึมิ คลินิก)** ย่านสุขุมวิท กรุงเทพฯ สร้างด้วย Next.js App Router และ deploy บน Cloudflare Workers ผ่าน OpenNext
 
-เป็นเว็บ **การตลาด/แนะนำบริการ (marketing site)** ที่ออกแบบให้ **SEO เป็นแกนหลัก** — เน้นให้ค้นเจอบน Google และ AI search รวมถึงแสดงราคา บริการ และช่องทางติดต่อ (โทร / LINE / Instagram) โทนแบรนด์เป็นสไตล์ญี่ปุ่นมินิมอล สงบ (_"Where balance purity becomes eternal beauty" / 純粋さは永遠の美へ_)
+โทนแบรนด์คือ Japanese Editorial Luxury: สงบ แม่นยำ ใช้พื้นที่ว่างและสัดส่วน 1.618 ภายใต้แนวคิด _“Where balance purity becomes eternal beauty” / 純粋さは永遠の美へ_ ดูกฎ UI ที่ [docs/design.md](docs/design.md)
 
-> ⚠️ เนื้อหาทางการแพทย์อยู่ภายใต้ พ.ร.บ.สถานพยาบาล และประกาศ อย./สบส. — ห้ามอ้างสรรพคุณเกินจริง และต้องแสดงเลขใบอนุญาต (`มสพ.สบส.338/2569`) เสมอ ดูรายละเอียดใน [CLAUDE.md](CLAUDE.md) §0.2
+> เนื้อหาทางการแพทย์อยู่ภายใต้ พ.ร.บ.สถานพยาบาล และประกาศ อย./สบส. ห้ามอ้างสรรพคุณเกินจริง ราคาที่มาจากโปรโมชั่นต้องระบุช่วงเวลา และต้องคงเลขใบอนุญาตสถานพยาบาลไว้เสมอ ดู [CLAUDE.md](CLAUDE.md) §0.2
 
----
+## สถานะปัจจุบัน
 
-## Tech Stack
+| รายการ | ค่า |
+| --- | --- |
+| URL ที่ใช้งาน | `https://kazumi-clinic.bankjack10452.workers.dev` |
+| Production Worker | `kazumi-clinic` |
+| CI/CD | ไม่มี — `gh pr checks` ตอบ `no checks reported` เป็นปกติ |
+| Deploy | `pnpm cf:deploy` ด้วยมือ; merge เข้า `main` ไม่ deploy อัตโนมัติ |
+| Search indexing | ปิดด้วย `SITE_ENV=preview` จนกว่าจะมีโดเมนจริง |
+| โดเมน canonical ปัจจุบัน | `site.url` ยังเป็น `https://kazumiclinic.com`; ดูข้อควรระวังใน [docs/infrastructure.md](docs/infrastructure.md) |
+
+## Tech stack
 
 | ชั้น | เทคโนโลยี |
 | --- | --- |
-| Framework | **Next.js 15.5** (App Router) + **React 19.2** |
-| ภาษา | **TypeScript 5.6** |
-| Styling | **Tailwind CSS v4** (config อยู่ใน `@theme` ของ `app/globals.css` — ไม่มี `tailwind.config.ts`) |
-| UI components | **shadcn/ui บน Base UI** (`@base-ui/react`) — ไม่ใช่ Radix |
-| Icons | `lucide-react` |
-| Validation | **Zod** (ใช้ validate input ของ API route ก่อนแตะ DB) |
-| Deploy | **Cloudflare Workers** ผ่าน **OpenNext** (`@opennextjs/cloudflare`) — Node.js runtime |
-| ISR cache | **R2** (incremental cache) · **D1** (tag cache) · **Durable Object** (revalidation queue) |
+| Framework | Next.js 15.5 App Router + React 19.2 |
+| ภาษา | TypeScript 5.6 |
+| Styling | Tailwind CSS v4 ผ่าน `@theme` ใน `app/globals.css` — ไม่มี `tailwind.config.ts` |
+| UI | shadcn/ui บน Base UI (`@base-ui/react`) — ใช้ prop `render`, ไม่ใช่ Radix `asChild` |
+| Validation | Zod ก่อน Route Handler แตะ DB |
+| Runtime | Cloudflare Workers + OpenNext, Node.js runtime compatibility |
+| ISR | KV incremental cache + D1 tag cache + Durable Object queue |
+| รูปภาพ | Cloudinary; image override เก็บในตาราง D1 `site_images` |
 
-**Backend:** ไม่แยก service ต่างหาก — ใช้ Next.js Route Handlers (`app/api/*/route.ts`) รันเป็นส่วนหนึ่งของ Worker เดียวกับหน้าเว็บ (share `lib/` และ D1 binding เดียวกัน)
-
----
+Backend ใช้ Next.js Route Handlers (`app/api/*/route.ts`) ภายใน Worker เดียวกับหน้าเว็บ ไม่มี backend service แยก
 
 ## โครงสร้างโปรเจกต์
 
-```
+```text
 app/
-├── layout.tsx          # root layout — inject MedicalBusiness JSON-LD + OG/Twitter defaults
-├── page.tsx            # หน้าแรก (+ FAQPage schema — มีที่นี่ที่เดียว)
-├── [category]/page.tsx # หน้าหมวดบริการ (dynamic) — generateStaticParams + generateMetadata
-├── about/page.tsx      # เกี่ยวกับคลินิก
-├── contact/page.tsx    # ติดต่อ
-├── globals.css         # Tailwind v4 @theme — สี/ฟอนต์แบรนด์
-├── sitemap.ts          # generate จาก lib/services.ts อัตโนมัติ
-└── robots.ts           # disallow /admin, /api
+├── layout.tsx                  # document shell + default async OG/Twitter
+├── (site)/
+│   ├── layout.tsx             # Header/Footer + MedicalBusiness/WebSite JSON-LD
+│   ├── page.tsx               # หน้าแรก + FAQPage schema
+│   ├── services/page.tsx      # Treatment Atlas ครบทุกหมวด
+│   ├── [category]/page.tsx    # หน้าหมวด dynamic + ItemList/Breadcrumb
+│   ├── about/ contact/ reviews/ promotions/
+├── admin/page.tsx             # จัดการ image slots; force-dynamic
+├── api/admin/images/route.ts  # upload/reset + exhaustive revalidation
+├── sitemap.ts
+└── robots.ts
 
-components/
-├── Header.tsx · Footer.tsx · service-icon.tsx
-└── ui/                 # shadcn/Base UI primitives (button, badge, card, sheet)
+lib/
+├── site.ts                    # ข้อมูลธุรกิจและใบอนุญาต
+├── doctor.ts                  # ข้อมูลแพทย์
+├── services.ts                # 9 หมวด + โปรแกรม + ราคา
+├── promotions.ts              # โปรโมชั่นและโปสเตอร์
+├── site-images.ts             # image slot contract และตำแหน่งที่ใช้
+├── site-images-store.ts       # resolve Cloudinary public ID จาก D1
+├── metadata-images.ts         # OG/Twitter 1200×630
+└── schema.ts                  # JSON-LD helpers
 
-lib/                    # ── Single source of truth ──
-├── site.ts             # ชื่อ/เบอร์/ที่อยู่/เวลาทำการ/social/ใบอนุญาต
-├── services.ts         # หมวดบริการ + ราคา (sitemap + schema + หน้า listing อ่านจากที่นี่)
-├── schema.ts           # JSON-LD helpers (MedicalBusiness, ItemList, Breadcrumb, FAQ)
-└── utils.ts
-
-open-next.config.ts     # override queue + tagCache + incrementalCache (จำเป็น)
-wrangler.jsonc          # Cloudflare bindings: DO queue + R2 + D1
+open-next.config.ts            # KV incremental cache + DO queue + D1 tag cache
+wrangler.jsonc                 # Worker bindings/vars ที่ใช้งานจริง
+middleware.ts                  # verify Cloudflare Access JWT สำหรับ /admin และ /api/admin
 ```
 
-### หลักการออกแบบสำคัญ
+## บริการ 9 หมวด
 
-- **Single source of truth** — ข้อมูลธุรกิจอยู่ใน [lib/site.ts](lib/site.ts), บริการ+ราคาอยู่ใน [lib/services.ts](lib/services.ts) เพิ่มบริการใหม่ที่ไฟล์เดียว → **sitemap, JSON-LD schema, และหน้า listing generate ให้อัตโนมัติ** ห้าม hardcode ซ้ำ
-- **SEO-first** — ทุกหน้ามี canonical (ไม่มี trailing slash), OG image เฉพาะหน้า, และ Schema.org JSON-LD ที่เหมาะกับประเภทหน้า (`MedicalBusiness` ที่ root, `ItemList` หน้าหมวด, `BreadcrumbList` หน้าลึก)
-- **ISR บน edge** — หน้า static regenerate ผ่านคิว Durable Object เก็บ cache ใน R2 + tag ใน D1
+รายการทั้งหมดมาจาก `serviceCategories` ใน [lib/services.ts](lib/services.ts) และถูกใช้ร่วมกันโดยหน้า `/services`, dynamic routes, sitemap และ JSON-LD:
 
----
+- `/filler` — ฟิลเลอร์
+- `/botox` — โบท็อกซ์
+- `/iv-drip` — IV Drip วิตามิน
+- `/skin-booster` — สกินบูสเตอร์
+- `/collagen-booster` — คอลลาเจนบูสเตอร์
+- `/thread-lift` — ร้อยไหมกระชับใบหน้า
+- `/mesotherapy` — เมโสบำรุงผิวและเมโสแฟต
+- `/acne-care` — ดูแลสิวและหลุมสิว
+- `/laser-hifu` — เลเซอร์และยกกระชับ
 
-## บริการที่ให้ (5 หมวด)
+ราคาบางรายการมีที่มาจากสื่อโปรโมชั่นและยังไม่ควรถูกนำไปแสดงเป็น “ราคาปกติ” ในหน้ารวมบริการ หากจะเปลี่ยนราคาให้แก้ที่ `lib/services.ts` เท่านั้นและผ่านการตรวจเนื้อหาทางการแพทย์ก่อนเผยแพร่
 
-| Slug | หมวด | เริ่มต้น |
-| --- | --- | --- |
-| `/filler` | ฟิลเลอร์ | 3,990.- |
-| `/botox` | โบท็อกซ์ | 8,990.- |
-| `/iv-drip` | IV Drip วิตามิน | 2,590.- |
-| `/skin-booster` | สกินบูสเตอร์ | 11,990.- |
-| `/collagen-booster` | คอลลาเจนบูสเตอร์ | 18,990.- |
+## รูปและ metadata
 
-> ราคาข้างต้นเป็นโปรโมชั่น "May Exclusive Offer" — ยืนยันราคาปกติกับคลินิกก่อนใช้เป็นราคาถาวร (ดู [lib/services.ts](lib/services.ts))
+- ห้ามเพิ่มรูปเว็บไซต์ใน `public/`; รูปที่คลินิกแก้เองต้องอยู่บน Cloudinary และมี slot ใน `lib/site-images.ts`
+- `/admin` เขียน Cloudinary public ID ลง D1; Server Component resolve override แล้วส่งให้ Client Component
+- รูปที่ admin เปลี่ยนได้ต้องใช้ async `generateMetadata`; ห้ามสร้าง `const ogImage = cld(...)` ระดับโมดูล
+- OG/Twitter ใช้สัดส่วน 1200×630 และต้องอ้าง image slot เดียวกับภาพจริงของหน้า
+- เพิ่มหรือย้ายจุดใช้รูปต้องอัปเดต `REVALIDATION_TARGETS` ใน `app/api/admin/images/route.ts`
 
----
+รายละเอียด end-to-end อยู่ใน [docs/images.md](docs/images.md)
 
-## การพัฒนา
+## การพัฒนาและตรวจสอบ
 
 ```bash
-pnpm install        # ติดตั้ง dependencies
-pnpm dev            # dev server (http://localhost:3000)
-pnpm typecheck      # tsc --noEmit
-pnpm build          # next build
-pnpm lint           # eslint
-
-# Cloudflare
-pnpm cf:build       # build ผ่าน OpenNext adapter
-pnpm cf:preview     # preview บน workerd (local)
-pnpm cf:deploy      # build + deploy production
+pnpm install
+pnpm dev          # Next dev; ไม่มี D1/KV binding จึงเห็นเฉพาะรูป default
+pnpm lint         # ESLint 9 ผ่าน flat config ของ repo
+pnpm typecheck    # verification บังคับ
+pnpm build        # verification บังคับ; ต้อง generate ครบ 9 category routes
+pnpm cf:build     # สร้าง OpenNext bundle
+pnpm cf:deploy    # build + deploy Worker จริง
 ```
 
-### ก่อน deploy จริงครั้งแรก
+ข้อจำกัดเครื่องปัจจุบัน (macOS 12.6): `wrangler dev`, `pnpm cf:preview` และ D1 local ใช้ไม่ได้เพราะ workerd ต้องการ macOS 13.5+ ส่วน `pnpm cf:deploy` ใช้ได้ผ่าน `OPEN_NEXT_DEPLOY=true` ที่ผูกไว้ใน script แล้ว
 
-ต้องสร้าง Cloudflare resources แล้วแทนที่ placeholder ใน [wrangler.jsonc](wrangler.jsonc):
+## Deploy
+
+Cloudflare resources ถูกสร้างและใส่ ID จริงไว้แล้ว ห้ามรันคำสั่งสร้าง KV/D1 ซ้ำ ขั้นตอน deploy คือ:
 
 ```bash
-wrangler r2 bucket create kazumi-clinic-cache
-wrangler d1 create kazumi-clinic-tag-cache   # เอา database_id มาใส่แทน REPLACE_WITH_D1_DATABASE_ID
+pnpm lint
+pnpm typecheck
+pnpm build
+pnpm cf:deploy
 ```
 
----
+ถือว่า deploy สำเร็จเมื่อ Wrangler คืน `Current Version ID` แล้วตรวจ URL จริงได้ HTTP 200 เท่านั้น งาน cache/ISR ต้องตรวจ runtime observability เพิ่ม เพราะ background error อาจไม่ปรากฏใน response
 
-## กติกาสำหรับผู้ร่วมพัฒนา (รวม AI agents)
+## เอกสารบังคับ
 
-อ่าน **[CLAUDE.md](CLAUDE.md)** ก่อนแก้โค้ดทุกครั้ง — เป็นกฎบังคับเรื่อง URL convention (ไม่มี trailing slash), JSON-LD, sitemap, เนื้อหาทางการแพทย์ และ workflow commit/PR ของ repo นี้
-
-บันทึกเหตุการณ์และบทเรียนจากการพัฒนาอยู่ใน [docs/2026-07-local-version-mismatch.md](docs/2026-07-local-version-mismatch.md) — ก่อนเปิด local preview ให้ตรวจ `HEAD` กับ `origin/main` ให้ตรงกันเสมอ
+- [CLAUDE.md](CLAUDE.md) — workflow, SEO, medical compliance และข้อห้ามสำหรับ agents
+- [docs/design.md](docs/design.md) — design system และโครงหน้า Services
+- [docs/images.md](docs/images.md) — Cloudinary/D1/admin/metadata/revalidation
+- [docs/infrastructure.md](docs/infrastructure.md) — URL, bindings, Access, deploy และข้อจำกัดเครื่อง
+- [docs/2026-07-local-version-mismatch.md](docs/2026-07-local-version-mismatch.md) — บทเรียนเรื่อง local branch ไม่ตรง `origin/main`

@@ -5,8 +5,9 @@
 **เอกสารที่ต้องอ่านก่อนลงมือ:**
 - **[docs/infrastructure.md](docs/infrastructure.md)** — เว็บอยู่ที่ไหน, binding/vars จริงมีอะไร, deploy ยังไง, ข้อจำกัดของเครื่อง dev, สถานะโดเมน
 - **[docs/images.md](docs/images.md)** — รูปทำงานยังไงตั้งแต่ /admin ถึงหน้าเว็บ, เพิ่มรูปใหม่ต้องแตะไฟล์ไหนบ้าง, กับดัก 6 ข้อที่เคยเหยียบมาแล้ว
+- **[docs/design.md](docs/design.md)** — design system ปัจจุบัน, โครงหน้า Services, และกฎ responsive/accessibility ที่ต้องรักษา
 
-Stack: Next.js App Router (React 19) + TypeScript + Tailwind CSS v4 + shadcn/ui (Base UI primitives) + Zod, deploy บน Cloudflare Workers ผ่าน OpenNext (D1 + R2 + Durable Object queue สำหรับ ISR)
+Stack: Next.js App Router (React 19) + TypeScript + Tailwind CSS v4 + shadcn/ui (Base UI primitives) + Zod, deploy บน Cloudflare Workers ผ่าน OpenNext (KV incremental cache + D1 tag cache + Durable Object queue สำหรับ ISR)
 
 **Backend**: ใช้ Next.js Route Handlers (`app/api/*/route.ts`) เป็น backend เดียว — ไม่แยก backend service ต่างหาก เพราะ `@opennextjs/cloudflare` รัน API routes เป็นส่วนหนึ่งของ Worker เดียวกับหน้าเว็บอยู่แล้ว (คนละ endpoint แต่ deploy พร้อมกัน, share `lib/` และ D1 binding เดียวกัน) — ทุก route handler ต้อง validate input ด้วย Zod ก่อนแตะ DB เสมอ
 
@@ -28,7 +29,8 @@ Stack: Next.js App Router (React 19) + TypeScript + Tailwind CSS v4 + shadcn/ui 
 - ถ้ามี check และยัง in-progress → ใช้ `gh pr merge <num> --squash --auto --delete-branch`
 - ถ้า build FAIL → หยุด, แจ้ง user, แก้ก่อน
 - ก่อน `gh pr merge` ทุกครั้ง: เช็ค `gh pr view --json headRefOid` ให้ตรงกับ local HEAD ก่อน (sleep 2-3 วิ แล้วเช็คซ้ำถ้าไม่ตรง) — auto-merge ที่ยิงทันทีหลัง push อาจ squash แค่ commit เก่า
-- หลัง merge แล้วรายงาน URL ของ commit บน main **เท่านั้น** — ⚠️ **ห้ามบอกว่า "Cloudflare กำลัง deploy production"** merge เข้า main **ไม่ได้ deploy อะไรทั้งสิ้น** ไม่มี pipeline ที่ทำให้ · deploy เกิดขึ้นเฉพาะตอนมีคนรัน `pnpm cf:deploy` ด้วยมือเท่านั้น (ดู §0.5 · 2026-07-16)
+- หลัง merge แล้วรายงาน URL ของ commit บน main — ⚠️ merge เข้า main **ไม่ได้ deploy อะไรทั้งสิ้น** ไม่มี pipeline ที่ทำให้
+- งานที่เปลี่ยน public site / Worker และ user ไม่ได้ห้าม deploy: รัน `pnpm cf:deploy` ต่อให้อัตโนมัติ แล้วรายงานว่า deploy สำเร็จได้ต่อเมื่อคำสั่งคืน `Current Version ID` และตรวจ URL จริงได้ HTTP 200 · งานเอกสารล้วนไม่ต้อง deploy
 
 ข้อยกเว้น: ถ้า user สั่งชัดว่า "ไม่ commit" / "ไม่ push" / "ไม่ PR" / "ไม่ merge" ให้หยุดที่ขั้นนั้น
 
@@ -40,7 +42,7 @@ Stack: Next.js App Router (React 19) + TypeScript + Tailwind CSS v4 + shadcn/ui 
 2. **สำรวจ** — อ่านไฟล์/โค้ดที่เกี่ยวข้องก่อนแก้ ห้ามเดา
 3. **วางแผน** — รู้ว่าจะแก้ไฟล์ไหน บรรทัดไหน เพราะอะไร ก่อนลงมือ
 4. **ลงมือ** — แก้ทีละจุด ชัดเจน ไม่แก้สะเปะสะปะ
-5. **Verify** (ข้อ 0.3) — typecheck + build + อ่าน diff + คิด edge cases
+5. **Verify** (ข้อ 0.3) — lint + typecheck + build + อ่าน diff + คิด edge cases
 6. **Commit + Push + PR** (ข้อ 0)
 7. **รายงาน** — สั้น กระชับ ใจความ ระดับมืออาชีพ
 
@@ -60,6 +62,7 @@ Stack: Next.js App Router (React 19) + TypeScript + Tailwind CSS v4 + shadcn/ui 
 
 ก่อน commit/push **ต้อง** ตรวจให้ครบ:
 
+- [ ] `pnpm lint` ผ่าน
 - [ ] `pnpm typecheck` ผ่าน
 - [ ] `pnpm build` ผ่าน (static params ของ `/[category]` ต้อง generate ครบทุก slug ใน `lib/services.ts`)
 - [ ] `git status` — ไม่มีไฟล์ untracked แปลกปลอม (`.DS_Store`, `* 2.*`, ฯลฯ) ก่อน push
@@ -72,10 +75,10 @@ Stack: Next.js App Router (React 19) + TypeScript + Tailwind CSS v4 + shadcn/ui 
 
 เมื่องานเกี่ยวกับ UI/UX ("ไม่สวย", "ปรับแต่ง", "ออกแบบ", "ดูตึง"):
 
-- **ใช้ความสามารถออกแบบของ Claude ได้เต็มที่** — ไม่ต้องถามก่อนทุก step
-- เรียก skill `anthropic-skills:frontend-design` เมื่อเหมาะ (สร้าง component, page, หรือ overhaul ครั้งใหญ่)
+- **ใช้ความสามารถออกแบบของ agent ได้เต็มที่** — ไม่ต้องถามก่อนทุก step
+- เรียก skill `frontend-design` เมื่อเหมาะ (สร้าง component, page, หรือ overhaul ครั้งใหญ่)
 - ตัดสินใจเรื่อง spacing / typography / color / layout / motion ได้เอง โดยอิงโทนสีที่มีในโปรเจกต์: `#4B5740` olive (primary), `#333C2B` olive-deep, `#7C8A68` olive-light, `#F4F2EA` sand (background), `#1E211B` ink (text), `#06C755` LINE — ค่าจริงอยู่ใน `@theme`/`:root` ของ [app/globals.css](app/globals.css) (Tailwind v4 ไม่มี `tailwind.config.ts` แล้ว ห้ามสร้างไฟล์นั้นกลับมา)
-- สไตล์แบรนด์: มินิมอล ญี่ปุ่น สงบ (ดู [lib/site.ts](lib/site.ts) tagline: "Where balance purity becomes eternal beauty" / 純粋さは永遠の美へ)
+- สไตล์แบรนด์: Japanese Editorial Luxury — มินิมอล ญี่ปุ่น สงบ, ใช้ negative space, asymmetry, เส้นบาง, มุมเหลี่ยม และสัดส่วน 1.618 ตาม [docs/design.md](docs/design.md)
 - ห้ามทำแค่ "ลด padding ให้พอผ่าน" — ถ้าจุดนั้นดูไม่ดี ให้คิดใหม่ทั้ง section
 - กฎเดิม (§0.1, §0.3, §0 auto-merge) ยังบังคับใช้
 
@@ -122,6 +125,8 @@ Stack: Next.js App Router (React 19) + TypeScript + Tailwind CSS v4 + shadcn/ui 
 
 <!-- รูปแบบ: - YYYY-MM-DD — สิ่งที่พลาด → กฎใหม่ -->
 
+- 2026-07-17 — **แก้เฉพาะสิ่งที่เห็นบนหน้า แต่ไม่ไล่ end-to-end = ทิ้งบั๊กไว้ใน metadata/admin/cache** · หน้า `/services` เคยใช้รูป hero ที่เปลี่ยนผ่าน `/admin` ได้ แต่ OG/Twitter ยังเป็น `const ogImage = cld(...)` ที่ถูก freeze ตอน build; Header/Footer และ JSON-LD logo ก็ยังอ่านค่า default; revalidation map ไม่ครอบทุกหน้าที่ใช้ slot เดียวกัน → **กฎ: งานที่แตะรูปต้อง audit ทั้งสายเสมอ**: page render → OG → Twitter → JSON-LD → Header/Footer (ถ้าเกี่ยว) → admin slot → D1 override → `REVALIDATION_TARGETS` → ISR/runtime verification · ห้ามปิดงานเพียงเพราะภาพบนหน้าที่ user ส่งมาดูถูกแล้ว และห้ามสร้าง Cloudinary URL สำหรับรูปที่ admin เปลี่ยนได้ด้วย module-level const
+- 2026-07-17 — **เอกสารเก่าที่ขัดกับ implementation ทำให้ agent ทำผิดซ้ำ** · README/CLAUDE ยังระบุ R2, 5 หมวดบริการ, `ogImage` field และ local `cf:preview` ทั้งที่ production ใช้ KV, มี 9 หมวด, metadata อ่าน image slot และเครื่องนี้รัน workerd ไม่ได้ → **กฎ: เมื่อ architecture/data/workflow เปลี่ยน ต้องค้นทุก `.md` หา keyword เก่าและแก้ใน PR เดียวกัน**; ข้อเท็จจริงเรื่อง runtime ให้ยึด `package.json`, `open-next.config.ts`, `wrangler.jsonc`, `lib/services.ts` และ `origin/main` ก่อน prose เสมอ
 - 2026-07-17 — **ไฟล์ที่เปิดจากดิสก์ ≠ ไฟล์บน main — audit ผิดตัวแล้วรายงานว่าคนอื่นมีบั๊ก** · ผม audit `CLAUDE.md` ของ littlesmileflower โดย `Read` จากโฟลเดอร์เขาตรง ๆ แล้วรายงาน user ว่า "ต้นฉบับยังมี 3 บั๊กค้างอยู่" · พอ user สั่งให้ไปแก้ให้ ถึงรู้ว่าสำเนาบนดิสก์นั้นอยู่บน branch ค้างเก่า (`fix/confirmed-no-price-empty-card`, 315 บรรทัด) ส่วน **main ของเขาแก้ครบทั้ง 3 ข้อไปแล้ว** (398 บรรทัด, refactor ใหญ่, มี `docs/lessons.md` + `pnpm run seo:check` ที่เราไม่มีด้วยซ้ำ) → ผมกล่าวหาเขาผิด ๆ และเกือบเปิด PR "แก้" สิ่งที่ไม่พัง
   → **กฎ: ก่อนสรุปสถานะโค้ดของ repo ใด (โดยเฉพาะ repo อื่น) ต้องอ่านจาก ref ที่ระบุชัดเสมอ** — `git -C <repo> show origin/main:path` หรือ `git fetch` + worktree จาก `origin/main` · **ห้าม `Read` ไฟล์จาก working copy แล้วเรียกมันว่า "โค้ดของโปรเจกต์นั้น"** เพราะ working copy อาจอยู่บน branch อื่น มี uncommitted changes หรือค้างหลัง main เป็นเดือน · เช็คก่อนเสมอ: `git -C <repo> branch --show-current` + `git -C <repo> status --short`
   → เป็นบั๊กชุดเดียวกับ 2026-07-16 ที่ผมเปิด local dev server ให้ user ดูแล้วบอกว่า "เวอร์ชันล่าสุด" ทั้งที่ worktree ค้างอยู่ 2 commit หลัง main · **"ล่าสุด" ต้องเทียบกับ `origin/main` ที่ fetch สด ไม่ใช่สิ่งที่บังเอิญอยู่ในโฟลเดอร์**
@@ -137,7 +142,7 @@ Stack: Next.js App Router (React 19) + TypeScript + Tailwind CSS v4 + shadcn/ui 
 - **`position: fixed` ตายเงียบใน ancestor ที่มี `transform`** · CSS spec: ancestor ที่มี `transform`/`filter`/`perspective`/`will-change: transform` กลายเป็น containing block ของ `fixed` descendant → `fixed inset-0` จะกางเท่า ancestor ไม่ใช่เต็มจอ และ **z-index ไม่ช่วย** · **เราเสี่ยงจริง**: [`.reveal` ใน app/globals.css](app/globals.css) ใช้ `transform: translateY(28px)` และห่อเนื้อหาแทบทุก section → **ถ้าจะทำ modal/lightbox/drawer เอง ต้อง `createPortal(..., document.body)` เสมอ** · ตอนนี้ยังไม่พังเพราะ `components/ui/sheet.tsx` ของ Base UI portal ให้อยู่แล้ว — กฎนี้มีไว้กันตอนเขียน overlay เอง
 - **แก้ bug ต้องแก้ทั้ง pattern ไม่ใช่แค่ไฟล์ที่ user ส่งรูปมา** · ที่โน่นแก้ lightbox z-index ไฟล์เดียวตามสกรีนช็อต ทิ้งอีกไฟล์ที่ bug เดียวกัน → user เจอซ้ำรอบสอง → **grep หา pattern ก่อนเสมอ แล้วเลือกให้ชัด: (a) แก้ทุกไฟล์ที่ match พร้อมกัน หรือ (b) เขียนในรายงานว่าไฟล์อื่นไม่แก้เพราะอะไร — ห้ามแก้ไฟล์เดียวแล้วเงียบ**
 - **ก่อนแก้ conditional ให้ list ทุก state ที่เงื่อนไขนั้นครอบคลุม** · ที่โน่นแก้ gate ของ status `confirmed` ตามรูปที่ user ส่ง ลืมว่า `delivering`/`completed` ใช้ gate เดียวกัน → **ถามทุกครั้งว่า "state อื่นพังแบบเดียวกันไหม" ไม่ใช่แก้แค่เคสในรูป**
-- **ห้ามลบ `eslint-disable`/guard/suppression โดยเชื่อ label "unused"** · ที่โน่นลบ directive 2 ตัวทั้งที่ lint บอกว่า unused **เฉพาะตัวที่สอง** → error โผล่ · **tool ที่ report ตำแหน่งเจาะจง (บรรทัด/ไฟล์) ให้แก้เฉพาะตำแหน่งนั้น ห้าม generalize ไปลบพี่น้องที่หน้าตาเหมือนกัน** · ถือว่าการลบ safety directive = destructive change ต้อง verify หลังลบทุกครั้ง · **เกี่ยวกับเราตรง ๆ**: `app/page.tsx`, `app/[category]/page.tsx` ฯลฯ มี `// eslint-disable-next-line react/no-danger` คุม JSON-LD อยู่ทุกไฟล์
+- **ห้ามลบ `eslint-disable`/guard/suppression โดยเชื่อ label "unused"** · ที่โน่นลบ directive 2 ตัวทั้งที่ lint บอกว่า unused **เฉพาะตัวที่สอง** → error โผล่ · **tool ที่ report ตำแหน่งเจาะจง (บรรทัด/ไฟล์) ให้แก้เฉพาะตำแหน่งนั้น ห้าม generalize ไปลบพี่น้องที่หน้าตาเหมือนกัน** · ถือว่าการลบ safety directive = destructive change ต้อง verify หลังลบทุกครั้ง · **เกี่ยวกับเราตรง ๆ**: `app/(site)/page.tsx`, `app/(site)/[category]/page.tsx` ฯลฯ มี `// eslint-disable-next-line react/no-danger` คุม JSON-LD อยู่ทุกไฟล์
 - **`npx tsc --noEmit` ลอย ๆ ไม่นับเป็น verify — ใช้ `pnpm typecheck` ตาม `package.json` เสมอ** · และ iCloud Drive ชอบสร้างสำเนา `* 2.ts` / `* 2.tsx` / `.next/* 2.*` ค้างไว้ ทำให้ typecheck ล้มด้วย `Duplicate identifier` แบบงง ๆ · **เกิดกับเราแล้วจริง** (2026-07-16: `.next/types/routes.d 2.ts` ทำ `pnpm typecheck` ล้ม ทั้งที่โค้ดไม่ผิด) → เจอ error แปลก ๆ ให้ `find . -name '* 2.*' -not -path './node_modules/*'` ก่อนไล่แก้โค้ด
 - **หน้าที่ตั้ง `robots: { index: false }` ต้อง `disallow` ใน [app/robots.ts](app/robots.ts) ด้วยเสมอ** · meta noindex = ห้าม index, robots.txt = ห้าม crawl เป็นคนละ layer ต้องใช้คู่กัน · **จะสำคัญตอนทำหน้า `/admin`** (robots.ts เรา disallow `/admin` ไว้แล้ว — ตอนสร้างหน้าจริงอย่าลืมใส่ `index: false` ใน metadata ด้วย)
 - **ค่า enum/unit/code ใน JSON-LD ต้องเช็คกับเอกสารของ Google ไม่ใช่แค่ schema.org** · ที่โน่นใส่ `unitCode: 'HUR'` ซึ่ง valid ตาม schema.org แต่ Google ไม่รับ → GSC ขึ้น error ทั้ง 27 สินค้า · **Google จำกัด enum แคบกว่า schema.org เสมอ** → เพิ่ม field ใหม่ที่มีค่า fixed (`availability`, `priceCurrency`, `@type` ของ MedicalProcedure ฯลฯ) ให้เปิด doc ของ Google เช็ค "supported values" ก่อน ship แล้วทดสอบ 1 หน้าใน Rich Results Test
@@ -185,15 +190,15 @@ export const metadata: Metadata = {
 };
 ```
 
-หน้า dynamic (`app/[category]/page.tsx`) ใช้ `generateMetadata` — canonical และ `openGraph.url` ต้องตรงกัน
+หน้า dynamic (`app/(site)/[category]/page.tsx`) ใช้ `generateMetadata` — canonical และ `openGraph.url` ต้องตรงกัน
 
 ---
 
 ## 3. JSON-LD / Schema.org rules
 
-### 3.1 MedicalBusiness อยู่ที่ root layout เท่านั้น
+### 3.1 MedicalBusiness อยู่ที่ public site layout เท่านั้น
 
-`clinicSchema` ใน [lib/schema.ts](lib/schema.ts) ถูก inject ผ่าน root layout ทุกหน้า มี `@id: ${site.url}/#business`
+`clinicSchema()` ใน [lib/schema.ts](lib/schema.ts) ถูก inject ผ่าน [app/(site)/layout.tsx](<app/(site)/layout.tsx>) ทุกหน้าสาธารณะ มี `@id: ${site.url}/#business` และรับ hero/logo public ID ที่ resolve จาก image slot แล้ว
 
 **ห้าม** เขียน `MedicalBusiness`/`HealthAndBeautyBusiness` ซ้ำในหน้าอื่น — ใช้ `@id` ref แทน:
 
@@ -207,11 +212,11 @@ provider: { '@id': `${site.url}/#business` }   // ✓ ถูก
 
 ### 3.3 ItemList สำหรับหน้า service category
 
-ทุก slug ใน `lib/services.ts` (`/filler` `/botox` `/iv-drip` `/skin-booster` `/collagen-booster`) ต้องมี `ItemList` schema ผ่าน `serviceItemListSchema()` — เพิ่มบริการใหม่ในหมวดเดิม แก้ที่ `lib/services.ts` เท่านั้น schema จะอัปเดตอัตโนมัติ
+ทุก slug ใน `serviceCategories` ของ [lib/services.ts](lib/services.ts) ต้องมี `ItemList` schema ผ่าน `serviceItemListSchema()`; หน้า `/services` ใช้ `serviceCategoryListSchema()` แสดงครบทุกหมวด — ห้ามเขียนรายชื่อ slug ซ้ำในเอกสารหรือ component เพราะจำนวนหมวดเปลี่ยนได้
 
 ### 3.4 BreadcrumbList
 
-หน้าที่ลึกกว่า 1 ระดับต้องมี `BreadcrumbList` (service category, about, contact) — ใช้ `breadcrumbSchema()` จาก `lib/schema.ts`
+ทุกหน้าสาธารณะยกเว้นหน้าแรกต้องมี `BreadcrumbList` ตาม implementation ปัจจุบัน (service category, services, about, contact, reviews, promotions) — ใช้ `breadcrumbSchema()` จาก `lib/schema.ts`
 
 ### 3.5 ราคาใน schema
 
@@ -228,13 +233,14 @@ provider: { '@id': `${site.url}/#business` }   // ✓ ถูก
 - ทุก URL ต้อง **ไม่มี trailing slash** (ยกเว้นหน้าแรก `${base}/`)
 - เพิ่มบริการใหม่ → เพิ่มใน `lib/services.ts` ก่อน sitemap จะ generate ให้อัตโนมัติจาก `serviceCategories`
 - เพิ่มหน้า static ใหม่ (เช่น `/promotion`, `/doctor`) → เพิ่มใน `staticUrls` array ด้วยตนเอง
-- `priority`: home 1.0, service category 0.9, about/contact 0.6
+- `priority`: home 1.0, services + service category 0.9, promotions 0.8, reviews/about/contact 0.6
 
 ---
 
 ## 5. robots.ts — [app/robots.ts](app/robots.ts)
 
-- `disallow: ['/admin', '/admin/', '/api/']` — ห้ามแก้ออก
+- เมื่อ `SITE_ENV=preview` (workers.dev ปัจจุบัน) ต้อง `disallow: '/'` เพื่อไม่ให้ Google เก็บ hostname ชั่วคราวที่ canonical ชี้ไปอีกโดเมน
+- เมื่อมีโดเมนจริงและลบ `SITE_ENV` แล้ว ต้องคง `disallow: ['/admin', '/admin/', '/api/']` — ห้ามแก้ออก
 - **ห้ามใส่** `host` directive (Yandex-only)
 - **ห้ามใส่** `crawl-delay`
 
@@ -242,8 +248,10 @@ provider: { '@id': `${site.url}/#business` }   // ✓ ถูก
 
 ## 6. OpenGraph / Twitter card
 
-- root layout ตั้ง default OG/Twitter ([app/layout.tsx](app/layout.tsx))
-- หน้า service category ต้องมี OG image เฉพาะของหมวดนั้น (field `ogImage` ใน `lib/services.ts`) ไม่ใช้ของหน้าแรกซ้ำ
+- root layout ตั้ง default OG/Twitter ผ่าน async `generateMetadata` ใน [app/layout.tsx](app/layout.tsx)
+- รูปที่ `/admin` เปลี่ยนได้ต้อง resolve ด้วย `siteSocialImage(key)` หรือ `getImage(key)` ภายใน async `generateMetadata`; **ห้าม** `const ogImage = cld(...)` ระดับโมดูล
+- OG และ Twitter ของหน้าเดียวกันต้องใช้ image slot เดียวกัน; หน้า `/services` ใช้ `hero-iv-drip-2` ซึ่งเป็น slot เดียวกับ hero ที่ render จริง
+- หน้า service category ใช้ `categoryImageKey` เพื่ออ่าน admin override และ fallback ไป `service.heroImage`; หมวดที่ยังไม่มีรูปจริงให้ใช้ Twitter summary/no image แทนการยืม hero หน้าแรกหรือรูปหัตถการอื่น
 - ขนาดมาตรฐาน: **1200×630** (1.91:1)
 
 ---
@@ -273,8 +281,12 @@ provider: { '@id': `${site.url}/#business` }   // ✓ ถูก
 | ------------------------------------------ | ------------------------------------ |
 | ชื่อร้าน, เบอร์, ที่อยู่, เวลาทำการ, social | [lib/site.ts](lib/site.ts)           |
 | หมวดบริการ + ราคา                          | [lib/services.ts](lib/services.ts)   |
+| ข้อมูลแพทย์                                 | [lib/doctor.ts](lib/doctor.ts)       |
+| โปรโมชั่น/โปสเตอร์                          | [lib/promotions.ts](lib/promotions.ts) |
+| image slots + ตำแหน่งที่ใช้                 | [lib/site-images.ts](lib/site-images.ts) |
 | MedicalBusiness JSON-LD + schema helpers   | [lib/schema.ts](lib/schema.ts)       |
 | สี/ฟอนต์ของแบรนด์ (CSS variables)          | [app/globals.css](app/globals.css)   |
+| design system และโครงหน้า Services          | [docs/design.md](docs/design.md)     |
 
 เพิ่มบริการ/หมวดใหม่ → แก้ `lib/services.ts` → sitemap + schema + หน้า listing generate อัตโนมัติ
 
@@ -290,7 +302,10 @@ provider: { '@id': `${site.url}/#business` }   // ✓ ถูก
 - [ ] ถ้าเป็นหน้า service listing — มี `ItemList`
 - [ ] ถ้าหน้าอยู่ลึกกว่า 1 ระดับ — มี `BreadcrumbList`
 - [ ] รูป OG เฉพาะของหน้านั้น
+- [ ] OG/Twitter อ่าน image slot เดียวกันผ่าน async metadata และไม่มี module-level `const ogImage`
+- [ ] ถ้าเพิ่ม/ย้ายจุดใช้รูป — `REVALIDATION_TARGETS` ใน `app/api/admin/images/route.ts` ครบทุกหน้าที่ได้รับผล
 - [ ] เพิ่ม URL/service ใหม่ใน `lib/services.ts` (sitemap อ่านจากตรงนี้)
+- [ ] `pnpm lint` ผ่าน
 - [ ] `pnpm typecheck` ผ่าน (script ของ repo เท่านั้น — ห้าม `npx tsc --noEmit` ลอย ๆ ดู §0.5)
 - [ ] **JSON-LD ที่แก้/เพิ่ม ผ่าน [Schema.org Validator](https://validator.schema.org/) และ [Rich Results Test](https://search.google.com/test/rich-results) อย่างน้อย 1 หน้า** — ค่า enum ต้องเช็คกับ doc ของ Google ไม่ใช่ schema.org (ดู §0.5)
 - [ ] เนื้อหาทางการแพทย์ผ่านการตรวจตามข้อ 0.2
@@ -300,7 +315,7 @@ provider: { '@id': `${site.url}/#business` }   // ✓ ถูก
 ## 11. Cloudflare / OpenNext — ข้อควรระวัง
 
 - `open-next.config.ts` ต้องมี `queue: doQueue` และ `tagCache: d1NextTagCache` เสมอ — ถ้าปล่อย default จะได้ dummy queue ที่ throw `"Dummy queue is not implemented"` ตอน revalidate พื้นหลัง ทำให้หน้า stale ไม่มีวัน regenerate (ดู [open-next.config.ts](open-next.config.ts))
-- Binding ที่ต้องมีใน [wrangler.jsonc](wrangler.jsonc) คู่กัน: `NEXT_CACHE_DO_QUEUE` (Durable Object), `NEXT_INC_CACHE_R2_BUCKET` (R2), `NEXT_TAG_CACHE_D1` (D1) — ก่อน deploy จริงต้องรัน `wrangler r2 bucket create` และ `wrangler d1 create` แล้วแทนที่ placeholder id ในไฟล์นี้
+- Incremental cache ปัจจุบันใช้ `kvIncrementalCache` เพราะบัญชียังไม่เปิด R2; binding ที่ต้องมีใน [wrangler.jsonc](wrangler.jsonc): `NEXT_CACHE_DO_QUEUE` (Durable Object), `NEXT_INC_CACHE_KV` (KV), `NEXT_TAG_CACHE_D1` (D1) และ `WORKER_SELF_REFERENCE` (Service) — resource จริงถูกสร้างและใส่ ID แล้ว ห้ามรันคำสั่งสร้างซ้ำ
 - งานที่แตะ cache/ISR/revalidation — verify ที่ runtime observability (`wrangler tail`) เสมอ ไม่ใช่แค่ HTTP 200 — async error จาก background revalidation ไม่โผล่ใน response
 
 ---
@@ -313,6 +328,7 @@ provider: { '@id': `${site.url}/#business` }   // ✓ ถูก
 - ❌ ลบ `disallow: /admin` ออกจาก robots.ts
 - ❌ ใส่ `host` directive กลับเข้า robots.ts
 - ❌ ใช้ OG image ของหน้าแรกซ้ำในทุกหน้า
+- ❌ สร้าง OG/Twitter ของรูปที่ admin เปลี่ยนได้ด้วย module-level const หรืออ่าน default โดยไม่ผ่าน image slot
 - ❌ Hardcode ชื่อคลินิก เบอร์ ที่อยู่ ราคา — import จาก `lib/site.ts` / `lib/services.ts` เท่านั้น
 - ❌ ลบ `@id: ${site.url}/#business` ออกจาก clinicSchema
 - ❌ ลบเลขใบอนุญาตสถานพยาบาลออกจาก footer/about
@@ -328,5 +344,6 @@ provider: { '@id': `${site.url}/#business` }   // ✓ ถูก
 
 ## ประวัติการตัดสินใจ
 
-- **2026-07-09**: Scaffold โปรเจกต์เริ่มต้น — Next.js App Router + Tailwind + Cloudflare Workers/OpenNext (D1 + R2 + DO queue), convention พอร์ตมาจาก littlesmileflower v2 CLAUDE.md ปรับให้เข้ากับ MedicalBusiness/คลินิกความงาม
+- **2026-07-09**: Scaffold โปรเจกต์เริ่มต้น — Next.js App Router + Tailwind + Cloudflare Workers/OpenNext (เดิมวางแผน D1 + R2 + DO queue), convention พอร์ตมาจาก littlesmileflower v2 CLAUDE.md ปรับให้เข้ากับ MedicalBusiness/คลินิกความงาม
+- **2026-07-17**: Production ใช้ KV incremental cache แทน R2 เพราะบัญชียังไม่เปิด R2; เชื่อมระบบรูป `/admin` → Cloudinary → D1 → page/OG/Twitter/JSON-LD/Header/Footer และกำหนด `REVALIDATION_TARGETS` แบบ exhaustive; หน้า Services ใช้โครง editorial ครบ 9 หมวดตาม [docs/design.md](docs/design.md)
 - **2026-07-17**: Audit ไฟล์นี้เทียบกับต้นฉบับ [littlesmileflower v2](../littlesmileflower%20v2/CLAUDE.md) อีกรอบ — พอร์ต **ของดี** ที่ตกหล่นตอน scaffold เข้ามา (กระบวนการบันทึกบทเรียนใน §0.5, บทเรียน stack-เดียวกัน 7 ข้อ, grep เช็ค trailing slash + Rich Results Test ใน §10) และแปลง **ข้อเสีย** ของต้นฉบับเป็นกฎ 3 ข้อ: (1) ห้ามพอร์ตข้อเท็จจริงเรื่อง infra โดยไม่ตรวจ — ต้นเหตุที่ §0 เดิมสั่งให้รายงาน deploy ที่ไม่มีจริง, (2) เพิ่มบทเรียนแล้วต้องไล่แก้ที่ที่ยังสอนตรงข้าม, (3) เพิ่ม/ย้ายหัวข้อแล้วต้องไล่อัปเดต cross-reference · **ไม่ได้ลอกของเขามาทั้งดุ้น** — ตัดสิ่งที่เป็นบริบทร้านดอกไม้ (Article schema, amphoe, Florist) ทิ้ง และตรวจทุกบทเรียนที่พอร์ตว่าเงื่อนไขมีจริงในโค้ดเราก่อน
