@@ -5,6 +5,12 @@
 import { cloudAssets } from './cloud';
 
 export type ServiceItem = {
+  /**
+   * Stable id for hanging per-item things off this row — currently its /admin image slot, via
+   * `itemImageKey` in lib/site-images.ts. That makes it a D1 key by proxy: renaming one silently
+   * drops the photo the clinic uploaded for it. Add ids freely; don't rename them.
+   */
+  id?: string;
   name: string;
   detail?: string;
   /** English tagline from the program poster, shown under the name. */
@@ -45,12 +51,43 @@ export const serviceCategories: ServiceCategory[] = [
     heroImage: cloudAssets.heroFiller,
     heroAlt: 'ใบหน้าด้านข้างของผู้หญิง เห็นริมฝีปากและกรอบหน้าชัด ในแสงธรรมชาติโทนเขียว',
     items: [
-      { name: 'Neura Deep', detail: '1 CC', priceFrom: 3990, unit: 'ครั้ง' },
-      { name: 'Neura Deep', detail: '3 CC', priceFrom: 9990, unit: 'ครั้ง' },
-      { name: 'Neura Volume', detail: '1 CC', priceFrom: 5990, unit: 'ครั้ง' },
-      { name: 'Neura Volume', detail: '3 CC', priceFrom: 11990, unit: 'ครั้ง' },
-      { name: 'Filler Lip (Neura Deep)', detail: '1 CC', priceFrom: 4990, unit: 'ครั้ง' },
       {
+        id: 'filler-neura-deep-1cc',
+        name: 'Neura Deep',
+        detail: '1 CC',
+        priceFrom: 3990,
+        unit: 'ครั้ง',
+      },
+      {
+        id: 'filler-neura-deep-3cc',
+        name: 'Neura Deep',
+        detail: '3 CC',
+        priceFrom: 9990,
+        unit: 'ครั้ง',
+      },
+      {
+        id: 'filler-neura-volume-1cc',
+        name: 'Neura Volume',
+        detail: '1 CC',
+        priceFrom: 5990,
+        unit: 'ครั้ง',
+      },
+      {
+        id: 'filler-neura-volume-3cc',
+        name: 'Neura Volume',
+        detail: '3 CC',
+        priceFrom: 11990,
+        unit: 'ครั้ง',
+      },
+      {
+        id: 'filler-lip-neura-deep-1cc',
+        name: 'Filler Lip (Neura Deep)',
+        detail: '1 CC',
+        priceFrom: 4990,
+        unit: 'ครั้ง',
+      },
+      {
+        id: 'filler-resty-1cc',
         name: 'Filler Resty',
         detail: 'Vital Light & Classic, 1 CC',
         priceFrom: 8990,
