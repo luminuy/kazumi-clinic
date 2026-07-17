@@ -25,6 +25,7 @@ export type SiteImageKey =
   | 'hero-mesotherapy'
   | 'hero-acne-care'
   | 'hero-laser-hifu'
+  | 'thread-lift-product'
   | 'item-filler-neura-deep-1cc'
   | 'item-filler-neura-deep-3cc'
   | 'item-filler-neura-volume-1cc'
@@ -156,6 +157,14 @@ export const siteImages: SiteImageSpec[] = [
     label: 'รูปหัวหน้าเลเซอร์และ HIFU',
     where: '/laser-hifu · การ์ดบน /services',
     ratioHint: 'แนวตั้ง 1:1.618 — ยังไม่มีรูป อัปแล้วจะขึ้นแทนกล่องไอคอน',
+  },
+  // ทั้ง 3 รายการของร้อยไหมเป็นผลิตภัณฑ์เดียวกัน ต่างแค่จำนวนเส้น → ใช้รูปสินค้าใบเดียวร่วมกัน
+  // (คนละใบกับ hero-thread-lift ที่เป็นรูปหัวหน้า)
+  {
+    key: 'thread-lift-product',
+    label: 'รูปสินค้าไหม PDO',
+    where: '/thread-lift — รูปในส่วน Treatment Menu',
+    ratioHint: 'แนวตั้ง 4:5 — รูปกล่อง/ตัวไหม · ยังไม่มีรูป อัปแล้วจะขึ้นแทนกล่องไอคอน',
   },
   // ── รูปผลิตภัณฑ์รายตัวบนหน้า /filler ────────────────────────────────
   // ยังไม่มีรูปสักใบ — การ์ดจะขึ้นกล่องไอคอนไปก่อนจนกว่าคลินิกจะอัป
