@@ -38,6 +38,9 @@ const REVALIDATION_TARGETS: Record<SiteImageKey, readonly RevalidationTarget[]> 
   'brand-logo': [{ path: '/', type: 'layout' }],
   'hero-home': [{ path: '/', type: 'layout' }],
   'hero-filler': [{ path: '/' }, { path: '/filler' }, { path: '/services' }],
+  // The home ServiceAtlas and the /services index both resolve their card images through
+  // categoryImageKey, so every category slot has to revalidate those two alongside its own page.
+  'hero-botox': [{ path: '/' }, { path: '/botox' }, { path: '/services' }],
   'hero-iv-drip-1': [{ path: '/' }, { path: '/iv-drip' }, { path: '/reviews' }],
   'hero-iv-drip-2': [{ path: '/' }, { path: '/services' }, { path: '/contact' }],
   'hero-iv-drip-3': [],
@@ -47,6 +50,11 @@ const REVALIDATION_TARGETS: Record<SiteImageKey, readonly RevalidationTarget[]> 
     { path: '/services' },
     { path: '/promotions' },
   ],
+  'hero-collagen-booster': [{ path: '/' }, { path: '/collagen-booster' }, { path: '/services' }],
+  'hero-thread-lift': [{ path: '/' }, { path: '/thread-lift' }, { path: '/services' }],
+  'hero-mesotherapy': [{ path: '/' }, { path: '/mesotherapy' }, { path: '/services' }],
+  'hero-acne-care': [{ path: '/' }, { path: '/acne-care' }, { path: '/services' }],
+  'hero-laser-hifu': [{ path: '/' }, { path: '/laser-hifu' }, { path: '/services' }],
   'doctor-pratch': [{ path: '/' }, { path: '/about' }, { path: '/services' }],
   'og-about': [{ path: '/about' }],
   'promo-active-refresh': [{ path: '/' }, { path: '/promotions' }, { path: '/services' }],
