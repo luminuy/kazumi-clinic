@@ -17,6 +17,7 @@ import { categoryImageKey, itemImageKey } from '@/lib/site-images';
 import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
 import { FillerServicePage } from '@/components/filler-service-page';
+import { ThreadLiftServicePage } from '@/components/thread-lift-service-page';
 
 type Props = { params: Promise<{ category: string }> };
 
@@ -195,11 +196,21 @@ export default async function ServiceCategoryPage({ params }: Props) {
     if (item.id && publicId) itemImages[item.id] = publicId;
   }
 
-  // Filler keeps its own bespoke page (#54); every other category renders this shared editorial
-  // template. Both are the same visual language, so they read as one site rather than compete.
+  // Filler and thread lift each have a bespoke page built to their own supplied design; every
+  // other category renders the shared editorial template below. All three are the same visual
+  // language, so they read as one site rather than compete.
+  //
+  // Thread lift is deliberately not gated on `heroImage` the way filler is: it has no photo yet,
+  // and gating would drop it back to the generic template — its own page handles the empty slot.
   const pageContent =
     service.slug === 'filler' && heroImage ? (
       <FillerServicePage service={service} heroImage={heroImage} itemImages={itemImages} />
+    ) : service.slug === 'thread-lift' ? (
+      <ThreadLiftServicePage
+        service={service}
+        heroImage={heroImage}
+        productImage={overrides.get('thread-lift-product')?.public_id}
+      />
     ) : (
       <div className="bg-sand">
         {/* ── Hero ─────────────────────────────────────────────── */}
