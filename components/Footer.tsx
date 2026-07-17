@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { MapPin, Phone, Clock, MessageCircle, AtSign, ExternalLink } from 'lucide-react';
 import { site } from '@/lib/site';
 import { serviceCategories } from '@/lib/services';
@@ -10,18 +11,24 @@ export default function Footer() {
     <footer className="border-t border-olive/10 bg-olive-deep text-sand">
       <div className="mx-auto grid max-w-6xl gap-10 px-6 py-14 md:grid-cols-4">
         <div>
-          <Link href="/" className="inline-flex items-center gap-3" aria-label="Kazumi Clinic หน้าหลัก">
-            {/* eslint-disable-next-line @next/next/no-img-element -- the local brand mark is a fixed, pre-cropped asset */}
-            <img
+          <Link
+            href="/"
+            className="inline-flex items-center gap-3"
+            aria-label="Kazumi Clinic หน้าหลัก"
+          >
+            <Image
               src={site.logoMark}
               alt="Kazumi Clinic"
               width={38}
               height={38}
+              sizes="38px"
               className="size-9 rounded-[0.35rem] object-cover ring-1 ring-sand/20"
             />
             <span className="flex flex-col font-serif leading-none tracking-[0.18em]">
               <span className="text-lg">KAZUMI</span>
-              <span className="mt-1 pl-0.5 text-[0.52rem] tracking-[0.34em] text-sand/70">CLINIC</span>
+              <span className="mt-1 pl-0.5 text-[0.52rem] tracking-[0.34em] text-sand/70">
+                CLINIC
+              </span>
             </span>
           </Link>
           <p className="mt-3 text-sm text-sand/70">{site.taglineTh}</p>

@@ -11,7 +11,8 @@ import { cloudAssets } from './cloud';
  * clinic's uploaded image back to the default. Add keys freely; don't rename them.
  */
 export type SiteImageKey =
-  | 'logo'
+  | 'brand-mark'
+  | 'brand-logo'
   | 'hero-home'
   | 'hero-filler'
   | 'hero-iv-drip-1'
@@ -40,10 +41,17 @@ export type SiteImageSpec = {
 
 export const siteImages: SiteImageSpec[] = [
   {
-    key: 'logo',
-    label: 'โลโก้คลินิก',
-    where: 'หัวเว็บทุกหน้า · favicon · โลโก้ใน JSON-LD',
-    defaultPublicId: cloudAssets.logo,
+    key: 'brand-mark',
+    label: 'โลโก้ (ดอกไม้)',
+    where: 'หัวเว็บและท้ายเว็บทุกหน้า',
+    defaultPublicId: cloudAssets.brandMark,
+    ratioHint: 'จัตุรัส — เฉพาะดอกไม้ ไม่มีตัวหนังสือ',
+  },
+  {
+    key: 'brand-logo',
+    label: 'โลโก้เต็ม (ดอกไม้ + ชื่อ)',
+    where: 'โลโก้ใน JSON-LD ที่ Google ใช้',
+    defaultPublicId: cloudAssets.brandLogo,
     ratioHint: 'จัตุรัส — ดอกไม้อยู่บน ตัวหนังสือ KAZUMI CLINIC อยู่ล่าง',
   },
   {

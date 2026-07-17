@@ -27,7 +27,7 @@ export const clinicSchema = {
   telephone: site.phoneIntl,
   priceRange: '$$',
   image: cld(cloudAssets.heroHome, { width: 1200, height: 630, crop: 'fill' }),
-  logo: `${site.url}${site.logo}`,
+  logo: cld(site.logo, { width: 512, height: 512, crop: 'fit' }),
   hasMap: site.mapsUrl,
   areaServed: {
     '@type': 'Place',

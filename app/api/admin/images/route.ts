@@ -28,7 +28,10 @@ const resetSchema = z.object({ key: z.enum(siteImageKeys as [SiteImageKey, ...Si
 
 /** Pages that render a given slot, so a save refreshes exactly what changed and nothing else. */
 function pathsFor(key: SiteImageKey): string[] {
-  if (key === 'logo') return ['/', '/about', '/services', '/promotions', '/reviews', '/contact'];
+  // The brand mark is in the header and footer of every page; the full logo only feeds JSON-LD.
+  if (key === 'brand-mark')
+    return ['/', '/about', '/services', '/promotions', '/reviews', '/contact'];
+  if (key === 'brand-logo') return ['/'];
   if (key === 'hero-home' || key === 'hero-iv-drip-2') return ['/'];
   if (key === 'doctor-pratch') return ['/', '/about'];
   if (key === 'og-about') return ['/about'];

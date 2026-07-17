@@ -3,8 +3,10 @@
 export const site = {
   name: 'Kazumi Clinic',
   nameTh: 'คาซึมิ คลินิก',
-  logo: '/images/brand/kazumi-logo.jpg',
-  logoMark: '/images/brand/kazumi-mark.jpg',
+  // Cloudinary public IDs, not public/ paths — /admin replaces these, so they must not be
+  // baked into the build. Render them through next/image or cld(); never glue site.url onto them.
+  logo: 'kazumi-clinic/brand-logo',
+  logoMark: 'kazumi-clinic/brand-mark',
   tagline: 'Where balance purity becomes eternal beauty.',
   taglineJa: '純粋さは永遠の美へ',
   taglineTh: 'Minimal Change. Maximum Confidence.',
