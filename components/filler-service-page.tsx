@@ -20,12 +20,12 @@ export function FillerServicePage({
 }) {
   return (
     <div className="overflow-hidden bg-sand">
-      <section className="px-6 pb-20 pt-28 md:px-10 md:pb-28 md:pt-36">
-        <div className="mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-12 lg:gap-16">
+      <section className="px-6 pb-20 pt-24 md:px-10 md:pb-24 md:pt-28">
+        <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-12 lg:gap-14">
           <div className="lg:col-span-7">
             <nav
               aria-label="Breadcrumb"
-              className="mb-12 flex items-center gap-2 text-xs text-ink/50"
+              className="mb-8 flex items-center gap-2 text-xs text-ink/50"
             >
               <Link href="/" className="transition-colors duration-150 hover:text-olive-deep">
                 หน้าหลัก
@@ -42,17 +42,17 @@ export function FillerServicePage({
             </nav>
 
             <p className="section-eyebrow">Medical Aesthetic Excellence</p>
-            <h1 className="mt-6 font-serif text-[clamp(4rem,9vw,8rem)] leading-[0.82] tracking-[-0.055em] text-olive-deep">
-              {service.titleEn}
-              <span className="mt-5 block text-[0.44em] font-normal italic tracking-[-0.02em] text-olive-light">
-                ({service.title})
-              </span>
+            {/* One line, at a readable size. The old clamp(4rem,9vw,8rem) pushed "(ฟิลเลอร์)" onto
+                its own line and left the column mostly empty space. */}
+            <h1 className="mt-5 font-serif text-4xl leading-[1.15] tracking-[-0.02em] text-olive-deep md:text-5xl">
+              {service.titleEn}{' '}
+              <span className="font-normal italic text-olive-light">({service.title})</span>
             </h1>
-            <p className="mt-10 max-w-2xl text-base leading-[1.9] text-ink/70 md:text-lg">
+            <p className="mt-7 max-w-xl text-sm leading-[1.9] text-ink/70 md:text-base">
               {service.description}
             </p>
 
-            <div className="mt-10 flex flex-col gap-4 border-t border-olive/20 pt-6 text-sm text-olive-deep sm:flex-row sm:gap-10">
+            <div className="mt-8 flex flex-col gap-4 text-sm text-olive-deep sm:flex-row sm:gap-10">
               <span className="flex items-center gap-2.5">
                 <ShieldCheck className="size-4" aria-hidden="true" />
                 Doctor Assessed
@@ -67,7 +67,10 @@ export function FillerServicePage({
           </div>
 
           <div className="relative lg:col-span-5">
-            <div className="relative ml-auto aspect-[1/1.618] w-[min(100%,31rem)] overflow-hidden bg-cream">
+            {/* Landscape, not the 1/1.618 portrait it was: the reference frames this shot wide,
+                and a tall portrait next to a one-line headline is what left the hero so airy.
+                Still golden ratio — just the other way up. */}
+            <div className="relative ml-auto aspect-[1.618] w-full overflow-hidden bg-cream">
               <Image
                 src={heroImage}
                 alt={service.heroAlt ?? ''}
@@ -79,7 +82,7 @@ export function FillerServicePage({
               />
             </div>
             <div
-              className="absolute -bottom-8 -left-8 -z-0 h-40 w-40 border-b border-l border-olive/25 md:h-52 md:w-52"
+              className="absolute -bottom-6 -left-6 -z-0 h-32 w-32 border-b border-l border-olive/25 md:h-40 md:w-40"
               aria-hidden="true"
             />
           </div>

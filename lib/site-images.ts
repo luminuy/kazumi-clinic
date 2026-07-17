@@ -86,7 +86,9 @@ export const siteImages: SiteImageSpec[] = [
     label: 'รูปหัวหน้าฟิลเลอร์',
     where: '/filler · การ์ดฟิลเลอร์บนหน้าแรกและ /services',
     defaultPublicId: cloudAssets.heroFiller,
-    ratioHint: 'แนวตั้ง',
+    // Cropped landscape on /filler and /services but portrait in the home atlas card, so no one
+    // orientation is the right advice — what matters is that the subject survives both crops.
+    ratioHint: 'ถูกครอปทั้งแนวนอน (/filler, /services) และแนวตั้ง (หน้าแรก) — ให้คนอยู่กลางเฟรม',
   },
   {
     key: 'hero-botox',
