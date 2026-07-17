@@ -6,11 +6,11 @@ import { site } from '@/lib/site';
 import {
   serviceCategories,
   getServiceBySlug,
-  serviceOgImage,
   type ServiceItem,
 } from '@/lib/services';
 import { serviceItemListSchema, breadcrumbSchema } from '@/lib/schema';
-import { getImageOverrides } from '@/lib/site-images-store';
+import { getImage, getImageOverrides } from '@/lib/site-images-store';
+import { socialImage } from '@/lib/metadata-images';
 import { categoryImageKey } from '@/lib/site-images';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -49,7 +49,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const service = getServiceBySlug(category);
   if (!service) return {};
 
-  const ogImage = serviceOgImage(service);
+  const imageKey = categoryImageKey[service.slug];
+  const publicId = imageKey ? await getImage(imageKey) : service.heroImage;
+  const socialPreview = publicId
+    ? socialImage(publicId, `${service.title} — ${site.name}`)
+    : undefined;
 
   return {
     title: service.title,
@@ -60,7 +64,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: service.description,
       url: `${site.url}/${service.slug}`,
       type: 'website',
-      ...(ogImage && { images: [{ url: ogImage, width: 1200, height: 630 }] }),
+      ...(socialPreview && { images: [socialPreview] }),
     },
     // A category with no hero photo gets no social image at all: the `twitter` key must still be
     // set to override the root layout's default, which would otherwise leak the homepage hero
@@ -68,8 +72,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     twitter: {
       title: service.title,
       description: service.description,
-      ...(ogImage
-        ? { card: 'summary_large_image' as const, images: [ogImage] }
+      ...(socialPreview
+        ? { card: 'summary_large_image' as const, images: [socialPreview.url] }
         : { card: 'summary' as const }),
     },
   };

@@ -1,27 +1,34 @@
 import type { Metadata } from 'next';
 import { ExternalLink, MessageCircle, Star } from 'lucide-react';
 import { site } from '@/lib/site';
-import { getOgImage } from '@/lib/site-images-store';
 import { breadcrumbSchema } from '@/lib/schema';
+import { siteSocialImage } from '@/lib/metadata-images';
 import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/reveal';
 import { PageHero } from '@/components/page-hero';
 
-// Derived from the Cloudinary hero rather than a file in public/ — the previous
-// `/images/og/reviews.jpg` was never actually added, so every share of this page
-// rendered with no preview image at all.
+const pageTitle = 'รีวิว / ผลลัพธ์ก่อน-หลัง';
+const pageDescription = `รีวิวและผลลัพธ์ก่อน-หลังทำหัตถการที่ ${site.name} ย่านสุขุมวิท กรุงเทพฯ`;
+
 export async function generateMetadata(): Promise<Metadata> {
-  const ogImage = await getOgImage('hero-iv-drip-1');
+  const socialImage = await siteSocialImage('hero-iv-drip-1', `${site.name} รีวิวและผลลัพธ์`);
+
   return {
-    title: 'รีวิว / ผลลัพธ์ก่อน-หลัง',
-    description: `รีวิวและผลลัพธ์ก่อน-หลังทำหัตถการที่ ${site.name} ย่านสุขุมวิท กรุงเทพฯ`,
+    title: pageTitle,
+    description: pageDescription,
     alternates: { canonical: `${site.url}/reviews` },
     openGraph: {
-      title: `รีวิว / ผลลัพธ์ก่อน-หลัง — ${site.name}`,
-      description: site.description,
+      title: `${pageTitle} — ${site.name}`,
+      description: pageDescription,
       url: `${site.url}/reviews`,
       type: 'website',
-      images: [{ url: ogImage, width: 1200, height: 630 }],
+      images: [socialImage],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${pageTitle} — ${site.name}`,
+      description: pageDescription,
+      images: [socialImage.url],
     },
   };
 }

@@ -12,24 +12,33 @@ import { getImage } from '@/lib/site-images-store';
  * A route group adds no path segment, so every URL is exactly what it was.
  */
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
-  // MedicalBusiness.image is the clinic's hero — resolve it so replacing the photo updates the
-  // structured data Google reads, not just the page.
-  const heroPublicId = await getImage('hero-home');
+  // One cached D1 read resolves all three slots. Keeping these in the public layout makes the
+  // admin-controlled logo and business schema consistent on every public route.
+  const [brandMark, brandLogo, heroImage] = await Promise.all([
+    getImage('brand-mark'),
+    getImage('brand-logo'),
+    getImage('hero-home'),
+  ]);
+  const businessSchema = clinicSchema({
+    imagePublicId: heroImage,
+    logoPublicId: brandLogo,
+  });
+
   return (
     <>
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(clinicSchema(heroPublicId)) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(businessSchema) }}
       />
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
       />
-      <Header />
+      <Header logoMark={brandMark} />
       <main>{children}</main>
-      <Footer />
+      <Footer logoMark={brandMark} />
       <MobileContactBar />
     </>
   );

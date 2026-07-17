@@ -16,7 +16,13 @@ const dayMap: Record<string, string> = {
   Sunday: 'Sunday',
 };
 
-export function clinicSchema(heroPublicId: string = cloudAssets.heroHome) {
+export function clinicSchema({
+  imagePublicId = cloudAssets.heroHome,
+  logoPublicId = site.logo,
+}: {
+  imagePublicId?: string;
+  logoPublicId?: string;
+} = {}) {
   return {
     '@context': 'https://schema.org',
     '@type': ['MedicalBusiness', 'HealthAndBeautyBusiness'],
@@ -27,8 +33,8 @@ export function clinicSchema(heroPublicId: string = cloudAssets.heroHome) {
     url: site.url,
     telephone: site.phoneIntl,
     priceRange: '$$',
-    image: cld(heroPublicId, { width: 1200, height: 630, crop: 'fill' }),
-    logo: cld(site.logo, { width: 512, height: 512, crop: 'fit' }),
+    image: cld(imagePublicId, { width: 1200, height: 630, crop: 'fill' }),
+    logo: cld(logoPublicId, { width: 512, height: 512, crop: 'fit' }),
     hasMap: site.mapsUrl,
     areaServed: {
       '@type': 'Place',
@@ -75,7 +81,7 @@ export const websiteSchema = {
   publisher: { '@id': `${site.url}/#business` },
 };
 
-export function homePageSchema(heroPublicId: string = cloudAssets.heroHome) {
+export function homePageSchema(imagePublicId: string = cloudAssets.heroHome) {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
@@ -88,7 +94,7 @@ export function homePageSchema(heroPublicId: string = cloudAssets.heroHome) {
     about: { '@id': `${site.url}/#business` },
     primaryImageOfPage: {
       '@type': 'ImageObject',
-      url: cld(heroPublicId, { width: 1200, height: 630, crop: 'fill' }),
+      url: cld(imagePublicId, { width: 1200, height: 630, crop: 'fill' }),
       width: 1200,
       height: 630,
     },
