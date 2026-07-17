@@ -3,6 +3,8 @@
 export const site = {
   name: 'Kazumi Clinic',
   nameTh: 'คาซึมิ คลินิก',
+  logo: '/images/brand/kazumi-logo.jpg',
+  logoMark: '/images/brand/kazumi-mark.jpg',
   tagline: 'Where balance purity becomes eternal beauty.',
   taglineJa: '純粋さは永遠の美へ',
   taglineTh: 'Minimal Change. Maximum Confidence.',
