@@ -2,6 +2,10 @@
 
 ไฟล์นี้เป็น **กฎที่ AI ทุกตัว** (Claude Code, Cursor, Copilot, Codex, etc.) ต้องทำตามเมื่อแก้โค้ดในโปรเจกต์นี้ เพื่อให้ SEO และ metadata สม่ำเสมอตลอดทั้งไซต์
 
+**เอกสารที่ต้องอ่านก่อนลงมือ:**
+- **[docs/infrastructure.md](docs/infrastructure.md)** — เว็บอยู่ที่ไหน, binding/vars จริงมีอะไร, deploy ยังไง, ข้อจำกัดของเครื่อง dev, สถานะโดเมน
+- **[docs/images.md](docs/images.md)** — รูปทำงานยังไงตั้งแต่ /admin ถึงหน้าเว็บ, เพิ่มรูปใหม่ต้องแตะไฟล์ไหนบ้าง, กับดัก 6 ข้อที่เคยเหยียบมาแล้ว
+
 Stack: Next.js App Router (React 19) + TypeScript + Tailwind CSS v4 + shadcn/ui (Base UI primitives) + Zod, deploy บน Cloudflare Workers ผ่าน OpenNext (D1 + R2 + Durable Object queue สำหรับ ISR)
 
 **Backend**: ใช้ Next.js Route Handlers (`app/api/*/route.ts`) เป็น backend เดียว — ไม่แยก backend service ต่างหาก เพราะ `@opennextjs/cloudflare` รัน API routes เป็นส่วนหนึ่งของ Worker เดียวกับหน้าเว็บอยู่แล้ว (คนละ endpoint แต่ deploy พร้อมกัน, share `lib/` และ D1 binding เดียวกัน) — ทุก route handler ต้อง validate input ด้วย Zod ก่อนแตะ DB เสมอ
@@ -316,6 +320,8 @@ provider: { '@id': `${site.url}/#business` }   // ✓ ถูก
 - ❌ ปล่อย `open-next.config.ts` ไม่มี `queue`/`tagCache` override ก่อน deploy จริง
 - ❌ ใส่ `export const runtime = 'edge'` ในหน้า/route ใด ๆ (ขัดกับ `@opennextjs/cloudflare`, ดู §0.4.2)
 - ❌ ใช้ prop `asChild` กับ component ใน `components/ui/` — ต้องใช้ `render` (ดู §0.4.1)
+- ❌ **เอาไฟล์รูปใส่ `public/`** — จะถูก build ติดไปกับโค้ด ทำให้คลินิกเปลี่ยนเองผ่าน /admin ไม่ได้ · **เกิดมาแล้ว 2 รอบ** (รูปหมอ+โปสเตอร์ → PR #38, โลโก้ → PR #45) รอบหลังทำให้การ์ด "โลโก้" ใน /admin กลายเป็นของหลอกกดแล้วไม่มีอะไรเกิดขึ้น · รูปทุกใบต้องขึ้น Cloudinary (ดู [docs/images.md](docs/images.md)) · ถ้าจำเป็นต้อง baked-in จริง ๆ ต้องใส่ใน `bakedInImages` ให้ /admin บอก user ตรง ๆ ว่าแก้ไม่ได้
+- ❌ ลบ var `SITE_ENV` โดยยังไม่มีโดเมนจริง (robots.txt จะเปิดให้ Google เก็บ workers.dev ที่ canonical ชี้ไปโดเมนคนอื่น) — และ **ห้ามลืมลบมันตอนมีโดเมนจริง** (เว็บจริงจะห้ามเก็บ) ดู [docs/infrastructure.md](docs/infrastructure.md)
 - ❌ รัน `npx shadcn@latest init` ซ้ำ หรือสร้าง `tailwind.config.ts` กลับมา (Tailwind v4 ใช้ `@theme` ใน `app/globals.css`)
 
 ---

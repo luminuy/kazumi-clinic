@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { headers } from 'next/headers';
 import { ImageIcon, LogOut, ExternalLink } from 'lucide-react';
-import { logoIconUrl } from '@/lib/cloud';
+import { site } from '@/lib/site';
+import { cld } from '@/lib/cloud';
 
 export const metadata: Metadata = {
   title: { default: 'จัดการเว็บไซต์', template: '%s — Kazumi Admin' },
@@ -21,7 +22,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <Link href="/admin" className="flex items-center gap-2.5 text-olive-deep">
             {/* eslint-disable-next-line @next/next/no-img-element -- fixed 96x96 Cloudinary crop */}
             <img
-              src={logoIconUrl}
+              src={cld(site.logoMark, { width: 56, crop: 'fit' })}
               alt=""
               aria-hidden="true"
               width={28}
