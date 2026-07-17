@@ -3,15 +3,19 @@
 import { useRef, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Check, Loader2, RotateCcw, TriangleAlert, Upload } from 'lucide-react';
+import { Check, ImageOff, Loader2, RotateCcw, TriangleAlert, Upload } from 'lucide-react';
 import type { SiteImageSpec } from '@/lib/site-images';
 import { cn } from '@/lib/utils';
 
 type Status = { kind: 'idle' | 'saving' | 'saved' } | { kind: 'error'; message: string };
 
 export type ImageSlot = SiteImageSpec & {
-  /** What's live right now — the clinic's upload if there is one, else the shipped default. */
-  currentPublicId: string;
+  /**
+   * What's live right now — the clinic's upload if there is one, else the shipped default.
+   * Undefined for a category that has neither yet: its page shows a tonal icon panel, and this
+   * card is how a photo gets there in the first place.
+   */
+  currentPublicId?: string;
   isOverridden: boolean;
   updatedAt: number | null;
   updatedBy: string | null;
@@ -67,15 +71,27 @@ export function ImageSlotCard({ slot }: { slot: ImageSlot }) {
   return (
     <li className="flex gap-4 rounded-2xl border border-olive/15 bg-cream p-4">
       <div className="relative size-28 shrink-0 overflow-hidden rounded-xl bg-sand">
-        <Image
-          key={slot.currentPublicId}
-          src={slot.currentPublicId}
-          alt=""
-          aria-hidden="true"
-          fill
-          sizes="112px"
-          className={cn('object-cover transition-opacity', busy && 'opacity-40')}
-        />
+        {slot.currentPublicId ? (
+          <Image
+            key={slot.currentPublicId}
+            src={slot.currentPublicId}
+            alt=""
+            aria-hidden="true"
+            fill
+            sizes="112px"
+            className={cn('object-cover transition-opacity', busy && 'opacity-40')}
+          />
+        ) : (
+          <span
+            className={cn(
+              'absolute inset-0 grid place-items-center gap-1 text-center transition-opacity',
+              busy && 'opacity-40',
+            )}
+          >
+            <ImageOff className="size-5 text-olive/35" aria-hidden="true" />
+            <span className="text-[0.6rem] leading-tight text-ink/40">ยังไม่มีรูป</span>
+          </span>
+        )}
         {busy && (
           <span className="absolute inset-0 grid place-items-center">
             <Loader2 className="size-5 animate-spin text-olive" />
@@ -126,7 +142,9 @@ export function ImageSlotCard({ slot }: { slot: ImageSlot }) {
               className="inline-flex items-center gap-1.5 rounded-full border border-olive/25 px-3 py-1.5 text-xs text-ink/60 transition-colors hover:bg-olive/10 hover:text-olive-deep disabled:opacity-50"
             >
               <RotateCcw className="size-3.5" />
-              คืนรูปเดิม
+              {/* Slots with no shipped default have no "เดิม" to go back to — resetting one
+                  removes the photo and returns the page to its icon panel. Say that. */}
+              {slot.defaultPublicId ? 'คืนรูปเดิม' : 'ลบรูป'}
             </button>
           )}
 
@@ -145,7 +163,9 @@ export function ImageSlotCard({ slot }: { slot: ImageSlot }) {
           </span>
         </div>
 
-        <code className="mt-2.5 truncate text-[0.65rem] text-ink/35">{slot.currentPublicId}</code>
+        <code className="mt-2.5 truncate text-[0.65rem] text-ink/35">
+          {slot.currentPublicId ?? '— ยังไม่ได้อัปรูป'}
+        </code>
       </div>
     </li>
   );
