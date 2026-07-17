@@ -78,7 +78,7 @@ Stack: Next.js App Router (React 19) + TypeScript + Tailwind CSS v4 + shadcn/ui 
 
 - **ใช้ความสามารถออกแบบของ agent ได้เต็มที่** — ไม่ต้องถามก่อนทุก step
 - เรียก skill `frontend-design` เมื่อเหมาะ (สร้าง component, page, หรือ overhaul ครั้งใหญ่)
-- ตัดสินใจเรื่อง spacing / typography / color / layout / motion ได้เอง โดยอิงโทนสีที่มีในโปรเจกต์: `#4B5740` olive (primary), `#333C2B` olive-deep, `#7C8A68` olive-light, `#F4F2EA` sand (background), `#1E211B` ink (text), `#06C755` LINE — ค่าจริงอยู่ใน `@theme`/`:root` ของ [app/globals.css](app/globals.css) (Tailwind v4 ไม่มี `tailwind.config.ts` แล้ว ห้ามสร้างไฟล์นั้นกลับมา)
+- ตัดสินใจเรื่อง spacing / typography / color / layout / motion ได้เอง โดยอิงโทนสีที่มีในโปรเจกต์: `#4D573E` olive (primary), `#3D4E46` olive-deep, `#7A7A5E` olive-light, `#EEE9DF` sand (background), `#26281F` ink (text), `#06C755` LINE — ค่าจริงอยู่ใน `@theme`/`:root` ของ [app/globals.css](app/globals.css) (Tailwind v4 ไม่มี `tailwind.config.ts` แล้ว ห้ามสร้างไฟล์นั้นกลับมา)
 - สไตล์แบรนด์: Japanese Editorial Luxury — มินิมอล ญี่ปุ่น สงบ, ใช้ negative space, asymmetry, เส้นบาง, มุมเหลี่ยม และสัดส่วน 1.618 ตาม [docs/design.md](docs/design.md)
 - ห้ามทำแค่ "ลด padding ให้พอผ่าน" — ถ้าจุดนั้นดูไม่ดี ให้คิดใหม่ทั้ง section
 - กฎเดิม (§0.1, §0.3, §0 auto-merge) ยังบังคับใช้

@@ -27,12 +27,12 @@
 
 | บทบาท | Token/ค่า |
 | --- | --- |
-| Primary | `olive` / `#4B5740` |
-| Deep structure | `olive-deep` / `#333C2B` |
-| Secondary text | `olive-light` / `#7C8A68` |
-| Paper background | `sand` / `#F4F2EA` |
+| Primary | `olive` / `#4D573E` |
+| Deep structure | `olive-deep` / `#3D4E46` |
+| Secondary text | `olive-light` / `#7A7A5E` |
+| Paper background | `sand` / `#EEE9DF` |
 | Raised paper surface | `cream` |
-| Main text | `ink` / `#1E211B` |
+| Main text | `ink` / `#26281F` |
 | LINE action only | `line` / `#06C755` |
 
 - Display/headline: **EB Garamond**, weight 400–500, line-height กระชับ
