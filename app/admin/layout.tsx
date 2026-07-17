@@ -58,7 +58,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             {adminEmail && (
               <span className="hidden text-xs text-ink/50 sm:block">{adminEmail}</span>
             )}
-            {/* Ends the Cloudflare Access session — the login itself is Cloudflare's, not ours. */}
+            {/* Ends the Cloudflare Access session — the login itself is Cloudflare's, not ours.
+                no-html-link-for-pages fires a false positive here: it matches /cdn-cgi/... against
+                the [category] dynamic route. This endpoint is served by Cloudflare, never by Next,
+                so <Link> would client-side navigate into the category page and never log anyone out. */}
+            {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
             <a
               href="/cdn-cgi/access/logout"
               className="flex items-center gap-1.5 rounded-full border border-olive/20 px-3 py-1.5 text-xs text-ink/60 hover:bg-olive/10 hover:text-olive-deep"
