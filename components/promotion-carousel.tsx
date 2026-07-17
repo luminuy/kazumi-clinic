@@ -4,10 +4,15 @@ import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide-react';
-import { promotionPosters } from '@/lib/promotions';
+import { promotionPosters, type PromotionPoster } from '@/lib/promotions';
 import { cn } from '@/lib/utils';
 
-export function PromotionCarousel() {
+export function PromotionCarousel({
+  posters = promotionPosters,
+}: {
+  /** Resolved through the /admin override layer by the server component that renders this. */
+  posters?: PromotionPoster[];
+}) {
   const railRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<number | null>(null);
   const programmaticIndexRef = useRef<number | null>(null);
@@ -16,7 +21,7 @@ export function PromotionCarousel() {
   const [activeIndex, setActiveIndex] = useState(0);
 
   const goTo = (requestedIndex: number) => {
-    const nextIndex = (requestedIndex + promotionPosters.length) % promotionPosters.length;
+    const nextIndex = (requestedIndex + posters.length) % posters.length;
     const rail = railRef.current;
     const card = rail?.querySelector<HTMLElement>(`[data-promotion-index="${nextIndex}"]`);
     const firstCard = rail?.querySelector<HTMLElement>('[data-promotion-index="0"]');
@@ -61,7 +66,7 @@ export function PromotionCarousel() {
         const gap = Number.parseFloat(getComputedStyle(rail).columnGap) || 0;
         const step = firstCard.getBoundingClientRect().width + gap;
         const nextIndex = Math.min(
-          promotionPosters.length - 1,
+          posters.length - 1,
           Math.max(0, Math.round((rail.scrollLeft - firstCard.offsetLeft) / step)),
         );
         if (nextIndex !== activeIndexRef.current) {
@@ -90,7 +95,7 @@ export function PromotionCarousel() {
           role="region"
           aria-label="แกลเลอรีโปรโมชั่นของ Kazumi Clinic"
         >
-          {promotionPosters.map((poster, index) => (
+          {posters.map((poster, index) => (
             <article
               key={poster.src}
               data-promotion-index={index}
@@ -144,7 +149,7 @@ export function PromotionCarousel() {
           สอบถามช่วงเวลาและสิทธิ์โปรโมชั่นกับทีม Kazumi
         </span>
         <div className="promotion-carousel-dots" role="group" aria-label="เลือกโปรโมชั่น">
-          {promotionPosters.map((poster, index) => (
+          {posters.map((poster, index) => (
             <button
               key={poster.src}
               type="button"

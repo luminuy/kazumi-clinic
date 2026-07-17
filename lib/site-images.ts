@@ -163,3 +163,18 @@ export const bakedInImages: { path: string; label: string; where: string }[] = [
 
 /** Every valid slot key — the allowlist the admin API validates uploads against. */
 export const siteImageKeys = siteImages.map((image) => image.key);
+
+/**
+ * Which image slot backs each service category's hero. Kept here rather than as a field on
+ * ServiceCategory so lib/services.ts stays pure data with no dependency on the override layer.
+ */
+export const categoryImageKey: Record<string, SiteImageKey> = {
+  filler: 'hero-filler',
+  'iv-drip': 'hero-iv-drip-1',
+  'skin-booster': 'hero-skin-booster',
+};
+
+/** Which slot backs each promotion poster, by its default public ID. */
+export const posterKeyByDefaultId = new Map(
+  siteImages.filter((i) => i.key.startsWith('promo-')).map((i) => [i.defaultPublicId, i.key]),
+);

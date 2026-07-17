@@ -16,7 +16,12 @@ const fallbackImages = [
   cloudAssets.heroSkinBooster,
 ];
 
-export function ServiceAtlas() {
+export function ServiceAtlas({
+  heroOverrides = {},
+}: {
+  /** slug → Cloudinary public ID, resolved from the /admin override layer server-side. */
+  heroOverrides?: Record<string, string>;
+}) {
   const railRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<number | null>(null);
   const programmaticIndexRef = useRef<number | null>(null);
@@ -48,8 +53,13 @@ export function ServiceAtlas() {
       const firstCard = rail?.querySelector<HTMLElement>('[data-service-index="0"]');
       if (rail && firstCard) {
         if (programmaticIndexRef.current !== null) {
-          const targetCard = rail.querySelector<HTMLElement>(`[data-service-index="${programmaticIndexRef.current}"]`);
-          if (targetCard && Math.abs(rail.scrollLeft - (targetCard.offsetLeft - firstCard.offsetLeft)) <= 2) {
+          const targetCard = rail.querySelector<HTMLElement>(
+            `[data-service-index="${programmaticIndexRef.current}"]`,
+          );
+          if (
+            targetCard &&
+            Math.abs(rail.scrollLeft - (targetCard.offsetLeft - firstCard.offsetLeft)) <= 2
+          ) {
             programmaticIndexRef.current = null;
           }
           frameRef.current = null;
@@ -57,7 +67,10 @@ export function ServiceAtlas() {
         }
         const gap = Number.parseFloat(getComputedStyle(rail).columnGap) || 0;
         const step = firstCard.getBoundingClientRect().width + gap;
-        const nextIndex = Math.min(serviceCategories.length - 1, Math.max(0, Math.round(rail.scrollLeft / step)));
+        const nextIndex = Math.min(
+          serviceCategories.length - 1,
+          Math.max(0, Math.round(rail.scrollLeft / step)),
+        );
         if (nextIndex !== activeIndexRef.current) {
           activeIndexRef.current = nextIndex;
           setActiveIndex(nextIndex);
@@ -119,10 +132,15 @@ export function ServiceAtlas() {
                 category={category}
                 index={index}
                 active={activeIndex === index}
+                heroOverride={heroOverrides[category.slug]}
               />
             ))}
           </div>
-          <div className="service-atlas-overlay-controls" role="group" aria-label="เลื่อนรายการบริการ">
+          <div
+            className="service-atlas-overlay-controls"
+            role="group"
+            aria-label="เลื่อนรายการบริการ"
+          >
             <button
               type="button"
               className="service-atlas-arrow"
@@ -150,7 +168,10 @@ export function ServiceAtlas() {
               type="button"
               aria-current={activeIndex === index ? 'true' : undefined}
               aria-label={`ดูบริการ ${category.title}`}
-              className={cn('service-atlas-dot', activeIndex === index && 'service-atlas-dot--active')}
+              className={cn(
+                'service-atlas-dot',
+                activeIndex === index && 'service-atlas-dot--active',
+              )}
               onClick={() => goTo(index)}
             />
           ))}
@@ -164,13 +185,16 @@ function ServiceAtlasCard({
   category,
   index,
   active,
+  heroOverride,
 }: {
   category: ServiceCategory;
   index: number;
   active: boolean;
+  heroOverride?: string;
 }) {
-  const imageSrc = category.heroImage ?? fallbackImages[index % fallbackImages.length];
-  const hasSemanticImage = Boolean(category.heroImage && category.heroAlt);
+  const imageSrc =
+    heroOverride ?? category.heroImage ?? fallbackImages[index % fallbackImages.length];
+  const hasSemanticImage = Boolean((heroOverride ?? category.heroImage) && category.heroAlt);
 
   return (
     <article
@@ -197,12 +221,16 @@ function ServiceAtlasCard({
           </span>
         </div>
         <div className="service-atlas-card__caption">
-          <p className="text-[0.65rem] uppercase tracking-[0.24em] text-olive-light">{category.titleEn}</p>
+          <p className="text-[0.65rem] uppercase tracking-[0.24em] text-olive-light">
+            {category.titleEn}
+          </p>
           <h3 className="mt-2 flex items-center justify-between gap-3 font-serif text-2xl text-olive-deep">
             {category.title}
             <ArrowUpRight className="service-atlas-card__arrow size-5 shrink-0 text-clay" />
           </h3>
-          <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-ink/60">{category.shortDescription}</p>
+          <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-ink/60">
+            {category.shortDescription}
+          </p>
         </div>
       </Link>
     </article>
