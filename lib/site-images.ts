@@ -26,6 +26,7 @@ export type SiteImageKey =
   | 'hero-acne-care'
   | 'hero-laser-hifu'
   | 'thread-lift-product'
+  | 'mesotherapy-treatment'
   | 'item-filler-neura-deep-1cc'
   | 'item-filler-neura-deep-3cc'
   | 'item-filler-neura-volume-1cc'
@@ -165,6 +166,13 @@ export const siteImages: SiteImageSpec[] = [
     label: 'รูปสินค้าไหม PDO',
     where: '/thread-lift — รูปในส่วน Treatment Menu',
     ratioHint: 'แนวตั้ง 4:5 — รูปกล่อง/ตัวไหม · ยังไม่มีรูป อัปแล้วจะขึ้นแทนกล่องไอคอน',
+  },
+  // รูปที่สองของหน้าเมโส (คนละใบกับ hero-mesotherapy ที่เป็นรูปหัวหน้า)
+  {
+    key: 'mesotherapy-treatment',
+    label: 'รูปบรรยากาศการรักษา (เมโส)',
+    where: '/mesotherapy — รูปในส่วน Ready for your transformation',
+    ratioHint: 'จัตุรัส · ยังไม่มีรูป อัปแล้วจะขึ้นแทนกล่องไอคอน',
   },
   // ── รูปผลิตภัณฑ์รายตัวบนหน้า /filler ────────────────────────────────
   // ยังไม่มีรูปสักใบ — การ์ดจะขึ้นกล่องไอคอนไปก่อนจนกว่าคลินิกจะอัป
