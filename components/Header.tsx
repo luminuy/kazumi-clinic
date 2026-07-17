@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Menu, MessageCircle, ChevronDown, ArrowRight } from 'lucide-react';
 import { site } from '@/lib/site';
 import { navItems, resolvedServiceNavGroups } from '@/lib/nav';
@@ -24,12 +25,12 @@ export default function Header() {
           aria-label="Kazumi Clinic หน้าหลัก"
           className="group flex items-center gap-3 text-olive-deep"
         >
-          {/* eslint-disable-next-line @next/next/no-img-element -- the local brand mark is a fixed, pre-cropped asset */}
-          <img
+          <Image
             src={site.logoMark}
             alt="Kazumi Clinic"
             width={36}
             height={36}
+            sizes="36px"
             className="size-9 rounded-[0.35rem] object-cover ring-1 ring-olive/10 transition-transform duration-300 group-hover:scale-[1.03]"
           />
           <span className="flex flex-col font-serif leading-none tracking-[0.18em]">

@@ -89,6 +89,11 @@ export default cloudinaryLoader;
 // cropped to 1200x630 via cld(cloudAssets.heroHome, { width: 1200, height: 630, crop: 'fill' }).
 export const cloudAssets = {
   logo: 'kazumi-clinic/logo',
+  // The wordmark and the flower mark the site actually renders. They lived in public/ — which
+  // meant /admin offered a "change the logo" button that changed nothing, because the header
+  // read a baked-in file instead.
+  brandLogo: 'kazumi-clinic/brand-logo',
+  brandMark: 'kazumi-clinic/brand-mark',
   heroHome: 'kazumi-clinic/hero-home',
   heroFiller: 'kazumi-clinic/hero-filler',
   heroIvDrip1: 'kazumi-clinic/hero-iv-drip-1',
