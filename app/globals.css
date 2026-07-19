@@ -292,16 +292,16 @@
   display: block;
   aspect-ratio: 0.8;
   overflow: hidden;
-  border: 1px solid rgb(197 174 155 / 28%);
-  border-radius: 1.5rem;
+  /* Sharp corners, no synthetic shadow — the editorial "Japanese Luxury" language
+     (docs/design.md · Shapes/Elevation). Depth comes from the hairline border alone. */
+  border: 1px solid rgb(197 174 155 / 32%);
+  border-radius: 0;
   background: var(--cream);
-  box-shadow: 0 1rem 2.5rem rgb(197 174 155 / 14%);
   isolation: isolate;
-  transition: transform 240ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 240ms ease-out;
+  transition: transform 240ms cubic-bezier(0.23, 1, 0.32, 1), border-color 240ms ease-out;
 }
 .promotion-carousel-card--active .promotion-carousel-card__link {
-  border-color: rgb(197 174 155 / 62%);
-  box-shadow: 0 1.25rem 3rem rgb(197 174 155 / 21%);
+  border-color: rgb(122 122 94 / 60%);
 }
 .promotion-carousel-card__image {
   transition: transform 700ms cubic-bezier(0.23, 1, 0.32, 1);

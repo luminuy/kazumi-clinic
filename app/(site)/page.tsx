@@ -3,10 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import {
   ArrowUpRight,
-  ArrowRight,
   MapPin,
-  Clock,
-  Phone,
   CircleHelp,
   GraduationCap,
   Navigation,
@@ -97,6 +94,9 @@ export default async function HomePage() {
   const heroSrc = overrides.has('hero-home') ? pick('hero-home', '') : heroHomePortrait;
   const philosophySrc = pick('hero-iv-drip-2', cloudAssets.heroIvDrip2);
   const doctorSrc = pick('doctor-pratch', doctor.image);
+  // Clinic photo for the "มาเยี่ยมเรา" section; undefined until the clinic uploads one, so the
+  // section falls back to a tonal placeholder rather than borrowing an unrelated image.
+  const visitPhoto = overrides.get('home-visit')?.public_id;
 
   // Service cards and promotion posters resolve here, in the server component, so the client
   // components stay free of the override layer and the D1 read happens once per render.
@@ -355,23 +355,26 @@ export default async function HomePage() {
       {/* ── Promotions / availability board ─────────────────── */}
       <section className="relative overflow-hidden bg-background px-6 py-24 md:py-32">
         <div className="relative mx-auto max-w-7xl">
-          <Reveal className="flex flex-wrap items-end justify-between gap-7">
-            <div>
-              <div className="section-eyebrow flex items-center gap-3">
-                <span className="h-px w-10 bg-clay" />
-                04 / Availability
+          <Reveal>
+            <div className="flex flex-wrap items-end justify-between gap-x-7 gap-y-4">
+              <div>
+                <div className="section-eyebrow flex items-center gap-3">
+                  <span className="h-px w-10 bg-clay" />
+                  04 / Availability
+                </div>
+                <h2 className="mt-6 font-serif text-5xl leading-none tracking-[-0.04em] text-olive-deep sm:text-6xl">
+                  โปรโมชั่นล่าสุด
+                </h2>
               </div>
-              <h2 className="mt-6 font-serif text-5xl leading-none tracking-[-0.04em] text-olive-deep sm:text-6xl">
-                โปรโมชั่นล่าสุด
-              </h2>
+              <Link
+                href="/promotions"
+                className="text-[0.68rem] uppercase tracking-[0.2em] text-olive transition-colors hover:text-olive-deep"
+              >
+                View all promotions
+              </Link>
             </div>
-            <Link
-              href="/promotions"
-              className="group inline-flex items-center gap-2 text-sm text-olive transition-colors hover:text-olive-deep"
-            >
-              ดูหน้ารวมโปรโมชั่น{' '}
-              <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
-            </Link>
+            {/* The full-width hairline under the header, as in the reference. */}
+            <span aria-hidden="true" className="mt-8 block h-px w-full bg-olive/15" />
           </Reveal>
 
           <Reveal className="mt-14">
@@ -383,74 +386,82 @@ export default async function HomePage() {
       {/* ── Visit dossier / FAQ ──────────────────────────────── */}
       <section className="border-t border-olive/10 bg-cream px-6 py-24 md:py-32">
         <div className="mx-auto max-w-7xl">
-          <Reveal className="flex flex-wrap items-end justify-between gap-7">
-            <div>
-              <div className="section-eyebrow flex items-center gap-3">
-                <span className="h-px w-10 bg-clay" />
-                05 / Visit dossier
-              </div>
-              <h2 className="mt-6 font-serif text-5xl leading-none tracking-[-0.04em] text-olive-deep sm:text-6xl">
-                มาเยี่ยมเรา
-              </h2>
+          <Reveal>
+            <div className="section-eyebrow flex items-center gap-3">
+              <span className="h-px w-10 bg-clay" />
+              05 / Visit dossier
             </div>
-            <p className="max-w-sm text-sm leading-relaxed text-ink/60">
-              พื้นที่สงบสำหรับการพูดคุย ประเมิน และวางแผนการดูแลในแบบที่เป็นคุณ
-            </p>
+            <h2 className="mt-6 font-serif text-5xl leading-none tracking-[-0.04em] text-olive-deep sm:text-6xl">
+              มาเยี่ยมเรา
+            </h2>
           </Reveal>
 
-          <div className="visit-dossier mt-14 grid overflow-hidden rounded-[2rem] border border-olive/15 bg-background md:grid-cols-[1fr_1.618fr]">
-            <Reveal className="relative p-8 sm:p-10 md:p-12">
-              <span className="font-serif text-6xl text-clay/45">05</span>
-              <ul className="mt-8 space-y-6 text-sm text-ink/75">
-                <li className="flex items-start gap-3">
-                  <MapPin className="mt-0.5 size-5 shrink-0 text-olive" />
-                  <a
-                    href={site.mapsUrl}
-                    target="_blank"
-                    rel="noopener"
-                    className="leading-relaxed hover:text-olive"
-                  >
-                    {site.addressFull}
-                  </a>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Clock className="mt-0.5 size-5 shrink-0 text-olive" />
-                  <span>
+          <div className="mt-14 grid items-stretch gap-x-12 gap-y-10 md:grid-cols-[1fr_1.618fr]">
+            {/* Left: the address book — Location / Hours / Contact, then the maps link. */}
+            <Reveal className="flex flex-col">
+              <dl className="space-y-8">
+                <div>
+                  <dt className="text-[0.62rem] uppercase tracking-[0.2em] text-olive/60">
+                    Location
+                  </dt>
+                  <dd className="mt-2 max-w-xs text-sm leading-relaxed text-ink/75">
+                    <a href={site.mapsUrl} target="_blank" rel="noopener" className="hover:text-olive">
+                      {site.addressFull}
+                    </a>
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-[0.62rem] uppercase tracking-[0.2em] text-olive/60">Hours</dt>
+                  <dd className="mt-2 text-sm leading-relaxed text-ink/75">
                     {site.hoursDisplay.weekdays}
                     <br />
                     {site.hoursDisplay.sunday}
-                  </span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <Phone className="size-5 shrink-0 text-olive" />
-                  <a href={site.phoneUrl} className="hover:text-olive">
-                    {site.phone}
-                  </a>
-                </li>
-              </ul>
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-[0.62rem] uppercase tracking-[0.2em] text-olive/60">Contact</dt>
+                  <dd className="mt-2 space-y-1 text-sm leading-relaxed text-ink/75">
+                    <a href={site.phoneUrl} className="block hover:text-olive">
+                      {site.phone}
+                    </a>
+                    <a
+                      href={site.lineUrl}
+                      target="_blank"
+                      rel="noopener"
+                      className="block hover:text-olive"
+                    >
+                      LINE Official
+                    </a>
+                  </dd>
+                </div>
+              </dl>
               <Button
                 render={<a href={site.mapsUrl} target="_blank" rel="noopener" />}
                 variant="outline"
-                className="mt-9 rounded-full border-olive/25 text-olive-deep hover:bg-olive/5"
+                className="mt-10 w-fit rounded-none border-olive/30 text-[0.68rem] uppercase tracking-[0.18em] text-olive-deep hover:bg-olive/5"
               >
-                <Navigation className="size-4" /> เปิด Google Maps
+                <Navigation className="size-4" /> Open Google Maps
               </Button>
             </Reveal>
+
+            {/* Right: a photo of the clinic. Placeholder until the clinic uploads one via /admin. */}
             <Reveal
               delay={80}
-              className="min-h-[23rem] overflow-hidden border-t border-olive/15 md:border-l md:border-t-0"
+              className="relative min-h-[20rem] overflow-hidden border border-olive/12 bg-olive-deep/[0.06] md:min-h-[26rem]"
             >
-              <iframe
-                src={site.mapsEmbedUrl}
-                width="100%"
-                height="100%"
-                className="min-h-[23rem] grayscale-[0.25]"
-                style={{ border: 0 }}
-                loading="lazy"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
-                title={`แผนที่ ${site.name}`}
-              />
+              {visitPhoto ? (
+                <Image
+                  src={visitPhoto}
+                  alt={`หน้าคลินิก ${site.name}`}
+                  fill
+                  sizes="(min-width: 768px) 62vw, 88vw"
+                  className="object-cover"
+                />
+              ) : (
+                <span className="absolute inset-0 flex items-center justify-center">
+                  <MapPin className="size-10 text-olive/25" strokeWidth={0.9} />
+                </span>
+              )}
             </Reveal>
           </div>
 
