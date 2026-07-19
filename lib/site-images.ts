@@ -31,6 +31,7 @@ export type SiteImageKey =
   | 'laser-hifu-editorial'
   | 'laser-hifu-interior'
   | 'acne-care-interstitial'
+  | 'skin-booster-discipline'
   | 'item-filler-neura-deep-1cc'
   | 'item-filler-neura-deep-3cc'
   | 'item-filler-neura-volume-1cc'
@@ -206,6 +207,14 @@ export const siteImages: SiteImageSpec[] = [
     label: 'รูปประกอบดูแลสิว',
     where: '/acne-care — รูปช่วงคั่นก่อนส่วน CTA',
     ratioHint: 'จัตุรัส · ยังไม่มีรูป อัปแล้วจะขึ้นแทนกล่องไอคอน',
+  },
+  // รูปพื้นหลังแถบ The Kazumi Discipline บนหน้า /skin-booster
+  // (คนละใบกับ hero-skin-booster ที่เป็นรูปหัวหน้า)
+  {
+    key: 'skin-booster-discipline',
+    label: 'รูปพื้นหลังแถบ Discipline (สกินบูสเตอร์)',
+    where: '/skin-booster — พื้นหลังแถบ The Kazumi Discipline',
+    ratioHint: 'แนวนอน · ยังไม่มีรูป แถบจะเป็นสีพื้นไปก่อน',
   },
   // ── รูปผลิตภัณฑ์รายตัวบนหน้า /filler ────────────────────────────────
   // ยังไม่มีรูปสักใบ — การ์ดจะขึ้นกล่องไอคอนไปก่อนจนกว่าคลินิกจะอัป
