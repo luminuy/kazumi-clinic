@@ -209,11 +209,13 @@ export const serviceCategories: ServiceCategory[] = [
         name: 'Karisma Rh Collagen',
         detail: 'Made in Italy',
         tagline: 'Rh Collagen',
+        // "English title — Thai description" so the collagen page's benefit cards can show the
+        // reference's feature title above our approved Thai copy (see skin-booster's splitBenefit).
         benefits: [
-          'คอลลาเจนโครงสร้างถอดแบบจาก Collagen Type 1 ในผิวมนุษย์ 100%',
-          'เข้ากับร่างกายได้ดีถึง 99.99% ลดความเสี่ยงในการแพ้',
-          'เติมเต็มคอลลาเจน พร้อมกระตุ้นการสร้างคอลลาเจนใหม่',
-          'ลดเลือนริ้วรอย ร่องแก้ม ร่องน้ำหมาก และถุงใต้ตา',
+          'Human Collagen Type 1 — คอลลาเจนโครงสร้างถอดแบบจาก Collagen Type 1 ในผิวมนุษย์ 100%',
+          '99.99% Compatibility — เข้ากับร่างกายได้ดีถึง 99.99% ลดความเสี่ยงในการแพ้',
+          'Restoration — เติมเต็มคอลลาเจน พร้อมกระตุ้นการสร้างคอลลาเจนใหม่',
+          'Targeted Solution — ลดเลือนริ้วรอย ร่องแก้ม ร่องน้ำหมาก และถุงใต้ตา',
         ],
         unit: 'ครั้ง',
       },

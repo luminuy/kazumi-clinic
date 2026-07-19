@@ -252,7 +252,7 @@ export default async function ServiceCategoryPage({ params }: Props) {
       <CollagenBoosterServicePage
         service={service}
         heroImage={heroImage}
-        disciplineImage={overrides.get('collagen-booster-discipline')?.public_id}
+        editorialImage={overrides.get('collagen-booster-editorial')?.public_id}
       />
     ) : (
       <div className="bg-sand">
