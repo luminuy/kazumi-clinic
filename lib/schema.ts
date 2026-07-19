@@ -2,7 +2,7 @@
 // `${site.url}/#business` — every other page must reference it via that @id instead of
 // repeating the MedicalBusiness block (see CLAUDE.md §3.1).
 import { site } from './site';
-import { ServiceCategory } from './services';
+import { ServiceCategory, serviceCategories } from './services';
 import { doctor } from './doctor';
 import { cld, cloudAssets } from './cloud';
 
@@ -33,6 +33,8 @@ export function clinicSchema({
     url: site.url,
     telephone: site.phoneIntl,
     priceRange: '$$',
+    // Aesthetic dermatology — the specialty Google maps the entity to for health/beauty queries.
+    medicalSpecialty: 'Dermatology',
     image: cld(imagePublicId, { width: 1200, height: 630, crop: 'fill' }),
     logo: cld(logoPublicId, { width: 512, height: 512, crop: 'fit' }),
     hasMap: site.mapsUrl,
@@ -66,6 +68,13 @@ export function clinicSchema({
       name: doctor.name,
       jobTitle: doctor.role,
       identifier: doctor.licenseNo,
+    })),
+    // The service range as procedures the clinic offers, linking the business entity to each
+    // category page. Driven by lib/services.ts, so it stays in sync as categories change.
+    availableService: serviceCategories.map((category) => ({
+      '@type': 'MedicalProcedure',
+      name: category.title,
+      url: `${site.url}/${category.slug}`,
     })),
     sameAs: [site.facebook, site.instagram, site.lineUrl].filter(Boolean),
   };
