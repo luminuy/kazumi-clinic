@@ -43,6 +43,7 @@ export type SiteImageKey =
   | 'about-hero'
   | 'about-interior'
   | 'og-about'
+  | 'home-visit'
   | 'promo-active-refresh'
   | 'promo-filler-neura'
   | 'promo-karisma-collagen'
@@ -289,6 +290,13 @@ export const siteImages: SiteImageSpec[] = [
     where: 'ตอนแชร์ลิงก์ /about',
     defaultPublicId: cloudAssets.ogAbout,
     ratioHint: '1200×630 เป๊ะ (สเปก Facebook/LINE)',
+  },
+  // รูปหน้าคลินิกในส่วน "มาเยี่ยมเรา" บนหน้าแรก (แทนแผนที่ฝัง Google Maps เดิม)
+  {
+    key: 'home-visit',
+    label: 'รูปคลินิกส่วนมาเยี่ยมเรา (หน้าแรก)',
+    where: 'หน้าแรก — ส่วน “มาเยี่ยมเรา” รูปด้านขวา',
+    ratioHint: 'แนวนอน/จัตุรัส · ยังไม่มีรูป จะขึ้นกล่องไอคอนไปก่อน',
   },
   {
     key: 'promo-active-refresh',
