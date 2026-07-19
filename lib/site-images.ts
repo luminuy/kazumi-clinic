@@ -32,6 +32,7 @@ export type SiteImageKey =
   | 'laser-hifu-interior'
   | 'acne-care-interstitial'
   | 'skin-booster-discipline'
+  | 'collagen-booster-discipline'
   | 'item-filler-neura-deep-1cc'
   | 'item-filler-neura-deep-3cc'
   | 'item-filler-neura-volume-1cc'
@@ -214,6 +215,14 @@ export const siteImages: SiteImageSpec[] = [
     key: 'skin-booster-discipline',
     label: 'รูปพื้นหลังแถบ Discipline (สกินบูสเตอร์)',
     where: '/skin-booster — พื้นหลังแถบ The Kazumi Discipline',
+    ratioHint: 'แนวนอน · ยังไม่มีรูป แถบจะเป็นสีพื้นไปก่อน',
+  },
+  // รูปพื้นหลังแถบ The Kazumi Discipline บนหน้า /collagen-booster
+  // (คนละใบกับ hero-collagen-booster ที่เป็นรูปหัวหน้า)
+  {
+    key: 'collagen-booster-discipline',
+    label: 'รูปพื้นหลังแถบ Discipline (คอลลาเจนบูสเตอร์)',
+    where: '/collagen-booster — พื้นหลังแถบ The Kazumi Discipline',
     ratioHint: 'แนวนอน · ยังไม่มีรูป แถบจะเป็นสีพื้นไปก่อน',
   },
   // ── รูปผลิตภัณฑ์รายตัวบนหน้า /filler ────────────────────────────────
