@@ -1,84 +1,42 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { BadgeCheck, MessageCircle, Sparkles } from 'lucide-react';
-import type { ServiceCategory, ServiceItem } from '@/lib/services';
+import { BadgeCheck, Dna, MessageCircle, Phone, Sparkles, Target } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+import type { ServiceCategory } from '@/lib/services';
 import { site } from '@/lib/site';
 import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
 
-function TreatmentCard({ item }: { item: ServiceItem }) {
-  return (
-    <article className="border border-olive/20 bg-surface-container-lowest p-8 md:p-10">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h3 className="font-serif text-2xl text-olive-deep md:text-3xl">{item.name}</h3>
-          {/* The reference labels this "Premium Bio-Stimulator"; we show the item's real
-              detail ("Made in Italy") instead of an invented tagline. */}
-          {item.detail && (
-            <p lang="en" className="mt-1 text-[0.66rem] uppercase tracking-[0.18em] text-olive/55">
-              {item.detail}
-            </p>
-          )}
-        </div>
-        <BadgeCheck aria-hidden="true" className="size-6 shrink-0 text-olive" />
-      </div>
-
-      {/* The reference's four benefits are short English chip labels; ours are full Thai
-          sentences, so they read as an editorial list with a hairline marker rather than
-          being forced into a 2×2 chip grid that only works for one-word labels. */}
-      {item.benefits && item.benefits.length > 0 && (
-        <ul className="mt-8 space-y-4 border-t border-olive/15 pt-8">
-          {item.benefits.map((benefit) => (
-            <li key={benefit} className="flex gap-3 text-sm leading-[1.8] text-ink/70">
-              <span aria-hidden="true" className="mt-2.5 h-px w-3 shrink-0 bg-olive/40" />
-              <span>{benefit}</span>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      <div className="mt-10 flex items-end justify-between gap-4">
-        <div>
-          <p lang="en" className="text-[0.62rem] uppercase tracking-[0.18em] text-olive/50">
-            Price
-          </p>
-          {/* No price in lib/services.ts for this item; the reference also prints
-              "สอบถามราคา", so the two agree — nothing invented. */}
-          <p className="mt-1 font-serif text-xl text-olive-deep">
-            {item.priceFrom !== undefined
-              ? `${item.priceFrom.toLocaleString('th-TH')} บาท / ${item.unit}`
-              : 'สอบถามราคา'}
-          </p>
-        </div>
-        <a
-          href={site.lineUrl}
-          target="_blank"
-          rel="noopener"
-          aria-label={`จองคิว ${item.name} ผ่าน LINE`}
-          className="bg-olive-deep px-6 py-3 text-[0.66rem] uppercase tracking-[0.18em] text-sand transition-opacity duration-200 hover:opacity-90 active:scale-[0.98]"
-        >
-          จองคิว
-        </a>
-      </div>
-    </article>
-  );
+/**
+ * Our benefits are "English title — Thai description" (e.g. "Restoration — เติมเต็ม…"). The
+ * reference's four cards each show an English feature title over a Thai paragraph, so we split
+ * on the em dash to recover both halves; the icons run in declared order.
+ */
+function splitBenefit(benefit: string) {
+  const [title, ...rest] = benefit.split(/\s+—\s+/);
+  return { title, description: rest.join(' — ') || undefined };
 }
+
+// One icon per benefit card, in the order the benefits are declared in lib/services.ts.
+const BENEFIT_ICONS: LucideIcon[] = [Dna, BadgeCheck, Sparkles, Target];
 
 export function CollagenBoosterServicePage({
   service,
   heroImage,
-  disciplineImage,
+  editorialImage,
 }: {
   service: ServiceCategory;
   /** No shipped default (hero-collagen-booster is admin-only), so the hero may be empty. */
   heroImage?: string;
-  disciplineImage?: string;
+  editorialImage?: string;
 }) {
+  const item = service.items[0];
+
   return (
     <div className="bg-sand">
-      {/* ── Hero: title, editorial image, then licence + intro ───────────────── */}
-      <section className="px-6 pb-24 pt-24 sm:px-10 md:px-14 md:pt-28 lg:px-20">
-        <div className="mx-auto max-w-5xl">
+      {/* ── Hero: asymmetric image + intro, with a tactile "Ma" overlap ──────── */}
+      <section className="px-6 pb-28 pt-24 sm:px-10 md:px-14 md:pt-28 lg:px-20">
+        <div className="mx-auto max-w-6xl">
           <nav
             aria-label="เส้นทางหน้า"
             className="mb-12 flex flex-wrap items-center gap-1.5 text-xs text-ink/40"
@@ -98,144 +56,184 @@ export function CollagenBoosterServicePage({
             <span className="text-ink/70">{service.title}</span>
           </nav>
 
-          <h1 className="font-serif text-4xl leading-none text-olive-deep md:text-6xl">
-            {service.title}
-          </h1>
-          <p
-            lang="en"
-            className="mt-6 max-w-xs border-l border-olive/30 py-1 pl-4 text-base italic text-olive/70"
-          >
-            Precision &amp; Refinement in Medical Aesthetics.
-          </p>
+          <div className="grid items-center gap-x-10 gap-y-16 md:grid-cols-12">
+            {/* Image column — with the overlapping philosophy card. */}
+            <Reveal className="relative order-2 md:order-1 md:col-span-7">
+              <div className="relative aspect-[4/5] w-full overflow-hidden border border-olive/10 bg-olive-deep/[0.06] md:aspect-[16/10]">
+                {heroImage ? (
+                  <Image
+                    src={heroImage}
+                    alt={service.heroAlt ?? ''}
+                    aria-hidden={service.heroAlt ? undefined : 'true'}
+                    fill
+                    priority
+                    fetchPriority="high"
+                    sizes="(min-width: 768px) 42rem, 90vw"
+                    className="object-cover"
+                  />
+                ) : (
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-0 flex items-center justify-center"
+                  >
+                    <ServiceIcon
+                      slug={service.slug}
+                      className="size-12 text-olive/25"
+                      strokeWidth={0.75}
+                    />
+                  </span>
+                )}
+              </div>
+              {/* Organic overlap (docs/design.md) — a tonal card, no glass/shadow. */}
+              <div className="mt-6 border border-olive/15 bg-cream p-7 md:absolute md:-bottom-10 md:-right-6 md:mt-0 md:max-w-xs">
+                <p
+                  lang="en"
+                  className="mb-2 text-[0.62rem] uppercase tracking-[0.22em] text-olive/60"
+                >
+                  Philosophy
+                </p>
+                <p className="text-sm italic leading-[1.8] text-ink/65">
+                  “Ma” — ศาสตร์แห่งการเว้นที่ว่างอย่างตั้งใจ
+                  เพื่อสร้างสมดุลและความหมายในความงามที่แม่นยำ
+                </p>
+              </div>
+            </Reveal>
 
-          <div className="relative mt-10 h-80 w-full overflow-hidden border border-olive/10 bg-olive-deep/[0.06] md:h-[31rem]">
-            {heroImage ? (
-              <Image
-                src={heroImage}
-                alt={service.heroAlt ?? ''}
-                aria-hidden={service.heroAlt ? undefined : 'true'}
-                fill
-                priority
-                fetchPriority="high"
-                sizes="(min-width: 1024px) 64rem, 90vw"
-                className="object-cover"
-              />
-            ) : (
+            {/* Intro column. */}
+            <div className="order-1 flex flex-col gap-5 md:order-2 md:col-span-5">
+              <Reveal>
+                <p lang="en" className="text-[0.66rem] uppercase tracking-[0.24em] text-olive/60">
+                  {service.titleEn}
+                </p>
+                <h1 className="mt-4 font-serif text-4xl leading-[1.1] text-olive-deep md:text-5xl">
+                  {service.title}
+                </h1>
+                <p className="mt-6 max-w-sm text-sm leading-[1.9] text-ink/65 md:text-base">
+                  {service.description}
+                </p>
+                <p className="mt-6 text-[0.64rem] uppercase tracking-[0.16em] text-olive/55">
+                  ใบอนุญาตสถานพยาบาลเลขที่ {site.license}
+                </p>
+              </Reveal>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Product highlight: Karisma Rh Collagen + benefit grid ────────────── */}
+      <section className="bg-cream px-6 py-24 sm:px-10 md:px-14 md:py-28 lg:px-20">
+        <div className="mx-auto grid max-w-6xl gap-x-14 gap-y-12 md:grid-cols-3">
+          <Reveal className="md:col-span-1">
+            <h2 className="font-serif text-3xl text-olive-deep md:text-4xl">{item.name}</h2>
+            {/* The reference labels this "Rh Collagen"; the item's real detail is "Made in Italy". */}
+            {item.detail && (
+              <p lang="en" className="mt-2 text-[0.66rem] uppercase tracking-[0.18em] text-olive/55">
+                {item.detail}
+              </p>
+            )}
+            <span aria-hidden="true" className="mt-6 block h-px w-full bg-olive/20" />
+            <p className="mt-6 text-sm leading-[1.9] text-ink/65">{service.shortDescription}</p>
+          </Reveal>
+
+          {item.benefits && item.benefits.length > 0 && (
+            <div className="grid gap-6 sm:grid-cols-2 md:col-span-2">
+              {item.benefits.map((benefit, index) => {
+                const { title, description } = splitBenefit(benefit);
+                const Icon = BENEFIT_ICONS[index % BENEFIT_ICONS.length];
+                return (
+                  <Reveal key={title} delay={index * 60}>
+                    <article className="h-full border border-olive/15 bg-surface-container-lowest p-7">
+                      <Icon aria-hidden="true" className="size-8 text-olive" strokeWidth={1.25} />
+                      <h3 lang="en" className="mt-4 font-serif text-xl text-olive-deep">
+                        {title}
+                      </h3>
+                      {description && (
+                        <p className="mt-2 text-sm leading-[1.8] text-ink/65">{description}</p>
+                      )}
+                    </article>
+                  </Reveal>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ── Editorial quote + image ──────────────────────────── */}
+      <section className="overflow-hidden px-6 py-24 sm:px-10 md:px-14 md:py-28 lg:px-20">
+        <div className="mx-auto grid max-w-6xl items-center gap-x-16 gap-y-14 md:grid-cols-2">
+          <Reveal className="space-y-8">
+            <blockquote className="font-serif text-3xl italic leading-[1.35] text-olive-deep md:text-4xl">
+              “{site.taglineTh}”
+            </blockquote>
+            <div className="flex items-center gap-4">
+              <span aria-hidden="true" className="h-px w-12 bg-olive/50" />
+              <p lang="en" className="text-[0.66rem] uppercase tracking-[0.2em] text-olive/70">
+                {site.name} Standards
+              </p>
+            </div>
+          </Reveal>
+
+          <Reveal delay={80}>
+            <div className="relative">
+              <div className="relative aspect-square w-full overflow-hidden border border-olive/10 bg-olive-deep/[0.06]">
+                {editorialImage ? (
+                  <Image
+                    src={editorialImage}
+                    alt=""
+                    aria-hidden="true"
+                    fill
+                    sizes="(min-width: 768px) 32rem, 90vw"
+                    className="object-cover grayscale-[0.2]"
+                  />
+                ) : (
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-0 flex items-center justify-center"
+                  >
+                    <ServiceIcon
+                      slug={service.slug}
+                      className="size-10 text-olive/25"
+                      strokeWidth={0.75}
+                    />
+                  </span>
+                )}
+              </div>
               <span
                 aria-hidden="true"
-                className="absolute inset-0 flex items-center justify-center"
-              >
-                <ServiceIcon
-                  slug={service.slug}
-                  className="size-12 text-olive/25"
-                  strokeWidth={0.75}
-                />
-              </span>
-            )}
-          </div>
-
-          <div className="mt-8 max-w-xl">
-            <p className="text-[0.64rem] uppercase tracking-[0.16em] text-olive/55">
-              ใบอนุญาตสถานพยาบาลเลขที่ {site.license}
-            </p>
-            <p className="mt-3 text-sm leading-[1.9] text-ink/65 md:text-base">
-              {service.description}
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Philosophy ───────────────────────────────────────── */}
-      <section className="bg-cream px-6 py-24 text-center sm:px-10 md:py-28">
-        <Reveal className="mx-auto max-w-xl">
-          <Sparkles aria-hidden="true" className="mx-auto size-7 text-olive/50" strokeWidth={0.9} />
-          <h2 lang="en" className="mt-6 font-serif text-3xl text-olive-deep md:text-4xl">
-            “Precision &amp; Refinement”
-          </h2>
-          <p className="mt-6 text-sm leading-[1.9] text-ink/65 md:text-base">
-            หัวใจหลักของ {site.name} คือความแม่นยำในการรักษาและความประณีตในการวิเคราะห์ปัญหาผิว
-            เพราะเราเชื่อว่าทุกรายละเอียดสำคัญต่อผลลัพธ์
-          </p>
-        </Reveal>
-      </section>
-
-      {/* ── Treatment menu ───────────────────────────────────── */}
-      <section className="px-6 py-24 sm:px-10 md:px-14 md:py-28 lg:px-20">
-        <div className="mx-auto max-w-4xl">
-          <Reveal>
-            <h2
-              lang="en"
-              className="border-b border-olive/15 pb-4 font-serif text-3xl text-olive-deep md:text-4xl"
-            >
-              Treatment Menu
-            </h2>
-          </Reveal>
-          <div className="mt-12 space-y-8">
-            {service.items.map((item, index) => (
-              <Reveal key={item.id ?? `${item.name}-${index}`} delay={index * 60}>
-                <TreatmentCard item={item} />
-              </Reveal>
-            ))}
-          </div>
-          <Reveal>
-            <p className="mt-8 text-[0.66rem] italic leading-[1.8] text-ink/45">
-              *ราคาและความเหมาะสมขึ้นอยู่กับการประเมินของแพทย์ ·
-              ทุกหัตถการไม่แนะนำสำหรับผู้มีอายุต่ำกว่า 18 ปี · ผลลัพธ์แตกต่างกันในแต่ละบุคคล
-            </p>
+                className="absolute -left-6 -top-6 -z-10 hidden size-40 border border-olive/20 md:block"
+              />
+            </div>
           </Reveal>
         </div>
-      </section>
-
-      {/* ── The Kazumi Discipline band ───────────────────────── */}
-      <section className="relative flex min-h-[24rem] items-center justify-center overflow-hidden px-6 py-24 text-center">
-        {disciplineImage ? (
-          <Image
-            src={disciplineImage}
-            alt=""
-            aria-hidden="true"
-            fill
-            sizes="100vw"
-            className="object-cover opacity-20 grayscale"
-          />
-        ) : (
-          <span aria-hidden="true" className="absolute inset-0 bg-olive-deep/[0.08]" />
-        )}
-        <Reveal className="relative">
-          <h2 lang="en" className="font-serif text-4xl text-olive-deep md:text-5xl">
-            The Kazumi Discipline
-          </h2>
-          <span aria-hidden="true" className="mx-auto mt-6 block h-px w-12 bg-olive/40" />
-          <p lang="en" className="mt-6 text-base italic text-olive/70">
-            “{site.taglineTh}”
-          </p>
-        </Reveal>
       </section>
 
       {/* ── CTA ──────────────────────────────────────────────── */}
       <section className="bg-olive-deep px-6 py-24 text-center text-sand sm:px-10 md:py-28">
-        <Reveal className="mx-auto max-w-xl">
-          <h2 lang="en" className="font-serif text-3xl md:text-4xl">
-            Ready for your transformation?
+        <Reveal className="mx-auto max-w-2xl">
+          <h2 className="font-serif text-3xl leading-snug md:text-4xl">
+            สัมผัสประสบการณ์ความงามที่ออกแบบมาเพื่อคุณ
           </h2>
-          <p className="mx-auto mt-6 max-w-md text-sm leading-[1.9] text-sand/75">
-            เริ่มต้นดูแลผิวพรรณของคุณกับทีมแพทย์ {site.name}
+          <p className="mx-auto mt-6 max-w-md text-sm leading-[1.9] text-sand/75 md:text-base">
+            เริ่มต้นดูแลผิวพรรณของคุณกับทีมแพทย์ {site.name} ปรึกษาและประเมินความเหมาะสมก่อนเข้ารับบริการ
           </p>
-          <div className="mt-10 flex flex-col items-center gap-4">
+          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <a
               href={site.lineUrl}
               target="_blank"
               rel="noopener"
-              className="inline-flex w-full max-w-xs items-center justify-center gap-3 bg-sand px-8 py-4 text-[0.68rem] uppercase tracking-[0.2em] text-olive-deep transition-colors duration-200 hover:bg-cream active:scale-[0.98]"
+              className="inline-flex w-full items-center justify-center gap-3 bg-sand px-10 py-4 text-[0.68rem] uppercase tracking-[0.2em] text-olive-deep transition-colors duration-200 hover:bg-cream active:scale-[0.98] sm:w-auto"
             >
               <MessageCircle aria-hidden="true" className="size-4" />
               จองคิวผ่าน LINE
             </a>
-            <Link
-              href="/services"
-              className="border-b border-sand/30 pb-1 text-[0.66rem] uppercase tracking-[0.18em] text-sand/80 transition-colors hover:text-sand"
+            <a
+              href={site.phoneUrl}
+              className="inline-flex w-full items-center justify-center gap-3 border border-sand/50 px-10 py-4 text-[0.68rem] uppercase tracking-[0.2em] text-sand transition-colors duration-200 hover:bg-sand hover:text-olive-deep sm:w-auto"
             >
-              ดูบริการทั้งหมด
-            </Link>
+              <Phone aria-hidden="true" className="size-4" />
+              โทร {site.phone}
+            </a>
           </div>
         </Reveal>
       </section>
