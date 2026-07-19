@@ -28,6 +28,8 @@ export type SiteImageKey =
   | 'thread-lift-product'
   | 'mesotherapy-treatment'
   | 'iv-drip-booking'
+  | 'laser-hifu-editorial'
+  | 'laser-hifu-interior'
   | 'item-filler-neura-deep-1cc'
   | 'item-filler-neura-deep-3cc'
   | 'item-filler-neura-volume-1cc'
@@ -183,6 +185,19 @@ export const siteImages: SiteImageSpec[] = [
     label: 'รูปบรรยากาศการรักษา (IV Drip)',
     where: '/iv-drip — รูปในส่วน Begin Your Journey',
     ratioHint: 'แนวตั้ง · ยังไม่มีรูป อัปแล้วจะขึ้นแทนกล่องไอคอน',
+  },
+  // รูปบนหน้า /laser-hifu (คนละใบกับ hero-laser-hifu ที่เป็นรูปหัวหน้า)
+  {
+    key: 'laser-hifu-editorial',
+    label: 'รูปประกอบเลเซอร์และยกกระชับ',
+    where: '/laser-hifu — รูปในส่วน Recommended Session',
+    ratioHint: 'แนวตั้ง · ยังไม่มีรูป อัปแล้วจะขึ้นแทนกล่องไอคอน',
+  },
+  {
+    key: 'laser-hifu-interior',
+    label: 'รูปบรรยากาศคลินิก (เลเซอร์)',
+    where: '/laser-hifu — รูปในส่วน Ready for your transformation',
+    ratioHint: 'แนวนอน · ยังไม่มีรูป อัปแล้วจะขึ้นแทนกล่องไอคอน',
   },
   // ── รูปผลิตภัณฑ์รายตัวบนหน้า /filler ────────────────────────────────
   // ยังไม่มีรูปสักใบ — การ์ดจะขึ้นกล่องไอคอนไปก่อนจนกว่าคลินิกจะอัป
