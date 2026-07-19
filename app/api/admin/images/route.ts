@@ -62,7 +62,7 @@ const REVALIDATION_TARGETS: Record<SiteImageKey, readonly RevalidationTarget[]> 
   'laser-hifu-interior': [{ path: '/laser-hifu' }],
   'acne-care-interstitial': [{ path: '/acne-care' }],
   'skin-booster-discipline': [{ path: '/skin-booster' }],
-  'collagen-booster-discipline': [{ path: '/collagen-booster' }],
+  'collagen-booster-editorial': [{ path: '/collagen-booster' }],
   // Product shots appear only on the filler page's own cards, so nothing else needs rebuilding.
   'item-filler-neura-deep-1cc': [{ path: '/filler' }],
   'item-filler-neura-deep-3cc': [{ path: '/filler' }],
