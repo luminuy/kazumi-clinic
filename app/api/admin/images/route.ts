@@ -58,6 +58,8 @@ const REVALIDATION_TARGETS: Record<SiteImageKey, readonly RevalidationTarget[]> 
   'thread-lift-product': [{ path: '/thread-lift' }],
   'mesotherapy-treatment': [{ path: '/mesotherapy' }],
   'iv-drip-booking': [{ path: '/iv-drip' }],
+  'laser-hifu-editorial': [{ path: '/laser-hifu' }],
+  'laser-hifu-interior': [{ path: '/laser-hifu' }],
   // Product shots appear only on the filler page's own cards, so nothing else needs rebuilding.
   'item-filler-neura-deep-1cc': [{ path: '/filler' }],
   'item-filler-neura-deep-3cc': [{ path: '/filler' }],
