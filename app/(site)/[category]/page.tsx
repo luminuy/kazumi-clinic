@@ -21,6 +21,7 @@ import { ThreadLiftServicePage } from '@/components/thread-lift-service-page';
 import { MesotherapyServicePage } from '@/components/mesotherapy-service-page';
 import { IvDripServicePage } from '@/components/iv-drip-service-page';
 import { LaserHifuServicePage } from '@/components/laser-hifu-service-page';
+import { AcneCareServicePage } from '@/components/acne-care-service-page';
 
 type Props = { params: Promise<{ category: string }> };
 
@@ -232,6 +233,12 @@ export default async function ServiceCategoryPage({ params }: Props) {
         heroImage={heroImage}
         editorialImage={overrides.get('laser-hifu-editorial')?.public_id}
         interiorImage={overrides.get('laser-hifu-interior')?.public_id}
+      />
+    ) : service.slug === 'acne-care' ? (
+      <AcneCareServicePage
+        service={service}
+        heroImage={heroImage}
+        interstitialImage={overrides.get('acne-care-interstitial')?.public_id}
       />
     ) : (
       <div className="bg-sand">
