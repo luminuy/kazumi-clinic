@@ -30,6 +30,7 @@ export type SiteImageKey =
   | 'iv-drip-booking'
   | 'laser-hifu-editorial'
   | 'laser-hifu-interior'
+  | 'acne-care-interstitial'
   | 'item-filler-neura-deep-1cc'
   | 'item-filler-neura-deep-3cc'
   | 'item-filler-neura-volume-1cc'
@@ -198,6 +199,13 @@ export const siteImages: SiteImageSpec[] = [
     label: 'รูปบรรยากาศคลินิก (เลเซอร์)',
     where: '/laser-hifu — รูปในส่วน Ready for your transformation',
     ratioHint: 'แนวนอน · ยังไม่มีรูป อัปแล้วจะขึ้นแทนกล่องไอคอน',
+  },
+  // รูปบนหน้า /acne-care (คนละใบกับ hero-acne-care ที่เป็นรูปหัวหน้า)
+  {
+    key: 'acne-care-interstitial',
+    label: 'รูปประกอบดูแลสิว',
+    where: '/acne-care — รูปช่วงคั่นก่อนส่วน CTA',
+    ratioHint: 'จัตุรัส · ยังไม่มีรูป อัปแล้วจะขึ้นแทนกล่องไอคอน',
   },
   // ── รูปผลิตภัณฑ์รายตัวบนหน้า /filler ────────────────────────────────
   // ยังไม่มีรูปสักใบ — การ์ดจะขึ้นกล่องไอคอนไปก่อนจนกว่าคลินิกจะอัป
