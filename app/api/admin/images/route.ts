@@ -74,6 +74,7 @@ const REVALIDATION_TARGETS: Record<SiteImageKey, readonly RevalidationTarget[]> 
   'about-hero': [{ path: '/about' }],
   'about-interior': [{ path: '/about' }],
   'og-about': [{ path: '/about' }],
+  'home-visit': [{ path: '/' }],
   'promo-active-refresh': [{ path: '/' }, { path: '/promotions' }, { path: '/services' }],
   'promo-filler-neura': [{ path: '/' }, { path: '/promotions' }, { path: '/services' }],
   'promo-karisma-collagen': [{ path: '/' }, { path: '/promotions' }, { path: '/services' }],
