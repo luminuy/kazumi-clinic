@@ -12,6 +12,7 @@ import { posterKeyByDefaultId } from '@/lib/site-images';
 import { siteSocialImage } from '@/lib/metadata-images';
 import { promotionPosters } from '@/lib/promotions';
 import { Reveal } from '@/components/reveal';
+import { PromotionCarousel } from '@/components/promotion-carousel';
 import { ServiceCarousel } from '@/components/service-carousel';
 
 const homeTitle = 'คลินิกความงามสุขุมวิท กรุงเทพฯ | Kazumi Clinic';
@@ -84,8 +85,7 @@ export default async function HomePage() {
       const key = posterKeyByDefaultId.get(poster.src);
       const override = key ? overrides.get(key)?.public_id : undefined;
       return override ? { ...poster, src: override } : poster;
-    })
-    .slice(0, 3);
+    });
 
   return (
     <>
@@ -291,10 +291,13 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Promotions: staggered editorial grid ─────────────── */}
-      <section className="mx-auto max-w-7xl px-6 py-24 sm:px-10 md:px-14 md:py-32 lg:px-20">
-        <Reveal className="mb-16 flex flex-wrap items-end justify-between gap-6">
-          <h2 className="font-serif text-4xl text-olive-deep md:text-5xl">โปรโมชั่นล่าสุด</h2>
+      {/* ── Promotions: Apple-style peeking carousel ─────────── */}
+      <section className="overflow-hidden bg-cream py-20 md:py-24">
+        <Reveal className="mx-auto mb-10 flex max-w-7xl flex-wrap items-end justify-between gap-6 px-6 sm:px-10 md:mb-12 md:px-14 lg:px-20">
+          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <h2 className="font-serif text-3xl text-olive-deep md:text-4xl">โปรโมชั่นล่าสุด</h2>
+            <p className="text-sm text-ink/55">เลือกดูโปรแกรมที่คลินิกคัดสรรไว้ได้เลย</p>
+          </div>
           <Link
             href="/promotions"
             className="text-[0.68rem] uppercase tracking-[0.2em] text-forest transition-colors hover:text-olive-deep"
@@ -303,33 +306,13 @@ export default async function HomePage() {
           </Link>
         </Reveal>
 
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3">
-          {posters.map((poster, index) => (
-            <Reveal
-              key={poster.src}
-              delay={index * 70}
-              className={index === 0 ? 'md:translate-y-10' : index === 2 ? 'md:translate-y-20' : ''}
-            >
-              <Link href="/promotions" className="group block">
-                <div className="relative aspect-[4/5] overflow-hidden border border-olive/10 bg-olive-deep/[0.06]">
-                  <Image
-                    src={poster.src}
-                    alt={poster.alt}
-                    fill
-                    sizes="(min-width: 768px) 30vw, 90vw"
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                </div>
-                <p
-                  lang="en"
-                  className="mt-5 text-[0.66rem] uppercase tracking-[0.16em] text-olive-deep"
-                >
-                  {poster.label}
-                </p>
-              </Link>
-            </Reveal>
-          ))}
-        </div>
+        <Reveal>
+          <PromotionCarousel
+            posters={posters}
+            className="homepage-promotion-shelf"
+            imageSizes="(min-width: 1536px) 18vw, (min-width: 1024px) 25vw, (min-width: 640px) 42vw, 78vw"
+          />
+        </Reveal>
       </section>
 
       {/* ── Location ─────────────────────────────────────────── */}

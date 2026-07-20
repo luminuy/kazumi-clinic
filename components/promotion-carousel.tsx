@@ -9,9 +9,15 @@ import { cn } from '@/lib/utils';
 
 export function PromotionCarousel({
   posters = promotionPosters,
+  className,
+  imageSizes = '(min-width: 1024px) 30vw, (min-width: 640px) 48vw, 88vw',
 }: {
   /** Resolved through the /admin override layer by the server component that renders this. */
   posters?: PromotionPoster[];
+  /** Page-specific layout treatment while preserving the same accessible carousel controls. */
+  className?: string;
+  /** Match the responsive image source to the card width for the rendering context. */
+  imageSizes?: string;
 }) {
   const railRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<number | null>(null);
@@ -85,7 +91,7 @@ export function PromotionCarousel({
   }, []);
 
   return (
-    <div className="promotion-carousel" id="promotion-gallery">
+    <div className={cn('promotion-carousel', className)} id="promotion-gallery">
       <div className="promotion-carousel-viewport">
         <div
           ref={railRef}
@@ -109,7 +115,7 @@ export function PromotionCarousel({
                   src={poster.src}
                   alt={poster.alt}
                   fill
-                  sizes="(min-width: 1024px) 30vw, (min-width: 640px) 48vw, 88vw"
+                  sizes={imageSizes}
                   className="promotion-carousel-card__image object-cover"
                 />
                 <div className="promotion-carousel-card__veil" aria-hidden="true" />

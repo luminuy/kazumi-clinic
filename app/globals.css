@@ -400,6 +400,45 @@
   width: 1.5rem;
   background: var(--clay);
 }
+/* Home promotions intentionally follow the supplied Apple-style shelf reference: concise
+   heading above, a run of equal cards with the following item visible, and controls overlaid
+   at the edge. The base carousel remains editorial for the Services page. */
+.homepage-promotion-shelf .promotion-carousel-viewport {
+  overflow: visible;
+}
+.homepage-promotion-shelf .promotion-carousel-rail {
+  gap: 0.75rem;
+  padding-inline: max(1.25rem, calc((100vw - 80rem) / 2 + 1.25rem));
+  scroll-padding-inline: max(1.25rem, calc((100vw - 80rem) / 2 + 1.25rem));
+}
+.homepage-promotion-shelf .promotion-carousel-card {
+  flex-basis: clamp(15rem, 18.75vw, 17.5rem);
+}
+.homepage-promotion-shelf .promotion-carousel-card__link {
+  border-color: rgb(38 40 31 / 7%);
+  border-radius: 0.9rem;
+  box-shadow: 0 0.25rem 1.25rem rgb(38 40 31 / 8%);
+}
+.homepage-promotion-shelf .promotion-carousel-card--active .promotion-carousel-card__link {
+  border-color: rgb(38 40 31 / 10%);
+  box-shadow: 0 0.4rem 1.5rem rgb(38 40 31 / 10%);
+}
+.homepage-promotion-shelf .promotion-carousel-card__veil,
+.homepage-promotion-shelf .promotion-carousel-card__meta,
+.homepage-promotion-shelf .promotion-carousel-footer {
+  display: none;
+}
+.homepage-promotion-shelf .promotion-carousel-controls {
+  right: max(0.75rem, calc((100vw - 80rem) / 2 + 0.25rem));
+  left: max(0.75rem, calc((100vw - 80rem) / 2 + 0.25rem));
+}
+.homepage-promotion-shelf .promotion-carousel-arrow {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-color: rgb(38 40 31 / 10%);
+  background: rgb(246 243 236 / 92%);
+  box-shadow: 0 0.25rem 0.75rem rgb(38 40 31 / 12%);
+}
 .doctor-frame,
 .promo-board,
 .visit-dossier {
@@ -456,6 +495,13 @@
     transform: translateY(-0.15rem);
     background: var(--cream);
   }
+  .homepage-promotion-shelf .promotion-carousel-card__link:hover {
+    transform: none;
+    box-shadow: 0 0.4rem 1.5rem rgb(38 40 31 / 12%);
+  }
+  .homepage-promotion-shelf .promotion-carousel-card__link:hover .promotion-carousel-card__image {
+    transform: none;
+  }
 }
 
 @media (max-width: 30rem) {
@@ -477,6 +523,17 @@
   }
   .promotion-carousel-note {
     width: 100%;
+  }
+  .homepage-promotion-shelf .promotion-carousel-rail {
+    padding-inline: 1.25rem;
+    scroll-padding-inline: 1.25rem;
+  }
+  .homepage-promotion-shelf .promotion-carousel-card {
+    flex-basis: 78vw;
+  }
+  .homepage-promotion-shelf .promotion-carousel-controls {
+    right: 0.4rem;
+    left: 0.4rem;
   }
 }
 @keyframes orbit-breathe {
