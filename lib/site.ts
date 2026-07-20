@@ -46,6 +46,11 @@ export const site = {
       licenseNo: 'ว.75302',
       role: 'ผู้ออกแบบโปรแกรมฟิลเลอร์ปรับรูปหน้า',
     },
+    {
+      name: 'Dr. Eesha Patel',
+      licenseNo: '69180',
+      role: 'แพทย์ผิวหนังและเวชศาสตร์ความงาม',
+    },
   ],
   hours: [
     { day: 'Monday', open: '09:00', close: '22:00' },

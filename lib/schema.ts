@@ -110,23 +110,36 @@ export function homePageSchema(imagePublicId: string = cloudAssets.heroHome) {
   };
 }
 
-export function doctorSchema(imagePublicId: string = doctor.image) {
+// Fields doctorSchema reads — both lib/doctor.ts profiles satisfy this. `nameTh`/image are
+// optional so a doctor without a Thai name or an uploaded photo still produces valid Person JSON-LD.
+type DoctorForSchema = {
+  name: string;
+  givenName: string;
+  familyName: string;
+  role: string;
+  nameTh?: string;
+  licenseNo: string;
+  education: readonly { degree: string; institution: string }[];
+  languages: readonly string[];
+};
+
+export function doctorSchema(doc: DoctorForSchema = doctor, imagePublicId?: string) {
   return {
     '@context': 'https://schema.org',
     '@type': 'Person',
-    name: doctor.name,
-    givenName: doctor.givenName,
-    familyName: doctor.familyName,
-    jobTitle: doctor.role,
-    alternateName: doctor.nameTh,
-    identifier: doctor.licenseNo,
-    image: cld(imagePublicId, { width: 800, crop: 'fit' }),
+    name: doc.name,
+    givenName: doc.givenName,
+    familyName: doc.familyName,
+    jobTitle: doc.role,
+    ...(doc.nameTh && { alternateName: doc.nameTh }),
+    identifier: doc.licenseNo,
+    ...(imagePublicId && { image: cld(imagePublicId, { width: 800, crop: 'fit' }) }),
     worksFor: { '@id': `${site.url}/#business` },
-    alumniOf: doctor.education.map((item) => ({
+    alumniOf: doc.education.map((item) => ({
       '@type': 'EducationalOrganization',
       name: item.institution,
     })),
-    knowsLanguage: doctor.languages,
+    knowsLanguage: doc.languages,
     url: `${site.url}/about`,
   };
 }
