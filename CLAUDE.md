@@ -79,7 +79,7 @@ Stack: Next.js App Router (React 19) + TypeScript + Tailwind CSS v4 + shadcn/ui 
 
 - **ใช้ความสามารถออกแบบของ agent ได้เต็มที่** — ไม่ต้องถามก่อนทุก step
 - เรียก skill `frontend-design` เมื่อเหมาะ (สร้าง component, page, หรือ overhaul ครั้งใหญ่)
-- ตัดสินใจเรื่อง spacing / typography / color / layout / motion ได้เอง โดยอิงโทนสีที่มีในโปรเจกต์: `#4D573E` olive (primary), `#3D4E46` olive-deep, `#7A7A5E` olive-light, `#EEE9DF` sand (background), `#26281F` ink (text), `#06C755` LINE — ค่าจริงอยู่ใน `@theme`/`:root` ของ [app/globals.css](app/globals.css) (Tailwind v4 ไม่มี `tailwind.config.ts` แล้ว ห้ามสร้างไฟล์นั้นกลับมา)
+- ตัดสินใจเรื่อง spacing / typography / color / layout / motion ได้เอง โดยอิงโทนสีที่มีในโปรเจกต์: `#006E2B` forest (green primary/CTA), `#06C755` mint (bright green — ปุ่มหลัก + LINE), `#3EE26C` mint-glow (เขียวอ่อนบนพื้นเข้ม), `#3D4E46` olive-deep (พื้นเข้ม/deep-forest), `#4D573E` olive, `#7A7A5E` olive-light, `#EEE9DF` sand (background), `#F6F3EC` cream, `#26281F` ink (text) — ค่าจริงอยู่ใน `@theme`/`:root` ของ [app/globals.css](app/globals.css) (Tailwind v4 ไม่มี `tailwind.config.ts` แล้ว ห้ามสร้างไฟล์นั้นกลับมา) · **2026 editorial redesign**: หน้าแรก ([app/(site)/page.tsx](<app/(site)/page.tsx>)) ใช้เขียว (`forest`/`mint`/`mint-glow`) เป็นสี action หลัก + มุมเหลี่ยม (sharp) ตามดีไซน์ใหม่ · `mint` = `#06C755` เป็นทั้งปุ่มหลักและ LINE (ไม่แยกสีแล้ว) · หน้าอื่นยังเป็น olive อยู่ — ถ้าจะไล่เปลี่ยนเป็นเขียวให้ทำทีละหน้าแล้ว verify
 - สไตล์แบรนด์: Japanese Editorial Luxury — มินิมอล ญี่ปุ่น สงบ, ใช้ negative space, asymmetry, เส้นบาง, มุมเหลี่ยม และสัดส่วน 1.618 ตาม [docs/design.md](docs/design.md)
 - ห้ามทำแค่ "ลด padding ให้พอผ่าน" — ถ้าจุดนั้นดูไม่ดี ให้คิดใหม่ทั้ง section
 - กฎเดิม (§0.1, §0.3, §0 auto-merge) ยังบังคับใช้
