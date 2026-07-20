@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, Pause, Play } from 'lucide-react';
 import type { ServiceCategory } from '@/lib/services';
 import { ServiceIcon } from '@/components/service-icon';
 
@@ -21,9 +21,11 @@ type ServiceCarouselProps = {
  */
 export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarouselProps) {
   const railRef = useRef<HTMLDivElement>(null);
+  const pickerRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<number | null>(null);
   const initialIndex = Math.min(2, Math.max(categories.length - 1, 0));
   const [activeIndex, setActiveIndex] = useState(initialIndex);
+  const [isPaused, setIsPaused] = useState(false);
   const activeIndexRef = useRef(initialIndex);
 
   const targetFor = useCallback((index: number) => {
@@ -34,6 +36,22 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
     return Math.max(0, card.offsetLeft - (rail.clientWidth - card.clientWidth) / 2);
   }, []);
 
+  const pickerTargetFor = useCallback((index: number) => {
+    const picker = pickerRef.current;
+    const card = picker?.querySelector<HTMLElement>(`[data-service-picker-index="${index}"]`);
+    if (!picker || !card) return null;
+
+    return Math.max(0, card.offsetLeft - picker.clientWidth * 0.12);
+  }, []);
+
+  const syncPicker = useCallback((index: number, behavior: ScrollBehavior) => {
+    const target = pickerTargetFor(index);
+    if (target === null) return;
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    pickerRef.current?.scrollTo({ left: target, behavior: reducedMotion ? 'auto' : behavior });
+  }, [pickerTargetFor]);
+
   const goTo = useCallback((requestedIndex: number, behavior: ScrollBehavior = 'smooth') => {
     if (categories.length === 0) return;
     const index = (requestedIndex + categories.length) % categories.length;
@@ -42,9 +60,10 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     railRef.current?.scrollTo({ left: target, behavior: reducedMotion ? 'auto' : behavior });
+    syncPicker(index, behavior);
     activeIndexRef.current = index;
     setActiveIndex(index);
-  }, [categories.length, targetFor]);
+  }, [categories.length, syncPicker, targetFor]);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => goTo(initialIndex, 'auto'));
@@ -52,14 +71,14 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
   }, [goTo, initialIndex]);
 
   useEffect(() => {
-    if (categories.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (isPaused || categories.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     const interval = window.setInterval(() => {
       goTo(activeIndexRef.current + 1);
-    }, 6000);
+    }, 4000);
 
     return () => window.clearInterval(interval);
-  }, [categories.length, goTo]);
+  }, [categories.length, goTo, isPaused]);
 
   const handleScroll = () => {
     if (frameRef.current !== null) return;
@@ -84,6 +103,7 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
         if (activeIndexRef.current !== nearestIndex) {
           activeIndexRef.current = nearestIndex;
           setActiveIndex(nearestIndex);
+          syncPicker(nearestIndex, 'smooth');
         }
       }
       frameRef.current = null;
@@ -153,12 +173,13 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
 
       </div>
 
-      <div className="service-stream-picker" role="group" aria-label="เลือกบริการ">
+      <div ref={pickerRef} className="service-stream-picker" role="group" aria-label="เลือกบริการ">
         {categories.map((category, index) => {
           const imageSrc = heroOverrides[category.slug] ?? category.heroImage;
           return (
             <button
               key={category.slug}
+              data-service-picker-index={index}
               type="button"
               onClick={() => goTo(index)}
               aria-label={`ไปที่ ${category.title}`}
@@ -183,17 +204,28 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
         })}
       </div>
 
-      <div className="service-stream-dots" role="group" aria-label="ตำแหน่งบริการ">
-        {categories.map((category, index) => (
-          <button
-            key={category.slug}
-            type="button"
-            onClick={() => goTo(index)}
-            aria-label={`ดูบริการ ${category.title}`}
-            aria-current={activeIndex === index ? 'true' : undefined}
-            className={activeIndex === index ? 'is-active' : undefined}
-          />
-        ))}
+      <div className="service-stream-footer">
+        <div className="service-stream-dots" role="group" aria-label="ตำแหน่งบริการ">
+          {categories.map((category, index) => (
+            <button
+              key={category.slug}
+              type="button"
+              onClick={() => goTo(index)}
+              aria-label={`ดูบริการ ${category.title}`}
+              aria-current={activeIndex === index ? 'true' : undefined}
+              className={activeIndex === index ? 'is-active' : undefined}
+            />
+          ))}
+        </div>
+        <button
+          type="button"
+          className="service-stream-pause"
+          onClick={() => setIsPaused((current) => !current)}
+          aria-label={isPaused ? 'เริ่มการเลื่อนบริการอัตโนมัติ' : 'หยุดการเลื่อนบริการอัตโนมัติ'}
+          aria-pressed={isPaused}
+        >
+          {isPaused ? <Play className="size-3" /> : <Pause className="size-3" />}
+        </button>
       </div>
     </div>
   );
