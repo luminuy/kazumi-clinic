@@ -544,10 +544,8 @@
 }
 .service-stream-picker__item {
   position: relative;
-  display: flex;
   flex: 0 0 24.45vw;
   aspect-ratio: 1.78;
-  align-items: flex-end;
   overflow: hidden;
   background: var(--olive-deep);
   color: var(--sand);
@@ -567,13 +565,30 @@
   background: linear-gradient(to top, rgb(15 24 21 / 72%), transparent 68%);
   content: '';
 }
-.service-stream-picker__item span {
-  position: relative;
+.service-stream-picker__title {
+  position: absolute;
   z-index: 2;
+  bottom: 0;
+  left: 0;
   padding: 0.75rem;
   font-size: 0.78rem;
   font-weight: 500;
   text-align: left;
+}
+.service-stream-picker__action {
+  position: absolute;
+  z-index: 2;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 92%);
+  color: var(--store-ink);
+  padding: 0.44rem 0.7rem;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  transition: background-color 160ms ease-out, transform 160ms ease-out;
 }
 .service-stream-dots {
   display: flex;
@@ -624,6 +639,10 @@
   }
   .service-stream-picker__item:hover {
     transform: translateY(-0.15rem);
+  }
+  .service-stream-picker__item:hover .service-stream-picker__action {
+    background: var(--mint);
+    transform: translateY(-0.1rem);
   }
   .service-stream-pause:hover {
     background: rgb(29 29 31 / 28%);
@@ -880,6 +899,7 @@
   .service-stream-card,
   .service-stream-card__action,
   .service-stream-picker__item,
+  .service-stream-picker__action,
   .service-stream-dots button,
   .promotion-carousel-card__link,
   .promotion-carousel-card__image,

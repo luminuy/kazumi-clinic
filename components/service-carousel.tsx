@@ -48,8 +48,7 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
     const target = pickerTargetFor(index);
     if (target === null) return;
 
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    pickerRef.current?.scrollTo({ left: target, behavior: reducedMotion ? 'auto' : behavior });
+    pickerRef.current?.scrollTo({ left: target, behavior });
   }, [pickerTargetFor]);
 
   const goTo = useCallback((requestedIndex: number, behavior: ScrollBehavior = 'smooth') => {
@@ -58,8 +57,7 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
     const target = targetFor(index);
     if (target === null) return;
 
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    railRef.current?.scrollTo({ left: target, behavior: reducedMotion ? 'auto' : behavior });
+    railRef.current?.scrollTo({ left: target, behavior });
     syncPicker(index, behavior);
     activeIndexRef.current = index;
     setActiveIndex(index);
@@ -198,7 +196,8 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
               ) : (
                 <ServiceIcon slug={category.slug} className="size-7" strokeWidth={1.1} aria-hidden="true" />
               )}
-              <span>{category.title}</span>
+              <span className="service-stream-picker__title">{category.title}</span>
+              <span className="service-stream-picker__action">ดูรายละเอียด</span>
             </button>
           );
         })}
