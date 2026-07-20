@@ -444,7 +444,7 @@
   gap: 0.5rem;
   overflow-x: auto;
   overscroll-behavior-inline: contain;
-  padding: 0.25rem max(1.5rem, calc((100vw - 58vw) / 2)) 0.5rem;
+  padding: 0.25rem max(0.75rem, calc((100vw - 63vw) / 2)) 0.5rem;
   scroll-behavior: smooth;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
@@ -454,20 +454,13 @@
   display: none;
 }
 .service-stream-card {
-  flex: 0 0 58vw;
+  flex: 0 0 63vw;
   scroll-snap-align: center;
-  opacity: 0.48;
-  transform: scale(0.965);
-  transition: opacity 320ms ease-out, transform 320ms cubic-bezier(0.23, 1, 0.32, 1);
-}
-.service-stream-card--active {
-  opacity: 1;
-  transform: none;
 }
 .service-stream-card__link {
   position: relative;
   display: block;
-  aspect-ratio: 1.78;
+  aspect-ratio: 1.87;
   overflow: hidden;
   background: var(--olive-deep);
   color: var(--sand);
@@ -501,9 +494,9 @@
 .service-stream-card__content {
   position: absolute;
   z-index: 2;
-  bottom: clamp(1.25rem, 3vw, 2.5rem);
-  left: clamp(1.25rem, 3vw, 2.5rem);
-  max-width: min(29rem, 72%);
+  bottom: clamp(1rem, 2.1vw, 2rem);
+  left: clamp(1rem, 2.1vw, 2rem);
+  max-width: min(33rem, 78%);
 }
 .service-stream-card__eyebrow {
   color: rgb(238 233 223 / 72%);
@@ -514,13 +507,13 @@
 .service-stream-card__content h3 {
   margin-top: 0.35rem;
   font-family: var(--font-serif);
-  font-size: clamp(2rem, 3.7vw, 4rem);
+  font-size: clamp(1.8rem, 2.7vw, 3rem);
   font-weight: 400;
   letter-spacing: -0.04em;
   line-height: 0.92;
 }
 .service-stream-card__content > p:not(.service-stream-card__eyebrow) {
-  margin-top: 0.75rem;
+  margin-top: 0.4rem;
   color: rgb(238 233 223 / 86%);
   font-size: clamp(0.82rem, 1.15vw, 1rem);
   line-height: 1.55;
@@ -529,7 +522,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  margin-top: 1rem;
+  margin-top: 0.75rem;
   border-radius: 999px;
   background: var(--sand);
   color: var(--olive-deep);
@@ -538,50 +531,30 @@
   letter-spacing: 0.06em;
   transition: transform 160ms ease-out, background-color 160ms ease-out;
 }
-.service-stream-controls {
-  position: absolute;
-  z-index: 3;
-  top: 50%;
-  right: max(0.5rem, calc((100vw - 58vw) / 2 - 2.75rem));
-  left: max(0.5rem, calc((100vw - 58vw) / 2 - 2.75rem));
-  display: flex;
-  justify-content: space-between;
-  pointer-events: none;
-  transform: translateY(-50%);
-}
-.service-stream-controls button {
-  display: inline-flex;
-  width: 2.25rem;
-  height: 2.25rem;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  background: rgb(210 210 215 / 92%);
-  color: var(--store-control-ink);
-  pointer-events: auto;
-  transition: transform 160ms ease-out, background-color 160ms ease-out;
-}
 .service-stream-picker {
   display: flex;
   gap: 0.5rem;
   overflow-x: auto;
   overscroll-behavior-inline: contain;
   margin-top: 0.55rem;
-  padding: 0 max(1.5rem, calc((100vw - 58vw) / 2)) 0.5rem;
+  padding: 0 0.75rem 0.5rem;
   scrollbar-width: none;
 }
 .service-stream-picker__item {
   position: relative;
   display: flex;
-  flex: 0 0 clamp(9.5rem, 16vw, 15rem);
-  aspect-ratio: 1.72;
+  flex: 0 0 23.75vw;
+  aspect-ratio: 1;
   align-items: flex-end;
   overflow: hidden;
   background: var(--olive-deep);
   color: var(--sand);
   isolation: isolate;
-  opacity: 0.62;
-  transition: opacity 180ms ease-out, transform 180ms ease-out;
+  transition: transform 160ms ease-out;
+}
+.service-stream-picker__item:first-child,
+.service-stream-picker__item:nth-child(5) {
+  flex-basis: 12.5vw;
 }
 .service-stream-picker__item > svg {
   position: absolute;
@@ -604,11 +577,6 @@
   font-weight: 500;
   text-align: left;
 }
-.service-stream-picker__item.is-active {
-  opacity: 1;
-  outline: 2px solid var(--mint);
-  outline-offset: -2px;
-}
 .service-stream-dots {
   display: flex;
   justify-content: center;
@@ -627,23 +595,17 @@
   background: var(--forest);
 }
 .service-stream-card__link:focus-visible,
-.service-stream-controls button:focus-visible,
 .service-stream-picker__item:focus-visible,
 .service-stream-dots button:focus-visible {
   outline: 2px solid var(--mint);
   outline-offset: 4px;
 }
 @media (min-width: 64rem) and (hover: hover) and (pointer: fine) {
-  .service-stream-card--active .service-stream-card__link:hover .service-stream-card__action {
+  .service-stream-card__link:hover .service-stream-card__action {
     background: var(--mint);
     transform: translateY(-0.15rem);
   }
-  .service-stream-controls button:hover {
-    background: var(--store-card);
-    transform: scale(1.06);
-  }
   .service-stream-picker__item:hover {
-    opacity: 0.88;
     transform: translateY(-0.15rem);
   }
 }
@@ -660,12 +622,13 @@
   .service-stream-card__content {
     max-width: 88%;
   }
-  .service-stream-controls {
-    right: 0.4rem;
-    left: 0.4rem;
-  }
   .service-stream-picker {
     padding-inline: 1.25rem;
+  }
+  .service-stream-picker__item,
+  .service-stream-picker__item:first-child,
+  .service-stream-picker__item:nth-child(5) {
+    flex-basis: min(58vw, 19rem);
   }
 }
 /* Home promotions follow the Apple Store shelf reference. The base carousel remains editorial
@@ -894,7 +857,6 @@
   .service-atlas-dot,
   .service-stream-card,
   .service-stream-card__action,
-  .service-stream-controls button,
   .service-stream-picker__item,
   .service-stream-dots button,
   .promotion-carousel-card__link,

@@ -3,10 +3,9 @@
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import type { ServiceCategory } from '@/lib/services';
 import { ServiceIcon } from '@/components/service-icon';
-import { cn } from '@/lib/utils';
 
 type ServiceCarouselProps = {
   categories: ServiceCategory[];
@@ -16,9 +15,9 @@ type ServiceCarouselProps = {
 
 /**
  * The homepage service navigator borrows the composition—not the content—from Apple's
- * entertainment shelf: one media-first feature in the centre, adjacent cards peeking at each
- * edge, then a compact strip that lets visitors choose any category. Image slots are resolved
- * by the server; categories without a real image remain honest icon panels.
+ * entertainment shelf: one media-first feature in the centre, full-height adjacent cards at
+ * each edge, then a separate full-width tile row beneath it. Image slots are resolved by the
+ * server; categories without a real image remain honest icon panels.
  */
 export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarouselProps) {
   const railRef = useRef<HTMLDivElement>(null);
@@ -104,7 +103,7 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
               <article
                 key={category.slug}
                 data-service-index={index}
-                className={cn('service-stream-card', activeIndex === index && 'service-stream-card--active')}
+                className="service-stream-card"
               >
                 <Link href={`/${category.slug}`} className="service-stream-card__link group">
                   <div className="service-stream-card__media">
@@ -140,24 +139,6 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
           })}
         </div>
 
-        <div className="service-stream-controls" role="group" aria-label="เลื่อนบริการ">
-          <button
-            type="button"
-            onClick={() => goTo(activeIndex - 1)}
-            aria-label="บริการก่อนหน้า"
-            aria-controls="home-service-stream"
-          >
-            <ArrowLeft className="size-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => goTo(activeIndex + 1)}
-            aria-label="บริการถัดไป"
-            aria-controls="home-service-stream"
-          >
-            <ArrowRight className="size-4" />
-          </button>
-        </div>
       </div>
 
       <div className="service-stream-picker" role="group" aria-label="เลือกบริการ">
@@ -170,7 +151,7 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
               onClick={() => goTo(index)}
               aria-label={`ไปที่ ${category.title}`}
               aria-current={activeIndex === index ? 'true' : undefined}
-              className={cn('service-stream-picker__item', activeIndex === index && 'is-active')}
+              className="service-stream-picker__item"
             >
               {imageSrc ? (
                 <Image src={imageSrc} alt="" aria-hidden="true" fill sizes="16rem" className="object-cover" />
@@ -191,7 +172,7 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
             onClick={() => goTo(index)}
             aria-label={`ดูบริการ ${category.title}`}
             aria-current={activeIndex === index ? 'true' : undefined}
-            className={cn(activeIndex === index && 'is-active')}
+            className={activeIndex === index ? 'is-active' : undefined}
           />
         ))}
       </div>
