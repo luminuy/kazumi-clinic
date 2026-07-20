@@ -60,7 +60,15 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
     const target = pickerTargetFor(railIndex);
     if (target === null) return;
 
-    pickerRef.current?.scrollTo({ left: target, behavior });
+    const picker = pickerRef.current;
+    if (!picker) return;
+
+    if (behavior === 'auto') {
+      picker.scrollLeft = target;
+      return;
+    }
+
+    picker.scrollTo({ left: target, behavior });
   }, [pickerTargetFor]);
 
   const nearestRailIndex = useCallback(() => {
@@ -115,7 +123,7 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
     if (railIndex === middleRailIndex) return;
 
     const target = targetFor(middleRailIndex);
-    if (target !== null) railRef.current?.scrollTo({ left: target, behavior: 'auto' });
+    if (target !== null && railRef.current) railRef.current.scrollLeft = target;
     syncPicker(middleRailIndex, 'auto');
   }, [categories.length, nearestRailIndex, syncPicker, targetFor]);
 
@@ -126,7 +134,12 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
     const target = targetFor(railIndex);
     if (target === null) return;
 
-    railRef.current?.scrollTo({ left: target, behavior });
+    const rail = railRef.current;
+    if (rail && behavior === 'auto') {
+      rail.scrollLeft = target;
+    } else {
+      rail?.scrollTo({ left: target, behavior });
+    }
     syncPicker(railIndex, behavior);
     activeIndexRef.current = index;
     pendingRailIndexRef.current = railIndex;
