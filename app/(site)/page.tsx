@@ -26,12 +26,10 @@ type PhysicianPanelProps = {
   role: string;
   licenseNo: string;
   summary: string;
-  education: ReadonlyArray<{ readonly degree: string; readonly institution: string }>;
   expertise: readonly string[];
   languages: readonly string[];
   imageSrc?: string;
   imageAlt: string;
-  dark?: boolean;
   delay?: number;
 };
 
@@ -42,100 +40,74 @@ function PhysicianPanel({
   role,
   licenseNo,
   summary,
-  education,
   expertise,
   languages,
   imageSrc,
   imageAlt,
-  dark = false,
   delay = 0,
 }: PhysicianPanelProps) {
-  const surface = dark ? 'bg-olive-deep text-sand' : 'bg-cream text-olive-deep';
-  const muted = dark ? 'text-sand/65' : 'text-ink/60';
-  const faint = dark ? 'text-sand/45' : 'text-ink/45';
-  const rule = dark ? 'border-sand/15' : 'border-olive/20';
-  const imageStage = dark ? 'bg-forest' : 'bg-sand';
-
   return (
     <Reveal delay={delay} className="h-full">
-      <article className={`flex h-full min-h-[50rem] flex-col overflow-hidden ${surface}`}>
-        <div className="px-7 pb-10 pt-10 sm:px-10 md:px-8 lg:px-12 lg:pt-12">
-          <p className={`text-[0.62rem] uppercase tracking-[0.28em] ${faint}`}>{label}</p>
-          <h3 className="mt-4 font-serif text-3xl leading-tight md:text-4xl">{name}</h3>
-          <p lang="en" className={`mt-1.5 font-serif text-base italic ${muted}`}>
-            {nameSecondary}
-          </p>
-          <p className="mt-3 text-[0.68rem] uppercase tracking-[0.17em] text-mint">
-            {role}
-          </p>
-          <p className={`mt-6 text-sm leading-[1.85] ${muted}`}>{summary}</p>
-
-          <dl className={`mt-7 grid grid-cols-1 gap-5 border-y py-5 sm:grid-cols-2 ${rule}`}>
-            <div>
-              <dt className={`text-[0.58rem] uppercase tracking-[0.18em] ${faint}`}>ใบประกอบวิชาชีพ</dt>
-              <dd className="mt-1.5 text-sm">เลขที่ {licenseNo}</dd>
-            </div>
-            <div>
-              <dt className={`text-[0.58rem] uppercase tracking-[0.18em] ${faint}`}>ภาษา</dt>
-              <dd className="mt-1.5 text-sm">{languages.join(' · ')}</dd>
-            </div>
-          </dl>
-
-          <div className="mt-7 grid gap-7 lg:grid-cols-2">
-            <div>
-              <p lang="en" className={`text-[0.6rem] uppercase tracking-[0.18em] ${faint}`}>
-                Education &amp; Credentials
-              </p>
-              <ul className="mt-3 space-y-3">
-                {education.map((item) => (
-                  <li key={item.degree} className={`border-l pl-3 text-xs leading-[1.6] ${rule} ${muted}`}>
-                    <span lang="en" className="block font-medium text-current">{item.degree}</span>
-                    <span className={faint}>{item.institution}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <p lang="en" className={`text-[0.6rem] uppercase tracking-[0.18em] ${faint}`}>
-                Clinical Focus
-              </p>
-              <ul lang="en" className={`mt-3 grid gap-2 text-xs leading-[1.55] ${muted}`}>
-                {expertise.map((item) => (
-                  <li key={item} className="flex items-start gap-2">
-                    <span aria-hidden="true" className="mt-1.5 size-1 shrink-0 bg-mint" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          <Link
-            href="/about"
-            className={`mt-8 inline-flex items-center gap-2 border px-5 py-3 text-[0.65rem] uppercase tracking-[0.16em] transition-colors duration-200 ${rule} ${dark ? 'hover:bg-sand hover:text-olive-deep' : 'hover:bg-olive-deep hover:text-sand'}`}
-          >
-            ดูประวัติฉบับเต็ม <ArrowUpRight className="size-3.5" />
-          </Link>
-        </div>
-
-        <div className={`relative mt-auto h-80 overflow-hidden ${imageStage}`}>
+      <article className="apple-doctor-card group flex h-full flex-col overflow-hidden rounded-[1.75rem] bg-[var(--store-card)] text-[var(--store-ink)]">
+        {/* Photo on top — Apple-style card image */}
+        <div className="relative aspect-[4/3] w-full overflow-hidden bg-sand">
           {imageSrc ? (
-            <div className="relative mx-auto h-full w-3/5 min-w-[16rem] max-w-[22rem]">
-              <Image
-                src={imageSrc}
-                alt={imageAlt}
-                fill
-                sizes="(min-width: 768px) 22rem, 70vw"
-                className="object-cover object-top"
-              />
-            </div>
+            <Image
+              src={imageSrc}
+              alt={imageAlt}
+              fill
+              sizes="(min-width: 768px) 40rem, 100vw"
+              className="object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+            />
           ) : (
             <div aria-hidden="true" className="absolute inset-0 flex items-center justify-center">
-              <div className={`flex size-28 items-center justify-center border ${rule}`}>
-                <Sparkles className={`size-9 ${faint}`} strokeWidth={1} />
+              <div className="flex size-24 items-center justify-center rounded-full border border-[var(--store-control)]">
+                <Sparkles className="size-8 text-[var(--store-muted)]" strokeWidth={1} />
               </div>
             </div>
           )}
+        </div>
+
+        {/* Text below */}
+        <div className="flex flex-1 flex-col px-7 pb-10 pt-9 text-center sm:px-10 md:px-8 lg:px-12">
+          <p className="text-[0.62rem] uppercase tracking-[0.28em] text-[var(--store-muted)]">{label}</p>
+          <h3 className="mt-3 font-serif text-[1.9rem] leading-tight md:text-[2.15rem]">{name}</h3>
+          <p lang="en" className="mt-1 font-serif text-base italic text-[var(--store-muted)]">
+            {nameSecondary}
+          </p>
+          <p className="mt-3 text-[0.68rem] uppercase tracking-[0.17em] text-forest">{role}</p>
+          <p className="mx-auto mt-5 max-w-md text-sm leading-[1.85] text-[var(--store-muted)]">{summary}</p>
+
+          <ul lang="en" className="mx-auto mt-6 flex max-w-md flex-wrap justify-center gap-2">
+            {expertise.map((item) => (
+              <li
+                key={item}
+                className="rounded-full bg-[var(--store-surface)] px-3 py-1.5 text-[0.7rem] text-[var(--store-control-ink)]"
+              >
+                {item}
+              </li>
+            ))}
+          </ul>
+
+          <dl className="mx-auto mt-6 flex flex-wrap justify-center gap-x-8 gap-y-2 text-[0.72rem] text-[var(--store-muted)]">
+            <div className="flex items-center gap-1.5">
+              <dt className="uppercase tracking-[0.16em] text-[var(--store-muted)]/70">ใบประกอบวิชาชีพ</dt>
+              <dd className="text-[var(--store-ink)]">เลขที่ {licenseNo}</dd>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <dt className="uppercase tracking-[0.16em] text-[var(--store-muted)]/70">ภาษา</dt>
+              <dd className="text-[var(--store-ink)]">{languages.join(' · ')}</dd>
+            </div>
+          </dl>
+
+          <div className="mt-auto pt-8">
+            <Link
+              href="/about"
+              className="inline-flex items-center gap-1.5 text-[0.9rem] text-forest transition-colors duration-200 hover:text-mint"
+            >
+              ดูประวัติฉบับเต็ม <ArrowUpRight className="size-4" />
+            </Link>
+          </div>
         </div>
       </article>
     </Reveal>
@@ -293,19 +265,19 @@ export default async function HomePage() {
         <ServiceCarousel categories={serviceCategories} heroOverrides={serviceHeroOverrides} />
       </section>
 
-      {/* ── Physicians: balanced split showcase ──────────────── */}
-      <section className="bg-surface px-2 pb-2 pt-14 md:px-3 md:pb-3 md:pt-16">
-        <Reveal className="mx-auto mb-10 max-w-3xl px-6 text-center">
-          <p lang="en" className="text-[0.62rem] uppercase tracking-[0.3em] text-olive/55">
+      {/* ── Physicians: Apple-style cards, photo on top ──────── */}
+      <section className="bg-[var(--store-surface)] px-4 pb-14 pt-14 md:px-6 md:pb-20 md:pt-16">
+        <Reveal className="mx-auto mb-10 max-w-3xl text-center md:mb-12">
+          <p lang="en" className="text-[0.62rem] uppercase tracking-[0.3em] text-[var(--store-muted)]">
             Physician Profiles
           </p>
-          <h2 className="mt-3 font-serif text-4xl text-olive-deep md:text-5xl">ทีมแพทย์ของเรา</h2>
-          <p className="mx-auto mt-4 max-w-2xl text-sm leading-[1.8] text-ink/60">
+          <h2 className="mt-3 font-serif text-4xl text-[var(--store-ink)] md:text-5xl">ทีมแพทย์ของเรา</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-sm leading-[1.8] text-[var(--store-muted)]">
             รู้จักประวัติการศึกษา ขอบเขตการดูแล และข้อมูลใบประกอบวิชาชีพของแพทย์ประจำคลินิก
           </p>
         </Reveal>
 
-        <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-3">
+        <div className="mx-auto grid max-w-5xl grid-cols-1 gap-4 md:grid-cols-2 md:gap-5">
           <PhysicianPanel
             label="The Lead Physician"
             name={doctor.nameTh}
@@ -313,7 +285,6 @@ export default async function HomePage() {
             role={doctor.role}
             licenseNo={doctor.licenseNo}
             summary={doctor.summary}
-            education={doctor.education}
             expertise={doctor.expertise}
             languages={doctor.languages}
             imageSrc={doctorSrc}
@@ -326,12 +297,10 @@ export default async function HomePage() {
             role={doctorEesha.role}
             licenseNo={doctorEesha.licenseNo}
             summary={doctorEesha.summary}
-            education={doctorEesha.education}
             expertise={doctorEesha.expertise}
             languages={doctorEesha.languages}
             imageSrc={eeshaSrc}
             imageAlt={`${doctorEesha.name} ${doctorEesha.role} ของ ${site.name}`}
-            dark
             delay={80}
           />
         </div>
