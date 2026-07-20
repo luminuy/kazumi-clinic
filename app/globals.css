@@ -39,6 +39,12 @@
   --cream: #f6f3ec;
   --ink: #26281f;
   --line: #06c755;
+  /* Green brand accent (2026 editorial redesign). forest = deep primary green,
+     mint = bright green for key actions, mint-glow = light green on dark surfaces.
+     The LINE colour (#06c755) doubles as the bright action green. */
+  --forest: #006e2b;
+  --mint: #06c755;
+  --mint-glow: #3ee26c;
 
   /* Layout rhythm. 1.618 keeps major and minor regions in a consistent proportion. */
   --phi: 1.618;
@@ -103,6 +109,9 @@
   --color-cream: var(--cream);
   --color-ink: var(--ink);
   --color-line: var(--line);
+  --color-forest: var(--forest);
+  --color-mint: var(--mint);
+  --color-mint-glow: var(--mint-glow);
 }
 
 @layer base {
