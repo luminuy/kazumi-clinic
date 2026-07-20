@@ -50,7 +50,7 @@ function PhysicianPanel({
     <Reveal delay={delay} className="h-full">
       <article className="apple-doctor-card group flex h-full flex-col overflow-hidden rounded-[1.75rem] bg-[var(--store-card)] text-[var(--store-ink)]">
         {/* Photo on top — Apple-style card image */}
-        <div className="relative aspect-[4/3] w-full overflow-hidden bg-sand">
+        <div className="relative aspect-[16/10] w-full overflow-hidden bg-sand md:aspect-[2/1]">
           {imageSrc ? (
             <Image
               src={imageSrc}
@@ -69,16 +69,16 @@ function PhysicianPanel({
         </div>
 
         {/* Text below */}
-        <div className="flex flex-1 flex-col px-7 pb-10 pt-9 text-center sm:px-10 md:px-8 lg:px-12">
+        <div className="flex flex-1 flex-col px-7 pb-8 pt-7 text-center sm:px-10 md:px-8 lg:px-12">
           <p className="text-[0.62rem] uppercase tracking-[0.28em] text-[var(--store-muted)]">{label}</p>
-          <h3 className="mt-3 font-serif text-[1.9rem] leading-tight md:text-[2.15rem]">{name}</h3>
+          <h3 className="mt-2.5 font-serif text-[1.9rem] leading-tight md:text-[2.15rem]">{name}</h3>
           <p lang="en" className="mt-1 font-serif text-base italic text-[var(--store-muted)]">
             {nameSecondary}
           </p>
-          <p className="mt-3 text-[0.68rem] uppercase tracking-[0.17em] text-forest">{role}</p>
-          <p className="mx-auto mt-5 max-w-md text-sm leading-[1.85] text-[var(--store-muted)]">{summary}</p>
+          <p className="mt-2.5 text-[0.68rem] uppercase tracking-[0.17em] text-forest">{role}</p>
+          <p className="mx-auto mt-4 max-w-lg text-sm leading-[1.8] text-[var(--store-muted)]">{summary}</p>
 
-          <ul lang="en" className="mx-auto mt-6 flex max-w-md flex-wrap justify-center gap-2">
+          <ul lang="en" className="mx-auto mt-5 flex max-w-lg flex-wrap justify-center gap-2">
             {expertise.map((item) => (
               <li
                 key={item}
@@ -89,7 +89,7 @@ function PhysicianPanel({
             ))}
           </ul>
 
-          <dl className="mx-auto mt-6 flex flex-wrap justify-center gap-x-8 gap-y-2 text-[0.72rem] text-[var(--store-muted)]">
+          <dl className="mx-auto mt-5 flex flex-wrap justify-center gap-x-8 gap-y-2 text-[0.72rem] text-[var(--store-muted)]">
             <div className="flex items-center gap-1.5">
               <dt className="uppercase tracking-[0.16em] text-[var(--store-muted)]/70">ใบประกอบวิชาชีพ</dt>
               <dd className="text-[var(--store-ink)]">เลขที่ {licenseNo}</dd>
@@ -100,7 +100,7 @@ function PhysicianPanel({
             </div>
           </dl>
 
-          <div className="mt-auto pt-8">
+          <div className="mt-auto pt-6">
             <Link
               href="/about"
               className="inline-flex items-center gap-1.5 text-[0.9rem] text-forest transition-colors duration-200 hover:text-mint"
@@ -277,7 +277,7 @@ export default async function HomePage() {
           </p>
         </Reveal>
 
-        <div className="mx-auto grid max-w-5xl grid-cols-1 gap-4 md:grid-cols-2 md:gap-5">
+        <div className="mx-auto grid max-w-6xl grid-cols-1 gap-4 md:grid-cols-2 md:gap-5">
           <PhysicianPanel
             label="The Lead Physician"
             name={doctor.nameTh}
