@@ -697,7 +697,9 @@
   scroll-padding-inline: clamp(2rem, 2.3vw, 3rem);
 }
 .homepage-promotion-shelf .promotion-carousel-card {
-  flex-basis: clamp(16rem, 18.55vw, 32rem);
+  /* Apple Store keeps roughly three full cards plus a clear peek of the next one at desktop.
+     A 27vw card reproduces that shelf rhythm without baking in a fixed viewport width. */
+  flex-basis: clamp(19rem, 27vw, 25.25rem);
 }
 .homepage-promotion-shelf .promotion-carousel-card__link {
   border: 0;

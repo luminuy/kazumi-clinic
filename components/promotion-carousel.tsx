@@ -113,7 +113,11 @@ export function PromotionCarousel({
                 activeIndex === index && 'promotion-carousel-card--active',
               )}
             >
-              <Link href="/promotions" className="promotion-carousel-card__link group">
+              <Link
+                href={`/${poster.categorySlug}`}
+                aria-label={`${poster.label} — ดูรายละเอียดบริการ`}
+                className="promotion-carousel-card__link group"
+              >
                 <Image
                   src={poster.src}
                   alt={poster.alt}
