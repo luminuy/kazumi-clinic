@@ -71,7 +71,7 @@ const REVALIDATION_TARGETS: Record<SiteImageKey, readonly RevalidationTarget[]> 
   'item-filler-lip-neura-deep-1cc': [{ path: '/filler' }],
   'item-filler-resty-1cc': [{ path: '/filler' }],
   'doctor-pratch': [{ path: '/' }, { path: '/about' }, { path: '/services' }],
-  'doctor-eesha': [{ path: '/about' }],
+  'doctor-eesha': [{ path: '/' }, { path: '/about' }],
   'about-hero': [{ path: '/about' }],
   'about-interior': [{ path: '/about' }],
   'og-about': [{ path: '/about' }],
