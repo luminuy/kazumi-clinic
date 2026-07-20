@@ -23,6 +23,7 @@ export type PromotionPoster = {
   src: string;
   alt: string;
   label: string;
+  categorySlug: string;
 };
 
 /**
@@ -35,21 +36,25 @@ export const promotionPosters: PromotionPoster[] = [
     src: cloudAssets.promoSignatureFlawless,
     alt: 'โปสเตอร์ Signature Flawless IV Drip พร้อมภาพผู้หญิงและถุงสารน้ำ',
     label: 'IV Drip · Signature Flawless',
+    categorySlug: 'iv-drip',
   },
   {
     src: cloudAssets.promoRadiantBright,
     alt: 'โปสเตอร์ Radiant Bright IV Drip พร้อมภาพผู้หญิงผมสีน้ำตาล',
     label: 'IV Drip · Radiant Bright',
+    categorySlug: 'iv-drip',
   },
   {
     src: cloudAssets.promoFillerNeura,
     alt: 'โปสเตอร์ Filler Neura Deep และ Neura Volume พร้อมภาพใบหน้าด้านข้าง',
     label: 'Filler · Neura',
+    categorySlug: 'filler',
   },
   {
     src: cloudAssets.promoOxelleSkinBooster,
     alt: 'โปสเตอร์ Oxelle Skin Boosters พร้อมภาพผิวก่อนและหลัง',
     label: 'Skin Booster · Oxelle',
+    categorySlug: 'skin-booster',
   },
   {
     // promo-karisma-collagen is the asset that actually holds the Velvet Glow poster — the two
@@ -57,17 +62,20 @@ export const promotionPosters: PromotionPoster[] = [
     src: cloudAssets.promoKarismaCollagen,
     alt: 'โปสเตอร์ Velvet Glow IV Drip พร้อมภาพผู้หญิงและถุงสารน้ำ',
     label: 'IV Drip · Velvet Glow',
+    categorySlug: 'iv-drip',
   },
   {
     src: cloudAssets.promoActiveRefresh,
     alt: 'โปสเตอร์ Active & Refresh IV Drip พร้อมภาพผู้หญิงกลางแจ้ง',
     label: 'IV Drip · Active & Refresh',
+    categorySlug: 'iv-drip',
   },
   {
     // ...and promo-velvet-glow holds the KARISMA poster. See the note above.
     src: cloudAssets.promoVelvetGlow,
     alt: 'โปสเตอร์ Karisma Rh Collagen พร้อมภาพแพ็กเกจผลิตภัณฑ์',
     label: 'Collagen · Karisma',
+    categorySlug: 'collagen-booster',
   },
 ];
 
