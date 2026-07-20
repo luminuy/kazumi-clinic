@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowUpRight, CircleHelp, MapPin, Navigation, Sparkles } from 'lucide-react';
+import { ArrowUpRight, ChevronDown, CircleHelp, MapPin, Sparkles } from 'lucide-react';
 import { site } from '@/lib/site';
 import { doctor, doctorEesha } from '@/lib/doctor';
 import { serviceCategories } from '@/lib/services';
@@ -329,68 +329,89 @@ export default async function HomePage() {
         </Reveal>
       </section>
 
-      {/* ── Location ─────────────────────────────────────────── */}
-      <section className="bg-cream py-24 md:py-32">
-        <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-14 px-6 sm:px-10 md:grid-cols-2 md:gap-16 md:px-14 lg:px-20">
-          <Reveal>
-            <span aria-hidden="true" className="mb-6 block h-px w-10 bg-forest" />
+      {/* ── Location: Apple-style accordion card ─────────────── */}
+      <section className="bg-cream py-20 md:py-28">
+        <div className="mx-auto max-w-6xl px-4 md:px-6">
+          <Reveal className="mb-8 flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
             <h2 className="font-serif text-4xl text-olive-deep md:text-5xl">มาเยี่ยมเรา</h2>
-            <p className="mt-8 max-w-md text-sm leading-[1.9] text-ink/65 md:text-base">
-              คลินิกความงามใจกลางสุขุมวิท พื้นที่สงบเป็นส่วนตัวสำหรับการปรึกษาและดูแลอย่างพิถีพิถัน
-            </p>
-            <dl className="mt-10 space-y-8">
-              <div>
-                <dt className="text-[0.62rem] uppercase tracking-[0.2em] text-olive/60">Location</dt>
-                <dd className="mt-2 max-w-sm text-sm leading-relaxed text-ink/75">
-                  <a href={site.mapsUrl} target="_blank" rel="noopener" className="hover:text-forest">
-                    {site.addressFull}
-                  </a>
-                </dd>
-              </div>
-              <div>
-                <dt className="text-[0.62rem] uppercase tracking-[0.2em] text-olive/60">Hours</dt>
-                <dd className="mt-2 text-sm leading-relaxed text-ink/75">
-                  {site.hoursDisplay.weekdays}
-                  <br />
-                  {site.hoursDisplay.sunday}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-[0.62rem] uppercase tracking-[0.2em] text-olive/60">Contact</dt>
-                <dd className="mt-2 space-y-1 text-sm leading-relaxed text-ink/75">
-                  <a href={site.phoneUrl} className="block hover:text-forest">
-                    {site.phone}
-                  </a>
-                  <a href={site.lineUrl} target="_blank" rel="noopener" className="block hover:text-forest">
-                    LINE Official
-                  </a>
-                </dd>
-              </div>
-            </dl>
             <a
               href={site.mapsUrl}
               target="_blank"
               rel="noopener"
-              className="mt-10 inline-flex items-center gap-2 border border-olive-deep/40 px-8 py-4 text-[0.68rem] uppercase tracking-[0.18em] text-olive-deep transition-colors duration-200 hover:bg-olive-deep hover:text-sand"
+              className="inline-flex items-center gap-1.5 text-[0.9rem] text-forest transition-colors duration-200 hover:text-mint"
             >
-              <Navigation className="size-4" /> Open Google Maps
+              เปิดใน Google Maps <ArrowUpRight className="size-4" />
             </a>
           </Reveal>
 
-          <Reveal delay={80} className="relative min-h-[22rem] overflow-hidden border border-olive/12 bg-olive-deep/[0.06] md:min-h-[30rem]">
-            {visitPhoto ? (
-              <Image
-                src={visitPhoto}
-                alt={`หน้าคลินิก ${site.name}`}
-                fill
-                sizes="(min-width: 768px) 45vw, 90vw"
-                className="object-cover"
-              />
-            ) : (
-              <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center">
-                <MapPin className="size-10 text-olive/25" strokeWidth={0.9} />
-              </span>
-            )}
+          <Reveal delay={80} className="overflow-hidden rounded-[1.75rem] bg-[var(--store-surface)]">
+            <div className="grid grid-cols-1 md:grid-cols-2">
+              {/* Left: intro + accordion */}
+              <div className="flex flex-col justify-center px-7 py-10 sm:px-12 md:py-14 lg:px-16">
+                <p className="max-w-md text-sm leading-[1.9] text-[var(--store-muted)]">
+                  คลินิกความงามใจกลางสุขุมวิท พื้นที่สงบเป็นส่วนตัวสำหรับการปรึกษาและดูแลอย่างพิถีพิถัน
+                </p>
+
+                <div className="mt-8">
+                  <details open className="visit-accordion group border-t border-[var(--store-control)]/70">
+                    <summary className="flex cursor-pointer list-none items-center justify-between py-5 [&::-webkit-details-marker]:hidden">
+                      <span className="font-serif text-xl text-[var(--store-ink)] md:text-2xl">ที่ตั้ง</span>
+                      <ChevronDown className="size-5 text-[var(--store-muted)] transition-transform duration-300 group-open:rotate-180" />
+                    </summary>
+                    <div className="pb-6 pr-6 text-sm leading-[1.9] text-[var(--store-muted)]">
+                      <a href={site.mapsUrl} target="_blank" rel="noopener" className="transition-colors hover:text-forest">
+                        {site.addressFull}
+                      </a>
+                    </div>
+                  </details>
+
+                  <details className="visit-accordion group border-t border-[var(--store-control)]/70">
+                    <summary className="flex cursor-pointer list-none items-center justify-between py-5 [&::-webkit-details-marker]:hidden">
+                      <span className="font-serif text-xl text-[var(--store-ink)] md:text-2xl">เวลาทำการ</span>
+                      <ChevronDown className="size-5 text-[var(--store-muted)] transition-transform duration-300 group-open:rotate-180" />
+                    </summary>
+                    <div className="pb-6 pr-6 text-sm leading-[1.9] text-[var(--store-muted)]">
+                      {site.hoursDisplay.weekdays}
+                      <br />
+                      {site.hoursDisplay.sunday}
+                    </div>
+                  </details>
+
+                  <details className="visit-accordion group border-y border-[var(--store-control)]/70">
+                    <summary className="flex cursor-pointer list-none items-center justify-between py-5 [&::-webkit-details-marker]:hidden">
+                      <span className="font-serif text-xl text-[var(--store-ink)] md:text-2xl">ช่องทางติดต่อ</span>
+                      <ChevronDown className="size-5 text-[var(--store-muted)] transition-transform duration-300 group-open:rotate-180" />
+                    </summary>
+                    <div className="space-y-1.5 pb-6 pr-6 text-sm leading-[1.9] text-[var(--store-muted)]">
+                      <a href={site.phoneUrl} className="block transition-colors hover:text-forest">
+                        {site.phone}
+                      </a>
+                      <a href={site.lineUrl} target="_blank" rel="noopener" className="block transition-colors hover:text-forest">
+                        LINE Official
+                      </a>
+                    </div>
+                  </details>
+                </div>
+              </div>
+
+              {/* Right: clinic photo / map */}
+              <div className="relative order-first min-h-[16rem] bg-sand md:order-last md:min-h-[30rem]">
+                {visitPhoto ? (
+                  <Image
+                    src={visitPhoto}
+                    alt={`หน้าคลินิก ${site.name}`}
+                    fill
+                    sizes="(min-width: 768px) 45vw, 90vw"
+                    className="object-cover"
+                  />
+                ) : (
+                  <span aria-hidden="true" className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-[var(--store-muted)]/50">
+                    <MapPin className="size-10" strokeWidth={0.9} />
+                    <span className="text-xs uppercase tracking-[0.2em]">สุขุมวิท · กรุงเทพฯ</span>
+                  </span>
+                )}
+              </div>
+            </div>
           </Reveal>
         </div>
       </section>
