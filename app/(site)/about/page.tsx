@@ -312,6 +312,7 @@ export default async function AboutPage() {
                   <h2 className="mt-4 font-serif text-4xl text-olive-deep md:text-5xl">
                     {doctorEesha.name}
                   </h2>
+                  <p className="mt-1 font-serif text-xl text-olive/60">{doctorEesha.nameTh}</p>
                   <p
                     lang="en"
                     className="mt-3 text-[0.7rem] uppercase tracking-[0.14em] text-olive/60"
