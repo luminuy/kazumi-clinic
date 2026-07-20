@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, MapPin, ShieldCheck, Sparkles } from 'lucide-react';
 import { site } from '@/lib/site';
-import { doctor } from '@/lib/doctor';
+import { doctor, doctorEesha } from '@/lib/doctor';
 import { breadcrumbSchema, doctorSchema } from '@/lib/schema';
 import { getImageOverrides } from '@/lib/site-images-store';
 import { siteSocialImage } from '@/lib/metadata-images';
@@ -48,6 +48,8 @@ function ImagePlaceholder() {
 export default async function AboutPage() {
   const overrides = await getImageOverrides();
   const doctorSrc = overrides.get('doctor-pratch')?.public_id ?? doctor.image;
+  // Dr. Eesha has no shipped default photo — undefined until the clinic uploads one via /admin.
+  const eeshaSrc = overrides.get('doctor-eesha')?.public_id;
   const heroSrc = overrides.get('about-hero')?.public_id;
   const interiorSrc = overrides.get('about-interior')?.public_id;
 
@@ -66,7 +68,12 @@ export default async function AboutPage() {
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(doctorSchema(doctorSrc)) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(doctorSchema(doctor, doctorSrc)) }}
+      />
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(doctorSchema(doctorEesha, eeshaSrc)) }}
       />
 
       {/* ── Hero ─────────────────────────────────────────────── */}
@@ -255,6 +262,174 @@ export default async function AboutPage() {
                       </li>
                     ))}
                   </ul>
+                  <p className="mt-8 flex items-start gap-2 text-xs leading-relaxed text-ink/45">
+                    <Sparkles aria-hidden="true" className="mt-0.5 size-3.5 shrink-0" />
+                    แผนการดูแลและผลลัพธ์แตกต่างกันตามการประเมินของแพทย์และแต่ละบุคคล
+                  </p>
+                </div>
+              </Reveal>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── (03) Clinic Physician — Dr. Eesha ────────────────── */}
+      <section className="border-t border-olive/10 bg-cream px-6 py-24 sm:px-10 md:px-14 md:py-28 lg:px-20">
+        <div className="mx-auto max-w-6xl">
+          <div className="flex flex-col gap-14 md:flex-row-reverse md:gap-20">
+            <div className="w-full md:w-5/12">
+              <Reveal>
+                <div className="border border-olive/10 p-2">
+                  <div className="relative aspect-[3/4] w-full overflow-hidden bg-olive-deep/[0.06]">
+                    {eeshaSrc ? (
+                      <Image
+                        src={eeshaSrc}
+                        alt={`${doctorEesha.name} ${doctorEesha.role} ของ ${site.name}`}
+                        fill
+                        sizes="(min-width: 768px) 40vw, 90vw"
+                        className="object-cover"
+                      />
+                    ) : (
+                      <ImagePlaceholder />
+                    )}
+                  </div>
+                </div>
+                <div className="mt-6 space-y-2">
+                  <p className="text-[0.66rem] uppercase tracking-[0.2em] text-olive-deep">
+                    ใบประกอบวิชาชีพเวชกรรมเลขที่ {doctorEesha.licenseNo}
+                  </p>
+                  <p className="text-[0.66rem] tracking-wide text-ink/55">
+                    ให้คำปรึกษาเป็นภาษา {doctorEesha.languages.join(' · ')}
+                  </p>
+                </div>
+              </Reveal>
+            </div>
+
+            <div className="w-full md:w-7/12">
+              <Reveal className="space-y-12 border-l border-olive/20 pl-8 md:pl-12">
+                <div>
+                  <SectionLabel index={3}>แพทย์ประจำคลินิก</SectionLabel>
+                  <h2 className="mt-4 font-serif text-4xl text-olive-deep md:text-5xl">
+                    {doctorEesha.name}
+                  </h2>
+                  <p
+                    lang="en"
+                    className="mt-3 text-[0.7rem] uppercase tracking-[0.14em] text-olive/60"
+                  >
+                    {doctorEesha.credentials}
+                  </p>
+                  <p className="mt-3 text-sm text-olive/70">{doctorEesha.role}</p>
+                  <p className="mt-6 max-w-xl text-sm leading-[1.9] text-ink/65">
+                    {doctorEesha.summary}
+                  </p>
+                </div>
+
+                <div>
+                  <h3
+                    lang="en"
+                    className="border-b border-olive/15 pb-2 text-[0.66rem] font-medium uppercase tracking-[0.2em] text-olive-deep"
+                  >
+                    Education &amp; Credentials
+                  </h3>
+                  <ul className="mt-6 space-y-6">
+                    {doctorEesha.education.map((item) => (
+                      <li
+                        key={item.degree}
+                        className="flex flex-col gap-1 md:flex-row md:items-baseline md:gap-6"
+                      >
+                        <span className="font-serif text-lg text-olive-deep md:w-72 md:shrink-0">
+                          {item.degree}
+                        </span>
+                        <span className="text-xs leading-relaxed text-ink/60">
+                          {item.institution}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div>
+                  <h3
+                    lang="en"
+                    className="border-b border-olive/15 pb-2 text-[0.66rem] font-medium uppercase tracking-[0.2em] text-olive-deep"
+                  >
+                    Experience
+                  </h3>
+                  <ul className="mt-5 space-y-3">
+                    {doctorEesha.experience.map((item) => (
+                      <li key={item} className="flex gap-3 text-xs leading-[1.7] text-ink/65">
+                        <span aria-hidden="true" className="mt-2 h-px w-3 shrink-0 bg-clay" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="grid gap-10 sm:grid-cols-2">
+                  <div>
+                    <h3
+                      lang="en"
+                      className="border-b border-olive/15 pb-2 text-[0.66rem] font-medium uppercase tracking-[0.2em] text-olive-deep"
+                    >
+                      Selected Training
+                    </h3>
+                    <ul className="mt-5 space-y-3">
+                      {doctorEesha.training.map((item) => (
+                        <li key={item} className="flex gap-3 text-xs leading-[1.7] text-ink/65">
+                          <span aria-hidden="true" className="mt-2 h-px w-3 shrink-0 bg-clay" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h3
+                      lang="en"
+                      className="border-b border-olive/15 pb-2 text-[0.66rem] font-medium uppercase tracking-[0.2em] text-olive-deep"
+                    >
+                      Professional &amp; Research
+                    </h3>
+                    <ul className="mt-5 space-y-3">
+                      {doctorEesha.memberships.map((item) => (
+                        <li key={item} className="flex gap-3 text-xs leading-[1.7] text-ink/65">
+                          <span aria-hidden="true" className="mt-2 h-px w-3 shrink-0 bg-clay" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                <div>
+                  <h3
+                    lang="en"
+                    className="text-[0.66rem] font-medium uppercase tracking-[0.2em] text-olive-deep"
+                  >
+                    Clinical Focus
+                  </h3>
+                  <ul className="mt-5 flex flex-wrap gap-3">
+                    {doctorEesha.expertise.map((item) => (
+                      <li
+                        key={item}
+                        lang="en"
+                        className="border border-olive/25 px-4 py-2 text-[0.66rem] uppercase tracking-[0.12em] text-olive-deep"
+                      >
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div>
+                  <h3
+                    lang="en"
+                    className="text-[0.66rem] font-medium uppercase tracking-[0.2em] text-olive-deep"
+                  >
+                    Technologies &amp; Modalities
+                  </h3>
+                  <p lang="en" className="mt-5 text-sm leading-[2] text-ink/60">
+                    {doctorEesha.technologies.join(' · ')}
+                  </p>
                   <p className="mt-8 flex items-start gap-2 text-xs leading-relaxed text-ink/45">
                     <Sparkles aria-hidden="true" className="mt-0.5 size-3.5 shrink-0" />
                     แผนการดูแลและผลลัพธ์แตกต่างกันตามการประเมินของแพทย์และแต่ละบุคคล

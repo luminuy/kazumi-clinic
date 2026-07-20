@@ -43,3 +43,72 @@ export const doctor = {
   ],
   languages: ['ไทย', 'English', '中文'],
 } as const;
+
+// Second physician — transcribed from the clinic's supplied profile posters. English name kept
+// as-is (the posters carry no Thai spelling); a Thai name/title can be added once the clinic
+// confirms it. `licenseNo` is printed exactly as the poster states — it lacks the Thai ว. prefix
+// Dr. Pratch's carries, so confirm the correct ใบประกอบวิชาชีพ number before relying on it.
+export const doctorEesha = {
+  name: 'Dr. Eesha Patel',
+  licenseNo: '69180',
+  givenName: 'Eesha',
+  familyName: 'Patel',
+  role: 'แพทย์ผิวหนังและเวชศาสตร์ความงาม',
+  credentials: 'MBBS · MSc Internal Medicine (Dermatology) · Anti-Aging Medicine',
+  summary:
+    'ดูแลด้านสุขภาพผิวและเวชศาสตร์ความงาม ให้คำปรึกษาและประเมินก่อนหัตถการ ครอบคลุมหัตถการเลเซอร์ อัลตราซาวด์ แสงบำบัด หัตถการฉีด และการฟื้นฟูผิว',
+  education: [
+    {
+      degree: 'Board Certification in Anti-Aging Medicine',
+      institution: 'American Academy of Anti-Aging / Regenerative Medicine · 2024',
+    },
+    {
+      degree: 'MSc Internal Medicine (Dermatology)',
+      institution: 'Ramathibodi Hospital, Mahidol University · 2016–2018',
+    },
+    {
+      degree: 'Bachelor of Medicine, Bachelor of Surgery (MBBS)',
+      institution: 'Kasturba Medical College, Manipal, India · 2010–2016',
+    },
+  ],
+  experience: [
+    'Aesthetic & Skin Physician — Bangkok, Thailand (2022–ปัจจุบัน)',
+    'Fellowship Training — Cutaneous & Laser Surgery, Institute of Dermatology, Ministry of Public Health (2019)',
+    'Senior Manager, Health Ideation & Innovation — Prudential Thailand (2020–2021)',
+  ],
+  training: [
+    'Integrative Toxin & Filler Training (2022)',
+    'Current Issues in Dermatology — Chulalongkorn University (2021)',
+    'International Thaicosderm Congress on Aesthetic Medicine (2018)',
+  ],
+  memberships: [
+    'Member, Dermatological Society of Thailand (2016–ปัจจุบัน)',
+    'Review of melasma treatment options (2017–2018)',
+  ],
+  expertise: [
+    'Skin health & aesthetic consultation',
+    'Laser, ultrasound & light-based procedures',
+    'Injectable treatments & skin rejuvenation',
+    'IV therapy consultation',
+    'PRP & collagen-stimulating treatments',
+    'Patient assessment & aftercare',
+  ],
+  technologies: [
+    'Diode',
+    'Ultherapy',
+    'Ultraformer',
+    'DPL',
+    'Fractional CO₂',
+    'RF',
+    'Erbium',
+    'IPL',
+    'V-Beam',
+    'Nd:YAG',
+    'Pico',
+  ],
+  languages: ['ไทย', 'English', 'Hindi', 'Gujarati'],
+} as const;
+
+// Dr. Pratch is the clinic director (featured across the site); Dr. Eesha is a clinic physician
+// shown on /about. Both appear as licensed employees in the MedicalBusiness JSON-LD.
+export const doctors = [doctor, doctorEesha] as const;
