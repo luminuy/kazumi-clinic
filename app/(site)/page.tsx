@@ -202,51 +202,77 @@ export default async function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(homePageSchema(pick('hero-home', cloudAssets.heroHome))) }}
       />
 
-      {/* ── Hero: Apple-style centered promo — text on top, image below ─────── */}
-      <section className="overflow-hidden bg-[var(--store-surface)]">
-        <div className="mx-auto max-w-3xl px-6 pt-20 text-center md:pt-28">
-          <p lang="en" className="text-[0.7rem] uppercase tracking-[0.28em] text-forest">
-            Kazumi Clinic · สุขุมวิท กรุงเทพฯ
-          </p>
-          <h1
-            lang="en"
-            className="mx-auto mt-5 max-w-2xl font-serif text-[2.4rem] leading-[1.08] tracking-[-0.02em] text-olive-deep sm:text-5xl md:text-[3.4rem]"
-          >
-            Where balance purity becomes eternal beauty.
-          </h1>
-          <p className="mx-auto mt-6 max-w-xl text-sm leading-[1.9] text-ink/65 md:text-base">
-            {site.description}
-          </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <a
-              href={site.lineUrl}
-              target="_blank"
-              rel="noopener"
-              className="inline-flex items-center gap-2 rounded-full bg-mint px-7 py-3 text-sm font-medium text-white transition-colors duration-200 hover:bg-forest active:scale-[0.98]"
-            >
-              จองคิวผ่าน LINE <ArrowUpRight className="size-4" />
-            </a>
-            <Link
-              href="/services"
-              className="inline-flex items-center gap-1.5 rounded-full border border-olive-deep/25 px-7 py-3 text-sm font-medium text-olive-deep transition-colors duration-200 hover:bg-olive-deep hover:text-sand"
-            >
-              ดูบริการทั้งหมด
-            </Link>
-          </div>
-        </div>
+      {/* ── Hero: full-bleed portrait with overlaid copy ─────── */}
+      <section className="relative isolate flex min-h-[86vh] items-end overflow-hidden bg-olive-deep text-sand md:min-h-[92vh] md:items-center">
+        <Image
+          src={heroSrc}
+          alt=""
+          aria-hidden="true"
+          fill
+          priority
+          fetchPriority="high"
+          sizes="100vw"
+          className="object-cover object-[38%_28%]"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-gradient-to-t from-olive-deep/92 via-olive-deep/60 to-olive-deep/25 md:bg-gradient-to-r md:from-olive-deep/88 md:via-olive-deep/45 md:to-transparent"
+        />
+        <div aria-hidden="true" className="absolute inset-0 bg-forest/10 mix-blend-multiply" />
+        <div className="hero-grid absolute inset-0 opacity-[0.1]" aria-hidden="true" />
 
-        <div className="relative mx-auto mt-14 aspect-[16/12] w-full max-w-5xl overflow-hidden rounded-t-[1.75rem] bg-olive-deep/[0.06] md:mt-16 md:aspect-[16/10]">
-          <Image
-            src={heroSrc}
-            alt=""
+        <div className="relative mx-auto grid w-full max-w-7xl gap-10 px-6 py-24 sm:px-10 md:grid-cols-[minmax(0,1.55fr)_minmax(15rem,1fr)] md:items-center md:gap-12 md:px-12 lg:px-16">
+          <div className="max-w-2xl">
+            <div className="hero-enter flex items-center gap-3 text-[0.64rem] uppercase tracking-[0.32em] text-sand/60">
+              <span aria-hidden="true" className="h-px w-10 bg-mint-glow" />
+              Kazumi Clinic · เวชศาสตร์ความงาม สุขุมวิท
+            </div>
+            <h1
+              lang="en"
+              className="hero-enter hero-enter--slow mt-7 font-serif text-[13.5vw] leading-[0.95] tracking-[-0.03em] text-sand sm:text-6xl md:text-[4rem] lg:text-[4.7rem]"
+            >
+              Where thoughtful care
+              <br />
+              becomes <span className="text-mint-glow">natural</span> beauty.
+            </h1>
+            <p className="hero-enter hero-enter--later mt-7 max-w-xl text-sm leading-[1.95] text-sand/75 md:text-base">
+              <span lang="ja" className="text-sand/55">
+                純粋さは永遠の美へ
+              </span>{' '}
+              — ความงามที่เริ่มจากความเข้าใจ แพทย์ประเมินและออกแบบการดูแลเฉพาะคุณ ในบรรยากาศที่สงบและเป็นส่วนตัว
+            </p>
+            <div className="hero-enter hero-enter--later mt-9 flex flex-wrap items-center gap-3">
+              <a
+                href={site.lineUrl}
+                target="_blank"
+                rel="noopener"
+                className="inline-flex items-center gap-2 rounded-full bg-mint px-7 py-3 text-sm font-medium text-white shadow-lg shadow-black/10 transition-transform duration-300 hover:-translate-y-0.5 hover:bg-forest active:translate-y-0"
+              >
+                จองคิวผ่าน LINE <ArrowUpRight className="size-4" />
+              </a>
+              <Link
+                href="/services"
+                className="inline-flex items-center rounded-full border border-sand/35 px-7 py-3 text-sm font-medium text-sand transition-colors duration-200 hover:border-sand/70 hover:bg-sand/10"
+              >
+                ดูบริการทั้งหมด
+              </Link>
+            </div>
+          </div>
+
+          <div
             aria-hidden="true"
-            fill
-            priority
-            fetchPriority="high"
-            sizes="(min-width: 1024px) 64rem, 100vw"
-            className="object-cover object-[center_42%]"
-          />
-          <div aria-hidden="true" className="absolute inset-0 bg-forest/10 mix-blend-multiply" />
+            className="hero-enter hero-enter--image hidden flex-col items-center justify-center gap-5 text-center md:flex"
+          >
+            <FlowerMark className="size-24 text-sand/25 lg:size-32" />
+            <div>
+              <p lang="en" className="font-serif text-xl italic leading-snug text-sand/25 lg:text-2xl">
+                Where thoughtful care becomes natural beauty.
+              </p>
+              <p lang="ja" className="mt-2 font-serif text-base text-sand/20 lg:text-lg">
+                純粋さは永遠の美へ
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
