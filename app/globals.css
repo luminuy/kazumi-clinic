@@ -581,6 +581,24 @@
   gap: 0.45rem;
   padding: 0.8rem 1.5rem 0;
 }
+.service-stream-footer {
+  position: relative;
+}
+.service-stream-pause {
+  position: absolute;
+  top: 50%;
+  right: 0.75rem;
+  display: inline-flex;
+  width: 1.15rem;
+  height: 1.15rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgb(29 29 31 / 16%);
+  color: var(--store-muted);
+  transform: translateY(-50%);
+  transition: background-color 160ms ease-out, color 160ms ease-out;
+}
 .service-stream-dots button {
   width: 0.4rem;
   height: 0.4rem;
@@ -594,7 +612,8 @@
 }
 .service-stream-card__link:focus-visible,
 .service-stream-picker__item:focus-visible,
-.service-stream-dots button:focus-visible {
+.service-stream-dots button:focus-visible,
+.service-stream-pause:focus-visible {
   outline: 2px solid var(--mint);
   outline-offset: 4px;
 }
@@ -605,6 +624,10 @@
   }
   .service-stream-picker__item:hover {
     transform: translateY(-0.15rem);
+  }
+  .service-stream-pause:hover {
+    background: rgb(29 29 31 / 28%);
+    color: var(--store-ink);
   }
 }
 @media (max-width: 47.999rem) {
@@ -625,6 +648,9 @@
   }
   .service-stream-picker__item {
     flex-basis: min(58vw, 19rem);
+  }
+  .service-stream-pause {
+    right: 1.25rem;
   }
 }
 /* Home promotions follow the Apple Store shelf reference. The base carousel remains editorial
