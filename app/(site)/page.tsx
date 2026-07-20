@@ -216,24 +216,25 @@ export default async function HomePage() {
       </section>
 
       {/* ── Doctor showcase (dark) ───────────────────────────── */}
-      <section className="overflow-hidden bg-olive-deep py-24 text-sand md:py-32">
+      <section className="overflow-hidden bg-olive-deep py-20 text-sand md:py-28">
         <div className="mx-auto max-w-7xl px-6 sm:px-10 md:px-14 lg:px-20">
-          <div className="grid grid-cols-1 items-center gap-14 md:grid-cols-2 md:gap-16">
-            <Reveal className="relative">
+          {/* Lead physician — portrait kept to a tasteful width so it doesn't dominate. */}
+          <div className="grid grid-cols-1 items-center gap-12 md:grid-cols-[20rem_minmax(0,1fr)] md:gap-16">
+            <Reveal className="relative mx-auto w-full max-w-[20rem]">
               <div className="relative aspect-[4/5] overflow-hidden border border-sand/15 bg-olive">
                 <Image
                   src={doctorSrc}
                   alt={`${doctor.name} ${doctor.role}`}
                   fill
-                  sizes="(min-width: 768px) 45vw, 90vw"
+                  sizes="(min-width: 768px) 20rem, 80vw"
                   className="object-cover"
                 />
               </div>
               <div
                 aria-hidden="true"
-                className="absolute -bottom-6 -right-6 hidden bg-mint px-8 py-6 md:block"
+                className="absolute -bottom-5 -right-5 hidden bg-mint px-6 py-4 md:block"
               >
-                <p lang="en" className="font-serif text-2xl italic text-white">
+                <p lang="en" className="font-serif text-xl italic text-white">
                   Excellence
                 </p>
               </div>
@@ -242,34 +243,34 @@ export default async function HomePage() {
             <Reveal delay={80}>
               <span
                 lang="en"
-                className="mb-5 block text-[0.66rem] uppercase tracking-[0.3em] text-sand/55"
+                className="mb-4 block text-[0.64rem] uppercase tracking-[0.3em] text-sand/55"
               >
                 The Lead Physician
               </span>
-              <h2 className="font-serif text-3xl text-sand md:text-5xl">{doctor.nameTh}</h2>
-              <p lang="en" className="mt-2 font-serif text-lg italic text-sand/60">
+              <h2 className="font-serif text-3xl text-sand md:text-4xl">{doctor.nameTh}</h2>
+              <p lang="en" className="mt-2 font-serif text-base italic text-sand/60">
                 {doctor.name}
               </p>
-              <p className="mt-4 text-[0.7rem] uppercase tracking-[0.18em] text-mint-glow">
+              <p className="mt-3 text-[0.68rem] uppercase tracking-[0.18em] text-mint-glow">
                 {doctor.role}
               </p>
 
-              <div className="mt-9 space-y-5">
+              <div className="mt-7 space-y-3.5">
                 {doctor.education.slice(0, 2).map((edu) => (
-                  <div key={edu.degree} className="border-b border-sand/10 pb-4">
-                    <p lang="en" className="text-[0.62rem] uppercase tracking-[0.16em] text-sand/45">
+                  <div key={edu.degree} className="border-b border-sand/10 pb-3.5">
+                    <p lang="en" className="text-[0.6rem] uppercase tracking-[0.16em] text-sand/45">
                       {edu.degree}
                     </p>
-                    <p className="mt-1.5 text-sm text-sand/80">{edu.institution}</p>
+                    <p className="mt-1 text-sm text-sand/80">{edu.institution}</p>
                   </div>
                 ))}
               </div>
 
-              <div className="mt-8 border border-sand/12 p-7">
-                <p lang="en" className="text-[0.66rem] uppercase tracking-[0.18em] text-mint-glow">
+              <div className="mt-7 border border-sand/12 p-6">
+                <p lang="en" className="text-[0.64rem] uppercase tracking-[0.18em] text-mint-glow">
                   Clinical Focus
                 </p>
-                <ul lang="en" className="mt-4 grid grid-cols-2 gap-x-5 gap-y-2.5 text-xs text-sand/75">
+                <ul lang="en" className="mt-4 grid grid-cols-2 gap-x-5 gap-y-2 text-xs text-sand/75">
                   {doctor.expertise.map((item) => (
                     <li key={item} className="flex items-start gap-2">
                       <span aria-hidden="true" className="mt-1.5 size-1 shrink-0 bg-mint" />
@@ -281,48 +282,60 @@ export default async function HomePage() {
             </Reveal>
           </div>
 
-          {/* Secondary physician — Dr. Eesha */}
-          <div className="mt-20 grid grid-cols-1 items-start gap-10 border-t border-sand/10 pt-20 md:mt-24 md:grid-cols-3 md:pt-24">
-            <Reveal>
-              <div className="relative mb-6 aspect-[4/5] max-w-[15rem] overflow-hidden border border-sand/15 bg-olive">
-                {eeshaSrc ? (
-                  <Image
-                    src={eeshaSrc}
-                    alt={`${doctorEesha.name} ${doctorEesha.role}`}
-                    fill
-                    sizes="15rem"
-                    className="object-cover"
-                  />
-                ) : (
-                  <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center">
-                    <Sparkles className="size-9 text-sand/25" strokeWidth={1} />
+          {/* Secondary physician — Dr. Eesha, compact: small portrait + name, then credentials. */}
+          <div className="mt-14 border-t border-sand/10 pt-14 md:mt-16 md:pt-16">
+            <div className="grid grid-cols-1 items-center gap-10 md:grid-cols-2 md:gap-16">
+              <Reveal className="flex items-center gap-5">
+                <div className="relative aspect-[4/5] w-24 shrink-0 overflow-hidden border border-sand/15 bg-olive sm:w-28">
+                  {eeshaSrc ? (
+                    <Image
+                      src={eeshaSrc}
+                      alt={`${doctorEesha.name} ${doctorEesha.role}`}
+                      fill
+                      sizes="7rem"
+                      className="object-cover"
+                    />
+                  ) : (
+                    <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center">
+                      <Sparkles className="size-7 text-sand/25" strokeWidth={1} />
+                    </span>
+                  )}
+                </div>
+                <div>
+                  <span
+                    lang="en"
+                    className="block text-[0.6rem] uppercase tracking-[0.28em] text-sand/50"
+                  >
+                    Clinic Physician
                   </span>
-                )}
-              </div>
-              <h3 className="font-serif text-2xl text-sand md:text-3xl">{doctorEesha.name}</h3>
-              <p className="mt-1 font-serif text-sand/55">{doctorEesha.nameTh}</p>
-              <p className="mt-4 text-sm leading-[1.8] text-sand/65">{doctorEesha.summary}</p>
-              <span aria-hidden="true" className="mt-6 block h-px w-24 bg-mint-glow" />
-            </Reveal>
+                  <h3 className="mt-2 font-serif text-2xl text-sand">{doctorEesha.name}</h3>
+                  <p className="mt-1 font-serif text-sm text-sand/55">{doctorEesha.nameTh}</p>
+                  <p className="mt-1.5 text-[0.64rem] uppercase tracking-[0.16em] text-mint-glow">
+                    {doctorEesha.role}
+                  </p>
+                </div>
+              </Reveal>
 
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:col-span-2">
-              <Reveal className="border border-sand/12 p-6">
-                <p lang="en" className="text-[0.62rem] uppercase tracking-[0.16em] text-sand/45">
-                  Board Certification
-                </p>
-                <p lang="en" className="mt-3 text-sm leading-relaxed text-sand/85">
-                  American Academy of Anti-Aging / Regenerative Medicine (2024)
-                </p>
-              </Reveal>
-              <Reveal delay={60} className="border border-sand/12 p-6">
-                <p lang="en" className="text-[0.62rem] uppercase tracking-[0.16em] text-sand/45">
-                  Specialization
-                </p>
-                <p lang="en" className="mt-3 text-sm leading-relaxed text-sand/85">
-                  MBBS · MSc Internal Medicine (Dermatology)
-                </p>
-              </Reveal>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <Reveal className="border border-sand/12 p-5">
+                  <p lang="en" className="text-[0.6rem] uppercase tracking-[0.16em] text-sand/45">
+                    Board Certification
+                  </p>
+                  <p lang="en" className="mt-2.5 text-sm leading-relaxed text-sand/85">
+                    American Academy of Anti-Aging / Regenerative Medicine (2024)
+                  </p>
+                </Reveal>
+                <Reveal delay={60} className="border border-sand/12 p-5">
+                  <p lang="en" className="text-[0.6rem] uppercase tracking-[0.16em] text-sand/45">
+                    Specialization
+                  </p>
+                  <p lang="en" className="mt-2.5 text-sm leading-relaxed text-sand/85">
+                    MBBS · MSc Internal Medicine (Dermatology)
+                  </p>
+                </Reveal>
+              </div>
             </div>
+            <p className="mt-6 max-w-2xl text-sm leading-[1.8] text-sand/60">{doctorEesha.summary}</p>
           </div>
         </div>
       </section>
