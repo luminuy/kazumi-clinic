@@ -23,10 +23,22 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
   const railRef = useRef<HTMLDivElement>(null);
   const pickerRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<number | null>(null);
+  const settleRef = useRef<number | null>(null);
   const initialIndex = Math.min(2, Math.max(categories.length - 1, 0));
+  const initialRailIndex = categories.length + initialIndex;
   const [activeIndex, setActiveIndex] = useState(initialIndex);
   const [isPaused, setIsPaused] = useState(false);
   const activeIndexRef = useRef(initialIndex);
+  const activeRailIndexRef = useRef(initialRailIndex);
+  const pendingRailIndexRef = useRef<number | null>(null);
+  const streamItems = categories.flatMap((category, categoryIndex) => (
+    [0, 1, 2].map((copy) => ({
+      category,
+      categoryIndex,
+      copy,
+      railIndex: copy * categories.length + categoryIndex,
+    }))
+  ));
 
   const targetFor = useCallback((index: number) => {
     const rail = railRef.current;
@@ -36,32 +48,90 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
     return Math.max(0, card.offsetLeft - (rail.clientWidth - card.clientWidth) / 2);
   }, []);
 
-  const pickerTargetFor = useCallback((index: number) => {
+  const pickerTargetFor = useCallback((railIndex: number) => {
     const picker = pickerRef.current;
-    const card = picker?.querySelector<HTMLElement>(`[data-service-picker-index="${index}"]`);
+    const card = picker?.querySelector<HTMLElement>(`[data-service-picker-index="${railIndex}"]`);
     if (!picker || !card) return null;
 
     return Math.max(0, card.offsetLeft - picker.clientWidth * 0.12);
   }, []);
 
-  const syncPicker = useCallback((index: number, behavior: ScrollBehavior) => {
-    const target = pickerTargetFor(index);
+  const syncPicker = useCallback((railIndex: number, behavior: ScrollBehavior) => {
+    const target = pickerTargetFor(railIndex);
     if (target === null) return;
 
     pickerRef.current?.scrollTo({ left: target, behavior });
   }, [pickerTargetFor]);
 
+  const nearestRailIndex = useCallback(() => {
+    const rail = railRef.current;
+    if (!rail || categories.length === 0) return null;
+
+    const railCentre = rail.scrollLeft + rail.clientWidth / 2;
+    let nearestIndex = activeRailIndexRef.current;
+    let nearestDistance = Number.POSITIVE_INFINITY;
+
+    for (let railIndex = 0; railIndex < categories.length * 3; railIndex += 1) {
+      const card = rail.querySelector<HTMLElement>(`[data-service-index="${railIndex}"]`);
+      if (!card) continue;
+
+      const distance = Math.abs(card.offsetLeft + card.clientWidth / 2 - railCentre);
+      if (distance < nearestDistance) {
+        nearestDistance = distance;
+        nearestIndex = railIndex;
+      }
+    }
+
+    return nearestIndex;
+  }, [categories.length]);
+
+  const canonicalRailIndex = useCallback((requestedIndex: number) => {
+    const categoryIndex = ((requestedIndex % categories.length) + categories.length) % categories.length;
+    const candidates = [
+      categoryIndex,
+      categories.length + categoryIndex,
+      categories.length * 2 + categoryIndex,
+    ];
+
+    return candidates.reduce((closest, candidate) => (
+      Math.abs(candidate - activeRailIndexRef.current) < Math.abs(closest - activeRailIndexRef.current)
+        ? candidate
+        : closest
+    ));
+  }, [categories.length]);
+
+  const rebalanceLoop = useCallback(() => {
+    const railIndex = nearestRailIndex();
+    if (railIndex === null || categories.length === 0) return;
+
+    const categoryIndex = railIndex % categories.length;
+    const middleRailIndex = categories.length + categoryIndex;
+
+    activeIndexRef.current = categoryIndex;
+    activeRailIndexRef.current = middleRailIndex;
+    pendingRailIndexRef.current = null;
+    setActiveIndex(categoryIndex);
+
+    if (railIndex === middleRailIndex) return;
+
+    const target = targetFor(middleRailIndex);
+    if (target !== null) railRef.current?.scrollTo({ left: target, behavior: 'auto' });
+    syncPicker(middleRailIndex, 'auto');
+  }, [categories.length, nearestRailIndex, syncPicker, targetFor]);
+
   const goTo = useCallback((requestedIndex: number, behavior: ScrollBehavior = 'smooth') => {
     if (categories.length === 0) return;
-    const index = (requestedIndex + categories.length) % categories.length;
-    const target = targetFor(index);
+    const index = ((requestedIndex % categories.length) + categories.length) % categories.length;
+    const railIndex = canonicalRailIndex(index);
+    const target = targetFor(railIndex);
     if (target === null) return;
 
     railRef.current?.scrollTo({ left: target, behavior });
-    syncPicker(index, behavior);
+    syncPicker(railIndex, behavior);
     activeIndexRef.current = index;
+    pendingRailIndexRef.current = railIndex;
     setActiveIndex(index);
-  }, [categories.length, syncPicker, targetFor]);
+  }, [canonicalRailIndex, categories.length, syncPicker, targetFor]);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => goTo(initialIndex, 'auto'));
@@ -82,35 +152,35 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
     if (frameRef.current !== null) return;
 
     frameRef.current = window.requestAnimationFrame(() => {
-      const rail = railRef.current;
-      if (rail) {
-        const railCentre = rail.scrollLeft + rail.clientWidth / 2;
-        let nearestIndex = activeIndexRef.current;
-        let nearestDistance = Number.POSITIVE_INFINITY;
+      const railIndex = nearestRailIndex();
+      if (railIndex !== null && categories.length > 0) {
+        const index = railIndex % categories.length;
+        const isPendingMove = pendingRailIndexRef.current !== null
+          && pendingRailIndexRef.current !== railIndex;
 
-        categories.forEach((_, index) => {
-          const card = rail.querySelector<HTMLElement>(`[data-service-index="${index}"]`);
-          if (!card) return;
-          const distance = Math.abs(card.offsetLeft + card.clientWidth / 2 - railCentre);
-          if (distance < nearestDistance) {
-            nearestDistance = distance;
-            nearestIndex = index;
+        if (!isPendingMove) {
+          const shouldSyncPicker = activeRailIndexRef.current !== railIndex;
+          pendingRailIndexRef.current = null;
+
+          if (activeIndexRef.current !== index) {
+            activeIndexRef.current = index;
+            setActiveIndex(index);
           }
-        });
-
-        if (activeIndexRef.current !== nearestIndex) {
-          activeIndexRef.current = nearestIndex;
-          setActiveIndex(nearestIndex);
-          syncPicker(nearestIndex, 'smooth');
+          activeRailIndexRef.current = railIndex;
+          if (shouldSyncPicker) syncPicker(railIndex, 'smooth');
         }
       }
       frameRef.current = null;
+
+      if (settleRef.current !== null) window.clearTimeout(settleRef.current);
+      settleRef.current = window.setTimeout(rebalanceLoop, 180);
     });
   };
 
   useEffect(() => {
     return () => {
       if (frameRef.current !== null) window.cancelAnimationFrame(frameRef.current);
+      if (settleRef.current !== null) window.clearTimeout(settleRef.current);
     };
   }, []);
 
@@ -125,17 +195,23 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
           role="region"
           aria-label="แกลเลอรีบริการของ Kazumi Clinic"
         >
-          {categories.map((category, index) => {
+          {streamItems.map(({ category, copy, railIndex }) => {
             const imageSrc = heroOverrides[category.slug] ?? category.heroImage;
             const hasImage = Boolean(imageSrc);
+            const isCanonicalCopy = copy === 1;
 
             return (
               <article
-                key={category.slug}
-                data-service-index={index}
+                key={`${copy}-${category.slug}`}
+                data-service-index={railIndex}
                 className="service-stream-card"
+                aria-hidden={isCanonicalCopy ? undefined : 'true'}
               >
-                <Link href={`/${category.slug}`} className="service-stream-card__link group">
+                <Link
+                  href={`/${category.slug}`}
+                  tabIndex={isCanonicalCopy ? undefined : -1}
+                  className="service-stream-card__link group"
+                >
                   <div className="service-stream-card__media">
                     {hasImage ? (
                       <Image
@@ -172,16 +248,19 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
       </div>
 
       <div ref={pickerRef} className="service-stream-picker" role="group" aria-label="เลือกบริการ">
-        {categories.map((category, index) => {
+        {streamItems.map(({ category, categoryIndex, copy, railIndex }) => {
           const imageSrc = heroOverrides[category.slug] ?? category.heroImage;
+          const isCanonicalCopy = copy === 1;
           return (
             <button
-              key={category.slug}
-              data-service-picker-index={index}
+              key={`${copy}-${category.slug}`}
+              data-service-picker-index={railIndex}
               type="button"
-              onClick={() => goTo(index)}
+              onClick={() => goTo(categoryIndex)}
+              tabIndex={isCanonicalCopy ? undefined : -1}
               aria-label={`ไปที่ ${category.title}`}
-              aria-current={activeIndex === index ? 'true' : undefined}
+              aria-hidden={isCanonicalCopy ? undefined : 'true'}
+              aria-current={isCanonicalCopy && activeIndex === categoryIndex ? 'true' : undefined}
               className="service-stream-picker__item"
             >
               {imageSrc ? (
