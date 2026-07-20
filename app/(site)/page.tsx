@@ -12,7 +12,7 @@ import {
   Stethoscope,
 } from 'lucide-react';
 import { site } from '@/lib/site';
-import { doctor } from '@/lib/doctor';
+import { doctor, doctorEesha } from '@/lib/doctor';
 import { serviceCategories } from '@/lib/services';
 import { faqSchema, homePageSchema } from '@/lib/schema';
 import { cloudAssets, heroHomePortrait } from '@/lib/cloud';
@@ -94,6 +94,17 @@ export default async function HomePage() {
   const heroSrc = overrides.has('hero-home') ? pick('hero-home', '') : heroHomePortrait;
   const philosophySrc = pick('hero-iv-drip-2', cloudAssets.heroIvDrip2);
   const doctorSrc = pick('doctor-pratch', doctor.image);
+  // Both physicians appear in the Medical direction section. Dr. Eesha has no shipped default
+  // photo, so her card falls back to a placeholder until the clinic uploads one via /admin.
+  const doctorCards = [
+    { name: doctor.name, role: doctor.role, licenseNo: doctor.licenseNo, src: doctorSrc },
+    {
+      name: doctorEesha.name,
+      role: doctorEesha.role,
+      licenseNo: doctorEesha.licenseNo,
+      src: overrides.get('doctor-eesha')?.public_id,
+    },
+  ];
   // Clinic photo for the "มาเยี่ยมเรา" section; undefined until the clinic uploads one, so the
   // section falls back to a tonal placeholder rather than borrowing an unrelated image.
   const visitPhoto = overrides.get('home-visit')?.public_id;
@@ -230,27 +241,37 @@ export default async function HomePage() {
           aria-hidden="true"
         />
         <div className="relative mx-auto grid max-w-7xl gap-14 md:grid-cols-[1fr_1.618fr] md:items-center md:gap-20">
-          <Reveal className="relative mx-auto w-full max-w-[27rem]">
-            <div className="doctor-frame relative aspect-[0.72] overflow-hidden rounded-[2rem] rounded-tr-[5rem] border border-sand/20 bg-olive shadow-2xl shadow-black/20 md:aspect-[0.618]">
-              <Image
-                src={doctorSrc}
-                alt={`${doctor.name} ${doctor.role}`}
-                fill
-                sizes="(min-width: 768px) 35vw, 90vw"
-                className="object-cover transition-transform duration-1000 hover:scale-[1.03]"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-olive-deep/80 via-transparent to-transparent" />
-              <div className="absolute inset-x-5 bottom-5">
-                <p className="font-serif text-2xl text-sand">{doctor.name}</p>
-                <p className="mt-1 text-xs text-sand/60">{doctor.role}</p>
-                <p className="mt-2 text-[0.68rem] tracking-wide text-sand/45">
-                  MEDICAL LICENSE {site.doctors[0].licenseNo}
-                </p>
+          <Reveal className="relative mx-auto grid w-full max-w-[27rem] grid-cols-2 gap-4 md:max-w-none">
+            {doctorCards.map((d, index) => (
+              <div
+                key={d.name}
+                className={`doctor-frame relative aspect-[0.72] overflow-hidden border border-sand/20 bg-olive shadow-2xl shadow-black/20 ${
+                  index === 0 ? 'rounded-[1.5rem] rounded-tr-[3.5rem]' : 'rounded-[1.5rem] rounded-bl-[3.5rem]'
+                }`}
+              >
+                {d.src ? (
+                  <Image
+                    src={d.src}
+                    alt={`${d.name} ${d.role}`}
+                    fill
+                    sizes="(min-width: 768px) 20vw, 45vw"
+                    className="object-cover transition-transform duration-1000 hover:scale-[1.03]"
+                  />
+                ) : (
+                  <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center">
+                    <Stethoscope className="size-9 text-sand/25" strokeWidth={1} />
+                  </span>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-olive-deep/85 via-transparent to-transparent" />
+                <div className="absolute inset-x-4 bottom-4">
+                  <p className="font-serif text-lg leading-tight text-sand">{d.name}</p>
+                  <p className="mt-1 text-[0.68rem] text-sand/60">{d.role}</p>
+                  <p className="mt-1.5 text-[0.58rem] tracking-wide text-sand/40">
+                    MEDICAL LICENSE {d.licenseNo}
+                  </p>
+                </div>
               </div>
-            </div>
-            <span className="absolute -bottom-6 -right-4 font-serif text-8xl leading-none text-clay/30">
-              02
-            </span>
+            ))}
           </Reveal>
 
           <Reveal delay={100}>
