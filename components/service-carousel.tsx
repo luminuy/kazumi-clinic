@@ -125,7 +125,7 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
                         alt={category.heroAlt ?? ''}
                         aria-hidden={category.heroAlt ? undefined : 'true'}
                         fill
-                        sizes="(min-width: 768px) 60vw, 84vw"
+                        sizes="(min-width: 768px) 65vw, 84vw"
                         className="object-cover"
                       />
                     ) : (
