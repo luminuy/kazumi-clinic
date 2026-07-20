@@ -49,6 +49,14 @@
   /* Layout rhythm. 1.618 keeps major and minor regions in a consistent proportion. */
   --phi: 1.618;
   --content-gutter: clamp(1.25rem, 3vw, 4rem);
+
+  /* Apple Store shelf reference tokens, scoped to the home promotion treatment below. */
+  --store-surface: #f5f5f7;
+  --store-ink: #1d1d1f;
+  --store-muted: #6e6e73;
+  --store-card: #fff;
+  --store-control: #d2d2d7;
+  --store-control-ink: #424245;
 }
 
 .dark {
@@ -400,28 +408,42 @@
   width: 1.5rem;
   background: var(--clay);
 }
-/* Home promotions intentionally follow the supplied Apple-style shelf reference: concise
-   heading above, a run of equal cards with the following item visible, and controls overlaid
-   at the edge. The base carousel remains editorial for the Services page. */
+/* Home promotions follow the Apple Store shelf reference. The base carousel remains editorial
+   for the Services page; only this treatment uses the Store's compact heading and full-bleed rail. */
+.apple-promotion-section {
+  padding-block: 3rem;
+  background: var(--store-surface);
+}
+.apple-promotion-heading {
+  margin-bottom: 1rem;
+  padding-inline: clamp(2rem, 2.3vw, 3rem);
+}
+.apple-promotion-heading h2 {
+  color: var(--store-ink);
+}
+.apple-promotion-heading p {
+  color: var(--store-muted);
+}
 .homepage-promotion-shelf .promotion-carousel-viewport {
-  overflow: visible;
+  overflow: hidden;
 }
 .homepage-promotion-shelf .promotion-carousel-rail {
   gap: 0.75rem;
-  padding-inline: max(1.25rem, calc((100vw - 80rem) / 2 + 1.25rem));
-  scroll-padding-inline: max(1.25rem, calc((100vw - 80rem) / 2 + 1.25rem));
+  padding: 0.25rem clamp(2rem, 2.3vw, 3rem) 0;
+  scroll-padding-inline: clamp(2rem, 2.3vw, 3rem);
 }
 .homepage-promotion-shelf .promotion-carousel-card {
-  flex-basis: clamp(15rem, 18.75vw, 17.5rem);
+  flex-basis: clamp(16rem, 18.55vw, 32rem);
 }
 .homepage-promotion-shelf .promotion-carousel-card__link {
-  border-color: rgb(38 40 31 / 7%);
-  border-radius: 0.9rem;
-  box-shadow: 0 0.25rem 1.25rem rgb(38 40 31 / 8%);
+  border: 0;
+  border-radius: 1rem;
+  background: var(--store-card);
+  box-shadow: none;
 }
 .homepage-promotion-shelf .promotion-carousel-card--active .promotion-carousel-card__link {
-  border-color: rgb(38 40 31 / 10%);
-  box-shadow: 0 0.4rem 1.5rem rgb(38 40 31 / 10%);
+  border-color: transparent;
+  box-shadow: none;
 }
 .homepage-promotion-shelf .promotion-carousel-card__veil,
 .homepage-promotion-shelf .promotion-carousel-card__meta,
@@ -429,15 +451,20 @@
   display: none;
 }
 .homepage-promotion-shelf .promotion-carousel-controls {
-  right: max(0.75rem, calc((100vw - 80rem) / 2 + 0.25rem));
-  left: max(0.75rem, calc((100vw - 80rem) / 2 + 0.25rem));
+  right: 0.5rem;
+  left: 0.5rem;
 }
 .homepage-promotion-shelf .promotion-carousel-arrow {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-color: rgb(38 40 31 / 10%);
-  background: rgb(246 243 236 / 92%);
-  box-shadow: 0 0.25rem 0.75rem rgb(38 40 31 / 12%);
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 0;
+  background: color-mix(in srgb, var(--store-control) 92%, transparent);
+  color: var(--store-control-ink);
+  box-shadow: none;
+}
+.homepage-promotion-shelf .promotion-carousel-arrow--hidden {
+  pointer-events: none;
+  opacity: 0;
 }
 .doctor-frame,
 .promo-board,
@@ -497,7 +524,7 @@
   }
   .homepage-promotion-shelf .promotion-carousel-card__link:hover {
     transform: none;
-    box-shadow: 0 0.4rem 1.5rem rgb(38 40 31 / 12%);
+    box-shadow: none;
   }
   .homepage-promotion-shelf .promotion-carousel-card__link:hover .promotion-carousel-card__image {
     transform: none;
