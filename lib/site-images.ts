@@ -40,6 +40,7 @@ export type SiteImageKey =
   | 'item-filler-lip-neura-deep-1cc'
   | 'item-filler-resty-1cc'
   | 'doctor-pratch'
+  | 'doctor-eesha'
   | 'about-hero'
   | 'about-interior'
   | 'og-about'
@@ -270,6 +271,12 @@ export const siteImages: SiteImageSpec[] = [
     where: 'หน้าแรก · /about · /services · รูปใน Person JSON-LD',
     defaultPublicId: cloudAssets.doctorPratch,
     ratioHint: 'แนวตั้ง 4:5 — เห็นหน้าชัด อยู่กลางเฟรม',
+  },
+  {
+    key: 'doctor-eesha',
+    label: 'รูปคุณหมอ Dr. Eesha',
+    where: '/about — โปรไฟล์แพทย์คนที่สอง · รูปใน Person JSON-LD',
+    ratioHint: 'แนวตั้ง 3:4 — เห็นหน้าชัด · ยังไม่มีรูป จะขึ้นกล่องไอคอนไปก่อน',
   },
   // รูปบนหน้า /about เอง (คนละใบกับ og-about ที่เป็นรูปตอนแชร์ลิงก์)
   {
