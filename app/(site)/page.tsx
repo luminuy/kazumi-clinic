@@ -202,52 +202,51 @@ export default async function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(homePageSchema(pick('hero-home', cloudAssets.heroHome))) }}
       />
 
-      {/* ── Hero: editorial asymmetry — image-dominant left, intro right ─────── */}
-      <section className="bg-surface">
-        <div className="flex flex-col md:min-h-[88vh] md:flex-row md:items-stretch">
-          <div className="relative h-[58vh] w-full overflow-hidden bg-olive-deep/[0.06] md:h-auto md:w-3/5">
-            <Image
-              src={heroSrc}
-              alt=""
-              aria-hidden="true"
-              fill
-              priority
-              fetchPriority="high"
-              sizes="(min-width: 768px) 60vw, 100vw"
-              className="object-cover"
-            />
-            <div aria-hidden="true" className="absolute inset-0 bg-forest/10 mix-blend-multiply" />
-          </div>
-
-          <div className="flex w-full flex-col justify-center px-6 py-14 sm:px-10 md:w-2/5 md:py-20 md:pl-16 lg:pl-20">
-            <span aria-hidden="true" className="mb-6 block h-px w-10 bg-forest" />
-            <p lang="en" className="text-[0.7rem] uppercase tracking-[0.28em] text-olive-deep/70">
-              Kazumi Clinic · สุขุมวิท กรุงเทพฯ
-            </p>
-            <h1
-              lang="en"
-              className="mt-6 font-serif text-[2.4rem] leading-[1.08] tracking-[-0.02em] text-olive-deep sm:text-5xl md:text-[3.1rem]"
+      {/* ── Hero: Apple-style centered promo — text on top, image below ─────── */}
+      <section className="overflow-hidden bg-[var(--store-surface)]">
+        <div className="mx-auto max-w-3xl px-6 pt-20 text-center md:pt-28">
+          <p lang="en" className="text-[0.7rem] uppercase tracking-[0.28em] text-forest">
+            Kazumi Clinic · สุขุมวิท กรุงเทพฯ
+          </p>
+          <h1
+            lang="en"
+            className="mx-auto mt-5 max-w-2xl font-serif text-[2.4rem] leading-[1.08] tracking-[-0.02em] text-olive-deep sm:text-5xl md:text-[3.4rem]"
+          >
+            Where balance purity becomes eternal beauty.
+          </h1>
+          <p className="mx-auto mt-6 max-w-xl text-sm leading-[1.9] text-ink/65 md:text-base">
+            {site.description}
+          </p>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <a
+              href={site.lineUrl}
+              target="_blank"
+              rel="noopener"
+              className="inline-flex items-center gap-2 rounded-full bg-mint px-7 py-3 text-sm font-medium text-white transition-colors duration-200 hover:bg-forest active:scale-[0.98]"
             >
-              Where balance purity becomes eternal beauty.
-            </h1>
-            <p className="mt-7 max-w-md text-sm leading-[1.9] text-ink/65">{site.description}</p>
-            <div className="mt-9 flex flex-wrap gap-4">
-              <a
-                href={site.lineUrl}
-                target="_blank"
-                rel="noopener"
-                className="inline-flex items-center gap-2 bg-mint px-8 py-4 text-[0.7rem] uppercase tracking-[0.18em] text-white transition-colors duration-200 hover:bg-forest active:scale-[0.98]"
-              >
-                จองคิวผ่าน LINE <ArrowUpRight className="size-4" />
-              </a>
-              <Link
-                href="/services"
-                className="inline-flex items-center gap-2 border border-olive-deep/40 px-8 py-4 text-[0.7rem] uppercase tracking-[0.18em] text-olive-deep transition-colors duration-200 hover:bg-olive-deep hover:text-sand"
-              >
-                ดูบริการทั้งหมด
-              </Link>
-            </div>
+              จองคิวผ่าน LINE <ArrowUpRight className="size-4" />
+            </a>
+            <Link
+              href="/services"
+              className="inline-flex items-center gap-1.5 rounded-full border border-olive-deep/25 px-7 py-3 text-sm font-medium text-olive-deep transition-colors duration-200 hover:bg-olive-deep hover:text-sand"
+            >
+              ดูบริการทั้งหมด
+            </Link>
           </div>
+        </div>
+
+        <div className="relative mx-auto mt-14 aspect-[16/12] w-full max-w-5xl overflow-hidden rounded-t-[1.75rem] bg-olive-deep/[0.06] md:mt-16 md:aspect-[16/10]">
+          <Image
+            src={heroSrc}
+            alt=""
+            aria-hidden="true"
+            fill
+            priority
+            fetchPriority="high"
+            sizes="(min-width: 1024px) 64rem, 100vw"
+            className="object-cover object-[center_42%]"
+          />
+          <div aria-hidden="true" className="absolute inset-0 bg-forest/10 mix-blend-multiply" />
         </div>
       </section>
 
