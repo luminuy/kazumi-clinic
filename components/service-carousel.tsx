@@ -71,7 +71,7 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
   }, [goTo, initialIndex]);
 
   useEffect(() => {
-    if (isPaused || categories.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (isPaused || categories.length < 2) return;
 
     const interval = window.setInterval(() => {
       goTo(activeIndexRef.current + 1);
