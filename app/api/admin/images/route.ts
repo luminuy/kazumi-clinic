@@ -38,7 +38,7 @@ const REVALIDATION_TARGETS: Record<SiteImageKey, readonly RevalidationTarget[]> 
   'brand-logo': [{ path: '/', type: 'layout' }],
   'hero-home': [{ path: '/', type: 'layout' }],
   'hero-filler': [{ path: '/' }, { path: '/filler' }, { path: '/services' }],
-  // The home ServiceAtlas and the /services index both resolve their card images through
+  // The home service stream and the /services index both resolve their card images through
   // categoryImageKey, so every category slot has to revalidate those two alongside its own page.
   'hero-botox': [{ path: '/' }, { path: '/botox' }, { path: '/services' }],
   'hero-iv-drip-1': [{ path: '/' }, { path: '/iv-drip' }, { path: '/reviews' }],

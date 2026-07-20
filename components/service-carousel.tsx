@@ -1,93 +1,79 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide-react';
 import type { ServiceCategory } from '@/lib/services';
 import { ServiceIcon } from '@/components/service-icon';
 import { cn } from '@/lib/utils';
 
+type ServiceCarouselProps = {
+  categories: ServiceCategory[];
+  /** slug → Cloudinary public ID, resolved by the home server component from the /admin layer. */
+  heroOverrides?: Record<string, string>;
+};
+
 /**
- * Peeking service carousel in the Apple "browse the shelf" style: a wide card sits at the gutter
- * with the next cards peeking on the right, scroll-snap pages between them, and the non-active
- * cards dim so focus stays on the front one. Cards keep the site's editorial language (sharp
- * corners, olive/green, Thai) rather than Apple's rounded image tiles.
- *
- * The scroll mechanics mirror the shipped PromotionCarousel (snap-start, small gutter padding, and
- * measuring `card.offsetLeft − firstCard.offsetLeft` so the offsetParent cancels out) — a version
- * that used snap-center with large vw spacers wouldn't scroll at all.
+ * The homepage service navigator borrows the composition—not the content—from Apple's
+ * entertainment shelf: one media-first feature in the centre, adjacent cards peeking at each
+ * edge, then a compact strip that lets visitors choose any category. Image slots are resolved
+ * by the server; categories without a real image remain honest icon panels.
  */
-export function ServiceCarousel({ categories }: { categories: ServiceCategory[] }) {
+export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarouselProps) {
   const railRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<number | null>(null);
-  const animationRef = useRef<number | null>(null);
-  const programmaticTargetRef = useRef<number | null>(null);
-  const activeRef = useRef(0);
-  const [active, setActive] = useState(0);
+  const initialIndex = Math.min(2, Math.max(categories.length - 1, 0));
+  const [activeIndex, setActiveIndex] = useState(initialIndex);
 
-  const goTo = (requested: number) => {
-    const index = (requested + categories.length) % categories.length;
+  const targetFor = (index: number) => {
     const rail = railRef.current;
-    const card = rail?.querySelector<HTMLElement>(`[data-idx="${index}"]`);
-    const first = rail?.querySelector<HTMLElement>('[data-idx="0"]');
-    if (!rail || !card || !first) return;
-    const target = Math.max(0, card.offsetLeft - first.offsetLeft);
-    programmaticTargetRef.current = target;
-    activeRef.current = index;
-    setActive(index);
+    const card = rail?.querySelector<HTMLElement>(`[data-service-index="${index}"]`);
+    if (!rail || !card) return null;
 
-    // Animate scrollLeft by hand rather than via native smooth scrollTo: `scroll-snap-type:
-    // mandatory` snaps a programmatic smooth scroll back to the current card, so snap is switched
-    // off for the animation and restored once it lands on the target (itself a snap point). The
-    // rAF loop also works where a headless browser won't run native smooth scrolling.
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      rail.scrollLeft = target;
-      return;
-    }
-    if (animationRef.current !== null) window.cancelAnimationFrame(animationRef.current);
-    rail.style.scrollSnapType = 'none';
-    const startLeft = rail.scrollLeft;
-    const distance = target - startLeft;
-    const startTime = performance.now();
-    const duration = 420;
-    const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
-    const step = (now: number) => {
-      const progress = Math.min(1, (now - startTime) / duration);
-      rail.scrollLeft = startLeft + distance * easeOutCubic(progress);
-      if (progress < 1) {
-        animationRef.current = window.requestAnimationFrame(step);
-      } else {
-        animationRef.current = null;
-        rail.style.scrollSnapType = '';
-      }
-    };
-    animationRef.current = window.requestAnimationFrame(step);
+    return Math.max(0, card.offsetLeft - (rail.clientWidth - card.clientWidth) / 2);
   };
+
+  const goTo = (requestedIndex: number, behavior: ScrollBehavior = 'smooth') => {
+    if (categories.length === 0) return;
+    const index = (requestedIndex + categories.length) % categories.length;
+    const target = targetFor(index);
+    if (target === null) return;
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    railRef.current?.scrollTo({ left: target, behavior: reducedMotion ? 'auto' : behavior });
+    setActiveIndex(index);
+  };
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => goTo(initialIndex, 'auto'));
+    return () => window.cancelAnimationFrame(frame);
+    // The opening card is deliberately IV Drip: it has a clinic-supplied hero image and leaves
+    // a real service card visible at each edge, matching the reference composition.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleScroll = () => {
     if (frameRef.current !== null) return;
+
     frameRef.current = window.requestAnimationFrame(() => {
       const rail = railRef.current;
-      const first = rail?.querySelector<HTMLElement>('[data-idx="0"]');
-      if (rail && first) {
-        // Ignore scroll events until a programmatic scroll has arrived, so the active index doesn't
-        // flicker through the cards it passes over on the way.
-        if (programmaticTargetRef.current !== null) {
-          if (Math.abs(rail.scrollLeft - programmaticTargetRef.current) <= 2) {
-            programmaticTargetRef.current = null;
+      if (rail) {
+        const railCentre = rail.scrollLeft + rail.clientWidth / 2;
+        let nearestIndex = activeIndex;
+        let nearestDistance = Number.POSITIVE_INFINITY;
+
+        categories.forEach((_, index) => {
+          const card = rail.querySelector<HTMLElement>(`[data-service-index="${index}"]`);
+          if (!card) return;
+          const distance = Math.abs(card.offsetLeft + card.clientWidth / 2 - railCentre);
+          if (distance < nearestDistance) {
+            nearestDistance = distance;
+            nearestIndex = index;
           }
-        } else {
-          const gap = Number.parseFloat(getComputedStyle(rail).columnGap) || 0;
-          const step = first.getBoundingClientRect().width + gap;
-          const index = Math.min(
-            categories.length - 1,
-            Math.max(0, Math.round(rail.scrollLeft / step)),
-          );
-          if (index !== activeRef.current) {
-            activeRef.current = index;
-            setActive(index);
-          }
-        }
+        });
+
+        setActiveIndex((current) => (current === nearestIndex ? current : nearestIndex));
       }
       frameRef.current = null;
     });
@@ -96,86 +82,118 @@ export function ServiceCarousel({ categories }: { categories: ServiceCategory[] 
   useEffect(() => {
     return () => {
       if (frameRef.current !== null) window.cancelAnimationFrame(frameRef.current);
-      if (animationRef.current !== null) window.cancelAnimationFrame(animationRef.current);
     };
   }, []);
 
   return (
-    <div>
-      <div
-        ref={railRef}
-        onScroll={handleScroll}
-        role="region"
-        aria-label="แกลเลอรีบริการของ Kazumi Clinic"
-        className="flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] scroll-pl-6 sm:px-10 sm:scroll-pl-10 md:gap-6 md:px-14 md:scroll-pl-14 lg:px-20 lg:scroll-pl-20 [&::-webkit-scrollbar]:hidden"
-      >
-        {categories.map((category, index) => (
-          <article
-            key={category.slug}
-            data-idx={index}
-            className={cn(
-              'w-[82vw] shrink-0 snap-start transition-opacity duration-500 sm:w-[52vw] md:w-[40vw] lg:w-[30vw]',
-              active === index ? 'opacity-100' : 'opacity-55',
-            )}
-          >
-            <Link
-              href={`/${category.slug}`}
-              className="group flex h-full min-h-[19rem] flex-col justify-between border border-olive/12 bg-cream p-8 transition-colors duration-300 hover:border-forest/40 md:min-h-[22rem] md:p-10"
-            >
-              <div>
-                <ServiceIcon slug={category.slug} className="size-8 text-forest" strokeWidth={1.25} />
-                <p lang="en" className="mt-6 text-[0.62rem] uppercase tracking-[0.2em] text-olive/55">
-                  {category.titleEn}
-                </p>
-                <h3 className="mt-2 font-serif text-2xl text-olive-deep md:text-3xl">
-                  {category.title}
-                </h3>
-                <p className="mt-3 text-sm leading-[1.8] text-ink/60">{category.shortDescription}</p>
-              </div>
-              <span className="mt-8 inline-flex items-center gap-2 border-t border-olive/12 pt-5 text-[0.64rem] uppercase tracking-[0.18em] text-forest">
-                ดูรายละเอียด
-                <ArrowUpRight className="size-3.5 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-              </span>
-            </Link>
-          </article>
-        ))}
-      </div>
+    <div className="service-stream">
+      <div className="service-stream-main">
+        <div
+          ref={railRef}
+          id="home-service-stream"
+          className="service-stream-rail"
+          onScroll={handleScroll}
+          role="region"
+          aria-label="แกลเลอรีบริการของ Kazumi Clinic"
+        >
+          {categories.map((category, index) => {
+            const imageSrc = heroOverrides[category.slug] ?? category.heroImage;
+            const hasImage = Boolean(imageSrc);
 
-      <div className="mx-auto mt-8 flex max-w-7xl items-center justify-between gap-6 px-6 sm:px-10 md:px-14 lg:px-20">
-        <div className="flex gap-2" role="group" aria-label="เลื่อนบริการ">
+            return (
+              <article
+                key={category.slug}
+                data-service-index={index}
+                className={cn('service-stream-card', activeIndex === index && 'service-stream-card--active')}
+              >
+                <Link href={`/${category.slug}`} className="service-stream-card__link group">
+                  <div className="service-stream-card__media">
+                    {hasImage ? (
+                      <Image
+                        src={imageSrc!}
+                        alt={category.heroAlt ?? ''}
+                        aria-hidden={category.heroAlt ? undefined : 'true'}
+                        fill
+                        sizes="(min-width: 768px) 58vw, 84vw"
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="service-stream-card__fallback" aria-hidden="true">
+                        <ServiceIcon slug={category.slug} className="size-16" strokeWidth={1} />
+                        <span>{category.titleEn}</span>
+                      </div>
+                    )}
+                    <div className="service-stream-card__wash" aria-hidden="true" />
+                  </div>
+
+                  <div className="service-stream-card__content">
+                    <p className="service-stream-card__eyebrow">{category.titleEn}</p>
+                    <h3>{category.title}</h3>
+                    <p>{category.shortDescription}</p>
+                    <span className="service-stream-card__action">
+                      ดูรายละเอียด <ArrowUpRight className="size-4" />
+                    </span>
+                  </div>
+                </Link>
+              </article>
+            );
+          })}
+        </div>
+
+        <div className="service-stream-controls" role="group" aria-label="เลื่อนบริการ">
           <button
             type="button"
-            onClick={() => goTo(active - 1)}
+            onClick={() => goTo(activeIndex - 1)}
             aria-label="บริการก่อนหน้า"
-            className="flex size-10 items-center justify-center border border-olive/25 text-olive-deep transition-colors hover:border-forest hover:text-forest"
+            aria-controls="home-service-stream"
           >
             <ArrowLeft className="size-4" />
           </button>
           <button
             type="button"
-            onClick={() => goTo(active + 1)}
+            onClick={() => goTo(activeIndex + 1)}
             aria-label="บริการถัดไป"
-            className="flex size-10 items-center justify-center border border-olive/25 text-olive-deep transition-colors hover:border-forest hover:text-forest"
+            aria-controls="home-service-stream"
           >
             <ArrowRight className="size-4" />
           </button>
         </div>
+      </div>
 
-        <div className="flex items-center gap-1.5" role="group" aria-label="เลือกบริการ">
-          {categories.map((category, index) => (
+      <div className="service-stream-picker" role="group" aria-label="เลือกบริการ">
+        {categories.map((category, index) => {
+          const imageSrc = heroOverrides[category.slug] ?? category.heroImage;
+          return (
             <button
               key={category.slug}
               type="button"
               onClick={() => goTo(index)}
               aria-label={`ไปที่ ${category.title}`}
-              aria-current={active === index ? 'true' : undefined}
-              className={cn(
-                'h-1.5 transition-all duration-300',
-                active === index ? 'w-6 bg-forest' : 'w-1.5 bg-olive/25 hover:bg-olive/50',
+              aria-current={activeIndex === index ? 'true' : undefined}
+              className={cn('service-stream-picker__item', activeIndex === index && 'is-active')}
+            >
+              {imageSrc ? (
+                <Image src={imageSrc} alt="" aria-hidden="true" fill sizes="16rem" className="object-cover" />
+              ) : (
+                <ServiceIcon slug={category.slug} className="size-7" strokeWidth={1.1} aria-hidden="true" />
               )}
-            />
-          ))}
-        </div>
+              <span>{category.title}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="service-stream-dots" role="group" aria-label="ตำแหน่งบริการ">
+        {categories.map((category, index) => (
+          <button
+            key={category.slug}
+            type="button"
+            onClick={() => goTo(index)}
+            aria-label={`ดูบริการ ${category.title}`}
+            aria-current={activeIndex === index ? 'true' : undefined}
+            className={cn(activeIndex === index && 'is-active')}
+          />
+        ))}
       </div>
     </div>
   );
