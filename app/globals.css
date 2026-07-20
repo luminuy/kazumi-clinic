@@ -444,7 +444,7 @@
   gap: 0.5rem;
   overflow-x: auto;
   overscroll-behavior-inline: contain;
-  padding: 0.25rem max(0.75rem, calc((100vw - 63vw) / 2)) 0.5rem;
+  padding: 0.25rem max(1rem, calc((100vw - 60vw) / 2)) 0.5rem;
   scroll-behavior: smooth;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
@@ -454,7 +454,7 @@
   display: none;
 }
 .service-stream-card {
-  flex: 0 0 63vw;
+  flex: 0 0 60vw;
   scroll-snap-align: center;
 }
 .service-stream-card__link {
@@ -544,17 +544,13 @@
   position: relative;
   display: flex;
   flex: 0 0 23.75vw;
-  aspect-ratio: 1;
+  aspect-ratio: 1.78;
   align-items: flex-end;
   overflow: hidden;
   background: var(--olive-deep);
   color: var(--sand);
   isolation: isolate;
   transition: transform 160ms ease-out;
-}
-.service-stream-picker__item:first-child,
-.service-stream-picker__item:nth-child(5) {
-  flex-basis: 12.5vw;
 }
 .service-stream-picker__item > svg {
   position: absolute;
@@ -625,9 +621,7 @@
   .service-stream-picker {
     padding-inline: 1.25rem;
   }
-  .service-stream-picker__item,
-  .service-stream-picker__item:first-child,
-  .service-stream-picker__item:nth-child(5) {
+  .service-stream-picker__item {
     flex-basis: min(58vw, 19rem);
   }
 }
