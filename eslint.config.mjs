@@ -1,12 +1,8 @@
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
-import { FlatCompat } from '@eslint/eslintrc';
-
-// ESLint 9 only reads flat config, but eslint-config-next 15.5 still ships the legacy
-// eslintrc format with no flat export — hence FlatCompat. Without this file `pnpm lint`
-// doesn't lint anything: it exits 2 telling you to migrate, which it did for every commit
-// up to this one. Drop the shim once eslint-config-next exports a flat config.
-const compat = new FlatCompat({ baseDirectory: dirname(fileURLToPath(import.meta.url)) });
+// eslint-config-next 16 ships native flat config (arrays of flat config objects), so it is
+// spread in directly. The FlatCompat shim used up to Next 15.5 is gone: passing v16's flat
+// config back through FlatCompat.extends() throws "Converting circular structure to JSON".
+import coreWebVitals from 'eslint-config-next/core-web-vitals';
+import typescript from 'eslint-config-next/typescript';
 
 const config = [
   {
@@ -22,7 +18,8 @@ const config = [
       'public/**',
     ],
   },
-  ...compat.extends('next/core-web-vitals', 'next/typescript'),
+  ...coreWebVitals,
+  ...typescript,
   {
     rules: {
       // next/core-web-vitals leaves react/no-danger off, which made every
