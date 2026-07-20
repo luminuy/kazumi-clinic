@@ -10,12 +10,15 @@ import { cn } from '@/lib/utils';
 export function PromotionCarousel({
   posters = promotionPosters,
   className,
+  hidePreviousAtStart = false,
   imageSizes = '(min-width: 1024px) 30vw, (min-width: 640px) 48vw, 88vw',
 }: {
   /** Resolved through the /admin override layer by the server component that renders this. */
   posters?: PromotionPoster[];
   /** Page-specific layout treatment while preserving the same accessible carousel controls. */
   className?: string;
+  /** Hides the previous control on the initial position for a one-way shelf treatment. */
+  hidePreviousAtStart?: boolean;
   /** Match the responsive image source to the card width for the rendering context. */
   imageSizes?: string;
 }) {
@@ -131,10 +134,14 @@ export function PromotionCarousel({
         <div className="promotion-carousel-controls" role="group" aria-label="เลื่อนโปรโมชั่น">
           <button
             type="button"
-            className="promotion-carousel-arrow"
+            className={cn(
+              'promotion-carousel-arrow',
+              hidePreviousAtStart && activeIndex === 0 && 'promotion-carousel-arrow--hidden',
+            )}
             onClick={() => goTo(activeIndex - 1)}
             aria-label="ดูโปรโมชั่นก่อนหน้า"
             aria-controls="promotion-gallery-rail"
+            disabled={hidePreviousAtStart && activeIndex === 0}
           >
             <ArrowLeft className="size-4" />
           </button>

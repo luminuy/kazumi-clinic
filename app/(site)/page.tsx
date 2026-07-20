@@ -292,25 +292,24 @@ export default async function HomePage() {
       </section>
 
       {/* ── Promotions: Apple-style peeking carousel ─────────── */}
-      <section className="overflow-hidden bg-cream py-20 md:py-24">
-        <Reveal className="mx-auto mb-10 flex max-w-7xl flex-wrap items-end justify-between gap-6 px-6 sm:px-10 md:mb-12 md:px-14 lg:px-20">
+      <section className="apple-promotion-section overflow-hidden">
+        <Reveal className="apple-promotion-heading">
           <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-            <h2 className="font-serif text-3xl text-olive-deep md:text-4xl">โปรโมชั่นล่าสุด</h2>
-            <p className="text-sm text-ink/55">เลือกดูโปรแกรมที่คลินิกคัดสรรไว้ได้เลย</p>
+            <h2 className="text-[1.35rem] font-semibold tracking-[-0.025em] md:text-[1.55rem]">
+              โปรโมชั่นล่าสุด
+            </h2>
+            <p className="text-[1.15rem] tracking-[-0.02em] md:text-[1.3rem]">
+              เลือกดูโปรแกรมที่คลินิกคัดสรรไว้ได้เลย
+            </p>
           </div>
-          <Link
-            href="/promotions"
-            className="text-[0.68rem] uppercase tracking-[0.2em] text-forest transition-colors hover:text-olive-deep"
-          >
-            View all promotions
-          </Link>
         </Reveal>
 
         <Reveal>
           <PromotionCarousel
             posters={posters}
             className="homepage-promotion-shelf"
-            imageSizes="(min-width: 1536px) 18vw, (min-width: 1024px) 25vw, (min-width: 640px) 42vw, 78vw"
+            hidePreviousAtStart
+            imageSizes="(min-width: 1440px) 19vw, (min-width: 1024px) 22vw, (min-width: 640px) 42vw, 78vw"
           />
         </Reveal>
       </section>
