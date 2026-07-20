@@ -8,7 +8,7 @@ import { serviceCategories } from '@/lib/services';
 import { faqSchema, homePageSchema } from '@/lib/schema';
 import { cloudAssets, heroHomePortrait } from '@/lib/cloud';
 import { getImageOverrides } from '@/lib/site-images-store';
-import { posterKeyByDefaultId } from '@/lib/site-images';
+import { categoryImageKey, posterKeyByDefaultId } from '@/lib/site-images';
 import { siteSocialImage } from '@/lib/metadata-images';
 import { promotionPosters } from '@/lib/promotions';
 import { Reveal } from '@/components/reveal';
@@ -86,6 +86,13 @@ export default async function HomePage() {
       const override = key ? overrides.get(key)?.public_id : undefined;
       return override ? { ...poster, src: override } : poster;
     });
+  const serviceHeroOverrides = Object.fromEntries(
+    serviceCategories.flatMap((category) => {
+      const key = categoryImageKey[category.slug];
+      const override = overrides.get(key)?.public_id;
+      return override ? [[category.slug, override]] : [];
+    }),
+  );
 
   return (
     <>
@@ -149,21 +156,18 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Services: Apple-style peeking carousel ───────────── */}
-      <section className="py-24 md:py-32">
-        <Reveal className="mx-auto mb-12 flex max-w-7xl flex-wrap items-end justify-between gap-6 px-6 sm:px-10 md:px-14 lg:px-20">
+      {/* ── Services: Apple-inspired media stream ────────────── */}
+      <section className="apple-services-section overflow-hidden">
+        <Reveal className="apple-services-heading">
           <div>
-            <h2 className="font-serif text-4xl text-olive-deep md:text-5xl">บริการของเรา</h2>
-            <p lang="en" className="mt-3 italic text-olive/70">
+            <h2>บริการของเรา.</h2>
+            <p lang="en">
               {site.taglineTh}
             </p>
           </div>
-          <span lang="en" className="hidden text-[0.68rem] uppercase tracking-[0.3em] text-forest md:block">
-            Services (01)
-          </span>
         </Reveal>
 
-        <ServiceCarousel categories={serviceCategories} />
+        <ServiceCarousel categories={serviceCategories} heroOverrides={serviceHeroOverrides} />
       </section>
 
       {/* ── Doctor showcase (dark) ───────────────────────────── */}
