@@ -12,7 +12,7 @@ import { posterKeyByDefaultId } from '@/lib/site-images';
 import { siteSocialImage } from '@/lib/metadata-images';
 import { promotionPosters } from '@/lib/promotions';
 import { Reveal } from '@/components/reveal';
-import { ServiceIcon } from '@/components/service-icon';
+import { ServiceCarousel } from '@/components/service-carousel';
 
 const homeTitle = 'คลินิกความงามสุขุมวิท กรุงเทพฯ | Kazumi Clinic';
 const homeDescription =
@@ -66,20 +66,6 @@ const faqs = [
     question: 'จองคิวได้ที่ไหน?',
     answer: `จองคิวผ่าน LINE Official Account หรือโทร ${site.phone}`,
   },
-];
-
-// Asymmetric bento spans (12-col grid). Cycles if the category count changes, so the grid stays
-// editorial without hardcoding a slug→span map that a data change could silently break.
-const bentoSpans = [
-  'md:col-span-7',
-  'md:col-span-5',
-  'md:col-span-5',
-  'md:col-span-7',
-  'md:col-span-4',
-  'md:col-span-4',
-  'md:col-span-4',
-  'md:col-span-6',
-  'md:col-span-6',
 ];
 
 export const revalidate = 3600;
@@ -163,9 +149,9 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Services: editorial bento grid ───────────────────── */}
-      <section className="mx-auto max-w-7xl px-6 py-24 sm:px-10 md:px-14 md:py-32 lg:px-20">
-        <Reveal className="mb-14 flex flex-wrap items-end justify-between gap-6">
+      {/* ── Services: Apple-style peeking carousel ───────────── */}
+      <section className="py-24 md:py-32">
+        <Reveal className="mx-auto mb-12 flex max-w-7xl flex-wrap items-end justify-between gap-6 px-6 sm:px-10 md:px-14 lg:px-20">
           <div>
             <h2 className="font-serif text-4xl text-olive-deep md:text-5xl">บริการของเรา</h2>
             <p lang="en" className="mt-3 italic text-olive/70">
@@ -177,42 +163,7 @@ export default async function HomePage() {
           </span>
         </Reveal>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-12">
-          {serviceCategories.map((category, index) => (
-            <Reveal
-              key={category.slug}
-              delay={(index % 3) * 60}
-              className={bentoSpans[index % bentoSpans.length]}
-            >
-              <Link
-                href={`/${category.slug}`}
-                className={`group flex h-full min-h-[15rem] flex-col justify-between border border-olive/12 p-8 transition-colors duration-300 hover:border-forest/40 md:p-10 ${
-                  index % 2 === 0 ? 'bg-cream' : 'bg-olive-deep/[0.045]'
-                }`}
-              >
-                <div>
-                  <ServiceIcon slug={category.slug} className="size-7 text-forest" strokeWidth={1.25} />
-                  <p
-                    lang="en"
-                    className="mt-6 text-[0.62rem] uppercase tracking-[0.2em] text-olive/55"
-                  >
-                    {category.titleEn}
-                  </p>
-                  <h3 className="mt-2 font-serif text-2xl text-olive-deep md:text-3xl">
-                    {category.title}
-                  </h3>
-                  <p className="mt-3 max-w-sm text-sm leading-[1.8] text-ink/60">
-                    {category.shortDescription}
-                  </p>
-                </div>
-                <span className="mt-8 inline-flex items-center gap-2 border-t border-olive/12 pt-5 text-[0.64rem] uppercase tracking-[0.18em] text-forest">
-                  ดูรายละเอียด
-                  <ArrowUpRight className="size-3.5 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                </span>
-              </Link>
-            </Reveal>
-          ))}
-        </div>
+        <ServiceCarousel categories={serviceCategories} />
       </section>
 
       {/* ── Doctor showcase (dark) ───────────────────────────── */}
