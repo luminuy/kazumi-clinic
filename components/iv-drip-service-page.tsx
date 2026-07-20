@@ -82,8 +82,12 @@ export function IvDripServicePage({
   const lastIndex = groups.length - 1;
 
   // The reference numbers its cards 01..04 across the light collections and leaves the dark panel
-  // unnumbered. Counting here keeps that running sequence across collection boundaries.
-  let cardNumber = 0;
+  // unnumbered. Precompute each group's starting offset (items in all earlier groups) so the
+  // running sequence is derived, not mutated during render — a mutable counter incremented inside
+  // the JSX trips react-hooks/immutability (React Compiler) under the Next 16 lint config.
+  const cardOffsets = groups.map((_, i) =>
+    groups.slice(0, i).reduce((sum, group) => sum + group.items.length, 0),
+  );
 
   return (
     <div className="overflow-x-hidden bg-sand">
@@ -226,10 +230,13 @@ export function IvDripServicePage({
                         headingRight ? 'md:order-1' : ''
                       }`}
                     >
-                      {group.items.map((item) => {
-                        cardNumber += 1;
-                        return <VitaminCard key={item.name} item={item} index={cardNumber} />;
-                      })}
+                      {group.items.map((item, itemIndex) => (
+                        <VitaminCard
+                          key={item.name}
+                          item={item}
+                          index={cardOffsets[groupIndex] + itemIndex + 1}
+                        />
+                      ))}
                     </div>
                   </div>
                 </Reveal>
