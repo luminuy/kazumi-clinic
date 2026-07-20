@@ -50,6 +50,9 @@ export const doctor = {
 // Dr. Pratch's carries, so confirm the correct ใบประกอบวิชาชีพ number before relying on it.
 export const doctorEesha = {
   name: 'Dr. Eesha Patel',
+  // Phonetic Thai transliteration (the posters carry no Thai spelling). No นพ./พญ. title — the
+  // clinic can swap in her registered Thai name/title if the spelling differs.
+  nameTh: 'อีชา พาเทล',
   licenseNo: '69180',
   givenName: 'Eesha',
   familyName: 'Patel',
