@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
@@ -24,16 +24,17 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
   const frameRef = useRef<number | null>(null);
   const initialIndex = Math.min(2, Math.max(categories.length - 1, 0));
   const [activeIndex, setActiveIndex] = useState(initialIndex);
+  const activeIndexRef = useRef(initialIndex);
 
-  const targetFor = (index: number) => {
+  const targetFor = useCallback((index: number) => {
     const rail = railRef.current;
     const card = rail?.querySelector<HTMLElement>(`[data-service-index="${index}"]`);
     if (!rail || !card) return null;
 
     return Math.max(0, card.offsetLeft - (rail.clientWidth - card.clientWidth) / 2);
-  };
+  }, []);
 
-  const goTo = (requestedIndex: number, behavior: ScrollBehavior = 'smooth') => {
+  const goTo = useCallback((requestedIndex: number, behavior: ScrollBehavior = 'smooth') => {
     if (categories.length === 0) return;
     const index = (requestedIndex + categories.length) % categories.length;
     const target = targetFor(index);
@@ -41,16 +42,24 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     railRef.current?.scrollTo({ left: target, behavior: reducedMotion ? 'auto' : behavior });
+    activeIndexRef.current = index;
     setActiveIndex(index);
-  };
+  }, [categories.length, targetFor]);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => goTo(initialIndex, 'auto'));
     return () => window.cancelAnimationFrame(frame);
-    // The opening card is deliberately IV Drip: it has a clinic-supplied hero image and leaves
-    // a real service card visible at each edge, matching the reference composition.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [goTo, initialIndex]);
+
+  useEffect(() => {
+    if (categories.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const interval = window.setInterval(() => {
+      goTo(activeIndexRef.current + 1);
+    }, 6000);
+
+    return () => window.clearInterval(interval);
+  }, [categories.length, goTo]);
 
   const handleScroll = () => {
     if (frameRef.current !== null) return;
@@ -59,7 +68,7 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
       const rail = railRef.current;
       if (rail) {
         const railCentre = rail.scrollLeft + rail.clientWidth / 2;
-        let nearestIndex = activeIndex;
+        let nearestIndex = activeIndexRef.current;
         let nearestDistance = Number.POSITIVE_INFINITY;
 
         categories.forEach((_, index) => {
@@ -72,7 +81,10 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
           }
         });
 
-        setActiveIndex((current) => (current === nearestIndex ? current : nearestIndex));
+        if (activeIndexRef.current !== nearestIndex) {
+          activeIndexRef.current = nearestIndex;
+          setActiveIndex(nearestIndex);
+        }
       }
       frameRef.current = null;
     });
@@ -113,7 +125,7 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
                         alt={category.heroAlt ?? ''}
                         aria-hidden={category.heroAlt ? undefined : 'true'}
                         fill
-                        sizes="(min-width: 768px) 58vw, 84vw"
+                        sizes="(min-width: 768px) 60vw, 84vw"
                         className="object-cover"
                       />
                     ) : (
@@ -154,7 +166,14 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
               className="service-stream-picker__item"
             >
               {imageSrc ? (
-                <Image src={imageSrc} alt="" aria-hidden="true" fill sizes="16rem" className="object-cover" />
+                <Image
+                  src={imageSrc}
+                  alt=""
+                  aria-hidden="true"
+                  fill
+                  sizes="(min-width: 768px) 24vw, 58vw"
+                  className="object-cover"
+                />
               ) : (
                 <ServiceIcon slug={category.slug} className="size-7" strokeWidth={1.1} aria-hidden="true" />
               )}
