@@ -275,7 +275,7 @@ export const siteImages: SiteImageSpec[] = [
   {
     key: 'doctor-eesha',
     label: 'รูปคุณหมอ Dr. Eesha',
-    where: '/about — โปรไฟล์แพทย์คนที่สอง · รูปใน Person JSON-LD',
+    where: 'หน้าแรก · /about — โปรไฟล์แพทย์คนที่สอง · รูปใน Person JSON-LD',
     ratioHint: 'แนวตั้ง 3:4 — เห็นหน้าชัด · ยังไม่มีรูป จะขึ้นกล่องไอคอนไปก่อน',
   },
   // รูปบนหน้า /about เอง (คนละใบกับ og-about ที่เป็นรูปตอนแชร์ลิงก์)
