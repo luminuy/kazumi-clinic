@@ -1,30 +1,23 @@
-import { MapPin, Phone } from 'lucide-react';
 import { site } from '@/lib/site';
 import { LineIcon } from '@/components/brand-icons';
 
-const actions = [
-  { label: 'โทร', href: site.phoneUrl, icon: Phone, external: false },
-  { label: 'แผนที่', href: site.mapsUrl, icon: MapPin, external: true },
-  { label: 'จอง LINE', href: site.lineUrl, icon: LineIcon, external: true },
-] as const;
-
+/**
+ * Floating LINE button on mobile. Replaces the old full-width three-up bottom bar
+ * (โทร / แผนที่ / จอง LINE), which sat heavy across the whole screen — this is a single, clear
+ * booking action tucked into the corner, out of the content's way. Mobile only; desktop keeps
+ * the in-page CTAs.
+ */
 export function MobileContactBar() {
   return (
-    <nav
-      aria-label="ติดต่อคลินิกอย่างรวดเร็ว"
-      className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-3 border-t border-olive/15 bg-cream/95 px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 shadow-[0_-8px_30px_rgb(38_40_31/0.12)] backdrop-blur md:hidden"
+    <a
+      href={site.lineUrl}
+      target="_blank"
+      rel="noopener"
+      aria-label="จองคิวผ่าน LINE"
+      className="fixed bottom-[max(1.1rem,env(safe-area-inset-bottom))] right-4 z-50 flex size-14 items-center justify-center rounded-full bg-[#06c755] text-white shadow-[0_8px_24px_rgb(6_199_85/0.45)] transition-transform duration-200 hover:scale-105 active:scale-95 md:hidden"
     >
-      {actions.map(({ label, href, icon: Icon, external }) => (
-        <a
-          key={label}
-          href={href}
-          {...(external && { target: '_blank', rel: 'noopener' })}
-          className="flex min-h-11 flex-col items-center justify-center gap-0.5 rounded-xl text-[0.7rem] font-medium text-olive-deep transition-colors hover:bg-olive/5"
-        >
-          <Icon className="size-4" />
-          {label}
-        </a>
-      ))}
-    </nav>
+      <LineIcon className="size-7" />
+      <span className="sr-only">จองคิวผ่าน LINE</span>
+    </a>
   );
 }

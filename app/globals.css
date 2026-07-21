@@ -478,6 +478,14 @@
 .service-stream-picker::-webkit-scrollbar {
   display: none;
 }
+/* Mobile-only swipe rails on the home page (physicians, reviews) — hide the scrollbar so the
+   peeking next card reads as the affordance instead of a bar. */
+.home-swipe-rail {
+  scrollbar-width: none;
+}
+.home-swipe-rail::-webkit-scrollbar {
+  display: none;
+}
 .service-stream-card {
   flex: 0 0 65vw;
   scroll-snap-align: center;
@@ -684,6 +692,11 @@
   }
   .service-stream-card {
     flex-basis: min(84vw, 27rem);
+  }
+  /* Taller cards on phones — the 1.87 landscape ratio left them looking cramped/short in the
+     stream; a near-square gives the overlaid copy room to breathe. */
+  .service-stream-card__link {
+    aspect-ratio: 1.28;
   }
   .service-stream-card__content {
     max-width: 88%;
