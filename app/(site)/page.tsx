@@ -521,29 +521,6 @@ export default async function HomePage() {
         </Reveal>
       </section>
 
-      {/* ── Final invitation (dark) ──────────────────────────── */}
-      <section className="relative overflow-hidden bg-olive-deep px-6 py-28 text-center text-sand md:py-36">
-        <FlowerMark className="pointer-events-none absolute left-1/2 top-1/2 size-[42rem] -translate-x-1/2 -translate-y-1/2 text-sand/[0.05]" />
-        <Reveal className="relative">
-          <div className="mx-auto flex w-fit items-center gap-3 text-[0.66rem] uppercase tracking-[0.24em] text-sand/55">
-            <span aria-hidden="true" className="h-px w-8 bg-mint" /> A quiet beginning{' '}
-            <span aria-hidden="true" className="h-px w-8 bg-mint" />
-          </div>
-          <h2 className="mx-auto mt-8 max-w-3xl font-serif text-4xl leading-[1.05] tracking-[-0.03em] text-sand sm:text-5xl md:text-6xl">
-            พร้อมเริ่มดูแลผิว
-            <br />
-            <span className="text-mint-glow">ในจังหวะของคุณหรือยัง?</span>
-          </h2>
-          <a
-            href={site.lineUrl}
-            target="_blank"
-            rel="noopener"
-            className="mt-10 inline-flex items-center gap-2 bg-mint px-9 py-4 text-[0.7rem] uppercase tracking-[0.18em] text-white transition-colors duration-200 hover:bg-mint/90 active:scale-[0.98]"
-          >
-            จองคิวผ่าน LINE <ArrowUpRight className="size-4" />
-          </a>
-        </Reveal>
-      </section>
     </>
   );
 }
