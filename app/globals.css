@@ -420,7 +420,7 @@
      below it (~55px, the heading's margin-bottom), so the section breathes on both sides of
      the "บริการของเรา" title instead of butting against the trust strip above it. */
   padding-block: clamp(3.5rem, 6vw, 5.5rem) 2.5rem;
-  background: var(--store-surface);
+  background: var(--store-card);
 }
 .apple-services-heading {
   display: flex;
@@ -689,7 +689,7 @@
   /* Fibonacci/golden step (3rem → 5rem, ratio ≈ φ) so this section grows the same way its
      neighbours do instead of staying flat across breakpoints. */
   padding-block: clamp(3rem, 4.5vw, 5rem);
-  background: var(--store-surface);
+  background: var(--store-card);
 }
 .apple-promotion-heading {
   margin-bottom: 1rem;
