@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Check, ImageOff, Loader2, RotateCcw, TriangleAlert, Upload } from 'lucide-react';
 import type { SiteImageSpec } from '@/lib/site-images';
 import { cn } from '@/lib/utils';
+import { btn, card } from './ui';
 
 type Status = { kind: 'idle' | 'saving' | 'saved' } | { kind: 'error'; message: string };
 
@@ -86,8 +87,8 @@ export function ImageSlotCard({ slot }: { slot: ImageSlot }) {
   }
 
   return (
-    <li className="flex gap-4 rounded-2xl border border-olive/15 bg-cream p-4">
-      <div className="relative size-28 shrink-0 overflow-hidden rounded-xl bg-sand">
+    <li className={cn(card, 'flex gap-4 p-4')}>
+      <div className="relative size-28 shrink-0 overflow-hidden rounded-xl bg-sand ring-1 ring-black/[0.05]">
         {slot.currentPublicId ? (
           <Image
             key={slot.currentPublicId}
@@ -105,30 +106,30 @@ export function ImageSlotCard({ slot }: { slot: ImageSlot }) {
               busy && 'opacity-40',
             )}
           >
-            <ImageOff className="size-5 text-olive/35" aria-hidden="true" />
-            <span className="text-[0.6rem] leading-tight text-ink/40">ยังไม่มีรูป</span>
+            <ImageOff className="size-5 text-ink/25" aria-hidden="true" />
+            <span className="text-[0.6rem] leading-tight text-ink/35">ยังไม่มีรูป</span>
           </span>
         )}
         {busy && (
-          <span className="absolute inset-0 grid place-items-center">
-            <Loader2 className="size-5 animate-spin text-olive" />
+          <span className="absolute inset-0 grid place-items-center bg-cream/30">
+            <Loader2 className="size-5 animate-spin text-forest" />
           </span>
         )}
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="flex items-start justify-between gap-2">
-          <h4 className="font-serif text-lg leading-tight text-olive-deep">{slot.label}</h4>
+          <h4 className="font-serif text-lg leading-tight text-ink">{slot.label}</h4>
           {slot.isOverridden && (
-            <span className="shrink-0 rounded-full bg-olive/10 px-2 py-0.5 text-[0.65rem] text-olive">
+            <span className="shrink-0 rounded-full bg-forest/10 px-2 py-0.5 text-[0.62rem] font-medium text-forest">
               เปลี่ยนแล้ว
             </span>
           )}
         </div>
-        <p className="mt-0.5 text-xs text-ink/55">{slot.where}</p>
-        <p className="mt-1 text-xs text-olive-light">{slot.ratioHint}</p>
+        <p className="mt-0.5 text-xs text-ink/50">{slot.where}</p>
+        <p className="mt-1 text-xs text-ink/40">{slot.ratioHint}</p>
 
-        <div className="mt-3 flex flex-wrap items-center gap-2">
+        <div className="mt-auto flex flex-wrap items-center gap-2 pt-3">
           <input
             ref={inputRef}
             type="file"
@@ -145,19 +146,14 @@ export function ImageSlotCard({ slot }: { slot: ImageSlot }) {
             type="button"
             disabled={busy}
             onClick={() => inputRef.current?.click()}
-            className="inline-flex items-center gap-1.5 rounded-full bg-olive px-3.5 py-1.5 text-xs text-cream transition-colors hover:bg-olive-deep disabled:opacity-50"
+            className={btn.secondary}
           >
             <Upload className="size-3.5" />
             เปลี่ยนรูป
           </button>
 
           {slot.isOverridden && (
-            <button
-              type="button"
-              disabled={busy}
-              onClick={() => void reset()}
-              className="inline-flex items-center gap-1.5 rounded-full border border-olive/25 px-3 py-1.5 text-xs text-ink/60 transition-colors hover:bg-olive/10 hover:text-olive-deep disabled:opacity-50"
-            >
+            <button type="button" disabled={busy} onClick={() => void reset()} className={btn.danger}>
               <RotateCcw className="size-3.5" />
               {/* Slots with no shipped default have no "เดิม" to go back to — resetting one
                   removes the photo and returns the page to its icon panel. Say that. */}
@@ -168,19 +164,19 @@ export function ImageSlotCard({ slot }: { slot: ImageSlot }) {
           {/* role=status so a screen reader hears the result without the focus moving. */}
           <span role="status" className="text-xs">
             {status.kind === 'saved' && (
-              <span className="inline-flex items-center gap-1 text-olive">
+              <span className="inline-flex items-center gap-1 text-forest">
                 <Check className="size-3.5" /> บันทึกแล้ว
               </span>
             )}
             {status.kind === 'error' && (
-              <span className="inline-flex items-center gap-1 text-red-700">
+              <span className="inline-flex items-center gap-1 text-red-600">
                 <TriangleAlert className="size-3.5" /> {status.message}
               </span>
             )}
           </span>
         </div>
 
-        <code className="mt-2.5 truncate text-[0.65rem] text-ink/35">
+        <code className="mt-2.5 truncate text-[0.65rem] text-ink/30">
           {slot.currentPublicId ?? '— ยังไม่ได้อัปรูป'}
         </code>
       </div>

@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { serviceCategories, type ServiceItem } from '@/lib/services';
 import { getCategoryItems } from '@/lib/service-products-store';
 import { ProductCategoryEditor, type AdminProduct } from '@/components/admin/product-category-editor';
+import { PageHeading } from '@/components/admin/ui';
+import { SectionNav } from '@/components/admin/nav';
 
 export const metadata: Metadata = { title: 'สินค้า' };
 
@@ -56,32 +58,27 @@ export default async function AdminProductsPage() {
 
   return (
     <>
-      <div className="flex flex-wrap items-end justify-between gap-3 border-b border-olive/15 pb-5">
-        <div>
-          <h1 className="font-serif text-3xl text-olive-deep">สินค้า</h1>
-          <p className="mt-1.5 text-sm text-ink/60">
-            เพิ่ม ลบ แก้ไข และเรียงลำดับสินค้าในแต่ละหมวด — เปลี่ยนแล้วหน้าบริการอัปเดตทันที
-          </p>
-        </div>
-        <p className="text-xs text-ink/45">ทั้งหมด {total} รายการ · {categories.length} หมวด</p>
+      <PageHeading
+        eyebrow="Product Catalogue"
+        title="สินค้า"
+        description="เพิ่ม ลบ แก้ไข และเรียงลำดับสินค้าในแต่ละหมวด — เปลี่ยนแล้วหน้าบริการอัปเดตทันที"
+        stat={
+          <span>
+            {total} รายการ · {categories.length} หมวด
+          </span>
+        }
+      />
+
+      <div className="mt-2">
+        <SectionNav
+          items={categories.map((category) => ({
+            id: `products-${category.slug}`,
+            label: category.title,
+          }))}
+        />
       </div>
 
-      <nav
-        aria-label="หมวดหมู่สินค้า"
-        className="sticky top-14 z-10 -mx-6 mt-6 flex gap-1.5 overflow-x-auto border-b border-olive/10 bg-sand/95 px-6 py-3 backdrop-blur"
-      >
-        {categories.map((category) => (
-          <a
-            key={category.slug}
-            href={`#products-${category.slug}`}
-            className="shrink-0 rounded-full border border-olive/15 px-3 py-1.5 text-xs text-ink/70 transition-colors hover:border-olive/30 hover:bg-olive/5 hover:text-olive-deep"
-          >
-            {category.title}
-          </a>
-        ))}
-      </nav>
-
-      <div className="mt-8 space-y-14">
+      <div className="mt-10 space-y-16">
         {categories.map((category) => (
           <ProductCategoryEditor
             key={category.slug}
