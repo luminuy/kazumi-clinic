@@ -216,9 +216,8 @@ export default async function HomePage() {
         />
         <div
           aria-hidden="true"
-          className="absolute inset-0 bg-gradient-to-t from-olive-deep/92 via-olive-deep/60 to-olive-deep/25 md:bg-gradient-to-r md:from-olive-deep/88 md:via-olive-deep/45 md:to-transparent"
+          className="absolute inset-0 bg-gradient-to-t from-olive-deep/70 via-olive-deep/35 to-olive-deep/5 md:bg-gradient-to-r md:from-olive-deep/70 md:via-olive-deep/25 md:to-transparent"
         />
-        <div aria-hidden="true" className="absolute inset-0 bg-forest/10 mix-blend-multiply" />
         <div className="hero-grid absolute inset-0 opacity-[0.1]" aria-hidden="true" />
 
         <div className="relative mx-auto grid w-full max-w-7xl gap-10 px-6 py-24 sm:px-10 md:grid-cols-[minmax(0,1.55fr)_minmax(15rem,1fr)] md:items-center md:gap-12 md:px-12 lg:px-16">
