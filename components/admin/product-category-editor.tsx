@@ -17,6 +17,7 @@ import {
   X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { btn, card, inputClass, SectionHeading } from './ui';
 
 export type AdminProduct = {
   id: string;
@@ -215,22 +216,20 @@ export function ProductCategoryEditor({
   }
 
   return (
-    <section id={`products-${slug}`} className="scroll-mt-32">
-      <div className="flex items-baseline justify-between gap-3">
-        <h2 className="font-serif text-2xl text-olive-deep">{title}</h2>
-        <button
-          type="button"
-          onClick={openAdd}
-          disabled={busy}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-olive px-3.5 py-1.5 text-xs text-cream transition-colors hover:bg-olive-deep disabled:opacity-50"
-        >
-          <Plus className="size-3.5" />
-          เพิ่มสินค้า
-        </button>
-      </div>
+    <section id={`products-${slug}`} className="scroll-mt-36">
+      <SectionHeading
+        title={title}
+        count={`${products.length} รายการ`}
+        action={
+          <button type="button" onClick={openAdd} disabled={busy} className={btn.primary}>
+            <Plus className="size-3.5" />
+            เพิ่มสินค้า
+          </button>
+        }
+      />
 
       {error && (
-        <p className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-red-50 px-3 py-1.5 text-xs text-red-700">
+        <p className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-red-50 px-3 py-2 text-xs text-red-600">
           <TriangleAlert className="size-3.5" /> {error}
         </p>
       )}
@@ -246,7 +245,7 @@ export function ProductCategoryEditor({
         />
       )}
 
-      <ul className="mt-5 space-y-3">
+      <ul className="mt-6 space-y-3">
         {products.map((product, index) => (
           <li key={product.id}>
             {editing === product.id ? (
@@ -275,7 +274,7 @@ export function ProductCategoryEditor({
           </li>
         ))}
         {products.length === 0 && (
-          <li className="rounded-2xl border border-dashed border-olive/20 px-4 py-6 text-center text-sm text-ink/45">
+          <li className="rounded-2xl border border-dashed border-black/10 px-4 py-8 text-center text-sm text-ink/40">
             ยังไม่มีสินค้าในหมวดนี้
           </li>
         )}
@@ -310,9 +309,15 @@ function ProductRow({
   const inputRef = useRef<HTMLInputElement>(null);
   const rowBusy = busyId === 'img-' + product.id || busyId === 'del-' + product.id;
 
+  const badgeStyle = !product.isDefault
+    ? 'bg-clay/15 text-ink/70'
+    : product.isEdited
+      ? 'bg-forest/10 text-forest'
+      : 'bg-black/[0.05] text-ink/45';
+
   return (
-    <div className="flex gap-4 rounded-2xl border border-olive/15 bg-cream p-4">
-      <div className="relative size-20 shrink-0 overflow-hidden rounded-xl bg-sand">
+    <div className={cn(card, 'flex gap-4 p-4')}>
+      <div className="relative size-20 shrink-0 overflow-hidden rounded-xl bg-sand ring-1 ring-black/[0.05]">
         {product.imagePublicId ? (
           <Image
             key={product.imagePublicId}
@@ -325,12 +330,12 @@ function ProductRow({
           />
         ) : (
           <span className="absolute inset-0 grid place-items-center">
-            <ImageOff className="size-5 text-olive/35" aria-hidden="true" />
+            <ImageOff className="size-5 text-ink/25" aria-hidden="true" />
           </span>
         )}
         {rowBusy && (
-          <span className="absolute inset-0 grid place-items-center">
-            <Loader2 className="size-5 animate-spin text-olive" />
+          <span className="absolute inset-0 grid place-items-center bg-cream/30">
+            <Loader2 className="size-5 animate-spin text-forest" />
           </span>
         )}
       </div>
@@ -338,32 +343,35 @@ function ProductRow({
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <h4 className="truncate font-serif text-lg leading-tight text-olive-deep">
-              {product.name}
-            </h4>
+            <h4 className="truncate font-serif text-lg leading-tight text-ink">{product.name}</h4>
             {(product.detail || product.collection) && (
-              <p className="mt-0.5 truncate text-xs text-ink/55">
+              <p className="mt-0.5 truncate text-xs text-ink/50">
                 {[product.collection, product.detail].filter(Boolean).join(' · ')}
               </p>
             )}
           </div>
-          <span className="shrink-0 rounded-full bg-olive/10 px-2 py-0.5 text-[0.62rem] text-olive">
+          <span
+            className={cn(
+              'shrink-0 rounded-full px-2 py-0.5 text-[0.62rem] font-medium',
+              badgeStyle,
+            )}
+          >
             {product.isDefault ? (product.isEdited ? 'แก้ไขแล้ว' : 'เริ่มต้น') : 'เพิ่มเอง'}
           </span>
         </div>
 
-        <p className="mt-1 text-sm text-olive-deep">
+        <p className="mt-1 text-sm font-medium text-ink">
           {product.priceFrom !== null ? (
             <>
               {product.priceFrom.toLocaleString('th-TH')}{' '}
-              <span className="text-xs text-ink/50">บาท / {product.unit}</span>
+              <span className="text-xs font-normal text-ink/45">บาท / {product.unit}</span>
             </>
           ) : (
-            <span className="text-xs text-ink/50">สอบถามราคา</span>
+            <span className="text-xs font-normal text-ink/45">สอบถามราคา</span>
           )}
         </p>
 
-        <div className="mt-3 flex flex-wrap items-center gap-1.5">
+        <div className="mt-auto flex flex-wrap items-center gap-1.5 pt-3">
           <input
             ref={inputRef}
             type="file"
@@ -380,26 +388,16 @@ function ProductRow({
             type="button"
             disabled={busy}
             onClick={() => inputRef.current?.click()}
-            className="inline-flex items-center gap-1.5 rounded-full border border-olive/25 px-3 py-1.5 text-xs text-ink/70 transition-colors hover:bg-olive/10 hover:text-olive-deep disabled:opacity-50"
+            className={btn.secondary}
           >
             <Upload className="size-3.5" />
             {product.imagePublicId ? 'เปลี่ยนรูป' : 'อัปรูป'}
           </button>
-          <button
-            type="button"
-            disabled={busy}
-            onClick={onEdit}
-            className="inline-flex items-center gap-1.5 rounded-full border border-olive/25 px-3 py-1.5 text-xs text-ink/70 transition-colors hover:bg-olive/10 hover:text-olive-deep disabled:opacity-50"
-          >
+          <button type="button" disabled={busy} onClick={onEdit} className={btn.secondary}>
             <Pencil className="size-3.5" />
             แก้ไข
           </button>
-          <button
-            type="button"
-            disabled={busy}
-            onClick={onDelete}
-            className="inline-flex items-center gap-1.5 rounded-full border border-red-200 px-3 py-1.5 text-xs text-red-700 transition-colors hover:bg-red-50 disabled:opacity-50"
-          >
+          <button type="button" disabled={busy} onClick={onDelete} className={btn.danger}>
             <Trash2 className="size-3.5" />
             {product.isDefault ? 'ซ่อน' : 'ลบ'}
           </button>
@@ -410,7 +408,7 @@ function ProductRow({
               disabled={busy || first}
               onClick={onMoveUp}
               aria-label="เลื่อนขึ้น"
-              className="grid size-7 place-items-center rounded-full border border-olive/20 text-olive-deep transition-colors hover:bg-olive/10 disabled:opacity-30"
+              className={cn(btn.icon, 'size-7')}
             >
               <ChevronUp className="size-4" />
             </button>
@@ -419,7 +417,7 @@ function ProductRow({
               disabled={busy || last}
               onClick={onMoveDown}
               aria-label="เลื่อนลง"
-              className="grid size-7 place-items-center rounded-full border border-olive/20 text-olive-deep transition-colors hover:bg-olive/10 disabled:opacity-30"
+              className={cn(btn.icon, 'size-7')}
             >
               <ChevronDown className="size-4" />
             </button>
@@ -441,15 +439,12 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="text-xs font-medium text-ink/70">{label}</span>
-      {hint && <span className="ml-2 text-[0.65rem] text-ink/40">{hint}</span>}
-      <span className="mt-1 block">{children}</span>
+      <span className="text-xs font-medium text-ink/65">{label}</span>
+      {hint && <span className="ml-2 text-[0.65rem] text-ink/35">{hint}</span>}
+      <span className="mt-1.5 block">{children}</span>
     </label>
   );
 }
-
-const inputClass =
-  'w-full rounded-lg border border-olive/20 bg-sand/40 px-3 py-2 text-sm text-ink outline-none transition-colors focus:border-olive/50';
 
 function ProductForm({
   draft,
@@ -469,15 +464,15 @@ function ProductForm({
   const set = (patch: Partial<Draft>) => setDraft({ ...draft, ...patch });
 
   return (
-    <div className="rounded-2xl border border-olive/25 bg-cream p-5">
+    <div className="rounded-2xl border border-black/[0.09] bg-cream p-5 shadow-[0_2px_16px_rgba(0,0,0,0.05)] sm:p-6">
       <div className="flex items-center justify-between">
-        <h4 className="font-serif text-lg text-olive-deep">{heading}</h4>
+        <h4 className="font-serif text-xl text-ink">{heading}</h4>
         <button
           type="button"
           onClick={onCancel}
           disabled={busy}
           aria-label="ปิด"
-          className="grid size-7 place-items-center rounded-full text-ink/50 hover:bg-olive/10 hover:text-olive-deep disabled:opacity-50"
+          className={cn(btn.icon, 'size-8')}
         >
           <X className="size-4" />
         </button>
@@ -549,22 +544,12 @@ function ProductForm({
         </div>
       </div>
 
-      <div className="mt-5 flex items-center gap-2">
-        <button
-          type="button"
-          onClick={onSave}
-          disabled={busy}
-          className="inline-flex items-center gap-1.5 rounded-full bg-olive px-4 py-2 text-xs text-cream transition-colors hover:bg-olive-deep disabled:opacity-50"
-        >
+      <div className="mt-6 flex items-center gap-2">
+        <button type="button" onClick={onSave} disabled={busy} className={btn.primary}>
           {busy ? <Loader2 className="size-3.5 animate-spin" /> : <Check className="size-3.5" />}
           บันทึก
         </button>
-        <button
-          type="button"
-          onClick={onCancel}
-          disabled={busy}
-          className="rounded-full border border-olive/25 px-4 py-2 text-xs text-ink/60 transition-colors hover:bg-olive/10 disabled:opacity-50"
-        >
+        <button type="button" onClick={onCancel} disabled={busy} className={btn.secondary}>
           ยกเลิก
         </button>
       </div>

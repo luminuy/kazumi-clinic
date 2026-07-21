@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { siteImages, siteImageGroups, ungroupedSiteImageKeys } from '@/lib/site-images';
 import { getImageOverrides } from '@/lib/site-images-store';
 import { ImageSlotCard, type ImageSlot } from '@/components/admin/image-slot-card';
+import { PageHeading, SectionHeading } from '@/components/admin/ui';
+import { SectionNav } from '@/components/admin/nav';
 
 export const metadata: Metadata = { title: 'รูปภาพ' };
 
@@ -41,34 +43,24 @@ export default async function AdminImagesPage() {
 
   return (
     <>
-      <div className="flex flex-wrap items-end justify-between gap-3 border-b border-olive/15 pb-5">
-        <div>
-          <h1 className="font-serif text-3xl text-olive-deep">รูปภาพ</h1>
-          <p className="mt-1.5 text-sm text-ink/60">
-            เปลี่ยนรูปได้ทุกใบที่เว็บใช้ — กดเปลี่ยนแล้วหน้าที่ใช้รูปนั้นอัปเดตทันที
-          </p>
-        </div>
-        <p className="text-xs text-ink/45">
-          ทั้งหมด {slots.length} รูป · เปลี่ยนแล้ว {changed}
-        </p>
+      <PageHeading
+        eyebrow="Image Library"
+        title="รูปภาพ"
+        description="เปลี่ยนรูปได้ทุกใบที่เว็บใช้ — กดเปลี่ยนแล้วหน้าที่ใช้รูปนั้นอัปเดตทันที"
+        stat={
+          <span>
+            ทั้งหมด {slots.length} รูป · เปลี่ยนแล้ว <span className="text-forest">{changed}</span>
+          </span>
+        }
+      />
+
+      <div className="mt-2">
+        <SectionNav
+          items={groups.map((group) => ({ id: `group-${group.id}`, label: group.title }))}
+        />
       </div>
 
-      <nav
-        aria-label="หมวดหมู่รูปภาพ"
-        className="sticky top-14 z-10 -mx-6 mt-6 flex gap-1.5 overflow-x-auto border-b border-olive/10 bg-sand/95 px-6 py-3 backdrop-blur"
-      >
-        {groups.map((group) => (
-          <a
-            key={group.id}
-            href={`#group-${group.id}`}
-            className="shrink-0 rounded-full border border-olive/15 px-3 py-1.5 text-xs text-ink/70 transition-colors hover:border-olive/30 hover:bg-olive/5 hover:text-olive-deep"
-          >
-            {group.title}
-          </a>
-        ))}
-      </nav>
-
-      <div className="mt-8 space-y-14">
+      <div className="mt-10 space-y-16">
         {groups.map((group) => {
           const sections = group.sections
             .map((section) => ({
@@ -82,23 +74,20 @@ export default async function AdminImagesPage() {
           if (groupCount === 0) return null;
 
           return (
-            <section key={group.id} id={`group-${group.id}`} className="scroll-mt-32">
-              <div className="flex items-baseline justify-between gap-3">
-                <h2 className="font-serif text-2xl text-olive-deep">{group.title}</h2>
-                <p className="text-xs text-ink/45">{groupCount} รูป</p>
-              </div>
+            <section key={group.id} id={`group-${group.id}`} className="scroll-mt-36">
+              <SectionHeading title={group.title} count={`${groupCount} รูป`} />
 
-              <div className="mt-5 space-y-8">
+              <div className="mt-6 space-y-8">
                 {sections.map((section) => (
                   <div key={section.id} id={section.id !== group.id ? section.id : undefined}>
                     {/* A group with one section sharing its own title (e.g. "โปรโมชั่น") already
                         said its name in the h2 above — repeating it as an h3 would be noise. */}
                     {section.id !== group.id && (
-                      <h3 className="border-b border-olive/10 pb-2 text-sm font-medium text-ink/70">
+                      <h3 className="mb-4 border-b border-black/[0.06] pb-2 text-xs font-medium uppercase tracking-[0.1em] text-ink/45">
                         {section.title}
                       </h3>
                     )}
-                    <ul className="mt-4 grid gap-4 lg:grid-cols-2">
+                    <ul className="grid gap-4 lg:grid-cols-2">
                       {section.slots.map((slot) => (
                         <ImageSlotCard key={slot.key} slot={slot} />
                       ))}
