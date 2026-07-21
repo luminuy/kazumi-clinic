@@ -141,7 +141,12 @@ function requireDb(binding: D1Database | null): asserts binding is D1Database {
   if (!binding) throw new Error('D1 binding NEXT_TAG_CACHE_D1 is not available');
 }
 
-/** Insert or fully replace a product row. The admin form always sends every field. */
+/**
+ * Insert a product, or edit its text fields. Deliberately does NOT touch `image_public_id` or
+ * `sort_order` on an existing row: the photo is owned by setProductImage and the order by
+ * reorderProducts, so editing a name never wipes the photo or moves the product. On a fresh
+ * INSERT both take the seed values passed in.
+ */
 export async function upsertProduct(input: ProductInput, updatedBy: string) {
   const binding = await db();
   requireDb(binding);
@@ -153,8 +158,7 @@ export async function upsertProduct(input: ProductInput, updatedBy: string) {
        VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, 0, ?12, ?13)
        ON CONFLICT(id) DO UPDATE SET
          category = ?2, name = ?3, detail = ?4, tagline = ?5, benefits = ?6, collection = ?7,
-         price_from = ?8, unit = ?9, image_public_id = ?10, sort_order = ?11, deleted = 0,
-         updated_at = ?12, updated_by = ?13`,
+         price_from = ?8, unit = ?9, deleted = 0, updated_at = ?12, updated_by = ?13`,
     )
     .bind(
       input.id,
@@ -183,25 +187,33 @@ export async function setProductImage(
 ) {
   const binding = await db();
   requireDb(binding);
-  // A hardcoded product may have no row yet, so seed one from its code defaults before setting
-  // the image — otherwise the UPDATE touches nothing and the upload is silently lost.
-  const base = getServiceBySlug(category)?.items.find((item) => item.id === id);
-  await upsertProduct(
-    {
-      id,
-      category,
-      name: base?.name ?? id,
-      detail: base?.detail ?? null,
-      tagline: base?.tagline ?? null,
-      benefits: base?.benefits ?? null,
-      collection: base?.collection ?? null,
-      priceFrom: base?.priceFrom ?? null,
-      unit: base?.unit ?? 'ครั้ง',
-      imagePublicId,
-      sortOrder: baseSortOrder(category, id),
-    },
-    updatedBy,
-  );
+  const result = await binding
+    .prepare(
+      'UPDATE service_products SET image_public_id = ?1, updated_at = ?2, updated_by = ?3 WHERE id = ?4',
+    )
+    .bind(imagePublicId, Date.now(), updatedBy, id)
+    .run();
+  // No row yet (a hardcoded product's first upload) — seed one from its code defaults, carrying
+  // the new image. upsertProduct's INSERT path takes both the image and the seed sort order.
+  if (result.meta.changes === 0) {
+    const base = getServiceBySlug(category)?.items.find((item) => item.id === id);
+    await upsertProduct(
+      {
+        id,
+        category,
+        name: base?.name ?? id,
+        detail: base?.detail ?? null,
+        tagline: base?.tagline ?? null,
+        benefits: base?.benefits ?? null,
+        collection: base?.collection ?? null,
+        priceFrom: base?.priceFrom ?? null,
+        unit: base?.unit ?? 'ครั้ง',
+        imagePublicId,
+        sortOrder: baseSortOrder(category, id),
+      },
+      updatedBy,
+    );
+  }
 }
 
 /**
@@ -224,6 +236,62 @@ export async function deleteProduct(id: string, category: string, updatedBy: str
   } else {
     await binding.prepare('DELETE FROM service_products WHERE id = ?1').bind(id).run();
   }
+}
+
+/**
+ * Persist a new product order for one category. A product that already has a row just gets its
+ * `sort_order` updated; a hardcoded product with no row yet is written out in full (from its code
+ * defaults) so the new position sticks — without a row the merge would fall back to code order.
+ */
+export async function reorderProducts(category: string, orderedIds: string[], updatedBy: string) {
+  const binding = await db();
+  requireDb(binding);
+  const { results } = await binding
+    .prepare('SELECT id FROM service_products WHERE category = ?1')
+    .bind(category)
+    .all<{ id: string }>();
+  const existing = new Set(results.map((r) => r.id));
+  const base = new Map((getServiceBySlug(category)?.items ?? []).map((item) => [item.id, item]));
+  const now = Date.now();
+
+  const statements = orderedIds.flatMap((id, index) => {
+    if (existing.has(id)) {
+      return [
+        binding
+          .prepare(
+            'UPDATE service_products SET sort_order = ?1, updated_at = ?2, updated_by = ?3 WHERE id = ?4',
+          )
+          .bind(index, now, updatedBy, id),
+      ];
+    }
+    const item = base.get(id);
+    if (!item) return []; // unknown id — ignore rather than write a ghost row
+    return [
+      binding
+        .prepare(
+          `INSERT INTO service_products
+             (id, category, name, detail, tagline, benefits, collection, price_from, unit,
+              image_public_id, sort_order, deleted, updated_at, updated_by)
+           VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, NULL, ?10, 0, ?11, ?12)`,
+        )
+        .bind(
+          id,
+          category,
+          item.name,
+          item.detail ?? null,
+          item.tagline ?? null,
+          item.benefits && item.benefits.length > 0 ? JSON.stringify(item.benefits) : null,
+          item.collection ?? null,
+          item.priceFrom ?? null,
+          item.unit,
+          index,
+          now,
+          updatedBy,
+        ),
+    ];
+  });
+
+  if (statements.length > 0) await binding.batch(statements);
 }
 
 /** The order a hardcoded product sits at in the code, used as the default sort for a new row. */

@@ -14,7 +14,7 @@ import { serviceItemListSchema, breadcrumbSchema } from '@/lib/schema';
 import { getCategoryItems } from '@/lib/service-products-store';
 import { getImage, getImageOverrides } from '@/lib/site-images-store';
 import { socialImage } from '@/lib/metadata-images';
-import { categoryImageKey, itemImageKey } from '@/lib/site-images';
+import { categoryImageKey } from '@/lib/site-images';
 import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
 import { LineIcon } from '@/components/brand-icons';
@@ -202,15 +202,11 @@ export default async function ServiceCategoryPage({ params }: Props) {
 
   // Per-item product shots for the filler cards. Resolved here, in the server component, so the
   // page component never touches the override layer — same rule the atlas and carousel follow.
+  // Per-product photos now travel on the merged item itself (managed at /admin/products),
+  // resolved here so the page component never touches the override layer.
   const itemImages: Record<string, string> = {};
   for (const item of service.items) {
-    if (!item.id) continue;
-    // The product's own uploaded photo wins; the legacy item-* image slot is the fallback so
-    // anything a clinic uploaded before this layer existed still shows.
-    const slotKey = itemImageKey[item.id];
-    const slotImage = slotKey ? overrides.get(slotKey)?.public_id : undefined;
-    const publicId = item.imagePublicId ?? slotImage;
-    if (publicId) itemImages[item.id] = publicId;
+    if (item.id && item.imagePublicId) itemImages[item.id] = item.imagePublicId;
   }
 
   // Filler and thread lift each have a bespoke page built to their own supplied design; every

@@ -33,12 +33,6 @@ export type SiteImageKey =
   | 'acne-care-interstitial'
   | 'skin-booster-discipline'
   | 'collagen-booster-editorial'
-  | 'item-filler-neura-deep-1cc'
-  | 'item-filler-neura-deep-3cc'
-  | 'item-filler-neura-volume-1cc'
-  | 'item-filler-neura-volume-3cc'
-  | 'item-filler-lip-neura-deep-1cc'
-  | 'item-filler-resty-1cc'
   | 'doctor-pratch'
   | 'doctor-eesha'
   | 'about-hero'
@@ -227,44 +221,8 @@ export const siteImages: SiteImageSpec[] = [
     where: '/collagen-booster — รูปจัตุรัสข้างคำโปรย',
     ratioHint: 'จัตุรัส · ยังไม่มีรูป จะขึ้นกล่องไอคอนไปก่อน',
   },
-  // ── รูปผลิตภัณฑ์รายตัวบนหน้า /filler ────────────────────────────────
-  // ยังไม่มีรูปสักใบ — การ์ดจะขึ้นกล่องไอคอนไปก่อนจนกว่าคลินิกจะอัป
-  {
-    key: 'item-filler-neura-deep-1cc',
-    label: 'รูปสินค้า Neura Deep 1 CC',
-    where: '/filler — การ์ดรายการที่ 1',
-    ratioHint: 'จัตุรัส — รูปกล่อง/ขวดผลิตภัณฑ์',
-  },
-  {
-    key: 'item-filler-neura-deep-3cc',
-    label: 'รูปสินค้า Neura Deep 3 CC',
-    where: '/filler — การ์ดรายการที่ 2',
-    ratioHint: 'จัตุรัส — รูปกล่อง/ขวดผลิตภัณฑ์',
-  },
-  {
-    key: 'item-filler-neura-volume-1cc',
-    label: 'รูปสินค้า Neura Volume 1 CC',
-    where: '/filler — การ์ดรายการที่ 3',
-    ratioHint: 'จัตุรัส — รูปกล่อง/ขวดผลิตภัณฑ์',
-  },
-  {
-    key: 'item-filler-neura-volume-3cc',
-    label: 'รูปสินค้า Neura Volume 3 CC',
-    where: '/filler — การ์ดรายการที่ 4',
-    ratioHint: 'จัตุรัส — รูปกล่อง/ขวดผลิตภัณฑ์',
-  },
-  {
-    key: 'item-filler-lip-neura-deep-1cc',
-    label: 'รูปสินค้า Filler Lip (Neura Deep) 1 CC',
-    where: '/filler — การ์ดรายการที่ 5',
-    ratioHint: 'จัตุรัส — รูปกล่อง/ขวดผลิตภัณฑ์',
-  },
-  {
-    key: 'item-filler-resty-1cc',
-    label: 'รูปสินค้า Filler Resty 1 CC',
-    where: '/filler — การ์ดรายการที่ 6',
-    ratioHint: 'จัตุรัส — รูปกล่อง/ขวดผลิตภัณฑ์',
-  },
+  // รูปสินค้ารายตัว (ฟิลเลอร์ ฯลฯ) ย้ายไปจัดการที่หน้า /admin/products แล้ว — เก็บ public_id
+  // ไว้บน row ของสินค้าเองใน service_products ไม่ใช่ slot แบบ static ตรงนี้
   {
     key: 'doctor-pratch',
     label: 'รูปคุณหมอ',
@@ -370,20 +328,10 @@ export const siteImageKeys = siteImages.map((image) => image.key);
 /**
  * Which image slot backs each service category's hero. Kept here rather than as a field on
  * ServiceCategory so lib/services.ts stays pure data with no dependency on the override layer.
+ *
+ * (Per-product images are no longer slots — they live on each product's own row in
+ * service_products and are managed at /admin/products. See lib/service-products-store.ts.)
  */
-/**
- * Which image slot backs each individual product card, keyed by `ServiceItem.id`. Same reasoning
- * as `categoryImageKey`: the mapping lives here so lib/services.ts stays pure data.
- */
-export const itemImageKey: Record<string, SiteImageKey> = {
-  'filler-neura-deep-1cc': 'item-filler-neura-deep-1cc',
-  'filler-neura-deep-3cc': 'item-filler-neura-deep-3cc',
-  'filler-neura-volume-1cc': 'item-filler-neura-volume-1cc',
-  'filler-neura-volume-3cc': 'item-filler-neura-volume-3cc',
-  'filler-lip-neura-deep-1cc': 'item-filler-lip-neura-deep-1cc',
-  'filler-resty-1cc': 'item-filler-resty-1cc',
-};
-
 export const categoryImageKey: Record<string, SiteImageKey> = {
   filler: 'hero-filler',
   botox: 'hero-botox',
@@ -451,19 +399,7 @@ export const siteImageGroups: SiteImageGroup[] = [
     id: 'services',
     title: 'บริการ',
     sections: [
-      {
-        id: 'svc-filler',
-        title: 'ฟิลเลอร์',
-        keys: [
-          'hero-filler',
-          'item-filler-neura-deep-1cc',
-          'item-filler-neura-deep-3cc',
-          'item-filler-neura-volume-1cc',
-          'item-filler-neura-volume-3cc',
-          'item-filler-lip-neura-deep-1cc',
-          'item-filler-resty-1cc',
-        ],
-      },
+      { id: 'svc-filler', title: 'ฟิลเลอร์', keys: ['hero-filler'] },
       { id: 'svc-botox', title: 'โบท็อกซ์', keys: ['hero-botox'] },
       {
         id: 'svc-thread-lift',
