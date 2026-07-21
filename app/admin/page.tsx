@@ -54,11 +54,11 @@ export default async function AdminImagesPage() {
         }
       />
 
-      <div className="mt-2">
-        <SectionNav
-          items={groups.map((group) => ({ id: `group-${group.id}`, label: group.title }))}
-        />
-      </div>
+      {/* Direct child of <main> on purpose: position:sticky can only travel within its parent's
+          box, so wrapping this in a short div would pin it for a few pixels and drop it. */}
+      <SectionNav
+        items={groups.map((group) => ({ id: `group-${group.id}`, label: group.title }))}
+      />
 
       <div className="mt-10 space-y-16">
         {groups.map((group) => {
