@@ -488,10 +488,15 @@ export default async function HomePage() {
           {/* Reviews — voice of our patients */}
           <Reveal className="h-full">
             <div className="apple-doctor-card flex h-full flex-col rounded-[1.75rem] bg-[var(--store-card)] px-8 py-10 text-[var(--store-ink)] sm:px-10 md:py-12">
-              <p lang="en" className="text-[0.62rem] uppercase tracking-[0.3em] text-forest">
-                Reviews &amp; Results
-              </p>
-              <h2 className="mt-3 font-serif text-3xl text-olive-deep md:text-4xl">เสียงจากผู้ใช้บริการ</h2>
+              <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+                <h2 className="font-serif text-3xl text-olive-deep md:text-4xl">เสียงจากผู้ใช้บริการ</h2>
+                <Link
+                  href="/reviews"
+                  className="inline-flex shrink-0 items-center gap-1.5 text-[0.9rem] text-forest transition-colors duration-200 hover:text-mint"
+                >
+                  ดูหน้ารีวิวทั้งหมด <ArrowUpRight className="size-4" />
+                </Link>
+              </div>
               <p className="mt-4 max-w-md text-sm leading-[1.9] text-[var(--store-muted)]">
                 อ่านรีวิวจริงและผลลัพธ์ก่อน–หลังจากผู้ใช้บริการของเราได้บน Google และ Instagram
                 หรือสอบถามผลลัพธ์เฉพาะบุคคลกับทีมแพทย์ผ่าน LINE
@@ -518,12 +523,6 @@ export default async function HomePage() {
                   <InstagramIcon className="text-instagram size-4" />
                   Instagram {site.instagramHandle} <ArrowUpRight className="size-4" />
                 </a>
-                <Link
-                  href="/reviews"
-                  className="inline-flex items-center gap-1.5 rounded-full border border-olive-deep/25 px-7 py-3 text-sm font-medium text-olive-deep transition-colors duration-200 hover:bg-olive-deep hover:text-sand"
-                >
-                  ดูหน้ารีวิวทั้งหมด
-                </Link>
               </div>
             </div>
           </Reveal>
