@@ -400,3 +400,137 @@ export const categoryImageKey: Record<string, SiteImageKey> = {
 export const posterKeyByDefaultId = new Map(
   siteImages.filter((i) => i.key.startsWith('promo-')).map((i) => [i.defaultPublicId, i.key]),
 );
+
+export type SiteImageSection = {
+  id: string;
+  title: string;
+  keys: SiteImageKey[];
+};
+
+export type SiteImageGroup = {
+  id: string;
+  title: string;
+  /**
+   * Sub-headed within the group's own card grid. Most groups have exactly one section sharing
+   * the group's own title; "บริการ" has nine, one per service category, in the same order as
+   * `serviceCategories` in lib/services.ts so /admin's structure matches the public site's.
+   */
+  sections: SiteImageSection[];
+};
+
+/**
+ * /admin's category structure — the single source of truth both the page and its quick-nav
+ * read from. Add a key to `siteImages` above and it MUST be added to a section here too, or
+ * `ungroupedSiteImageKeys` below will flag it instead of letting it silently disappear from
+ * the admin UI.
+ */
+export const siteImageGroups: SiteImageGroup[] = [
+  {
+    id: 'brand-home',
+    title: 'แบรนด์และหน้าแรก',
+    sections: [
+      {
+        id: 'brand-home',
+        title: 'แบรนด์และหน้าแรก',
+        keys: ['brand-mark', 'brand-logo', 'hero-home', 'home-visit'],
+      },
+    ],
+  },
+  {
+    id: 'about',
+    title: 'ทีมแพทย์และเกี่ยวกับเรา',
+    sections: [
+      {
+        id: 'about',
+        title: 'ทีมแพทย์และเกี่ยวกับเรา',
+        keys: ['doctor-pratch', 'doctor-eesha', 'about-hero', 'about-interior', 'og-about'],
+      },
+    ],
+  },
+  {
+    id: 'services',
+    title: 'บริการ',
+    sections: [
+      {
+        id: 'svc-filler',
+        title: 'ฟิลเลอร์',
+        keys: [
+          'hero-filler',
+          'item-filler-neura-deep-1cc',
+          'item-filler-neura-deep-3cc',
+          'item-filler-neura-volume-1cc',
+          'item-filler-neura-volume-3cc',
+          'item-filler-lip-neura-deep-1cc',
+          'item-filler-resty-1cc',
+        ],
+      },
+      { id: 'svc-botox', title: 'โบท็อกซ์', keys: ['hero-botox'] },
+      {
+        id: 'svc-thread-lift',
+        title: 'ร้อยไหมกระชับใบหน้า',
+        keys: ['hero-thread-lift', 'thread-lift-product'],
+      },
+      {
+        id: 'svc-collagen-booster',
+        title: 'คอลลาเจนบูสเตอร์',
+        keys: ['hero-collagen-booster', 'collagen-booster-editorial'],
+      },
+      {
+        id: 'svc-skin-booster',
+        title: 'สกินบูสเตอร์',
+        keys: ['hero-skin-booster', 'skin-booster-discipline'],
+      },
+      {
+        id: 'svc-iv-drip',
+        title: 'IV Drip วิตามิน',
+        keys: ['hero-iv-drip-1', 'hero-iv-drip-2', 'hero-iv-drip-3', 'iv-drip-booking'],
+      },
+      {
+        id: 'svc-mesotherapy',
+        title: 'เมโสบำรุงผิวและเมโสแฟต',
+        keys: ['hero-mesotherapy', 'mesotherapy-treatment'],
+      },
+      {
+        id: 'svc-acne-care',
+        title: 'ดูแลสิวและหลุมสิว',
+        keys: ['hero-acne-care', 'acne-care-interstitial'],
+      },
+      {
+        id: 'svc-laser-hifu',
+        title: 'เลเซอร์และยกกระชับ',
+        keys: ['hero-laser-hifu', 'laser-hifu-editorial', 'laser-hifu-interior'],
+      },
+    ],
+  },
+  {
+    id: 'promotions',
+    title: 'โปรโมชั่น',
+    sections: [
+      {
+        id: 'promotions',
+        title: 'โปรโมชั่น',
+        keys: [
+          'promo-active-refresh',
+          'promo-filler-neura',
+          'promo-karisma-collagen',
+          'promo-oxelle-skin-booster',
+          'promo-radiant-bright',
+          'promo-signature-flawless',
+          'promo-velvet-glow',
+        ],
+      },
+    ],
+  },
+];
+
+/**
+ * Keys in `siteImages` that no section above claims — should always be empty. Non-empty means a
+ * key was added to `siteImages` without a home in `siteImageGroups`, so /admin's page falls back
+ * to showing them in an "อื่นๆ" section rather than dropping them silently.
+ */
+export const ungroupedSiteImageKeys: SiteImageKey[] = (() => {
+  const grouped = new Set(
+    siteImageGroups.flatMap((group) => group.sections.flatMap((section) => section.keys)),
+  );
+  return siteImageKeys.filter((key) => !grouped.has(key));
+})();

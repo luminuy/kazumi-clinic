@@ -101,7 +101,7 @@ export function ImageSlotCard({ slot }: { slot: ImageSlot }) {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="font-serif text-lg leading-tight text-olive-deep">{slot.label}</h3>
+          <h4 className="font-serif text-lg leading-tight text-olive-deep">{slot.label}</h4>
           {slot.isOverridden && (
             <span className="shrink-0 rounded-full bg-olive/10 px-2 py-0.5 text-[0.65rem] text-olive">
               เปลี่ยนแล้ว
