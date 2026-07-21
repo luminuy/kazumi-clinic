@@ -204,7 +204,7 @@ export default async function HomePage() {
       />
 
       {/* ── Hero: full-bleed portrait with overlaid copy ─────── */}
-      <section className="relative isolate flex min-h-[86vh] items-end overflow-hidden bg-olive-deep text-sand md:min-h-[92vh] md:items-center">
+      <section className="relative isolate flex min-h-[60vh] items-end overflow-hidden bg-olive-deep text-sand md:min-h-[92vh] md:items-center">
         <Image
           src={heroSrc}
           alt=""
@@ -221,7 +221,7 @@ export default async function HomePage() {
         />
         <div className="hero-grid absolute inset-0 opacity-[0.1]" aria-hidden="true" />
 
-        <div className="relative mx-auto grid w-full max-w-7xl gap-10 px-6 py-24 sm:px-10 md:grid-cols-[minmax(0,1.55fr)_minmax(15rem,1fr)] md:items-center md:gap-12 md:px-12 lg:px-16">
+        <div className="relative mx-auto grid w-full max-w-7xl gap-10 px-6 py-14 sm:px-10 md:grid-cols-[minmax(0,1.55fr)_minmax(15rem,1fr)] md:items-center md:gap-12 md:px-12 md:py-24 lg:px-16">
           <div className="max-w-2xl">
             <div className="hero-enter flex items-center gap-3 text-[0.64rem] uppercase tracking-[0.32em] text-sand/60">
               <span aria-hidden="true" className="h-px w-10 bg-mint-glow" />
@@ -229,7 +229,7 @@ export default async function HomePage() {
             </div>
             <h1
               lang="en"
-              className="hero-enter hero-enter--slow mt-7 font-serif text-[13.5vw] leading-[0.95] tracking-[-0.03em] text-sand sm:text-6xl md:text-[4rem] lg:text-[4.7rem]"
+              className="hero-enter hero-enter--slow mt-6 font-serif text-[11vw] leading-[0.98] tracking-[-0.03em] text-sand sm:text-6xl md:mt-7 md:text-[4rem] md:leading-[0.95] lg:text-[4.7rem]"
             >
               Where thoughtful care
               <br />
@@ -335,32 +335,38 @@ export default async function HomePage() {
           </Link>
         </Reveal>
 
-        <div className="mx-auto grid max-w-6xl grid-cols-1 gap-4 md:grid-cols-2 md:gap-5">
-          <PhysicianPanel
-            label="The Lead Physician"
-            name={doctor.nameTh}
-            nameSecondary={doctor.name}
-            role={doctor.role}
-            licenseNo={doctor.licenseNo}
-            summary={doctor.summary}
-            expertise={doctor.expertise}
-            languages={doctor.languages}
-            imageSrc={doctorSrc}
-            imageAlt={`${doctor.nameTh} ${doctor.role} ของ ${site.name}`}
-          />
-          <PhysicianPanel
-            label="Clinic Physician"
-            name={doctorEesha.name}
-            nameSecondary={doctorEesha.nameTh}
-            role={doctorEesha.role}
-            licenseNo={doctorEesha.licenseNo}
-            summary={doctorEesha.summary}
-            expertise={doctorEesha.expertise}
-            languages={doctorEesha.languages}
-            imageSrc={eeshaSrc}
-            imageAlt={`${doctorEesha.name} ${doctorEesha.role} ของ ${site.name}`}
-            delay={80}
-          />
+        {/* Two tall cards stacked ate the whole screen on mobile — swipe them left/right instead
+            (like the promotions shelf), collapsing back to a two-up grid from md. */}
+        <div className="home-swipe-rail -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 md:mx-auto md:grid md:max-w-6xl md:grid-cols-2 md:gap-5 md:overflow-visible md:px-0 md:pb-0">
+          <div className="w-[85%] shrink-0 snap-center md:w-auto md:shrink">
+            <PhysicianPanel
+              label="The Lead Physician"
+              name={doctor.nameTh}
+              nameSecondary={doctor.name}
+              role={doctor.role}
+              licenseNo={doctor.licenseNo}
+              summary={doctor.summary}
+              expertise={doctor.expertise}
+              languages={doctor.languages}
+              imageSrc={doctorSrc}
+              imageAlt={`${doctor.nameTh} ${doctor.role} ของ ${site.name}`}
+            />
+          </div>
+          <div className="w-[85%] shrink-0 snap-center md:w-auto md:shrink">
+            <PhysicianPanel
+              label="Clinic Physician"
+              name={doctorEesha.name}
+              nameSecondary={doctorEesha.nameTh}
+              role={doctorEesha.role}
+              licenseNo={doctorEesha.licenseNo}
+              summary={doctorEesha.summary}
+              expertise={doctorEesha.expertise}
+              languages={doctorEesha.languages}
+              imageSrc={eeshaSrc}
+              imageAlt={`${doctorEesha.name} ${doctorEesha.role} ของ ${site.name}`}
+              delay={80}
+            />
+          </div>
         </div>
       </section>
 
@@ -484,9 +490,10 @@ export default async function HomePage() {
 
       {/* ── Reviews + FAQ: paired two-column block ───────────── */}
       <section className="bg-[var(--store-surface)] px-4 py-20 md:px-6 md:py-32">
-        <div className="mx-auto grid max-w-6xl grid-cols-1 items-stretch gap-4 md:grid-cols-2 md:gap-5">
+        {/* Reviews + FAQ stacked ran long on mobile — swipe between them, two-up grid from md. */}
+        <div className="home-swipe-rail -mx-4 flex snap-x snap-mandatory items-stretch gap-4 overflow-x-auto px-4 pb-2 md:mx-auto md:grid md:max-w-6xl md:grid-cols-2 md:gap-5 md:overflow-visible md:px-0 md:pb-0">
           {/* Reviews — voice of our patients */}
-          <Reveal className="h-full">
+          <Reveal className="h-full w-[88%] shrink-0 snap-center md:w-auto md:shrink">
             <div className="apple-doctor-card flex h-full flex-col rounded-[1.75rem] bg-[var(--store-card)] px-8 py-10 text-[var(--store-ink)] sm:px-10 md:py-12">
               <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
                 <h2 className="font-serif text-3xl text-olive-deep md:text-4xl">เสียงจากผู้ใช้บริการ</h2>
@@ -528,7 +535,7 @@ export default async function HomePage() {
           </Reveal>
 
           {/* FAQ — accordion (content + FAQPage schema parity) */}
-          <Reveal delay={80} className="h-full">
+          <Reveal delay={80} className="h-full w-[88%] shrink-0 snap-center md:w-auto md:shrink">
             <div className="apple-doctor-card flex h-full flex-col rounded-[1.75rem] bg-[var(--store-card)] px-8 py-10 text-[var(--store-ink)] sm:px-10 md:py-12">
               <div className="flex items-center gap-3 text-[0.66rem] uppercase tracking-[0.22em] text-forest">
                 <span aria-hidden="true" className="h-px w-10 bg-forest" /> คำถามที่พบบ่อย
