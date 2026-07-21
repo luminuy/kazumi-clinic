@@ -1,0 +1,248 @@
+import { getCloudflareContext } from '@opennextjs/cloudflare';
+import type { D1Database } from '@cloudflare/workers-types';
+import { cache } from 'react';
+import { getServiceBySlug, serviceCategories, type ServiceItem } from './services';
+
+/**
+ * The product override layer. Same shape and safety net as lib/site-images-store.ts, one level
+ * up: instead of a single public ID per slot, each row is a whole product the clinic edited,
+ * added, or removed through /admin. An empty table means the site renders the hardcoded
+ * catalogue in lib/services.ts unchanged, and any D1 failure degrades to that same catalogue —
+ * a clinic's menu should never 500 because the database blinked.
+ *
+ * See migrations/0002_service_products.sql for the three row kinds (edit / new / delete-tombstone).
+ */
+
+export type ProductRow = {
+  id: string;
+  category: string;
+  name: string;
+  detail: string | null;
+  tagline: string | null;
+  benefits: string | null;
+  collection: string | null;
+  price_from: number | null;
+  unit: string;
+  image_public_id: string | null;
+  sort_order: number;
+  deleted: number;
+  updated_at: number;
+  updated_by: string;
+};
+
+/** Everything the admin form can set on a product. `id`/`category` identify the row. */
+export type ProductInput = {
+  id: string;
+  category: string;
+  name: string;
+  detail?: string | null;
+  tagline?: string | null;
+  benefits?: string[] | null;
+  collection?: string | null;
+  priceFrom?: number | null;
+  unit?: string | null;
+  imagePublicId?: string | null;
+  sortOrder: number;
+};
+
+async function db() {
+  try {
+    const { env } = await getCloudflareContext({ async: true });
+    return (env as unknown as { NEXT_TAG_CACHE_D1?: D1Database }).NEXT_TAG_CACHE_D1 ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Every product row grouped by category. Empty map when D1 is unavailable. React cache
+ * deduplicates the read across a single render (the category page and its JSON-LD both need it).
+ */
+export const getProductRowsByCategory = cache(async (): Promise<Map<string, ProductRow[]>> => {
+  const binding = await db();
+  if (!binding) return new Map();
+  try {
+    const { results } = await binding
+      .prepare('SELECT * FROM service_products ORDER BY sort_order')
+      .all<ProductRow>();
+    const byCategory = new Map<string, ProductRow[]>();
+    for (const row of results) {
+      const list = byCategory.get(row.category);
+      if (list) list.push(row);
+      else byCategory.set(row.category, [row]);
+    }
+    return byCategory;
+  } catch {
+    return new Map();
+  }
+});
+
+function rowToItem(row: ProductRow): ServiceItem {
+  let benefits: string[] | undefined;
+  if (row.benefits) {
+    try {
+      const parsed = JSON.parse(row.benefits);
+      if (Array.isArray(parsed) && parsed.length > 0) benefits = parsed.map(String);
+    } catch {
+      // Malformed JSON in a column the admin writes as JSON — drop the benefits rather than throw.
+    }
+  }
+  return {
+    id: row.id,
+    name: row.name,
+    detail: row.detail ?? undefined,
+    tagline: row.tagline ?? undefined,
+    benefits,
+    collection: row.collection ?? undefined,
+    priceFrom: row.price_from ?? undefined,
+    unit: row.unit,
+    imagePublicId: row.image_public_id ?? undefined,
+  };
+}
+
+/**
+ * Merge one category's hardcoded items with its D1 overrides into the list the site renders.
+ *
+ * Ordering: a hardcoded item with no row keeps its position in the code (its index); a row
+ * carries its own `sort_order`, which the admin sets to that same index when it only edits
+ * fields, and changes only on an explicit reorder — so editing a product never makes it jump.
+ */
+export async function getCategoryItems(slug: string): Promise<ServiceItem[]> {
+  const base = getServiceBySlug(slug)?.items ?? [];
+  const rows = (await getProductRowsByCategory()).get(slug) ?? [];
+  const rowById = new Map(rows.map((r) => [r.id, r]));
+
+  const merged: { item: ServiceItem; order: number }[] = [];
+  base.forEach((item, index) => {
+    const row = item.id ? rowById.get(item.id) : undefined;
+    if (row?.deleted) return; // the clinic removed this shipped product
+    merged.push({ item: row ? rowToItem(row) : item, order: row ? row.sort_order : index });
+  });
+  for (const row of rows) {
+    if (row.deleted) continue;
+    if (base.some((item) => item.id === row.id)) continue; // handled above as an edit
+    merged.push({ item: rowToItem(row), order: row.sort_order });
+  }
+
+  merged.sort((a, b) => a.order - b.order);
+  return merged.map((m) => m.item);
+}
+
+/** A category with its items resolved through the override layer — what pages/schema render. */
+export async function getMergedCategory(slug: string) {
+  const base = getServiceBySlug(slug);
+  if (!base) return undefined;
+  return { ...base, items: await getCategoryItems(slug) };
+}
+
+// ── Writes (used by the /admin products API) ────────────────────────────────────────────────
+
+function requireDb(binding: D1Database | null): asserts binding is D1Database {
+  if (!binding) throw new Error('D1 binding NEXT_TAG_CACHE_D1 is not available');
+}
+
+/** Insert or fully replace a product row. The admin form always sends every field. */
+export async function upsertProduct(input: ProductInput, updatedBy: string) {
+  const binding = await db();
+  requireDb(binding);
+  await binding
+    .prepare(
+      `INSERT INTO service_products
+         (id, category, name, detail, tagline, benefits, collection, price_from, unit,
+          image_public_id, sort_order, deleted, updated_at, updated_by)
+       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, 0, ?12, ?13)
+       ON CONFLICT(id) DO UPDATE SET
+         category = ?2, name = ?3, detail = ?4, tagline = ?5, benefits = ?6, collection = ?7,
+         price_from = ?8, unit = ?9, image_public_id = ?10, sort_order = ?11, deleted = 0,
+         updated_at = ?12, updated_by = ?13`,
+    )
+    .bind(
+      input.id,
+      input.category,
+      input.name,
+      input.detail ?? null,
+      input.tagline ?? null,
+      input.benefits && input.benefits.length > 0 ? JSON.stringify(input.benefits) : null,
+      input.collection ?? null,
+      input.priceFrom ?? null,
+      input.unit ?? 'ครั้ง',
+      input.imagePublicId ?? null,
+      input.sortOrder,
+      Date.now(),
+      updatedBy,
+    )
+    .run();
+}
+
+/** Just the image, for the per-product upload button — leaves every other field untouched. */
+export async function setProductImage(
+  id: string,
+  category: string,
+  imagePublicId: string,
+  updatedBy: string,
+) {
+  const binding = await db();
+  requireDb(binding);
+  // A hardcoded product may have no row yet, so seed one from its code defaults before setting
+  // the image — otherwise the UPDATE touches nothing and the upload is silently lost.
+  const base = getServiceBySlug(category)?.items.find((item) => item.id === id);
+  await upsertProduct(
+    {
+      id,
+      category,
+      name: base?.name ?? id,
+      detail: base?.detail ?? null,
+      tagline: base?.tagline ?? null,
+      benefits: base?.benefits ?? null,
+      collection: base?.collection ?? null,
+      priceFrom: base?.priceFrom ?? null,
+      unit: base?.unit ?? 'ครั้ง',
+      imagePublicId,
+      sortOrder: baseSortOrder(category, id),
+    },
+    updatedBy,
+  );
+}
+
+/**
+ * Remove a product. A hardcoded one leaves a tombstone (deleted = 1) so the merge drops it; a
+ * clinic-added one is deleted outright, since there's no default for it to fall back to.
+ */
+export async function deleteProduct(id: string, category: string, updatedBy: string) {
+  const binding = await db();
+  requireDb(binding);
+  const isHardcoded = Boolean(getServiceBySlug(category)?.items.some((item) => item.id === id));
+  if (isHardcoded) {
+    await binding
+      .prepare(
+        `INSERT INTO service_products (id, category, name, unit, sort_order, deleted, updated_at, updated_by)
+         VALUES (?1, ?2, ?1, 'ครั้ง', 0, 1, ?3, ?4)
+         ON CONFLICT(id) DO UPDATE SET deleted = 1, updated_at = ?3, updated_by = ?4`,
+      )
+      .bind(id, category, Date.now(), updatedBy)
+      .run();
+  } else {
+    await binding.prepare('DELETE FROM service_products WHERE id = ?1').bind(id).run();
+  }
+}
+
+/** The order a hardcoded product sits at in the code, used as the default sort for a new row. */
+function baseSortOrder(category: string, id: string): number {
+  const index = getServiceBySlug(category)?.items.findIndex((item) => item.id === id) ?? -1;
+  return index >= 0 ? index : nextSortOrder(category);
+}
+
+/** One past the last hardcoded product — where a brand-new product goes by default. */
+function nextSortOrder(category: string): number {
+  return getServiceBySlug(category)?.items.length ?? 0;
+}
+
+/** Every category with its merged items — the admin products page reads this. */
+export async function getAllMergedCategories() {
+  return Promise.all(
+    serviceCategories.map(async (category) => ({
+      ...category,
+      items: await getCategoryItems(category.slug),
+    })),
+  );
+}

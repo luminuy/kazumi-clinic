@@ -11,6 +11,7 @@ import {
   type ServiceItem,
 } from '@/lib/services';
 import { serviceItemListSchema, breadcrumbSchema } from '@/lib/schema';
+import { getCategoryItems } from '@/lib/service-products-store';
 import { getImage, getImageOverrides } from '@/lib/site-images-store';
 import { socialImage } from '@/lib/metadata-images';
 import { categoryImageKey, itemImageKey } from '@/lib/site-images';
@@ -178,8 +179,12 @@ function BookingCta({ service, hasPrice }: { service: ServiceCategory; hasPrice:
 
 export default async function ServiceCategoryPage({ params }: Props) {
   const { category } = await params;
-  const service = getServiceBySlug(category);
-  if (!service) notFound();
+  const base = getServiceBySlug(category);
+  if (!base) notFound();
+
+  // Items resolved through the /admin override layer (edits, additions, removals). Category
+  // structure itself stays in code — only the product list is editable.
+  const service: ServiceCategory = { ...base, items: await getCategoryItems(category) };
 
   // A hero the clinic replaced through /admin wins over the one compiled into lib/services.ts.
   const overrides = await getImageOverrides();
@@ -199,9 +204,13 @@ export default async function ServiceCategoryPage({ params }: Props) {
   // page component never touches the override layer — same rule the atlas and carousel follow.
   const itemImages: Record<string, string> = {};
   for (const item of service.items) {
-    const key = item.id ? itemImageKey[item.id] : undefined;
-    const publicId = key ? overrides.get(key)?.public_id : undefined;
-    if (item.id && publicId) itemImages[item.id] = publicId;
+    if (!item.id) continue;
+    // The product's own uploaded photo wins; the legacy item-* image slot is the fallback so
+    // anything a clinic uploaded before this layer existed still shows.
+    const slotKey = itemImageKey[item.id];
+    const slotImage = slotKey ? overrides.get(slotKey)?.public_id : undefined;
+    const publicId = item.imagePublicId ?? slotImage;
+    if (publicId) itemImages[item.id] = publicId;
   }
 
   // Filler and thread lift each have a bespoke page built to their own supplied design; every
