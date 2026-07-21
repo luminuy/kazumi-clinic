@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { serviceCategories } from '@/lib/services';
-import { getCategoryItems, getProductRowsByCategory } from '@/lib/service-products-store';
+import { serviceCategories, type ServiceItem } from '@/lib/services';
+import { getCategoryItems } from '@/lib/service-products-store';
 import { ProductCategoryEditor, type AdminProduct } from '@/components/admin/product-category-editor';
 
 export const metadata: Metadata = { title: 'สินค้า' };
@@ -8,28 +8,46 @@ export const metadata: Metadata = { title: 'สินค้า' };
 // The clinic's product edits are per-request state, not build output.
 export const dynamic = 'force-dynamic';
 
-export default async function AdminProductsPage() {
-  const rowsByCategory = await getProductRowsByCategory();
+/**
+ * Whether a shipped product's live content actually differs from its code default. Compared by
+ * content, not by "has a D1 row" — reordering writes rows for every product in a category, and a
+ * product that only moved shouldn't read as "แก้ไขแล้ว".
+ */
+function isContentEdited(base: ServiceItem, live: ServiceItem): boolean {
+  if (live.imagePublicId) return true;
+  const norm = (v: string | number | undefined) => v ?? '';
+  return (
+    norm(base.name) !== norm(live.name) ||
+    norm(base.detail) !== norm(live.detail) ||
+    norm(base.tagline) !== norm(live.tagline) ||
+    norm(base.collection) !== norm(live.collection) ||
+    norm(base.priceFrom) !== norm(live.priceFrom) ||
+    norm(base.unit) !== norm(live.unit) ||
+    JSON.stringify(base.benefits ?? []) !== JSON.stringify(live.benefits ?? [])
+  );
+}
 
+export default async function AdminProductsPage() {
   const categories = await Promise.all(
     serviceCategories.map(async (category) => {
-      const baseIds = new Set(category.items.map((item) => item.id));
-      const rows = rowsByCategory.get(category.slug) ?? [];
-      const overridden = new Set(rows.filter((r) => !r.deleted).map((r) => r.id));
+      const baseById = new Map(category.items.map((item) => [item.id, item]));
       const items = await getCategoryItems(category.slug);
-      const products: AdminProduct[] = items.map((item) => ({
-        id: item.id ?? '',
-        name: item.name,
-        detail: item.detail ?? '',
-        tagline: item.tagline ?? '',
-        benefits: item.benefits ?? [],
-        collection: item.collection ?? '',
-        priceFrom: item.priceFrom ?? null,
-        unit: item.unit,
-        imagePublicId: item.imagePublicId ?? null,
-        isDefault: baseIds.has(item.id),
-        isEdited: overridden.has(item.id ?? ''),
-      }));
+      const products: AdminProduct[] = items.map((item) => {
+        const base = baseById.get(item.id);
+        return {
+          id: item.id ?? '',
+          name: item.name,
+          detail: item.detail ?? '',
+          tagline: item.tagline ?? '',
+          benefits: item.benefits ?? [],
+          collection: item.collection ?? '',
+          priceFrom: item.priceFrom ?? null,
+          unit: item.unit,
+          imagePublicId: item.imagePublicId ?? null,
+          isDefault: Boolean(base),
+          isEdited: base ? isContentEdited(base, item) : false,
+        };
+      });
       return { slug: category.slug, title: category.title, products };
     }),
   );
