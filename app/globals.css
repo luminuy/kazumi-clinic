@@ -416,7 +416,10 @@
    centred while adjacent categories remain visible, and the lower rail gives every category a
    direct route without turning the section back into a text-card grid. */
 .apple-services-section {
-  padding-block: 0 2.5rem;
+  /* Golden vertical rhythm: the gap above the heading (~89px, Fibonacci) is 1.618× the gap
+     below it (~55px, the heading's margin-bottom), so the section breathes on both sides of
+     the "บริการของเรา" title instead of butting against the trust strip above it. */
+  padding-block: clamp(3.5rem, 6vw, 5.5rem) 2.5rem;
   background: var(--store-surface);
 }
 .apple-services-heading {
@@ -424,7 +427,7 @@
   height: 3.75rem;
   align-items: center;
   justify-content: center;
-  margin: 0;
+  margin: 0 0 clamp(2.125rem, 4vw, 3.4375rem);
   padding-inline: 1.5rem;
   text-align: center;
 }
@@ -654,9 +657,6 @@
   }
 }
 @media (max-width: 47.999rem) {
-  .apple-services-section {
-    padding-block-start: 3rem;
-  }
   .service-stream-rail {
     padding-inline: max(1.25rem, calc((100vw - min(84vw, 27rem)) / 2));
   }
@@ -679,7 +679,9 @@
 /* Home promotions follow the Apple Store shelf reference. The base carousel remains editorial
    for the Services page; only this treatment uses the Store's compact heading and full-bleed rail. */
 .apple-promotion-section {
-  padding-block: 3rem;
+  /* Fibonacci/golden step (3rem → 5rem, ratio ≈ φ) so this section grows the same way its
+     neighbours do instead of staying flat across breakpoints. */
+  padding-block: clamp(3rem, 4.5vw, 5rem);
   background: var(--store-surface);
 }
 .apple-promotion-heading {
