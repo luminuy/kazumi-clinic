@@ -26,14 +26,32 @@ export default function Footer({ logoMark }: { logoMark: string }) {
               <span className="font-serif text-lg">Kazumi Clinic</span>
             </Link>
             <p className="mt-5 text-xs leading-[1.75] text-ink/60">{site.description}</p>
-            <div className="mt-5 flex items-center gap-4 text-olive-deep/65">
-              <a href={site.lineUrl} target="_blank" rel="noopener" aria-label="LINE">
+            <div className="mt-5 flex items-center gap-4">
+              <a
+                href={site.lineUrl}
+                target="_blank"
+                rel="noopener"
+                aria-label="LINE"
+                className="text-line transition-opacity hover:opacity-75"
+              >
                 <LineIcon className="size-4" />
               </a>
-              <a href={site.instagram} target="_blank" rel="noopener" aria-label="Instagram">
+              <a
+                href={site.instagram}
+                target="_blank"
+                rel="noopener"
+                aria-label="Instagram"
+                className="text-instagram transition-opacity hover:opacity-75"
+              >
                 <InstagramIcon className="size-4" />
               </a>
-              <a href={site.facebook} target="_blank" rel="noopener" aria-label="Facebook">
+              <a
+                href={site.facebook}
+                target="_blank"
+                rel="noopener"
+                aria-label="Facebook"
+                className="text-facebook transition-opacity hover:opacity-75"
+              >
                 <FacebookIcon className="size-4" />
               </a>
             </div>

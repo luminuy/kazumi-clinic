@@ -16,6 +16,7 @@ import { socialImage } from '@/lib/metadata-images';
 import { categoryImageKey, itemImageKey } from '@/lib/site-images';
 import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
+import { LineIcon } from '@/components/brand-icons';
 import { FillerServicePage } from '@/components/filler-service-page';
 import { ThreadLiftServicePage } from '@/components/thread-lift-service-page';
 import { MesotherapyServicePage } from '@/components/mesotherapy-service-page';
@@ -156,8 +157,9 @@ function BookingCta({ service, hasPrice }: { service: ServiceCategory; hasPrice:
         href={site.lineUrl}
         target="_blank"
         rel="noopener"
-        className="block w-full bg-olive-deep py-4 text-center text-[0.7rem] uppercase tracking-[0.18em] text-sand transition-opacity duration-200 hover:opacity-90 active:scale-[0.99]"
+        className="flex w-full items-center justify-center gap-2.5 bg-olive-deep py-4 text-center text-[0.7rem] uppercase tracking-[0.18em] text-sand transition-opacity duration-200 hover:opacity-90 active:scale-[0.99]"
       >
+        <LineIcon className="size-4" />
         จองคิว {service.title} ผ่าน LINE
       </a>
       {hasPrice && (
@@ -450,8 +452,9 @@ export default async function ServiceCategoryPage({ params }: Props) {
                 href={site.lineUrl}
                 target="_blank"
                 rel="noopener"
-                className="w-full border border-olive-deep bg-olive-deep px-10 py-4 text-[0.7rem] uppercase tracking-[0.18em] text-sand transition-opacity duration-200 hover:opacity-90 sm:w-auto"
+                className="flex w-full items-center justify-center gap-2.5 border border-olive-deep bg-olive-deep px-10 py-4 text-[0.7rem] uppercase tracking-[0.18em] text-sand transition-opacity duration-200 hover:opacity-90 sm:w-auto"
               >
+                <LineIcon className="size-4" />
                 จองคิวผ่าน LINE
               </a>
               <Link
