@@ -62,6 +62,8 @@ revalidatePath() เฉพาะหน้าที่ใช้รูปนั้
 
 ---
 
+> **รูปสินค้ารายตัว (ฟิลเลอร์ ฯลฯ) ไม่ใช้ image slot แล้ว** — ย้ายไปจัดการที่ [`/admin/products`](../app/admin/products/page.tsx) โดยเก็บ `image_public_id` บน row ของสินค้าเองในตาราง `service_products` (ดู [infrastructure.md](./infrastructure.md#ตาราง-d1)) เพื่อให้สินค้าที่เพิ่มใหม่มีรูปได้ทันที · slot `item-filler-*` เดิมถูกปลดแล้ว · หน้านี้ (`site_images`) เหลือแค่ hero/แบรนด์/โปสเตอร์/รูปบรรยากาศ
+
 ## เพิ่มรูปใหม่ให้ /admin จัดการได้ ต้องทำครบ 5 จุด
 
 1. อัปไฟล์ขึ้น Cloudinary (ดูวิธีข้างล่าง) → ได้ public id
