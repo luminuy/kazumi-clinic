@@ -79,20 +79,7 @@ export default async function AboutPage() {
       {/* ── Hero ─────────────────────────────────────────────── */}
       <section className="px-6 pb-24 pt-24 sm:px-10 md:px-14 md:pt-28 lg:px-20">
         <div className="mx-auto max-w-6xl">
-          <nav
-            aria-label="เส้นทางหน้า"
-            className="mb-12 flex flex-wrap items-center gap-1.5 text-xs text-ink/40"
-          >
-            <Link href="/" className="transition-colors hover:text-olive-deep">
-              หน้าหลัก
-            </Link>
-            <span aria-hidden="true" className="text-ink/25">
-              /
-            </span>
-            <span className="text-ink/70">เกี่ยวกับเรา</span>
-          </nav>
-
-          <div className="grid items-center gap-12 md:grid-cols-2 md:gap-16">
+          <div className="mt-12 grid items-center gap-12 md:grid-cols-2 md:gap-16">
             <div>
               <p lang="en" className="text-[0.68rem] uppercase tracking-[0.28em] text-olive/60">
                 About Us / Our Doctors

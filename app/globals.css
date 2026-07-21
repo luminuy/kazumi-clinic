@@ -492,17 +492,23 @@
   display: flex;
   width: 100%;
   height: 100%;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: clamp(1.5rem, 4vw, 4rem);
+  align-items: center;
+  justify-content: center;
   background: linear-gradient(135deg, #1d1d1f, #2c2c2e);
   color: var(--mint-glow);
 }
-.service-stream-card__fallback span {
-  align-self: flex-end;
-  color: rgb(238 233 223 / 62%);
-  font-size: clamp(1rem, 2vw, 1.75rem);
-  letter-spacing: -0.04em;
+/* A centred circular badge, echoing the empty-state treatment on the physicians and location
+   sections, instead of a bare icon pinned to a corner with a redundant title label — the card's
+   own eyebrow/h3/description overlay already names the category. */
+.service-stream-card__fallback-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(4.5rem, 9vw, 6.5rem);
+  height: clamp(4.5rem, 9vw, 6.5rem);
+  border-radius: 9999px;
+  border: 1px solid rgb(238 233 223 / 16%);
+  background: rgb(255 255 255 / 3%);
 }
 .service-stream-card__content {
   position: absolute;

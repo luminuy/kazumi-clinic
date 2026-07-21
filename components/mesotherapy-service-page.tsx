@@ -1,10 +1,10 @@
 import Image from 'next/image';
-import Link from 'next/link';
-import { ArrowRight, MapPin, MessageCircle, Phone, Sparkles } from 'lucide-react';
+import { ArrowRight, MapPin, Phone, Sparkles } from 'lucide-react';
 import type { ServiceCategory, ServiceItem } from '@/lib/services';
 import { site } from '@/lib/site';
 import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
+import { LineIcon } from '@/components/brand-icons';
 
 /**
  * The reference gives every card a one-line description. Our data carries that in two shapes:
@@ -80,26 +80,7 @@ export function MesotherapyServicePage({
       {/* ── Hero: the reference overlaps the copy block onto the image ─────────── */}
       <section className="px-6 pb-24 pt-24 sm:px-10 md:px-14 md:pt-28 lg:px-20">
         <div className="mx-auto max-w-6xl">
-          <nav
-            aria-label="เส้นทางหน้า"
-            className="mb-12 flex flex-wrap items-center gap-1.5 text-xs text-ink/40"
-          >
-            <Link href="/" className="transition-colors hover:text-olive-deep">
-              หน้าหลัก
-            </Link>
-            <span aria-hidden="true" className="text-ink/25">
-              /
-            </span>
-            <Link href="/services" className="transition-colors hover:text-olive-deep">
-              บริการ
-            </Link>
-            <span aria-hidden="true" className="text-ink/25">
-              /
-            </span>
-            <span className="text-ink/70">{service.title}</span>
-          </nav>
-
-          <div className="md:grid md:grid-cols-12 md:items-end">
+          <div className="mt-12 md:grid md:grid-cols-12 md:items-end">
             <div className="relative z-10 md:col-span-7">
               <div className="border border-olive/15 bg-cream p-8 md:mb-[-5rem] md:mr-[-6rem] md:p-14">
                 <p lang="en" className="text-[0.66rem] uppercase tracking-[0.24em] text-ink/45">
@@ -203,7 +184,7 @@ export function MesotherapyServicePage({
               className="mt-10 inline-flex items-center gap-3 bg-line px-10 py-4 text-[0.68rem] uppercase tracking-[0.2em] text-white transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98]"
             >
               จองคิวผ่าน LINE
-              <MessageCircle aria-hidden="true" className="size-4" />
+              <LineIcon className="size-4" />
             </a>
           </div>
         </Reveal>

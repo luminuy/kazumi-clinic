@@ -155,17 +155,6 @@ export default async function ServicesPage() {
       <section className="px-6 pb-20 pt-28 sm:px-10 md:px-14 lg:px-20">
         <div className="mx-auto grid max-w-6xl items-center gap-12 md:grid-cols-12 md:gap-10">
           <Reveal className="md:col-span-6">
-            <nav
-              aria-label="เส้นทางหน้า"
-              className="flex flex-wrap items-center gap-1.5 text-xs text-ink/40"
-            >
-              <Link href="/" className="transition-colors hover:text-olive-deep">
-                หน้าหลัก
-              </Link>
-              <span className="text-ink/25">/</span>
-              <span className="text-ink/70">บริการ / หัตถการ</span>
-            </nav>
-
             <div className="mt-10 flex items-center gap-3 text-[0.68rem] uppercase tracking-[0.24em] text-olive/60">
               <span className="h-px w-8 bg-clay" />
               Clinical Services
