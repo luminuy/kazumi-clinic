@@ -189,8 +189,9 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
                       />
                     ) : (
                       <div className="service-stream-card__fallback" aria-hidden="true">
-                        <ServiceIcon slug={category.slug} className="size-16" strokeWidth={1} />
-                        <span>{category.titleEn}</span>
+                        <span className="service-stream-card__fallback-badge">
+                          <ServiceIcon slug={category.slug} className="size-8" strokeWidth={1} />
+                        </span>
                       </div>
                     )}
                     <div className="service-stream-card__wash" aria-hidden="true" />

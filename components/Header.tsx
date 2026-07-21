@@ -1,10 +1,11 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, MessageCircle, ChevronDown, ArrowRight } from 'lucide-react';
+import { Menu, ChevronDown, ArrowRight } from 'lucide-react';
 import { site } from '@/lib/site';
 import { navItems, resolvedServiceNavGroups } from '@/lib/nav';
 import { Button } from '@/components/ui/button';
 import { ServiceIcon } from '@/components/service-icon';
+import { LineIcon } from '@/components/brand-icons';
 import {
   Sheet,
   SheetContent,
@@ -98,7 +99,7 @@ export default function Header({ logoMark }: { logoMark: string }) {
             render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
             className="hidden bg-line text-white hover:bg-line/90 sm:inline-flex"
           >
-            <MessageCircle className="size-4" />
+            <LineIcon className="size-4" />
             จองคิว LINE
           </Button>
 
@@ -162,7 +163,7 @@ export default function Header({ logoMark }: { logoMark: string }) {
                   render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
                   className="mt-4 bg-line text-white hover:bg-line/90"
                 >
-                  <MessageCircle className="size-4" />
+                  <LineIcon className="size-4" />
                   จองคิว LINE
                 </Button>
               </nav>

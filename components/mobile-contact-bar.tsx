@@ -1,10 +1,11 @@
-import { MapPin, MessageCircle, Phone } from 'lucide-react';
+import { MapPin, Phone } from 'lucide-react';
 import { site } from '@/lib/site';
+import { LineIcon } from '@/components/brand-icons';
 
 const actions = [
   { label: 'โทร', href: site.phoneUrl, icon: Phone, external: false },
   { label: 'แผนที่', href: site.mapsUrl, icon: MapPin, external: true },
-  { label: 'จอง LINE', href: site.lineUrl, icon: MessageCircle, external: true },
+  { label: 'จอง LINE', href: site.lineUrl, icon: LineIcon, external: true },
 ] as const;
 
 export function MobileContactBar() {

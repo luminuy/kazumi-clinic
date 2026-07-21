@@ -1,10 +1,10 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { MessageCircle } from 'lucide-react';
 import type { ServiceCategory, ServiceItem } from '@/lib/services';
 import { site } from '@/lib/site';
 import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
+import { LineIcon } from '@/components/brand-icons';
 
 function MenuRow({ item }: { item: ServiceItem }) {
   return (
@@ -41,26 +41,7 @@ export function AcneCareServicePage({
       {/* ── Hero: title above a tall editorial image with a licence badge ─────── */}
       <section className="px-6 pb-24 pt-24 sm:px-10 md:px-14 md:pt-28 lg:px-20">
         <div className="mx-auto max-w-4xl">
-          <nav
-            aria-label="เส้นทางหน้า"
-            className="mb-12 flex flex-wrap items-center gap-1.5 text-xs text-ink/40"
-          >
-            <Link href="/" className="transition-colors hover:text-olive-deep">
-              หน้าหลัก
-            </Link>
-            <span aria-hidden="true" className="text-ink/25">
-              /
-            </span>
-            <Link href="/services" className="transition-colors hover:text-olive-deep">
-              บริการ
-            </Link>
-            <span aria-hidden="true" className="text-ink/25">
-              /
-            </span>
-            <span className="text-ink/70">{service.title}</span>
-          </nav>
-
-          <h1 className="font-serif text-4xl leading-[1.15] tracking-tight text-olive-deep md:text-5xl">
+          <h1 className="mt-12 font-serif text-4xl leading-[1.15] tracking-tight text-olive-deep md:text-5xl">
             {service.title}
             <span lang="en" className="mt-1 block font-light italic text-olive/60">
               {service.titleEn}
@@ -200,7 +181,7 @@ export function AcneCareServicePage({
               rel="noopener"
               className="inline-flex items-center justify-center gap-3 bg-line px-10 py-4 text-[0.68rem] uppercase tracking-[0.18em] text-white transition-opacity duration-200 hover:opacity-90 active:scale-[0.98]"
             >
-              <MessageCircle aria-hidden="true" className="size-4" />
+              <LineIcon className="size-4" />
               จองคิวผ่าน LINE
             </a>
             <Link

@@ -1,23 +1,20 @@
-import Link from 'next/link';
 import Image from 'next/image';
 
-// Editorial page header shared by all inner pages: dark forest band, breadcrumb,
-// uppercase eyebrow, oversized serif title, optional lead paragraph. Pass `image`
-// (a Cloudinary public ID) to show a full-bleed photo behind the text instead of
+// Editorial page header shared by all inner pages: dark forest band, uppercase
+// eyebrow, oversized serif title, optional lead paragraph. Pass `image` (a
+// Cloudinary public ID) to show a full-bleed photo behind the text instead of
 // the flat olive-deep background, with `imageAlt` describing what it shows —
 // omit `imageAlt` only when the photo is purely decorative.
 export function PageHero({
   eyebrow,
   title,
   lead,
-  breadcrumb,
   image,
   imageAlt,
 }: {
   eyebrow?: string;
   title: string;
   lead?: string;
-  breadcrumb: { name: string; href?: string }[];
   image?: string;
   imageAlt?: string;
 }) {
@@ -48,24 +45,9 @@ export function PageHero({
       )}
 
       <div className="relative mx-auto max-w-6xl">
-        <nav className={`flex flex-wrap items-center gap-1.5 text-xs ${onImage ? 'text-sand/50' : 'text-ink/45'}`}>
-          {breadcrumb.map((b, i) => (
-            <span key={b.name} className="flex items-center gap-1.5">
-              {b.href ? (
-                <Link href={b.href} className={`transition-colors ${onImage ? 'hover:text-sand' : 'hover:text-olive-deep'}`}>
-                  {b.name}
-                </Link>
-              ) : (
-                <span className={onImage ? 'text-sand/80' : 'text-ink/70'}>{b.name}</span>
-              )}
-              {i < breadcrumb.length - 1 && <span className={onImage ? 'text-sand/30' : 'text-ink/25'}>/</span>}
-            </span>
-          ))}
-        </nav>
-
         {eyebrow && (
           <div
-            className={`mt-10 flex items-center gap-3 text-xs uppercase tracking-[0.3em] ${
+            className={`flex items-center gap-3 text-xs uppercase tracking-[0.3em] ${
               onImage ? 'text-sand/60' : 'text-forest'
             }`}
           >
@@ -74,7 +56,7 @@ export function PageHero({
           </div>
         )}
 
-        <h1 className="mt-5 max-w-4xl font-serif text-4xl leading-[1.02] tracking-tight md:text-6xl">
+        <h1 className={`max-w-4xl font-serif text-4xl leading-[1.02] tracking-tight md:text-6xl ${eyebrow ? 'mt-5' : ''}`}>
           {title}
         </h1>
 

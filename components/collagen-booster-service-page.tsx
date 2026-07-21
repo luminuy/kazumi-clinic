@@ -1,11 +1,11 @@
 import Image from 'next/image';
-import Link from 'next/link';
-import { BadgeCheck, Dna, MessageCircle, Phone, Sparkles, Target } from 'lucide-react';
+import { BadgeCheck, Dna, Phone, Sparkles, Target } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { ServiceCategory } from '@/lib/services';
 import { site } from '@/lib/site';
 import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
+import { LineIcon } from '@/components/brand-icons';
 
 /**
  * Our benefits are "English title — Thai description" (e.g. "Restoration — เติมเต็ม…"). The
@@ -37,26 +37,7 @@ export function CollagenBoosterServicePage({
       {/* ── Hero: asymmetric image + intro, with a tactile "Ma" overlap ──────── */}
       <section className="px-6 pb-28 pt-24 sm:px-10 md:px-14 md:pt-28 lg:px-20">
         <div className="mx-auto max-w-6xl">
-          <nav
-            aria-label="เส้นทางหน้า"
-            className="mb-12 flex flex-wrap items-center gap-1.5 text-xs text-ink/40"
-          >
-            <Link href="/" className="transition-colors hover:text-olive-deep">
-              หน้าหลัก
-            </Link>
-            <span aria-hidden="true" className="text-ink/25">
-              /
-            </span>
-            <Link href="/services" className="transition-colors hover:text-olive-deep">
-              บริการ
-            </Link>
-            <span aria-hidden="true" className="text-ink/25">
-              /
-            </span>
-            <span className="text-ink/70">{service.title}</span>
-          </nav>
-
-          <div className="grid items-center gap-x-10 gap-y-16 md:grid-cols-12">
+          <div className="mt-12 grid items-center gap-x-10 gap-y-16 md:grid-cols-12">
             {/* Image column — with the overlapping philosophy card. */}
             <Reveal className="relative order-2 md:order-1 md:col-span-7">
               <div className="relative aspect-[4/5] w-full overflow-hidden border border-olive/10 bg-olive-deep/[0.06] md:aspect-[16/10]">
@@ -224,7 +205,7 @@ export function CollagenBoosterServicePage({
               rel="noopener"
               className="inline-flex w-full items-center justify-center gap-3 bg-sand px-10 py-4 text-[0.68rem] uppercase tracking-[0.2em] text-olive-deep transition-colors duration-200 hover:bg-cream active:scale-[0.98] sm:w-auto"
             >
-              <MessageCircle aria-hidden="true" className="size-4" />
+              <LineIcon className="size-4" />
               จองคิวผ่าน LINE
             </a>
             <a

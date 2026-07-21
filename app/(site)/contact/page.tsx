@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
-import { MapPin, Phone, Clock, MessageCircle, AtSign, Navigation } from 'lucide-react';
+import { MapPin, Phone, Clock, Navigation } from 'lucide-react';
 import { site } from '@/lib/site';
 import { breadcrumbSchema } from '@/lib/schema';
 import { siteSocialImage } from '@/lib/metadata-images';
 import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/reveal';
 import { PageHero } from '@/components/page-hero';
+import { LineIcon, InstagramIcon } from '@/components/brand-icons';
 
 const pageTitle = 'ติดต่อเรา';
 const pageDescription = `ที่อยู่ เบอร์โทร และเวลาทำการของ ${site.name} ย่านสุขุมวิท กรุงเทพฯ`;
@@ -51,7 +52,6 @@ export default function ContactPage() {
         eyebrow="Contact Us"
         title="ติดต่อเรา"
         lead={`${site.name} ยินดีให้คำปรึกษาและดูแลทุกหัตถการ — นัดหมายหรือสอบถามได้ทุกวัน`}
-        breadcrumb={[{ name: 'หน้าหลัก', href: '/' }, { name: 'ติดต่อเรา' }]}
       />
 
       <section className="mx-auto grid max-w-6xl gap-12 px-6 py-20 md:grid-cols-2">
@@ -83,7 +83,7 @@ export default function ContactPage() {
               render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
               className="rounded-full bg-line text-white hover:bg-line/90"
             >
-              <MessageCircle className="size-4" />
+              <LineIcon className="size-4" />
               LINE
             </Button>
             <Button
@@ -91,7 +91,7 @@ export default function ContactPage() {
               variant="outline"
               className="rounded-full border-olive text-olive-deep hover:bg-olive/10"
             >
-              <AtSign className="size-4" />
+              <InstagramIcon className="size-4" />
               Instagram
             </Button>
             <Button

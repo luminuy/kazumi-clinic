@@ -1,10 +1,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { BadgeCheck, MessageCircle, Sparkles } from 'lucide-react';
+import { BadgeCheck, Sparkles } from 'lucide-react';
 import type { ServiceCategory, ServiceItem } from '@/lib/services';
 import { site } from '@/lib/site';
 import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
+import { LineIcon } from '@/components/brand-icons';
 
 /**
  * Our benefits are "Label — Thai description" (e.g. "Revitalizing — กระตุ้น…"). The reference
@@ -94,26 +95,7 @@ export function SkinBoosterServicePage({
       {/* ── Hero: title, editorial image, then licence + intro ───────────────── */}
       <section className="px-6 pb-24 pt-24 sm:px-10 md:px-14 md:pt-28 lg:px-20">
         <div className="mx-auto max-w-5xl">
-          <nav
-            aria-label="เส้นทางหน้า"
-            className="mb-12 flex flex-wrap items-center gap-1.5 text-xs text-ink/40"
-          >
-            <Link href="/" className="transition-colors hover:text-olive-deep">
-              หน้าหลัก
-            </Link>
-            <span aria-hidden="true" className="text-ink/25">
-              /
-            </span>
-            <Link href="/services" className="transition-colors hover:text-olive-deep">
-              บริการ
-            </Link>
-            <span aria-hidden="true" className="text-ink/25">
-              /
-            </span>
-            <span className="text-ink/70">{service.title}</span>
-          </nav>
-
-          <h1 className="font-serif text-4xl leading-none text-olive-deep md:text-6xl">
+          <h1 className="mt-12 font-serif text-4xl leading-none text-olive-deep md:text-6xl">
             {service.title}
           </h1>
           <p
@@ -242,7 +224,7 @@ export function SkinBoosterServicePage({
               rel="noopener"
               className="inline-flex w-full max-w-xs items-center justify-center gap-3 bg-sand px-8 py-4 text-[0.68rem] uppercase tracking-[0.2em] text-olive-deep transition-colors duration-200 hover:bg-cream active:scale-[0.98]"
             >
-              <MessageCircle aria-hidden="true" className="size-4" />
+              <LineIcon className="size-4" />
               จองคิวผ่าน LINE
             </a>
             <Link
