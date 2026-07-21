@@ -365,13 +365,21 @@ export default async function HomePage() {
       {/* ── Promotions: Apple-style peeking carousel ─────────── */}
       <section className="apple-promotion-section overflow-hidden">
         <Reveal className="apple-promotion-heading">
-          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-            <h2 className="text-[1.35rem] font-semibold tracking-[-0.025em] md:text-[1.55rem]">
-              โปรโมชั่นล่าสุด
-            </h2>
-            <p className="text-[1.15rem] tracking-[-0.02em] md:text-[1.3rem]">
-              เลือกดูโปรแกรมที่คลินิกคัดสรรไว้ได้เลย
-            </p>
+          <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <h2 className="text-[1.35rem] font-semibold tracking-[-0.025em] md:text-[1.55rem]">
+                โปรโมชั่นล่าสุด
+              </h2>
+              <p className="text-[1.15rem] tracking-[-0.02em] md:text-[1.3rem]">
+                เลือกดูโปรแกรมที่คลินิกคัดสรรไว้ได้เลย
+              </p>
+            </div>
+            <Link
+              href="/promotions"
+              className="inline-flex shrink-0 items-center gap-1.5 text-[0.9rem] text-forest transition-colors duration-200 hover:text-mint"
+            >
+              ดูโปรโมชั่นทั้งหมด <ArrowUpRight className="size-4" />
+            </Link>
           </div>
         </Reveal>
 
