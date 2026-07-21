@@ -263,8 +263,9 @@ export function ThreadLiftServicePage({
               href={site.lineUrl}
               target="_blank"
               rel="noopener"
-              className="bg-sand px-10 py-4 text-center text-[0.68rem] uppercase tracking-[0.2em] text-olive-deep transition-colors duration-200 hover:bg-cream active:scale-[0.98]"
+              className="inline-flex items-center justify-center gap-2.5 bg-sand px-10 py-4 text-center text-[0.68rem] uppercase tracking-[0.2em] text-olive-deep transition-colors duration-200 hover:bg-cream active:scale-[0.98]"
             >
+              <LineIcon className="size-4" />
               จองคิวผ่าน LINE
             </a>
             <Link

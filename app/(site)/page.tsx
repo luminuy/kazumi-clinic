@@ -14,6 +14,7 @@ import { promotionPosters } from '@/lib/promotions';
 import { Reveal } from '@/components/reveal';
 import { PromotionCarousel } from '@/components/promotion-carousel';
 import { ServiceCarousel } from '@/components/service-carousel';
+import { GoogleIcon, InstagramIcon, LineIcon } from '@/components/brand-icons';
 
 const homeTitle = 'คลินิกความงามสุขุมวิท กรุงเทพฯ | Kazumi Clinic';
 const homeDescription =
@@ -247,6 +248,7 @@ export default async function HomePage() {
                 rel="noopener"
                 className="inline-flex items-center gap-2 rounded-full bg-mint px-7 py-3 text-sm font-medium text-white shadow-lg shadow-black/10 transition-transform duration-300 hover:-translate-y-0.5 hover:bg-forest active:translate-y-0"
               >
+                <LineIcon className="size-4" />
                 จองคิวผ่าน LINE <ArrowUpRight className="size-4" />
               </a>
               <Link
@@ -502,16 +504,18 @@ export default async function HomePage() {
                   href={site.mapsUrl}
                   target="_blank"
                   rel="noopener"
-                  className="inline-flex items-center gap-2 rounded-full bg-mint px-7 py-3 text-sm font-medium text-white transition-colors duration-200 hover:bg-forest"
+                  className="inline-flex items-center gap-2.5 rounded-full border border-olive-deep/20 bg-white px-7 py-3 text-sm font-medium text-olive-deep transition-colors duration-200 hover:bg-sand"
                 >
+                  <GoogleIcon className="size-4" />
                   ดูรีวิวบน Google <ArrowUpRight className="size-4" />
                 </a>
                 <a
                   href={site.instagram}
                   target="_blank"
                   rel="noopener"
-                  className="inline-flex items-center gap-2 rounded-full border border-olive-deep/25 px-7 py-3 text-sm font-medium text-olive-deep transition-colors duration-200 hover:bg-olive-deep hover:text-sand"
+                  className="inline-flex items-center gap-2.5 rounded-full border border-olive-deep/25 px-7 py-3 text-sm font-medium text-olive-deep transition-colors duration-200 hover:bg-olive-deep hover:text-sand"
                 >
+                  <InstagramIcon className="text-instagram size-4" />
                   Instagram {site.instagramHandle} <ArrowUpRight className="size-4" />
                 </a>
                 <Link

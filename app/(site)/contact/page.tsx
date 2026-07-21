@@ -91,7 +91,7 @@ export default function ContactPage() {
               variant="outline"
               className="rounded-full border-olive text-olive-deep hover:bg-olive/10"
             >
-              <InstagramIcon className="size-4" />
+              <InstagramIcon className="text-instagram size-4" />
               Instagram
             </Button>
             <Button

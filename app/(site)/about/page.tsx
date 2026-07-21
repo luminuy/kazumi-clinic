@@ -9,6 +9,7 @@ import { getImageOverrides } from '@/lib/site-images-store';
 import { siteSocialImage } from '@/lib/metadata-images';
 import { Reveal } from '@/components/reveal';
 import { SectionLabel } from '@/components/page-hero';
+import { LineIcon } from '@/components/brand-icons';
 
 const pageTitle = 'เกี่ยวกับเรา / แพทย์';
 const pageDescription = `รู้จัก ${site.name} สถานเสริมความงามย่านสุขุมวิท กรุงเทพฯ และ ${doctor.name} ${doctor.role} ใบอนุญาตสถานพยาบาลเลขที่ ${site.license}`;
@@ -471,7 +472,10 @@ export default async function AboutPage() {
                 rel="noopener"
                 className="group flex items-center justify-between bg-olive-deep p-6 text-sand transition-opacity duration-200 hover:opacity-90"
               >
-                <span className="text-[0.68rem] uppercase tracking-[0.24em]">จองคิวผ่าน LINE</span>
+                <span className="flex items-center gap-2.5 text-[0.68rem] uppercase tracking-[0.24em]">
+                  <LineIcon className="size-4" />
+                  จองคิวผ่าน LINE
+                </span>
                 <ArrowRight
                   aria-hidden="true"
                   className="size-4 transition-transform duration-200 group-hover:translate-x-1"

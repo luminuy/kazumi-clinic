@@ -43,6 +43,12 @@
   --cream: #ffffff;
   --ink: #1d1d1f;
   --line: #06c755;
+  /* Real platform brand colors (verified against simple-icons, not guessed) — used only where an
+     icon/button represents that specific platform (social links, review CTAs), never as a
+     general-purpose site accent. */
+  --instagram: #ff0069;
+  --facebook: #0866ff;
+  --google-blue: #4285f4;
   /* Green brand accent (2026 editorial redesign). forest = deep primary green,
      mint = bright green for key actions, mint-glow = light green on dark surfaces.
      The LINE colour (#06c755) doubles as the bright action green. */
@@ -121,6 +127,9 @@
   --color-cream: var(--cream);
   --color-ink: var(--ink);
   --color-line: var(--line);
+  --color-instagram: var(--instagram);
+  --color-facebook: var(--facebook);
+  --color-google-blue: var(--google-blue);
   --color-forest: var(--forest);
   --color-mint: var(--mint);
   --color-mint-glow: var(--mint-glow);
