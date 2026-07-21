@@ -29,6 +29,7 @@
 | Runtime | Cloudflare Workers + OpenNext, Node.js runtime compatibility |
 | ISR | KV incremental cache + D1 tag cache + Durable Object queue |
 | รูปภาพ | Cloudinary; image override เก็บในตาราง D1 `site_images` |
+| สินค้า | คลินิกเพิ่ม/แก้/ลบ/อัปรูปเองที่ `/admin/products`; override เก็บในตาราง D1 `service_products` (ส่วนต่างบน `lib/services.ts`) |
 
 Backend ใช้ Next.js Route Handlers (`app/api/*/route.ts`) ภายใน Worker เดียวกับหน้าเว็บ ไม่มี backend service แยก
 
