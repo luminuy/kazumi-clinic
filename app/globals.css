@@ -469,7 +469,9 @@
   gap: 0.5rem;
   overflow-x: auto;
   overscroll-behavior-inline: contain;
-  padding: 0 max(0.75rem, calc((100vw - 65vw) / 2)) 0.5rem;
+  /* Cap the card at 42rem so it doesn't balloon on wide desktops — 65vw alone made it ~1100px
+     tall-and-huge on a large screen. The rail's centring padding tracks the same capped width. */
+  padding: 0 max(0.75rem, calc((100vw - min(65vw, 42rem)) / 2)) 0.5rem;
   scroll-behavior: smooth;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
@@ -487,7 +489,7 @@
   display: none;
 }
 .service-stream-card {
-  flex: 0 0 65vw;
+  flex: 0 0 min(65vw, 42rem);
   scroll-snap-align: center;
 }
 .service-stream-card__link {

@@ -211,7 +211,7 @@ export default async function HomePage() {
       />
 
       {/* ── Hero: full-bleed portrait with overlaid copy ─────── */}
-      <section className="relative isolate flex min-h-[60vh] items-end overflow-hidden bg-olive-deep text-sand md:min-h-[92vh] md:items-center">
+      <section className="relative isolate flex min-h-[60vh] items-end overflow-hidden bg-olive-deep text-sand md:min-h-[74vh] md:items-center">
         <Image
           src={heroSrc}
           alt=""
