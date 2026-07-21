@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowUpRight, BadgeCheck, ChevronDown, CircleHelp, Clock, MapPin, Sparkles, Stethoscope } from 'lucide-react';
+import { ArrowUpRight, BadgeCheck, ChevronDown, Clock, MapPin, Sparkles, Stethoscope } from 'lucide-react';
 import { site } from '@/lib/site';
 import { doctor, doctorEesha } from '@/lib/doctor';
 import { serviceCategories } from '@/lib/services';
@@ -350,45 +350,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Social proof: real reviews on Google & Instagram ─── */}
-      <section className="bg-cream px-6 py-20 md:py-28">
-        <Reveal className="mx-auto max-w-2xl text-center">
-          <p lang="en" className="text-[0.62rem] uppercase tracking-[0.3em] text-forest">
-            Reviews &amp; Results
-          </p>
-          <h2 className="mt-4 font-serif text-4xl text-olive-deep md:text-5xl">เสียงจากผู้ใช้บริการ</h2>
-          <p className="mx-auto mt-4 max-w-xl text-sm leading-[1.9] text-ink/60 md:text-base">
-            อ่านรีวิวจริงและผลลัพธ์ก่อน–หลังจากผู้ใช้บริการของเราได้บน Google และ Instagram
-            หรือสอบถามผลลัพธ์เฉพาะบุคคลกับทีมแพทย์ผ่าน LINE
-          </p>
-          <p className="mt-3 text-xs text-ink/40">*ผลลัพธ์ขึ้นอยู่กับสภาพผิวและปัญหาเฉพาะบุคคล</p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <a
-              href={site.mapsUrl}
-              target="_blank"
-              rel="noopener"
-              className="inline-flex items-center gap-2 rounded-full bg-mint px-7 py-3 text-sm font-medium text-white transition-colors duration-200 hover:bg-forest"
-            >
-              ดูรีวิวบน Google <ArrowUpRight className="size-4" />
-            </a>
-            <a
-              href={site.instagram}
-              target="_blank"
-              rel="noopener"
-              className="inline-flex items-center gap-2 rounded-full border border-olive-deep/25 px-7 py-3 text-sm font-medium text-olive-deep transition-colors duration-200 hover:bg-olive-deep hover:text-sand"
-            >
-              Instagram {site.instagramHandle} <ArrowUpRight className="size-4" />
-            </a>
-            <Link
-              href="/reviews"
-              className="inline-flex items-center gap-1.5 rounded-full border border-olive-deep/25 px-7 py-3 text-sm font-medium text-olive-deep transition-colors duration-200 hover:bg-olive-deep hover:text-sand"
-            >
-              ดูหน้ารีวิวทั้งหมด
-            </Link>
-          </div>
-        </Reveal>
-      </section>
-
       {/* ── Promotions: Apple-style peeking carousel ─────────── */}
       <section className="apple-promotion-section overflow-hidden">
         <Reveal className="apple-promotion-heading">
@@ -499,25 +460,77 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── FAQ (kept for content + FAQPage schema parity) ───── */}
-      <section className="mx-auto max-w-7xl px-6 pb-24 sm:px-10 md:px-14 md:pb-32 lg:px-20">
-        <Reveal>
-          <div className="flex items-center gap-3 text-[0.66rem] uppercase tracking-[0.22em] text-forest">
-            <span aria-hidden="true" className="h-px w-10 bg-forest" /> คำถามที่พบบ่อย
-          </div>
-          <dl className="mt-8 grid gap-3 md:grid-cols-2">
-            {faqs.map((f, index) => (
-              <div key={f.question} className="border border-olive/12 bg-surface p-6">
-                <dt className="flex items-start gap-4 font-serif text-lg text-olive-deep">
-                  <span className="font-sans text-xs tracking-[0.15em] text-forest">0{index + 1}</span>
-                  <span className="flex-1">{f.question}</span>
-                  <CircleHelp className="mt-0.5 size-4 shrink-0 text-olive-light" />
-                </dt>
-                <dd className="mt-3 pl-9 text-sm leading-relaxed text-ink/65">{f.answer}</dd>
+      {/* ── Reviews + FAQ: paired two-column block ───────────── */}
+      <section className="bg-cream px-4 py-20 md:px-6 md:py-28">
+        <div className="mx-auto grid max-w-6xl grid-cols-1 items-stretch gap-4 md:grid-cols-2 md:gap-5">
+          {/* Reviews — voice of our patients */}
+          <Reveal className="h-full">
+            <div className="apple-doctor-card flex h-full flex-col rounded-[1.75rem] bg-[var(--store-card)] px-8 py-10 text-[var(--store-ink)] sm:px-10 md:py-12">
+              <p lang="en" className="text-[0.62rem] uppercase tracking-[0.3em] text-forest">
+                Reviews &amp; Results
+              </p>
+              <h2 className="mt-3 font-serif text-3xl text-olive-deep md:text-4xl">เสียงจากผู้ใช้บริการ</h2>
+              <p className="mt-4 max-w-md text-sm leading-[1.9] text-[var(--store-muted)]">
+                อ่านรีวิวจริงและผลลัพธ์ก่อน–หลังจากผู้ใช้บริการของเราได้บน Google และ Instagram
+                หรือสอบถามผลลัพธ์เฉพาะบุคคลกับทีมแพทย์ผ่าน LINE
+              </p>
+              <p className="mt-3 text-xs text-[var(--store-muted)]/70">
+                *ผลลัพธ์ขึ้นอยู่กับสภาพผิวและปัญหาเฉพาะบุคคล
+              </p>
+              <div className="mt-auto flex flex-wrap gap-3 pt-8">
+                <a
+                  href={site.mapsUrl}
+                  target="_blank"
+                  rel="noopener"
+                  className="inline-flex items-center gap-2 rounded-full bg-mint px-7 py-3 text-sm font-medium text-white transition-colors duration-200 hover:bg-forest"
+                >
+                  ดูรีวิวบน Google <ArrowUpRight className="size-4" />
+                </a>
+                <a
+                  href={site.instagram}
+                  target="_blank"
+                  rel="noopener"
+                  className="inline-flex items-center gap-2 rounded-full border border-olive-deep/25 px-7 py-3 text-sm font-medium text-olive-deep transition-colors duration-200 hover:bg-olive-deep hover:text-sand"
+                >
+                  Instagram {site.instagramHandle} <ArrowUpRight className="size-4" />
+                </a>
+                <Link
+                  href="/reviews"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-olive-deep/25 px-7 py-3 text-sm font-medium text-olive-deep transition-colors duration-200 hover:bg-olive-deep hover:text-sand"
+                >
+                  ดูหน้ารีวิวทั้งหมด
+                </Link>
               </div>
-            ))}
-          </dl>
-        </Reveal>
+            </div>
+          </Reveal>
+
+          {/* FAQ — accordion (content + FAQPage schema parity) */}
+          <Reveal delay={80} className="h-full">
+            <div className="apple-doctor-card flex h-full flex-col rounded-[1.75rem] bg-[var(--store-card)] px-8 py-10 text-[var(--store-ink)] sm:px-10 md:py-12">
+              <div className="flex items-center gap-3 text-[0.66rem] uppercase tracking-[0.22em] text-forest">
+                <span aria-hidden="true" className="h-px w-10 bg-forest" /> คำถามที่พบบ่อย
+              </div>
+              <dl className="mt-4 border-t border-olive/12">
+                {faqs.map((f, index) => (
+                  <details
+                    key={f.question}
+                    open={index === 0}
+                    className="visit-accordion group border-b border-olive/12"
+                  >
+                    <summary className="flex cursor-pointer list-none items-start gap-3 py-4 [&::-webkit-details-marker]:hidden">
+                      <span className="mt-1 font-sans text-xs tracking-[0.15em] text-forest">0{index + 1}</span>
+                      <dt className="flex-1 font-serif text-base leading-snug text-olive-deep md:text-lg">
+                        {f.question}
+                      </dt>
+                      <ChevronDown className="mt-1 size-4 shrink-0 text-olive-light transition-transform duration-300 group-open:rotate-180" />
+                    </summary>
+                    <dd className="pb-5 pl-9 pr-2 text-sm leading-relaxed text-ink/65">{f.answer}</dd>
+                  </details>
+                ))}
+              </dl>
+            </div>
+          </Reveal>
+        </div>
       </section>
 
     </>
