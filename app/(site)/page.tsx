@@ -298,11 +298,11 @@ export default async function HomePage() {
       {/* ── Services: Apple-inspired media stream ────────────── */}
       <section className="apple-services-section overflow-hidden">
         <Reveal className="apple-services-heading">
-          <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
-            <h2>บริการของเรา.</h2>
+          <div className="flex max-w-xl flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+            <h2>บริการของเรา</h2>
             <Link
               href="/services"
-              className="inline-flex items-center gap-1.5 text-[0.9rem] text-forest transition-colors duration-200 hover:text-mint"
+              className="inline-flex shrink-0 items-center gap-1.5 text-[0.9rem] text-forest transition-colors duration-200 hover:text-mint"
             >
               ดูบริการทั้งหมด <ArrowUpRight className="size-4" />
             </Link>
@@ -317,7 +317,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── Physicians: Apple-style cards, photo on top ──────── */}
-      <section className="bg-[var(--store-card)] px-4 py-12 md:px-6 md:py-20">
+      <section className="bg-[var(--store-surface)] px-4 py-12 md:px-6 md:py-20">
         <Reveal className="mx-auto mb-10 flex max-w-6xl flex-wrap items-end justify-between gap-x-6 gap-y-3 md:mb-12">
           <div>
             <p lang="en" className="text-[0.62rem] uppercase tracking-[0.3em] text-[var(--store-muted)]">
