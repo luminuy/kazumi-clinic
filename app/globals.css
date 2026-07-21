@@ -427,9 +427,12 @@
   flex-direction: column;
   gap: 0.75rem;
   margin: 0 0 clamp(2.125rem, 4vw, 3.4375rem);
-  /* Same inset formula as .service-stream-rail below it, so the heading's left edge lines up
-     with the first card's left edge instead of drifting per breakpoint. */
-  padding-inline: max(0.75rem, calc((100vw - 65vw) / 2));
+  /* Was matched to .service-stream-rail's own inset (~17.5vw a side at desktop widths) so the
+     heading aligned with the first card — but that carousel gutter is generous by design (peek
+     space for horizontal scroll) and left the heading row with huge unused margins now that it
+     spans edge-to-edge with justify-between. Uses .apple-promotion-heading's tighter inset
+     instead, same as the rest of the page's content width. */
+  padding-inline: clamp(2rem, 2.3vw, 3rem);
   text-align: left;
 }
 .apple-services-heading h2 {
@@ -667,9 +670,6 @@
   }
 }
 @media (max-width: 47.999rem) {
-  .apple-services-heading {
-    padding-inline: max(1.25rem, calc((100vw - min(84vw, 27rem)) / 2));
-  }
   .service-stream-rail {
     padding-inline: max(1.25rem, calc((100vw - min(84vw, 27rem)) / 2));
   }
