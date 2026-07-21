@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowUpRight, ChevronDown, CircleHelp, MapPin, Sparkles } from 'lucide-react';
+import { ArrowUpRight, BadgeCheck, ChevronDown, CircleHelp, Clock, MapPin, Sparkles, Stethoscope } from 'lucide-react';
 import { site } from '@/lib/site';
 import { doctor, doctorEesha } from '@/lib/doctor';
 import { serviceCategories } from '@/lib/services';
@@ -276,6 +276,26 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* ── Trust strip: verifiable credibility signals ──────── */}
+      <section className="border-b border-olive/10 bg-cream">
+        <ul className="mx-auto grid max-w-6xl grid-cols-2 gap-x-6 gap-y-6 px-6 py-7 text-olive-deep sm:px-10 md:grid-cols-4 md:gap-8 md:px-12">
+          {[
+            { icon: Stethoscope, label: 'ดูแลโดยแพทย์เวชกรรม', sub: 'ประเมินทุกเคสก่อนหัตถการ' },
+            { icon: BadgeCheck, label: 'ใบอนุญาตสถานพยาบาล', sub: site.license },
+            { icon: MapPin, label: 'ใจกลางสุขุมวิท', sub: 'กรุงเทพฯ' },
+            { icon: Clock, label: 'เปิดทุกวัน', sub: site.hoursDisplay.short },
+          ].map(({ icon: Icon, label, sub }) => (
+            <li key={label} className="flex items-center gap-3">
+              <Icon className="size-5 shrink-0 text-forest" strokeWidth={1.5} aria-hidden="true" />
+              <div className="min-w-0">
+                <p className="text-[0.8rem] font-medium leading-tight">{label}</p>
+                <p className="mt-0.5 text-[0.72rem] leading-tight text-ink/55">{sub}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+
       {/* ── Services: Apple-inspired media stream ────────────── */}
       <section className="apple-services-section overflow-hidden">
         <Reveal className="apple-services-heading">
@@ -329,6 +349,45 @@ export default async function HomePage() {
             delay={80}
           />
         </div>
+      </section>
+
+      {/* ── Social proof: real reviews on Google & Instagram ─── */}
+      <section className="bg-cream px-6 py-20 md:py-28">
+        <Reveal className="mx-auto max-w-2xl text-center">
+          <p lang="en" className="text-[0.62rem] uppercase tracking-[0.3em] text-forest">
+            Reviews &amp; Results
+          </p>
+          <h2 className="mt-4 font-serif text-4xl text-olive-deep md:text-5xl">เสียงจากผู้ใช้บริการ</h2>
+          <p className="mx-auto mt-4 max-w-xl text-sm leading-[1.9] text-ink/60 md:text-base">
+            อ่านรีวิวจริงและผลลัพธ์ก่อน–หลังจากผู้ใช้บริการของเราได้บน Google และ Instagram
+            หรือสอบถามผลลัพธ์เฉพาะบุคคลกับทีมแพทย์ผ่าน LINE
+          </p>
+          <p className="mt-3 text-xs text-ink/40">*ผลลัพธ์ขึ้นอยู่กับสภาพผิวและปัญหาเฉพาะบุคคล</p>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <a
+              href={site.mapsUrl}
+              target="_blank"
+              rel="noopener"
+              className="inline-flex items-center gap-2 rounded-full bg-mint px-7 py-3 text-sm font-medium text-white transition-colors duration-200 hover:bg-forest"
+            >
+              ดูรีวิวบน Google <ArrowUpRight className="size-4" />
+            </a>
+            <a
+              href={site.instagram}
+              target="_blank"
+              rel="noopener"
+              className="inline-flex items-center gap-2 rounded-full border border-olive-deep/25 px-7 py-3 text-sm font-medium text-olive-deep transition-colors duration-200 hover:bg-olive-deep hover:text-sand"
+            >
+              Instagram {site.instagramHandle} <ArrowUpRight className="size-4" />
+            </a>
+            <Link
+              href="/reviews"
+              className="inline-flex items-center gap-1.5 rounded-full border border-olive-deep/25 px-7 py-3 text-sm font-medium text-olive-deep transition-colors duration-200 hover:bg-olive-deep hover:text-sand"
+            >
+              ดูหน้ารีวิวทั้งหมด
+            </Link>
+          </div>
+        </Reveal>
       </section>
 
       {/* ── Promotions: Apple-style peeking carousel ─────────── */}
