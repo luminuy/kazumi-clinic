@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { ACCESS_JWT_HEADER, verifyAdmin } from '@/lib/auth';
+import { ACCESS_COOKIE_NAME, ACCESS_JWT_HEADER, verifyAdmin } from '@/lib/auth';
 
 /**
  * The only gate on /admin. It runs before the route is resolved, so it covers the pages and the
@@ -13,7 +13,12 @@ import { ACCESS_JWT_HEADER, verifyAdmin } from '@/lib/auth';
  * nodejs_compat Worker as everything else (CLAUDE.md §0.4.2).
  */
 export async function middleware(request: NextRequest) {
-  const admin = await verifyAdmin(request.headers.get(ACCESS_JWT_HEADER));
+  // Prefer the header Access injects; fall back to the CF_Authorization cookie so paths the
+  // Access application doesn't proxy (e.g. /api/admin/* when the app only covers /admin) still
+  // authenticate. verifyAdmin checks the signature regardless, so neither source is trusted blind.
+  const jwt =
+    request.headers.get(ACCESS_JWT_HEADER) ?? request.cookies.get(ACCESS_COOKIE_NAME)?.value ?? null;
+  const admin = await verifyAdmin(jwt);
   if (!admin) return new NextResponse(null, { status: 404 });
 
   // Hand the verified identity down so pages/handlers don't each re-verify the JWT.
