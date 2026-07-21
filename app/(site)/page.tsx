@@ -310,7 +310,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── Physicians: Apple-style cards, photo on top ──────── */}
-      <section className="bg-[var(--store-surface)] px-4 pb-14 pt-14 md:px-6 md:pb-20 md:pt-16">
+      <section className="bg-[var(--store-surface)] px-4 py-12 md:px-6 md:py-20">
         <Reveal className="mx-auto mb-10 max-w-3xl text-center md:mb-12">
           <p lang="en" className="text-[0.62rem] uppercase tracking-[0.3em] text-[var(--store-muted)]">
             Physician Profiles
@@ -374,7 +374,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── Location: Apple-style accordion card ─────────────── */}
-      <section className="bg-cream py-20 md:py-28">
+      <section className="bg-cream py-20 md:py-32">
         <div className="mx-auto max-w-6xl px-4 md:px-6">
           <Reveal className="mb-8 flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
             <h2 className="font-serif text-4xl text-olive-deep md:text-5xl">มาเยี่ยมเรา</h2>
@@ -461,7 +461,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── Reviews + FAQ: paired two-column block ───────────── */}
-      <section className="bg-cream px-4 py-20 md:px-6 md:py-28">
+      <section className="bg-cream px-4 py-20 md:px-6 md:py-32">
         <div className="mx-auto grid max-w-6xl grid-cols-1 items-stretch gap-4 md:grid-cols-2 md:gap-5">
           {/* Reviews — voice of our patients */}
           <Reveal className="h-full">
