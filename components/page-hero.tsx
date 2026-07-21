@@ -21,8 +21,16 @@ export function PageHero({
   image?: string;
   imageAlt?: string;
 }) {
+  // With a photo behind it the band stays dark for legibility; without one it
+  // reads as a light Apple-style header (near-black text on the store surface).
+  const onImage = Boolean(image);
+
   return (
-    <section className="relative overflow-hidden bg-olive-deep px-6 pb-16 pt-28 text-sand">
+    <section
+      className={`relative overflow-hidden px-6 pb-16 pt-28 ${
+        onImage ? 'bg-olive-deep text-sand' : 'bg-[var(--store-surface)] text-olive-deep'
+      }`}
+    >
       {image && (
         <>
           <Image
@@ -40,24 +48,28 @@ export function PageHero({
       )}
 
       <div className="relative mx-auto max-w-6xl">
-        <nav className="flex flex-wrap items-center gap-1.5 text-xs text-sand/50">
+        <nav className={`flex flex-wrap items-center gap-1.5 text-xs ${onImage ? 'text-sand/50' : 'text-ink/45'}`}>
           {breadcrumb.map((b, i) => (
             <span key={b.name} className="flex items-center gap-1.5">
               {b.href ? (
-                <Link href={b.href} className="transition-colors hover:text-sand">
+                <Link href={b.href} className={`transition-colors ${onImage ? 'hover:text-sand' : 'hover:text-olive-deep'}`}>
                   {b.name}
                 </Link>
               ) : (
-                <span className="text-sand/80">{b.name}</span>
+                <span className={onImage ? 'text-sand/80' : 'text-ink/70'}>{b.name}</span>
               )}
-              {i < breadcrumb.length - 1 && <span className="text-sand/30">/</span>}
+              {i < breadcrumb.length - 1 && <span className={onImage ? 'text-sand/30' : 'text-ink/25'}>/</span>}
             </span>
           ))}
         </nav>
 
         {eyebrow && (
-          <div className="mt-10 flex items-center gap-3 text-xs uppercase tracking-[0.3em] text-sand/60">
-            <span className="h-px w-8 bg-clay" />
+          <div
+            className={`mt-10 flex items-center gap-3 text-xs uppercase tracking-[0.3em] ${
+              onImage ? 'text-sand/60' : 'text-forest'
+            }`}
+          >
+            <span className={`h-px w-8 ${onImage ? 'bg-clay' : 'bg-forest'}`} />
             {eyebrow}
           </div>
         )}
@@ -66,7 +78,11 @@ export function PageHero({
           {title}
         </h1>
 
-        {lead && <p className="mt-6 max-w-2xl text-sm leading-relaxed text-sand/70">{lead}</p>}
+        {lead && (
+          <p className={`mt-6 max-w-2xl text-sm leading-relaxed ${onImage ? 'text-sand/70' : 'text-ink/60'}`}>
+            {lead}
+          </p>
+        )}
       </div>
     </section>
   );

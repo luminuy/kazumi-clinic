@@ -8,36 +8,40 @@
    Base swatches: #c7cec7 sage-pale · #a7af9a sage · #7a7a5e khaki · #3d4e46 forest
    #c5ae9b clay · #4d573e olive · warm grey · cream. */
 :root {
-  --background: #eee9df;
-  --foreground: #26281f;
-  --card: #f6f3ec;
-  --card-foreground: #26281f;
-  --popover: #f6f3ec;
-  --popover-foreground: #26281f;
-  --primary: #4d573e;
-  --primary-foreground: #eee9df;
-  --secondary: #e2ddce;
-  --secondary-foreground: #3d4e46;
-  --muted: #e5e0d1;
-  --muted-foreground: #6b6f5c;
-  --accent: #c5ae9b;
-  --accent-foreground: #26281f;
+  /* Apple-style light theme (2026): white/grey neutrals, near-black text,
+     green kept as the single brand action colour. The former earthy tokens
+     below are remapped to cool Apple neutrals so the whole site re-tones
+     from one place — component classes keep their names. */
+  --background: #ffffff;
+  --foreground: #1d1d1f;
+  --card: #ffffff;
+  --card-foreground: #1d1d1f;
+  --popover: #ffffff;
+  --popover-foreground: #1d1d1f;
+  --primary: #1d1d1f;
+  --primary-foreground: #ffffff;
+  --secondary: #f5f5f7;
+  --secondary-foreground: #1d1d1f;
+  --muted: #f5f5f7;
+  --muted-foreground: #6e6e73;
+  --accent: #f5f5f7;
+  --accent-foreground: #1d1d1f;
   --destructive: #a8452f;
-  --border: #d8d1bf;
-  --input: #d8d1bf;
-  --ring: #4d573e;
+  --border: #d2d2d7;
+  --input: #d2d2d7;
+  --ring: #1d1d1f;
   --radius: 0.75rem;
 
-  /* brand scale */
-  --olive: #4d573e;
-  --olive-deep: #3d4e46;
-  --olive-light: #7a7a5e;
-  --sage: #a7af9a;
-  --sage-pale: #c7cec7;
-  --clay: #c5ae9b;
-  --sand: #eee9df;
-  --cream: #f6f3ec;
-  --ink: #26281f;
+  /* brand scale — remapped to Apple cool neutrals (green tokens kept below) */
+  --olive: #6e6e73;
+  --olive-deep: #1d1d1f;
+  --olive-light: #86868b;
+  --sage: #c7c7cc;
+  --sage-pale: #e8e8ed;
+  --clay: #86868b;
+  --sand: #f5f5f7;
+  --cream: #ffffff;
+  --ink: #1d1d1f;
   --line: #06c755;
   /* Green brand accent (2026 editorial redesign). forest = deep primary green,
      mint = bright green for key actions, mint-glow = light green on dark surfaces.
@@ -484,7 +488,7 @@
   flex-direction: column;
   justify-content: space-between;
   padding: clamp(1.5rem, 4vw, 4rem);
-  background: linear-gradient(135deg, var(--olive-deep), var(--forest));
+  background: linear-gradient(135deg, #1d1d1f, #2c2c2e);
   color: var(--mint-glow);
 }
 .service-stream-card__fallback span {

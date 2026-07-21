@@ -8,7 +8,7 @@ const legalLabels = ['Privacy Policy', 'Terms of Service', 'Career'];
 
 export default function Footer({ logoMark }: { logoMark: string }) {
   return (
-    <footer className="border-t border-olive/10 bg-[#e4e3db] text-olive-deep">
+    <footer className="border-t border-olive/10 bg-[#f5f5f7] text-olive-deep">
       <div className="mx-auto max-w-7xl px-5 py-12 sm:px-10 md:px-14 md:py-16 lg:px-20">
         <div className="grid gap-12 md:grid-cols-[1.2fr_0.8fr_0.8fr]">
           <div className="max-w-sm">
