@@ -694,9 +694,9 @@
     flex-basis: min(84vw, 27rem);
   }
   /* Taller cards on phones — the 1.87 landscape ratio left them looking cramped/short in the
-     stream; a near-square gives the overlaid copy room to breathe. */
+     stream; a portrait-leaning ratio gives the overlaid copy room to breathe. */
   .service-stream-card__link {
-    aspect-ratio: 1.28;
+    aspect-ratio: 1;
   }
   .service-stream-card__content {
     max-width: 88%;
