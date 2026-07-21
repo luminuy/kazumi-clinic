@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
-import { ExternalLink, MessageCircle, Star } from 'lucide-react';
+import { ExternalLink, Star } from 'lucide-react';
 import { site } from '@/lib/site';
 import { breadcrumbSchema } from '@/lib/schema';
 import { siteSocialImage } from '@/lib/metadata-images';
 import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/reveal';
 import { PageHero } from '@/components/page-hero';
+import { LineIcon } from '@/components/brand-icons';
 
 const pageTitle = 'รีวิว / ผลลัพธ์ก่อน-หลัง';
 const pageDescription = `รีวิวและผลลัพธ์ก่อน-หลังทำหัตถการที่ ${site.name} ย่านสุขุมวิท กรุงเทพฯ`;
@@ -56,7 +57,6 @@ export default function ReviewsPage() {
         eyebrow="Reviews / Before & After"
         title="รีวิว / ผลลัพธ์ก่อน-หลัง"
         lead={`ผลลัพธ์จากการทำหัตถการที่ ${site.name} — ดูรีวิวจากลูกค้าจริงและผลลัพธ์ก่อน-หลังทำ`}
-        breadcrumb={[{ name: 'หน้าหลัก', href: '/' }, { name: 'รีวิว / ผลลัพธ์ก่อน-หลัง' }]}
       />
 
       <section className="mx-auto max-w-6xl px-6 py-20">
@@ -90,7 +90,7 @@ export default function ReviewsPage() {
             size="lg"
             className="rounded-full bg-line px-8 text-white hover:bg-line/90"
           >
-            <MessageCircle className="size-4" />
+            <LineIcon className="size-4" />
             สอบถามผลลัพธ์ผ่าน LINE
           </Button>
         </div>

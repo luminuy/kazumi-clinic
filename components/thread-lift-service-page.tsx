@@ -1,10 +1,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowUpRight, MessageCircle, ShieldCheck, Stethoscope } from 'lucide-react';
+import { ArrowUpRight, ShieldCheck, Stethoscope } from 'lucide-react';
 import type { ServiceCategory, ServiceItem } from '@/lib/services';
 import { site } from '@/lib/site';
 import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
+import { LineIcon } from '@/components/brand-icons';
 
 /**
  * "4 เส้น" → { count: '4', unit: 'เส้น' } so the count can be set large with its unit small
@@ -82,25 +83,6 @@ export function ThreadLiftServicePage({
       {/* ── Hero ─────────────────────────────────────────────── */}
       <section className="px-6 pb-24 pt-24 sm:px-10 md:px-14 md:pb-28 md:pt-28 lg:px-20">
         <div className="mx-auto max-w-6xl">
-          <nav
-            aria-label="เส้นทางหน้า"
-            className="flex flex-wrap items-center gap-1.5 text-xs text-ink/40"
-          >
-            <Link href="/" className="transition-colors hover:text-olive-deep">
-              หน้าหลัก
-            </Link>
-            <span aria-hidden="true" className="text-ink/25">
-              /
-            </span>
-            <Link href="/services" className="transition-colors hover:text-olive-deep">
-              บริการ
-            </Link>
-            <span aria-hidden="true" className="text-ink/25">
-              /
-            </span>
-            <span className="text-ink/70">{service.title}</span>
-          </nav>
-
           <div className="mt-12 grid items-start gap-12 md:grid-cols-12 md:gap-10">
             <div className="md:col-span-7">
               <p lang="en" className="text-[0.68rem] uppercase tracking-[0.24em] text-ink/45">
@@ -218,7 +200,7 @@ export function ThreadLiftServicePage({
                 rel="noopener"
                 className="flex w-full items-center justify-center gap-3 bg-line px-10 py-4 text-[0.68rem] uppercase tracking-[0.18em] text-white transition-opacity duration-200 hover:opacity-90 active:scale-[0.98] md:w-auto"
               >
-                <MessageCircle aria-hidden="true" className="size-4" />
+                <LineIcon className="size-4" />
                 จองคิว / สอบถามราคา ผ่าน LINE
               </a>
               <p className="max-w-xs text-center text-[0.66rem] italic leading-[1.8] text-ink/45 md:text-right">

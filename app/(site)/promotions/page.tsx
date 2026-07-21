@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { MessageCircle, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { site } from '@/lib/site';
 import { activePromotions } from '@/lib/promotions';
 import { breadcrumbSchema } from '@/lib/schema';
@@ -9,6 +9,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Reveal } from '@/components/reveal';
 import { PageHero } from '@/components/page-hero';
+import { LineIcon } from '@/components/brand-icons';
 
 const pageTitle = 'โปรโมชั่น / แพ็กเกจ';
 const pageDescription = `โปรโมชั่นและแพ็กเกจราคาพิเศษของ ${site.name} — ฟิลเลอร์ โบท็อกซ์ สกินบูสเตอร์ และ IV Drip วิตามิน`;
@@ -63,7 +64,6 @@ export default function PromotionsPage() {
         eyebrow="Promotions & Pricing"
         title="โปรโมชั่น / แพ็กเกจ"
         lead={`โปรโมชั่นและแพ็กเกจราคาพิเศษประจำเดือนของ ${site.name} จองคิวหรือสอบถามรายละเอียดเพิ่มเติมผ่าน LINE`}
-        breadcrumb={[{ name: 'หน้าหลัก', href: '/' }, { name: 'โปรโมชั่น / แพ็กเกจ' }]}
       />
 
       <section className="mx-auto max-w-6xl px-6 py-20">
@@ -116,7 +116,7 @@ export default function PromotionsPage() {
           size="lg"
           className="mt-12 rounded-full bg-line px-8 text-white hover:bg-line/90"
         >
-          <MessageCircle className="size-4" />
+          <LineIcon className="size-4" />
           สอบถามโปรโมชั่นผ่าน LINE
         </Button>
       </section>

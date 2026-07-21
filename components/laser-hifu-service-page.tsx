@@ -1,10 +1,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { MessageCircle, ShieldCheck, Stethoscope } from 'lucide-react';
+import { ShieldCheck, Stethoscope } from 'lucide-react';
 import type { ServiceCategory, ServiceItem } from '@/lib/services';
 import { site } from '@/lib/site';
 import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
+import { LineIcon } from '@/components/brand-icons';
 
 function RecommendedSession({ item }: { item: ServiceItem }) {
   return (
@@ -52,7 +53,7 @@ function RecommendedSession({ item }: { item: ServiceItem }) {
         rel="noopener"
         className="mt-8 flex items-center justify-center gap-3 bg-olive-deep py-4 text-[0.68rem] uppercase tracking-[0.18em] text-sand transition-opacity duration-200 hover:opacity-90 active:scale-[0.99]"
       >
-        <MessageCircle aria-hidden="true" className="size-4" />
+        <LineIcon className="size-4" />
         จองคิว / สอบถามราคา ผ่าน LINE
       </a>
     </div>
@@ -96,25 +97,6 @@ export function LaserHifuServicePage({
         )}
 
         <div className="relative max-w-3xl">
-          <nav
-            aria-label="เส้นทางหน้า"
-            className="mb-10 flex flex-wrap items-center justify-center gap-1.5 text-xs text-ink/45"
-          >
-            <Link href="/" className="transition-colors hover:text-olive-deep">
-              หน้าหลัก
-            </Link>
-            <span aria-hidden="true" className="text-ink/25">
-              /
-            </span>
-            <Link href="/services" className="transition-colors hover:text-olive-deep">
-              บริการ
-            </Link>
-            <span aria-hidden="true" className="text-ink/25">
-              /
-            </span>
-            <span className="text-ink/70">{service.title}</span>
-          </nav>
-
           <p lang="en" className="text-[0.68rem] uppercase tracking-[0.3em] text-olive/60">
             {service.titleEn}
           </p>
@@ -219,7 +201,7 @@ export function LaserHifuServicePage({
                 rel="noopener"
                 className="inline-flex flex-1 items-center justify-center gap-3 bg-line px-8 py-4 text-[0.68rem] uppercase tracking-[0.18em] text-white transition-opacity duration-200 hover:opacity-90 active:scale-[0.98]"
               >
-                <MessageCircle aria-hidden="true" className="size-4" />
+                <LineIcon className="size-4" />
                 จองคิวผ่าน LINE
               </a>
               <Link

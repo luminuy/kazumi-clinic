@@ -262,21 +262,6 @@ export default async function ServiceCategoryPage({ params }: Props) {
               so bottom-aligning the text opened a dead gap above it. */}
           <div className="mx-auto grid max-w-6xl items-center gap-12 md:grid-cols-12 md:gap-10">
             <Reveal className="md:col-span-7">
-              <nav
-                aria-label="เส้นทางหน้า"
-                className="flex flex-wrap items-center gap-1.5 text-xs text-ink/40"
-              >
-                <Link href="/" className="transition-colors hover:text-olive-deep">
-                  หน้าหลัก
-                </Link>
-                <span className="text-ink/25">/</span>
-                <Link href="/services" className="transition-colors hover:text-olive-deep">
-                  บริการ
-                </Link>
-                <span className="text-ink/25">/</span>
-                <span className="text-ink/70">{service.title}</span>
-              </nav>
-
               <p
                 lang="en"
                 className="mt-10 text-[0.68rem] uppercase tracking-[0.24em] text-olive/60"

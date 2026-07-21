@@ -320,10 +320,7 @@ export default async function HomePage() {
       <section className="bg-[var(--store-surface)] px-4 py-12 md:px-6 md:py-20">
         <Reveal className="mx-auto mb-10 flex max-w-6xl flex-wrap items-end justify-between gap-x-6 gap-y-3 md:mb-12">
           <div>
-            <p lang="en" className="text-[0.62rem] uppercase tracking-[0.3em] text-[var(--store-muted)]">
-              Physician Profiles
-            </p>
-            <h2 className="mt-3 font-serif text-4xl text-[var(--store-ink)] md:text-5xl">ทีมแพทย์ของเรา</h2>
+            <h2 className="font-serif text-4xl text-[var(--store-ink)] md:text-5xl">ทีมแพทย์ของเรา</h2>
             <p className="mt-4 max-w-2xl text-sm leading-[1.8] text-[var(--store-muted)]">
               รู้จักประวัติการศึกษา ขอบเขตการดูแล และข้อมูลใบประกอบวิชาชีพของแพทย์ประจำคลินิก
             </p>

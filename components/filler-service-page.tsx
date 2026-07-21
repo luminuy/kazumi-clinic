@@ -1,12 +1,13 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, FlaskConical, MessageCircle, ShieldCheck, Syringe } from 'lucide-react';
+import { ArrowRight, FlaskConical, ShieldCheck, Syringe } from 'lucide-react';
 import type { ServiceCategory } from '@/lib/services';
 import { doctor } from '@/lib/doctor';
 import { site } from '@/lib/site';
 import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/reveal';
 import { SectionLabel } from '@/components/page-hero';
+import { LineIcon } from '@/components/brand-icons';
 
 export function FillerServicePage({
   service,
@@ -23,24 +24,6 @@ export function FillerServicePage({
       <section className="px-6 pb-20 pt-24 md:px-10 md:pb-24 md:pt-28">
         <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-12 lg:gap-14">
           <div className="lg:col-span-7">
-            <nav
-              aria-label="Breadcrumb"
-              className="mb-8 flex items-center gap-2 text-xs text-ink/50"
-            >
-              <Link href="/" className="transition-colors duration-150 hover:text-olive-deep">
-                หน้าหลัก
-              </Link>
-              <span aria-hidden="true">/</span>
-              <Link
-                href="/services"
-                className="transition-colors duration-150 hover:text-olive-deep"
-              >
-                บริการ
-              </Link>
-              <span aria-hidden="true">/</span>
-              <span className="text-olive-deep">{service.title}</span>
-            </nav>
-
             <p className="section-eyebrow">Medical Aesthetic Excellence</p>
             {/* One line, at a readable size. The old clamp(4rem,9vw,8rem) pushed "(ฟิลเลอร์)" onto
                 its own line and left the column mostly empty space. */}
@@ -235,7 +218,7 @@ export function FillerServicePage({
               render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
               className="h-14 rounded-none bg-sand px-8 text-olive-deep transition-[transform,background-color] duration-150 hover:bg-cream active:scale-[0.97]"
             >
-              <MessageCircle className="size-4" />
+              <LineIcon className="size-4" />
               จองคิว {service.title} ผ่าน LINE
             </Button>
             <Button
