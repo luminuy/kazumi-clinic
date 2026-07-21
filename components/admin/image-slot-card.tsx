@@ -9,6 +9,25 @@ import { cn } from '@/lib/utils';
 
 type Status = { kind: 'idle' | 'saving' | 'saved' } | { kind: 'error'; message: string };
 
+/**
+ * Turns a failed response into a message worth reading. The auth gate answers with an empty-body
+ * 404 when the session isn't recognised, so calling res.json() straight away threw "Unexpected end
+ * of JSON input" — read the body defensively and fall back to the status instead.
+ */
+async function errorMessage(res: Response, fallback: string): Promise<string> {
+  const text = await res.text().catch(() => '');
+  if (text) {
+    try {
+      const data = JSON.parse(text) as { error?: string };
+      if (data.error) return data.error;
+    } catch {
+      // Non-JSON body — fall through to the status-based message.
+    }
+  }
+  if (res.status === 401 || res.status === 404) return 'เซสชันหมดอายุ — โหลดหน้านี้ใหม่แล้วลองอีกครั้ง';
+  return `${fallback} (${res.status})`;
+}
+
 export type ImageSlot = SiteImageSpec & {
   /**
    * What's live right now — the clinic's upload if there is one, else the shipped default.
@@ -35,8 +54,7 @@ export function ImageSlotCard({ slot }: { slot: ImageSlot }) {
 
     try {
       const res = await fetch('/api/admin/images', { method: 'POST', body });
-      const data = (await res.json()) as { error?: string };
-      if (!res.ok) throw new Error(data.error ?? 'อัปโหลดไม่สำเร็จ');
+      if (!res.ok) throw new Error(await errorMessage(res, 'อัปโหลดไม่สำเร็จ'));
       setStatus({ kind: 'saved' });
       // Pull the new public ID down from the server rather than guessing it client-side.
       router.refresh();
@@ -56,8 +74,7 @@ export function ImageSlotCard({ slot }: { slot: ImageSlot }) {
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ key: slot.key }),
       });
-      const data = (await res.json()) as { error?: string };
-      if (!res.ok) throw new Error(data.error ?? 'คืนค่าเริ่มต้นไม่สำเร็จ');
+      if (!res.ok) throw new Error(await errorMessage(res, 'คืนค่าเริ่มต้นไม่สำเร็จ'));
       setStatus({ kind: 'saved' });
       router.refresh();
     } catch (error) {
