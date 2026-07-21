@@ -6,12 +6,19 @@ import { cloudAssets } from './cloud';
 
 export type ServiceItem = {
   /**
-   * Stable id for hanging per-item things off this row — currently its /admin image slot, via
-   * `itemImageKey` in lib/site-images.ts. That makes it a D1 key by proxy: renaming one silently
-   * drops the photo the clinic uploaded for it. Add ids freely; don't rename them.
+   * Stable id, and the primary key of the `service_products` D1 table the clinic edits through
+   * /admin. Every hardcoded item carries one so an admin edit/delete can target it; renaming one
+   * silently orphans the clinic's edits and uploaded photo for that product. Add ids freely;
+   * don't rename them. Optional only so brand-new drafts can be built before an id is assigned.
    */
   id?: string;
   name: string;
+  /**
+   * Cloudinary public ID for this product's own photo, when the clinic has uploaded one through
+   * /admin. Never set in the hardcoded defaults — it's populated by the product override layer
+   * (lib/service-products-store.ts) at request time, same idea as the site image overrides.
+   */
+  imagePublicId?: string;
   detail?: string;
   /** English tagline from the program poster, shown under the name. */
   tagline?: string;
@@ -113,7 +120,9 @@ export const serviceCategories: ServiceCategory[] = [
       'ฉีดโบทูลินั่มท็อกซินโดยแพทย์ ลดริ้วรอยหน้าผาก หางตา และร่องระหว่างคิ้ว ปรับกรามให้เรียว ยกหางคิ้ว และลดเหงื่อ กำหนดขนาดยาเฉพาะบุคคลตามการประเมินของแพทย์',
     // No clinic-supplied hero yet; image listings intentionally render the category icon instead
     // of borrowing an unrelated treatment photo.
-    items: [{ name: 'Botulinum Toxin Neuro', detail: '100 U', priceFrom: 8990, unit: 'ครั้ง' }],
+    items: [
+      { id: 'botox-neuro-100u', name: 'Botulinum Toxin Neuro', detail: '100 U', priceFrom: 8990, unit: 'ครั้ง' },
+    ],
   },
   {
     slug: 'thread-lift',
@@ -125,9 +134,9 @@ export const serviceCategories: ServiceCategory[] = [
     // TODO: no hero photo in Cloudinary yet, so this page ships without an OG image.
     // Upload one and set `heroImage` to give it a link preview.
     items: [
-      { name: 'ไหมก้างปลา PDO', detail: '4 เส้น', unit: 'ครั้ง' },
-      { name: 'ไหมก้างปลา PDO', detail: '6 เส้น', unit: 'ครั้ง' },
-      { name: 'ไหมก้างปลา PDO', detail: '8 เส้น', unit: 'ครั้ง' },
+      { id: 'thread-lift-pdo-4', name: 'ไหมก้างปลา PDO', detail: '4 เส้น', unit: 'ครั้ง' },
+      { id: 'thread-lift-pdo-6', name: 'ไหมก้างปลา PDO', detail: '6 เส้น', unit: 'ครั้ง' },
+      { id: 'thread-lift-pdo-8', name: 'ไหมก้างปลา PDO', detail: '8 เส้น', unit: 'ครั้ง' },
     ],
   },
   {
@@ -141,6 +150,7 @@ export const serviceCategories: ServiceCategory[] = [
     // Upload one and set `heroImage` to give it a link preview.
     items: [
       {
+        id: 'collagen-karisma-rh',
         name: 'Karisma Rh Collagen',
         detail: 'Made in Italy',
         tagline: 'Rh Collagen',
@@ -168,6 +178,7 @@ export const serviceCategories: ServiceCategory[] = [
     heroAlt: 'ใบหน้าผู้หญิงท่ามกลางเงาใบไม้และแสงแดดอ่อน',
     items: [
       {
+        id: 'skin-booster-oxelle',
         name: 'Oxelle Skin Booster',
         detail: 'Product from Italy',
         tagline: 'Skin Boosters',
@@ -196,6 +207,7 @@ export const serviceCategories: ServiceCategory[] = [
     // botox figures these are catalogue prices, not May promo prices — so they're safe to show.
     items: [
       {
+        id: 'iv-aura-bright-express',
         collection: 'Essential Glow Collection',
         name: 'Aura Bright Express',
         detail: 'IV Drip Vitamin',
@@ -203,6 +215,7 @@ export const serviceCategories: ServiceCategory[] = [
         unit: 'ครั้ง',
       },
       {
+        id: 'iv-snow-white-intensive',
         collection: 'Essential Glow Collection',
         name: 'Snow White Intensive',
         detail: 'IV Drip Vitamin',
@@ -210,6 +223,7 @@ export const serviceCategories: ServiceCategory[] = [
         unit: 'ครั้ง',
       },
       {
+        id: 'iv-detox-restore',
         collection: 'Essential Glow Collection',
         name: 'Detox Restore',
         detail: 'IV Drip Vitamin',
@@ -217,6 +231,7 @@ export const serviceCategories: ServiceCategory[] = [
         unit: 'ครั้ง',
       },
       {
+        id: 'iv-energy-reset',
         collection: 'Recovery & Energy Collection',
         name: 'Energy Reset',
         detail: 'IV Drip Vitamin',
@@ -224,6 +239,7 @@ export const serviceCategories: ServiceCategory[] = [
         unit: 'ครั้ง',
       },
       {
+        id: 'iv-ala-metabolic-glow',
         collection: 'Recovery & Energy Collection',
         name: 'ALA Metabolic Glow',
         detail: 'IV Drip Vitamin',
@@ -231,6 +247,7 @@ export const serviceCategories: ServiceCategory[] = [
         unit: 'ครั้ง',
       },
       {
+        id: 'iv-super-max-signature',
         collection: 'Signature Collection',
         name: 'Super Max Signature',
         detail: 'IV Drip Vitamin',
@@ -238,6 +255,7 @@ export const serviceCategories: ServiceCategory[] = [
         unit: 'ครั้ง',
       },
       {
+        id: 'iv-premium-bespoke',
         collection: 'Signature Collection',
         name: 'Premium Bespoke',
         detail: 'โปรแกรมเฉพาะบุคคล',
@@ -256,15 +274,16 @@ export const serviceCategories: ServiceCategory[] = [
     // TODO: no hero photo in Cloudinary yet, so this page ships without an OG image.
     // Upload one and set `heroImage` to give it a link preview.
     items: [
-      { name: 'NCTF 135 HA + Oxelle', detail: 'โปรแกรมคู่', unit: 'ครั้ง' },
+      { id: 'meso-nctf-oxelle', name: 'NCTF 135 HA + Oxelle', detail: 'โปรแกรมคู่', unit: 'ครั้ง' },
       {
+        id: 'meso-white-complex',
         name: 'White Complex',
         detail: 'Nexus Pharma',
         benefits: ['ฟื้นฟูผิว ลดริ้วรอย ฝ้า กระ ด้วยกลูต้าไธโอนบริสุทธิ์'],
         unit: 'ครั้ง',
       },
-      { name: 'เมโสบำรุงผิว', detail: 'เลือกสูตรตามสภาพผิว', unit: 'ครั้ง' },
-      { name: 'เมโสสลายไขมันเฉพาะจุด', detail: 'แก้ม / เหนียง', unit: 'ครั้ง' },
+      { id: 'meso-nourish', name: 'เมโสบำรุงผิว', detail: 'เลือกสูตรตามสภาพผิว', unit: 'ครั้ง' },
+      { id: 'meso-fat-dissolve', name: 'เมโสสลายไขมันเฉพาะจุด', detail: 'แก้ม / เหนียง', unit: 'ครั้ง' },
     ],
   },
   // ── Group 3 · Skin-concern treatments & lifting devices ──────────────────────
@@ -278,8 +297,8 @@ export const serviceCategories: ServiceCategory[] = [
     // TODO: no hero photo in Cloudinary yet, so this page ships without an OG image.
     // Upload one and set `heroImage` to give it a link preview.
     items: [
-      { name: 'โปรแกรมดูแลสิว', detail: 'แบ่งระดับตามความรุนแรง', unit: 'ครั้ง' },
-      { name: 'โปรแกรมฟื้นฟูหลุมสิว', detail: 'ประเมินโดยแพทย์', unit: 'ครั้ง' },
+      { id: 'acne-care-program', name: 'โปรแกรมดูแลสิว', detail: 'แบ่งระดับตามความรุนแรง', unit: 'ครั้ง' },
+      { id: 'acne-scar-program', name: 'โปรแกรมฟื้นฟูหลุมสิว', detail: 'ประเมินโดยแพทย์', unit: 'ครั้ง' },
     ],
   },
   {
@@ -291,7 +310,9 @@ export const serviceCategories: ServiceCategory[] = [
       'โปรแกรมยกกระชับผิวหน้าด้วยเครื่องมือแพทย์ HIFU และเลเซอร์ ช่วยกระชับผิวที่หย่อนคล้อยและดูแลผิวให้เรียบเนียน แพทย์ประเมินระดับพลังงานและตำแหน่งที่เหมาะสมกับแต่ละบุคคล',
     // TODO: no hero photo in Cloudinary yet, so this page ships without an OG image.
     // Upload one and set `heroImage` to give it a link preview.
-    items: [{ name: 'HIFU ยกกระชับผิวหน้า', detail: 'ประเมินโดยแพทย์', unit: 'ครั้ง' }],
+    items: [
+      { id: 'laser-hifu-lifting', name: 'HIFU ยกกระชับผิวหน้า', detail: 'ประเมินโดยแพทย์', unit: 'ครั้ง' },
+    ],
   },
 ];
 

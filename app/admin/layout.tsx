@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { headers } from 'next/headers';
-import { ImageIcon, LogOut, ExternalLink } from 'lucide-react';
+import { ImageIcon, LogOut, ExternalLink, Package } from 'lucide-react';
 import { site } from '@/lib/site';
 import { cld } from '@/lib/cloud';
 
@@ -42,6 +42,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             >
               <ImageIcon className="size-4" />
               รูปภาพ
+            </Link>
+            <Link
+              href="/admin/products"
+              className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-olive-deep hover:bg-olive/10"
+            >
+              <Package className="size-4" />
+              สินค้า
             </Link>
             <a
               href="/"
