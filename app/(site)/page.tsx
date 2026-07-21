@@ -298,7 +298,7 @@ export default async function HomePage() {
       {/* ── Services: Apple-inspired media stream ────────────── */}
       <section className="apple-services-section overflow-hidden">
         <Reveal className="apple-services-heading">
-          <div className="flex flex-wrap items-baseline gap-x-6 gap-y-2">
+          <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
             <h2>บริการของเรา</h2>
             <Link
               href="/services"
