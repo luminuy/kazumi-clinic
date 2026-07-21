@@ -47,42 +47,48 @@ export default function Header({ logoMark }: { logoMark: string }) {
         <nav className="hidden gap-6 text-sm text-foreground/80 md:flex">
           {navItems.map((item) =>
             item.href === '/services' ? (
-              <div key={item.href} className="group relative">
+              <div key={item.href} className="group">
                 <Link href={item.href} className="flex items-center gap-1 py-2 hover:text-primary">
                   {item.label}
                   <ChevronDown className="size-3.5 transition-transform group-hover:rotate-180 group-focus-within:rotate-180" />
                 </Link>
 
-                <div className="invisible absolute left-1/2 top-full z-50 w-[44rem] -translate-x-1/2 pt-3 opacity-0 transition-[opacity,visibility] group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-                  <div className="grid grid-cols-2 gap-x-8 gap-y-6 rounded-2xl border border-olive/15 bg-cream p-7 shadow-xl shadow-olive-deep/5">
-                    {serviceGroups.map(({ group, categories }) => (
-                      <div key={group.title}>
-                        <p className="flex items-start gap-2 text-xs font-medium leading-snug text-olive-deep">
-                          <span aria-hidden="true">{group.glyph}</span>
-                          {group.title}
-                        </p>
-                        <ul className="mt-2.5 space-y-1.5 border-l border-olive/15 pl-3">
-                          {categories.map((c) => (
-                            <li key={c.slug}>
-                              <Link
-                                href={`/${c.slug}`}
-                                className="flex items-center gap-2 text-sm text-ink/70 hover:text-primary"
-                              >
-                                <ServiceIcon slug={c.slug} className="size-3.5 text-olive-light" />
-                                {c.title}
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
+                {/* Full-bleed panel: header has position:sticky, which is a positioned ancestor,
+                    so this can sit `absolute inset-x-0` off the header itself rather than the
+                    narrow trigger — same edge-to-edge mega-menu shape as apple.com's nav. */}
+                <div className="invisible absolute inset-x-0 top-full z-50 opacity-0 transition-[opacity,visibility] group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+                  <div className="border-b border-olive/10 bg-[var(--store-surface)] shadow-[0_24px_48px_-32px_rgb(38_40_31/0.25)]">
+                    <div className="mx-auto grid max-w-6xl grid-cols-3 gap-x-10 gap-y-9 px-6 py-10">
+                      {serviceGroups.map(({ group, categories }) => (
+                        <div key={group.title}>
+                          <p className="text-sm font-semibold leading-snug text-[var(--store-ink)]">
+                            {group.title}
+                          </p>
+                          <ul className="mt-3 space-y-2">
+                            {categories.map((c) => (
+                              <li key={c.slug}>
+                                <Link
+                                  href={`/${c.slug}`}
+                                  className="text-sm text-[var(--store-muted)] transition-colors hover:text-primary"
+                                >
+                                  {c.title}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="border-t border-olive/10 px-6 py-4">
+                      <div className="mx-auto max-w-6xl">
+                        <Link
+                          href="/services"
+                          className="inline-flex items-center gap-1.5 text-sm text-forest hover:text-mint"
+                        >
+                          ดูบริการทั้งหมด <ArrowRight className="size-4" />
+                        </Link>
                       </div>
-                    ))}
-
-                    <Link
-                      href="/services"
-                      className="col-span-2 flex items-center gap-1.5 border-t border-olive/15 pt-4 text-sm text-olive hover:text-olive-deep"
-                    >
-                      ดูบริการทั้งหมด <ArrowRight className="size-4" />
-                    </Link>
+                    </div>
                   </div>
                 </div>
               </div>
