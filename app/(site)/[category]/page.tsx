@@ -11,9 +11,10 @@ import {
   type ServiceItem,
 } from '@/lib/services';
 import { serviceItemListSchema, breadcrumbSchema } from '@/lib/schema';
+import { getCategoryItems } from '@/lib/service-products-store';
 import { getImage, getImageOverrides } from '@/lib/site-images-store';
 import { socialImage } from '@/lib/metadata-images';
-import { categoryImageKey, itemImageKey } from '@/lib/site-images';
+import { categoryImageKey } from '@/lib/site-images';
 import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
 import { LineIcon } from '@/components/brand-icons';
@@ -178,8 +179,12 @@ function BookingCta({ service, hasPrice }: { service: ServiceCategory; hasPrice:
 
 export default async function ServiceCategoryPage({ params }: Props) {
   const { category } = await params;
-  const service = getServiceBySlug(category);
-  if (!service) notFound();
+  const base = getServiceBySlug(category);
+  if (!base) notFound();
+
+  // Items resolved through the /admin override layer (edits, additions, removals). Category
+  // structure itself stays in code — only the product list is editable.
+  const service: ServiceCategory = { ...base, items: await getCategoryItems(category) };
 
   // A hero the clinic replaced through /admin wins over the one compiled into lib/services.ts.
   const overrides = await getImageOverrides();
@@ -197,11 +202,11 @@ export default async function ServiceCategoryPage({ params }: Props) {
 
   // Per-item product shots for the filler cards. Resolved here, in the server component, so the
   // page component never touches the override layer — same rule the atlas and carousel follow.
+  // Per-product photos now travel on the merged item itself (managed at /admin/products),
+  // resolved here so the page component never touches the override layer.
   const itemImages: Record<string, string> = {};
   for (const item of service.items) {
-    const key = item.id ? itemImageKey[item.id] : undefined;
-    const publicId = key ? overrides.get(key)?.public_id : undefined;
-    if (item.id && publicId) itemImages[item.id] = publicId;
+    if (item.id && item.imagePublicId) itemImages[item.id] = item.imagePublicId;
   }
 
   // Filler and thread lift each have a bespoke page built to their own supplied design; every

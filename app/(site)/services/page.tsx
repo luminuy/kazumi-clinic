@@ -10,6 +10,7 @@ import { categoryImageKey, posterKeyByDefaultId } from '@/lib/site-images';
 import { siteSocialImage } from '@/lib/metadata-images';
 import { promotionPosters } from '@/lib/promotions';
 import { serviceCategories, type ServiceCategory } from '@/lib/services';
+import { getAllMergedCategories } from '@/lib/service-products-store';
 import { serviceCategoryListSchema, breadcrumbSchema } from '@/lib/schema';
 import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
@@ -128,6 +129,9 @@ export default async function ServicesPage() {
   const overrides = await getImageOverrides();
   const pick = (key: string, fallback: string) => overrides.get(key)?.public_id ?? fallback;
 
+  // Merged so a product the clinic renamed/added through /admin shows in each card's program list.
+  const categories = await getAllMergedCategories();
+
   // Posters resolve here, in the server component, so the client carousel stays free of the
   // override layer and the D1 read happens once per render.
   const posters = promotionPosters.map((poster) => {
@@ -242,7 +246,7 @@ export default async function ServicesPage() {
           </div>
 
           <div className="grid gap-12 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3 lg:gap-10">
-            {serviceCategories.map((category, index) => {
+            {categories.map((category, index) => {
               const key = categoryImageKey[category.slug];
               const image = key ? pick(key, category.heroImage ?? '') : category.heroImage;
               return (
