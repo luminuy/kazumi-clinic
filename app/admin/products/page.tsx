@@ -69,14 +69,14 @@ export default async function AdminProductsPage() {
         }
       />
 
-      <div className="mt-2">
-        <SectionNav
-          items={categories.map((category) => ({
-            id: `products-${category.slug}`,
-            label: category.title,
-          }))}
-        />
-      </div>
+      {/* Direct child of <main> on purpose: position:sticky can only travel within its parent's
+          box, so wrapping this in a short div would pin it for a few pixels and drop it. */}
+      <SectionNav
+        items={categories.map((category) => ({
+          id: `products-${category.slug}`,
+          label: category.title,
+        }))}
+      />
 
       <div className="mt-10 space-y-16">
         {categories.map((category) => (
