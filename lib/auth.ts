@@ -60,6 +60,15 @@ export async function verifyAdmin(jwt: string | null | undefined): Promise<Admin
 /** Header Cloudflare Access puts the signed identity in. */
 export const ACCESS_JWT_HEADER = 'cf-access-jwt-assertion';
 
+/**
+ * Cookie Access also stores the same signed JWT in, scoped to the whole hostname (Path=/).
+ * Access only injects ACCESS_JWT_HEADER on requests it actually proxies, so a browser fetch to a
+ * path the Access application doesn't cover (e.g. /api/admin/* when the app is scoped to /admin)
+ * arrives without the header — but still carries this cookie. Verifying it is just as safe: the
+ * signature is checked against Cloudflare's JWKS either way, so a forged cookie can't pass.
+ */
+export const ACCESS_COOKIE_NAME = 'CF_Authorization';
+
 /** True when the deploy has Access wired up at all — used to explain the 404 in logs/UI. */
 export function isAccessConfigured() {
   return readConfig() !== null;
