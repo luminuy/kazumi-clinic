@@ -300,8 +300,9 @@ export default async function HomePage() {
         <Reveal className="apple-services-heading">
           <div>
             <h2>บริการของเรา.</h2>
-            <p lang="en">
-              {site.taglineTh}
+            <p>
+              ฟิลเลอร์ โบท็อกซ์ IV Drip วิตามิน สกินบูสเตอร์ คอลลาเจนบูสเตอร์ และอีกหลายโปรแกรม —
+              ประเมินและดูแลโดยแพทย์ทุกขั้นตอน
             </p>
           </div>
         </Reveal>
