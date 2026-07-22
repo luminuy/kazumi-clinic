@@ -15,6 +15,7 @@ import { serviceCategoryListSchema, breadcrumbSchema } from '@/lib/schema';
 import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
 import { PromotionCarousel } from '@/components/promotion-carousel';
+import { LineIcon } from '@/components/brand-icons';
 
 const pageTitle = 'บริการ / หัตถการ';
 const pageDescription = `บริการและหัตถการทั้งหมดของ ${site.name} — ฟิลเลอร์ โบท็อกซ์ สกินบูสเตอร์ คอลลาเจนบูสเตอร์ และ IV Drip วิตามิน ดูแลโดยแพทย์`;
@@ -197,13 +198,14 @@ export default async function ServicesPage() {
                 href={site.lineUrl}
                 target="_blank"
                 rel="noopener"
-                className="border border-olive-deep bg-olive-deep px-8 py-4 text-[0.72rem] tracking-[0.06em] text-sand transition-opacity duration-200 hover:opacity-90 active:scale-[0.98]"
+                className="inline-flex items-center justify-center gap-2.5 rounded-full bg-[#06C755] px-7 py-3.5 text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.98]"
               >
+                <LineIcon className="size-4" />
                 ปรึกษาแพทย์ผ่าน LINE
               </a>
               <a
                 href="#treatment-atlas"
-                className="border border-olive-deep px-8 py-4 text-[0.72rem] tracking-[0.06em] text-olive-deep transition-colors duration-200 hover:bg-olive-deep/5"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-olive-deep/30 bg-transparent px-7 py-3.5 text-xs font-medium text-olive-deep transition-all duration-200 hover:border-olive-deep hover:bg-olive-deep/5 active:scale-[0.98]"
               >
                 ดูหัตถการทั้งหมด
               </a>

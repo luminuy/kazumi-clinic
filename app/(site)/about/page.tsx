@@ -470,9 +470,9 @@ export default async function AboutPage() {
                 href={site.lineUrl}
                 target="_blank"
                 rel="noopener"
-                className="group flex items-center justify-between bg-olive-deep p-6 text-sand transition-opacity duration-200 hover:opacity-90"
+                className="group flex items-center justify-between rounded-full bg-[#06C755] px-8 py-4 text-white transition-all duration-200 hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.98]"
               >
-                <span className="flex items-center gap-2.5 text-[0.68rem] uppercase tracking-[0.24em]">
+                <span className="flex items-center gap-2.5 text-xs font-medium tracking-[0.1em]">
                   <LineIcon className="size-4" />
                   จองคิวผ่าน LINE
                 </span>
@@ -483,9 +483,9 @@ export default async function AboutPage() {
               </a>
               <Link
                 href="/services"
-                className="group flex items-center justify-between border border-olive-deep p-6 text-olive-deep transition-colors duration-200 hover:bg-olive-deep hover:text-sand"
+                className="group flex items-center justify-between rounded-full border border-olive-deep/30 bg-transparent px-8 py-4 text-olive-deep transition-all duration-200 hover:border-olive-deep hover:bg-olive-deep/5 active:scale-[0.98]"
               >
-                <span className="text-[0.68rem] uppercase tracking-[0.24em]">ดูบริการทั้งหมด</span>
+                <span className="text-xs font-medium tracking-[0.1em]">ดูบริการทั้งหมด</span>
                 <ArrowRight
                   aria-hidden="true"
                   className="size-4 transition-transform duration-200 group-hover:translate-x-1"

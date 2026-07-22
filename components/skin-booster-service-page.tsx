@@ -71,9 +71,9 @@ function TreatmentCard({ item }: { item: ServiceItem }) {
           target="_blank"
           rel="noopener"
           aria-label={`จองคิว ${item.name} ผ่าน LINE`}
-          className="bg-olive-deep px-6 py-3 text-[0.66rem] uppercase tracking-[0.18em] text-sand transition-opacity duration-200 hover:opacity-90 active:scale-[0.98]"
+          className="rounded-full bg-[#06C755] px-5 py-2.5 text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] active:scale-[0.98]"
         >
-          จองคิว
+          จองผ่าน LINE
         </a>
       </div>
     </article>
@@ -222,7 +222,7 @@ export function SkinBoosterServicePage({
               href={site.lineUrl}
               target="_blank"
               rel="noopener"
-              className="inline-flex w-full max-w-xs items-center justify-center gap-3 bg-sand px-8 py-4 text-[0.68rem] uppercase tracking-[0.2em] text-olive-deep transition-colors duration-200 hover:bg-cream active:scale-[0.98]"
+              className="inline-flex w-full max-w-xs items-center justify-center gap-2.5 rounded-full bg-[#06C755] px-8 py-3.5 text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.98]"
             >
               <LineIcon className="size-4" />
               จองคิวผ่าน LINE

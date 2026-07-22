@@ -158,7 +158,7 @@ function BookingCta({ service, hasPrice }: { service: ServiceCategory; hasPrice:
         href={site.lineUrl}
         target="_blank"
         rel="noopener"
-        className="flex w-full items-center justify-center gap-2.5 bg-olive-deep py-4 text-center text-[0.7rem] uppercase tracking-[0.18em] text-sand transition-opacity duration-200 hover:opacity-90 active:scale-[0.99]"
+        className="flex w-full items-center justify-center gap-2.5 rounded-full bg-[#06C755] py-4 text-center text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.98]"
       >
         <LineIcon className="size-4" />
         จองคิว {service.title} ผ่าน LINE
@@ -457,14 +457,14 @@ export default async function ServiceCategoryPage({ params }: Props) {
                 href={site.lineUrl}
                 target="_blank"
                 rel="noopener"
-                className="flex w-full items-center justify-center gap-2.5 border border-olive-deep bg-olive-deep px-10 py-4 text-[0.7rem] uppercase tracking-[0.18em] text-sand transition-opacity duration-200 hover:opacity-90 sm:w-auto"
+                className="flex w-full items-center justify-center gap-2.5 rounded-full bg-[#06C755] px-8 py-3.5 text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.98] sm:w-auto"
               >
                 <LineIcon className="size-4" />
                 จองคิวผ่าน LINE
               </a>
               <Link
                 href="/services"
-                className="group inline-flex w-full items-center justify-center gap-2 border border-olive-deep px-10 py-4 text-[0.7rem] uppercase tracking-[0.18em] text-olive-deep transition-colors duration-200 hover:bg-olive-deep/5 sm:w-auto"
+                className="group inline-flex w-full items-center justify-center gap-2 rounded-full border border-olive-deep/30 bg-transparent px-8 py-3.5 text-xs font-medium text-olive-deep transition-all duration-200 hover:border-olive-deep hover:bg-olive-deep/5 active:scale-[0.98] sm:w-auto"
               >
                 ดูบริการอื่น
                 <ArrowUpRight className="size-3.5 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
