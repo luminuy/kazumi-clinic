@@ -9,23 +9,23 @@ import { LineIcon } from '@/components/brand-icons';
 
 function RecommendedSession({ item }: { item: ServiceItem }) {
   return (
-    <div className="border border-olive/10 bg-sand p-8 md:p-10">
+    <div className="rounded-3xl border border-black/[0.08] bg-[var(--store-surface)] p-8 shadow-sm md:p-10">
       <div className="flex items-start justify-between gap-6">
         <div>
-          <h3 className="font-serif text-2xl text-olive-deep md:text-3xl">{item.name}</h3>
-          {item.detail && <p className="mt-2 text-sm leading-[1.9] text-ink/60">{item.detail}</p>}
+          <h3 className="font-serif text-2xl text-[var(--store-ink)] md:text-3xl">{item.name}</h3>
+          {item.detail && <p className="mt-2 text-sm leading-[1.9] text-[var(--store-muted)]">{item.detail}</p>}
         </div>
         <div className="shrink-0 text-right">
-          <p lang="en" className="text-[0.62rem] uppercase tracking-[0.18em] text-olive/50">
+          <p lang="en" className="text-[0.62rem] uppercase tracking-[0.18em] text-[var(--store-muted)]">
             Price
           </p>
           {/* The reference prints "สอบถามราคา" here, and lib/services.ts has no price for this
               category, so the two agree — no invented figure. */}
-          <p className="mt-1 font-serif text-lg text-olive-deep">
+          <p className="mt-1 font-serif text-lg text-[var(--store-ink)]">
             {item.priceFrom !== undefined ? (
               <>
                 {item.priceFrom.toLocaleString('th-TH')}
-                <span className="ml-1 text-xs text-ink/50"> บาท / {item.unit}</span>
+                <span className="ml-1 text-xs text-[var(--store-muted)]"> บาท / {item.unit}</span>
               </>
             ) : (
               'สอบถามราคา'
@@ -35,15 +35,15 @@ function RecommendedSession({ item }: { item: ServiceItem }) {
       </div>
 
       <div className="mt-8 grid grid-cols-2 gap-4">
-        <div className="flex items-center gap-3 border border-olive/20 p-4">
-          <ShieldCheck aria-hidden="true" className="size-4 shrink-0 text-forest" />
-          <p className="text-[0.62rem] uppercase tracking-[0.1em] text-olive-deep">
+        <div className="flex items-center gap-3 rounded-2xl border border-black/[0.08] bg-[var(--store-card)] p-4 shadow-sm">
+          <ShieldCheck aria-hidden="true" className="size-4 shrink-0 text-[#06C755]" />
+          <p className="text-[0.62rem] uppercase tracking-[0.1em] text-[var(--store-ink)]">
             เครื่องมือมาตรฐาน
           </p>
         </div>
-        <div className="flex items-center gap-3 border border-olive/20 p-4">
-          <Stethoscope aria-hidden="true" className="size-4 shrink-0 text-forest" />
-          <p className="text-[0.62rem] uppercase tracking-[0.1em] text-olive-deep">ดูแลโดยแพทย์</p>
+        <div className="flex items-center gap-3 rounded-2xl border border-black/[0.08] bg-[var(--store-card)] p-4 shadow-sm">
+          <Stethoscope aria-hidden="true" className="size-4 shrink-0 text-[#06C755]" />
+          <p className="text-[0.62rem] uppercase tracking-[0.1em] text-[var(--store-ink)]">ดูแลโดยแพทย์</p>
         </div>
       </div>
 
@@ -75,7 +75,7 @@ export function LaserHifuServicePage({
   const session = service.items[0];
 
   return (
-    <div className="bg-sand">
+    <div className="bg-[var(--background)]">
       {/* ── Hero: centred, over a full-bleed image when one exists ───────────── */}
       <section className="relative flex min-h-[70vh] items-center justify-center overflow-hidden px-6 py-24 text-center sm:px-10">
         {heroImage ? (
@@ -90,26 +90,26 @@ export function LaserHifuServicePage({
               sizes="100vw"
               className="object-cover"
             />
-            <span aria-hidden="true" className="absolute inset-0 bg-sand/70" />
+            <span aria-hidden="true" className="absolute inset-0 bg-[var(--background)]/70 backdrop-blur-[2px]" />
           </>
         ) : (
-          <span aria-hidden="true" className="absolute inset-0 bg-olive-deep/[0.05]" />
+          <span aria-hidden="true" className="absolute inset-0 bg-[var(--store-surface)]" />
         )}
 
         <div className="relative max-w-3xl">
-          <p lang="en" className="text-[0.68rem] uppercase tracking-[0.3em] text-olive/60">
+          <p lang="en" className="text-[0.68rem] uppercase tracking-[0.3em] text-[var(--store-muted)]">
             {service.titleEn}
           </p>
-          <h1 className="mt-6 font-serif text-4xl leading-[1.1] text-olive-deep md:text-6xl">
+          <h1 className="mt-6 font-serif text-4xl leading-[1.1] text-[var(--store-ink)] md:text-6xl">
             {service.title}
           </h1>
-          <p className="mx-auto mt-8 max-w-2xl text-sm leading-[1.9] text-ink/65 md:text-base">
+          <p className="mx-auto mt-8 max-w-2xl text-sm leading-[1.9] text-[var(--store-muted)] md:text-base">
             {service.description}
           </p>
 
           <div className="mt-12 flex flex-col items-center">
-            <span aria-hidden="true" className="h-20 w-px bg-olive/30" />
-            <p lang="en" className="mt-4 text-[0.62rem] italic tracking-[0.28em] text-olive/55">
+            <span aria-hidden="true" className="h-20 w-px bg-black/10" />
+            <p lang="en" className="mt-4 text-[0.62rem] italic tracking-[0.28em] text-[var(--store-muted)]">
               The Science of Purity
             </p>
           </div>
@@ -120,7 +120,7 @@ export function LaserHifuServicePage({
       <section className="px-6 py-24 sm:px-10 md:px-14 md:py-28 lg:px-20">
         <div className="mx-auto grid max-w-6xl items-stretch gap-8 md:grid-cols-12 md:gap-10">
           <Reveal className="md:col-span-5">
-            <div className="relative h-80 w-full overflow-hidden border border-olive/10 bg-olive-deep/[0.06] md:h-full md:min-h-[31rem]">
+            <div className="relative h-80 w-full overflow-hidden rounded-[1.75rem] border border-black/[0.08] bg-[var(--store-card)] shadow-[0_4px_24px_rgba(0,0,0,0.04)] md:h-full md:min-h-[31rem]">
               {editorialImage ? (
                 <Image
                   src={editorialImage}
@@ -137,7 +137,7 @@ export function LaserHifuServicePage({
                 >
                   <ServiceIcon
                     slug={service.slug}
-                    className="size-12 text-olive/25"
+                    className="size-12 text-[var(--store-muted)]"
                     strokeWidth={0.75}
                   />
                 </span>
@@ -146,14 +146,14 @@ export function LaserHifuServicePage({
           </Reveal>
 
           <Reveal
-            className="flex flex-col justify-center md:col-span-7 md:border-l md:border-olive/15 md:pl-10"
+            className="flex flex-col justify-center md:col-span-7 md:border-l md:border-black/[0.08] md:pl-10"
             delay={60}
           >
             <div>
-              <h2 lang="en" className="font-serif text-3xl text-olive-deep">
+              <h2 lang="en" className="font-serif text-3xl text-[var(--store-ink)]">
                 Recommended Session
               </h2>
-              <span aria-hidden="true" className="mt-4 block h-px w-24 bg-olive/25" />
+              <span aria-hidden="true" className="mt-4 block h-px w-24 bg-black/10" />
             </div>
 
             {session && (
@@ -162,7 +162,7 @@ export function LaserHifuServicePage({
               </div>
             )}
 
-            <p className="mt-6 text-[0.66rem] italic leading-[1.8] text-ink/45">
+            <p className="mt-6 text-[0.66rem] italic leading-[1.8] text-[var(--store-muted)]">
               *ทุกหัตถการไม่แนะนำสำหรับผู้มีอายุต่ำกว่า 18 ปี · ผลลัพธ์แตกต่างกันในแต่ละบุคคล
               ขึ้นอยู่กับการประเมินของแพทย์
             </p>
@@ -171,13 +171,13 @@ export function LaserHifuServicePage({
       </section>
 
       {/* ── Philosophy ───────────────────────────────────────── */}
-      <section className="bg-cream px-6 py-24 text-center sm:px-10 md:py-32">
+      <section className="bg-[var(--store-surface)] px-6 py-24 text-center sm:px-10 md:py-32">
         <Reveal className="mx-auto max-w-3xl">
-          <p lang="en" className="font-serif text-4xl leading-tight text-olive-deep md:text-5xl">
+          <p lang="en" className="font-serif text-4xl leading-tight text-[var(--store-ink)] md:text-5xl">
             “{site.taglineTh}”
           </p>
-          <span aria-hidden="true" className="mx-auto mt-10 block h-px w-16 bg-olive/40" />
-          <p lang="en" className="mt-8 text-[0.62rem] uppercase tracking-[0.4em] text-ink/45">
+          <span aria-hidden="true" className="mx-auto mt-10 block h-px w-16 bg-black/[0.08]" />
+          <p lang="en" className="mt-8 text-[0.62rem] uppercase tracking-[0.4em] text-[var(--store-muted)]">
             The Kazumi Discipline
           </p>
         </Reveal>
@@ -187,10 +187,10 @@ export function LaserHifuServicePage({
       <section className="px-6 py-24 sm:px-10 md:px-14 md:py-28 lg:px-20">
         <div className="mx-auto grid max-w-6xl items-center gap-12 md:grid-cols-2 md:gap-20">
           <Reveal>
-            <h2 lang="en" className="font-serif text-3xl text-olive-deep md:text-4xl">
+            <h2 lang="en" className="font-serif text-3xl text-[var(--store-ink)] md:text-4xl">
               Ready for your transformation?
             </h2>
-            <p className="mt-6 text-sm leading-[1.9] text-ink/65 md:text-base">
+            <p className="mt-6 text-sm leading-[1.9] text-[var(--store-muted)] md:text-base">
               ปรึกษาทีมแพทย์เพื่อประเมินว่า{service.title}เหมาะกับคุณหรือไม่
               ก่อนตัดสินใจเข้ารับบริการ
             </p>
@@ -206,7 +206,7 @@ export function LaserHifuServicePage({
               </a>
               <Link
                 href="/services"
-                className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-olive-deep/30 bg-transparent px-8 py-3.5 text-xs font-medium text-olive-deep transition-all duration-200 hover:border-olive-deep hover:bg-olive-deep/5 active:scale-[0.98]"
+                className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-black/[0.08] bg-transparent px-8 py-3.5 text-xs font-medium text-[var(--store-ink)] transition-all duration-200 hover:border-[var(--store-ink)] hover:bg-black/5 active:scale-[0.98]"
               >
                 ดูบริการอื่น
               </Link>
@@ -214,7 +214,7 @@ export function LaserHifuServicePage({
           </Reveal>
 
           <Reveal delay={60}>
-            <div className="relative h-80 w-full overflow-hidden border border-olive/10 bg-olive-deep/[0.06] md:h-[25rem]">
+            <div className="relative h-80 w-full overflow-hidden rounded-[1.75rem] border border-black/[0.08] bg-[var(--store-card)] shadow-lg md:h-[25rem]">
               {interiorImage ? (
                 <Image
                   src={interiorImage}
@@ -231,7 +231,7 @@ export function LaserHifuServicePage({
                 >
                   <ServiceIcon
                     slug={service.slug}
-                    className="size-10 text-olive/20"
+                    className="size-10 text-[var(--store-muted)]"
                     strokeWidth={0.75}
                   />
                 </span>
@@ -242,8 +242,8 @@ export function LaserHifuServicePage({
       </section>
 
       {/* ── Medical disclaimer band ──────────────────────────── */}
-      <div className="bg-olive-deep/[0.06] px-6 py-4 text-center sm:px-10">
-        <p className="text-[0.66rem] tracking-wide text-ink/55">
+      <div className="bg-[var(--store-card)] px-6 py-4 text-center sm:px-10">
+        <p className="text-[0.66rem] tracking-wide text-[var(--store-muted)]">
           ประเมินและดูแลโดยแพทย์ · ใบอนุญาตสถานพยาบาลเลขที่ {site.license}
         </p>
       </div>

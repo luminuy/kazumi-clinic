@@ -90,8 +90,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 function ItemSpec({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex items-baseline justify-between gap-4 border-b border-olive/10 py-3">
-      <dt className="text-[0.62rem] uppercase tracking-[0.18em] text-olive/55">{label}</dt>
+    <div className="flex items-baseline justify-between gap-4 border-b border-black/[0.08] py-3">
+      <dt className="text-[0.62rem] uppercase tracking-[0.18em] text-[var(--store-muted)]">{label}</dt>
       <dd className="text-right">{children}</dd>
     </div>
   );
@@ -108,9 +108,9 @@ function TreatmentItem({
     // Open, not boxed: the reference keeps this column as editorial type on the page rather than
     // a card. Multi-item categories get a hairline rule between items instead (see the list).
     <article>
-      <Heading className="font-serif text-2xl text-olive-deep">{item.name}</Heading>
+      <Heading className="font-serif text-2xl text-[var(--store-ink)]">{item.name}</Heading>
       {item.tagline && (
-        <p lang="en" className="mt-1 font-serif text-sm italic text-olive-light">
+        <p lang="en" className="mt-1 font-serif text-sm italic text-[var(--store-muted)]">
           {item.tagline}
         </p>
       )}
@@ -118,9 +118,9 @@ function TreatmentItem({
       {item.benefits && (
         <ul className="mt-5 space-y-2.5">
           {item.benefits.map((benefit) => (
-            <li key={benefit} className="flex gap-3 text-xs leading-[1.75] text-ink/65">
+            <li key={benefit} className="flex gap-3 text-xs leading-[1.75] text-[var(--store-muted)]">
               {/* Editorial dash marker rather than a bullet — docs/design.md "Lists". */}
-              <span aria-hidden="true" className="mt-2.5 h-px w-3 shrink-0 bg-clay" />
+              <span aria-hidden="true" className="mt-2.5 h-px w-3 shrink-0 bg-[var(--store-control)]" />
               <span>{benefit}</span>
             </li>
           ))}
@@ -130,19 +130,19 @@ function TreatmentItem({
       <dl className="mt-6">
         {item.detail && (
           <ItemSpec label="รายละเอียด">
-            <span className="text-sm text-ink/75">{item.detail}</span>
+            <span className="text-sm text-[var(--store-muted)]">{item.detail}</span>
           </ItemSpec>
         )}
         <ItemSpec label="ราคา">
           {item.priceFrom !== undefined ? (
             <>
-              <span className="font-serif text-xl text-olive-deep">
+              <span className="font-serif text-xl text-[var(--store-ink)]">
                 {item.priceFrom.toLocaleString('th-TH')} บาท
               </span>
-              <span className="ml-1 text-xs text-ink/50">/ {item.unit}</span>
+              <span className="ml-1 text-xs text-[var(--store-muted)]">/ {item.unit}</span>
             </>
           ) : (
-            <span className="text-sm text-ink/60">สอบถามราคา</span>
+            <span className="text-sm text-[var(--store-muted)]">สอบถามราคา</span>
           )}
         </ItemSpec>
       </dl>
@@ -164,12 +164,12 @@ function BookingCta({ service, hasPrice }: { service: ServiceCategory; hasPrice:
         จองคิว {service.title} ผ่าน LINE
       </a>
       {hasPrice && (
-        <p className="mt-4 text-center text-[0.66rem] leading-[1.8] text-ink/45">
+        <p className="mt-4 text-center text-[0.66rem] leading-[1.8] text-[var(--store-muted)]">
           ราคาที่แสดงอาจมีการเปลี่ยนแปลง
           กรุณาสอบถามราคาปัจจุบันและเงื่อนไขกับคลินิกก่อนเข้ารับบริการ
         </p>
       )}
-      <p className="mt-2 text-center text-[0.66rem] leading-[1.8] text-ink/45">
+      <p className="mt-2 text-center text-[0.66rem] leading-[1.8] text-[var(--store-muted)]">
         *ทุกหัตถการไม่แนะนำสำหรับผู้มีอายุต่ำกว่า 18 ปี · ผลลัพธ์แตกต่างกันในแต่ละบุคคล
         ขึ้นอยู่กับการประเมินของแพทย์
       </p>
@@ -190,6 +190,9 @@ export default async function ServiceCategoryPage({ params }: Props) {
   const overrides = await getImageOverrides();
   const slotKey = categoryImageKey[service.slug];
   const heroImage = (slotKey && overrides.get(slotKey)?.public_id) || service.heroImage;
+
+  const pick = (key: string, fallback: string) => overrides.get(key)?.public_id ?? fallback;
+  const doctorImage = pick('doctor-pratch', 'v1731671042/doctor-pratch_b4r3p1');
 
   // Only categories with a published price need the price caveat — the rest already say
   // "สอบถามราคา", and a note about prices changing would be about nothing.
@@ -217,7 +220,7 @@ export default async function ServiceCategoryPage({ params }: Props) {
   // and gating would drop it back to the generic template — its own page handles the empty slot.
   const pageContent =
     service.slug === 'filler' && heroImage ? (
-      <FillerServicePage service={service} heroImage={heroImage} itemImages={itemImages} />
+      <FillerServicePage service={service} heroImage={heroImage} itemImages={itemImages} doctorImage={doctorImage} />
     ) : service.slug === 'thread-lift' ? (
       <ThreadLiftServicePage
         service={service}
@@ -262,7 +265,7 @@ export default async function ServiceCategoryPage({ params }: Props) {
         editorialImage={overrides.get('collagen-booster-editorial')?.public_id}
       />
     ) : (
-      <div className="bg-sand">
+      <div className="bg-[var(--background)]">
         {/* ── Hero ─────────────────────────────────────────────── */}
         <section className="px-6 pb-20 pt-28 sm:px-10 md:px-14 lg:px-20">
           {/* Centred, not end-aligned: a 1:1.618 portrait is much taller than the text column,
@@ -271,35 +274,35 @@ export default async function ServiceCategoryPage({ params }: Props) {
             <Reveal className="md:col-span-7">
               <p
                 lang="en"
-                className="mt-10 text-[0.68rem] uppercase tracking-[0.24em] text-olive/60"
+                className="mt-10 text-[0.68rem] uppercase tracking-[0.24em] text-[var(--store-muted)]"
               >
                 {service.titleEn}
               </p>
 
               <h1 className="mt-4 max-w-xl">
-                <span className="block font-serif text-4xl leading-[1.15] text-olive-deep md:text-5xl">
+                <span className="block font-serif text-4xl leading-[1.15] text-[var(--store-ink)] md:text-5xl">
                   {service.title}
                 </span>
                 <span
                   lang="en"
-                  className="mt-2 block font-serif text-2xl font-light italic leading-tight text-olive/65 md:text-3xl"
+                  className="mt-2 block font-serif text-2xl font-light italic leading-tight text-[var(--store-muted)] md:text-3xl"
                 >
                   {service.titleEn}
                 </span>
               </h1>
 
               {/* The reference's `.japanese-border` — a left rule instead of a box. */}
-              <p className="mt-8 max-w-lg border-l border-olive/40 pl-5 text-sm leading-[1.9] text-ink/65">
+              <p className="mt-8 max-w-lg border-l border-black/10 pl-5 text-sm leading-[1.9] text-[var(--store-muted)]">
                 {service.description}
               </p>
 
               <div className="mt-8 flex flex-wrap gap-x-8 gap-y-3">
-                <span className="flex items-center gap-2 text-xs text-ink/60">
-                  <Stethoscope aria-hidden="true" className="size-4 shrink-0 text-olive/60" />
+                <span className="flex items-center gap-2 text-xs text-[var(--store-muted)]">
+                  <Stethoscope aria-hidden="true" className="size-4 shrink-0 text-[var(--store-muted)]" />
                   ประเมินและดูแลโดยแพทย์
                 </span>
-                <span className="flex items-center gap-2 text-xs text-ink/60">
-                  <ShieldCheck aria-hidden="true" className="size-4 shrink-0 text-olive/60" />
+                <span className="flex items-center gap-2 text-xs text-[var(--store-muted)]">
+                  <ShieldCheck aria-hidden="true" className="size-4 shrink-0 text-[var(--store-muted)]" />
                   ใบอนุญาตเลขที่ {site.license}
                 </span>
               </div>
@@ -307,7 +310,7 @@ export default async function ServiceCategoryPage({ params }: Props) {
 
             <Reveal className="md:col-span-5" delay={80}>
               <div className="relative ml-auto w-full max-w-[17rem] sm:max-w-[20rem]">
-                <div className="relative aspect-[1/1.618] overflow-hidden border border-olive/10 bg-olive-deep/[0.06]">
+                <div className="relative aspect-[1/1.618] overflow-hidden border border-black/[0.08] bg-[var(--store-surface)]">
                   {heroImage ? (
                     <>
                       <Image
@@ -322,7 +325,7 @@ export default async function ServiceCategoryPage({ params }: Props) {
                       />
                       <p
                         lang="en"
-                        className="absolute bottom-6 left-6 bg-sand/60 px-4 py-3 text-[0.62rem] uppercase tracking-[0.2em] text-olive-deep backdrop-blur-[2px]"
+                        className="absolute bottom-6 left-6 bg-[var(--store-surface)]/60 px-4 py-3 text-[0.62rem] uppercase tracking-[0.2em] text-[var(--store-ink)] backdrop-blur-[2px]"
                       >
                         Precision &amp; Refinement
                       </p>
@@ -336,7 +339,7 @@ export default async function ServiceCategoryPage({ params }: Props) {
                     >
                       <ServiceIcon
                         slug={service.slug}
-                        className="size-12 text-olive/25"
+                        className="size-12 text-[var(--store-muted)]/60"
                         strokeWidth={0.75}
                       />
                     </div>
@@ -344,7 +347,7 @@ export default async function ServiceCategoryPage({ params }: Props) {
                 </div>
                 <span
                   aria-hidden="true"
-                  className="absolute -bottom-6 -right-6 -z-10 hidden size-32 border-[0.5px] border-olive/20 md:block"
+                  className="absolute -bottom-6 -right-6 -z-10 hidden size-32 border-[0.5px] border-black/[0.08] md:block"
                 />
               </div>
             </Reveal>
@@ -352,7 +355,7 @@ export default async function ServiceCategoryPage({ params }: Props) {
         </section>
 
         {/* ── Treatment detail ─────────────────────────────────── */}
-        <section className="border-t border-olive/10 bg-cream px-6 py-24 sm:px-10 md:px-14 lg:px-20">
+        <section className="border-t border-black/10 bg-[var(--store-surface)] px-6 py-24 sm:px-10 md:px-14 lg:px-20">
           <div className="mx-auto grid max-w-6xl gap-12 md:grid-cols-12 md:gap-14">
             <div className="md:col-span-7">
               {/* This label is the section's heading, not decoration — as a <p> it left the page
@@ -360,7 +363,7 @@ export default async function ServiceCategoryPage({ params }: Props) {
               <Reveal>
                 <h2
                   lang="en"
-                  className="inline-block border-b border-olive/20 pb-2 text-[0.68rem] font-normal uppercase tracking-[0.24em] text-olive/70"
+                  className="inline-block border-b border-black/[0.08] pb-2 text-[0.68rem] font-normal uppercase tracking-[0.24em] text-[var(--store-muted)]"
                 >
                   {service.items.length > 1 ? 'Treatment Menu' : 'Recommended Session'}
                 </h2>
@@ -371,7 +374,7 @@ export default async function ServiceCategoryPage({ params }: Props) {
                   <div key={collection ?? '_'}>
                     {collection && (
                       <Reveal>
-                        <h3 lang="en" className="mb-5 font-serif text-2xl text-olive-deep">
+                        <h3 lang="en" className="mb-5 font-serif text-2xl text-[var(--store-ink)]">
                           {collection}
                         </h3>
                       </Reveal>
@@ -381,7 +384,7 @@ export default async function ServiceCategoryPage({ params }: Props) {
                     <div className="space-y-8">
                       {items.map((item, i) => (
                         <Reveal key={`${item.name}-${item.detail ?? ''}`} delay={i * 50}>
-                          <div className={i > 0 ? 'border-t border-olive/10 pt-8' : undefined}>
+                          <div className={i > 0 ? 'border-t border-black/10 pt-8' : undefined}>
                             {/* Items sit one level under their collection heading when they have
                                 one, so the outline stays contiguous either way. */}
                             <TreatmentItem item={item} headingLevel={collection ? 'h4' : 'h3'} />
@@ -408,33 +411,33 @@ export default async function ServiceCategoryPage({ params }: Props) {
                     would only work at md+, where `sticky` happens to make it a positioned
                     ancestor — below that it would escape to some far-away container. */}
                 <div className="relative">
-                  <div className="border border-olive/15 bg-sand p-8">
+                  <div className="border border-black/[0.08] bg-[var(--store-card)] p-8">
                     <p
                       lang="en"
-                      className="font-serif text-[1.6rem] italic leading-snug text-olive-deep"
+                      className="font-serif text-[1.6rem] italic leading-snug text-[var(--store-ink)]"
                     >
                       “{site.taglineTh}”
                     </p>
-                    <span aria-hidden="true" className="mt-6 block h-px w-full bg-olive/15" />
+                    <span aria-hidden="true" className="mt-6 block h-px w-full bg-black/10" />
                     <div className="mt-6 flex items-center gap-4">
                       <span
                         aria-hidden="true"
-                        className="flex size-12 shrink-0 items-center justify-center border border-olive/15 bg-olive-deep/[0.06]"
+                        className="flex size-12 shrink-0 items-center justify-center border border-black/10 bg-[var(--store-control)]"
                       >
                         <ServiceIcon
                           slug={service.slug}
-                          className="size-5 text-olive/45"
+                          className="size-5 text-[var(--store-muted)]"
                           strokeWidth={1}
                         />
                       </span>
-                      <p lang="en" className="font-serif text-sm italic text-ink/55">
+                      <p lang="en" className="font-serif text-sm italic text-[var(--store-muted)]">
                         The Kazumi Discipline
                       </p>
                     </div>
                   </div>
                   <span
                     aria-hidden="true"
-                    className="absolute -bottom-6 -right-6 -z-10 hidden size-32 border-[0.5px] border-olive/20 lg:block"
+                    className="absolute -bottom-6 -right-6 -z-10 hidden size-32 border-[0.5px] border-black/[0.08] lg:block"
                   />
                 </div>
               </aside>
@@ -445,10 +448,10 @@ export default async function ServiceCategoryPage({ params }: Props) {
         {/* ── Closing CTA ──────────────────────────────────────── */}
         <section className="px-6 py-24 sm:px-10 md:px-14 lg:px-20">
           <Reveal className="mx-auto max-w-3xl text-center">
-            <h2 lang="en" className="font-serif text-3xl text-olive-deep md:text-4xl">
+            <h2 lang="en" className="font-serif text-3xl text-[var(--store-ink)] md:text-4xl">
               Ready for your transformation?
             </h2>
-            <p className="mt-5 text-sm leading-[1.9] text-ink/60">
+            <p className="mt-5 text-sm leading-[1.9] text-[var(--store-muted)]">
               ปรึกษาทีมแพทย์เพื่อประเมินว่า{service.title}เหมาะกับคุณหรือไม่
               ก่อนตัดสินใจเข้ารับบริการ
             </p>
@@ -464,7 +467,7 @@ export default async function ServiceCategoryPage({ params }: Props) {
               </a>
               <Link
                 href="/services"
-                className="group inline-flex w-full items-center justify-center gap-2 rounded-full border border-olive-deep/30 bg-transparent px-8 py-3.5 text-xs font-medium text-olive-deep transition-all duration-200 hover:border-olive-deep hover:bg-olive-deep/5 active:scale-[0.98] sm:w-auto"
+                className="group inline-flex w-full items-center justify-center gap-2 rounded-full border border-black/20 bg-transparent px-8 py-3.5 text-xs font-medium text-[var(--store-ink)] transition-all duration-200 hover:border-black/30 hover:bg-black/5 active:scale-[0.98] sm:w-auto"
               >
                 ดูบริการอื่น
                 <ArrowUpRight className="size-3.5 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
