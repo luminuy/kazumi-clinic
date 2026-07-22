@@ -15,6 +15,7 @@ export function FillerServicePage({
   heroImage,
   itemImages = {},
   doctorImage,
+  eeshaImage,
 }: {
   service: ServiceCategory;
   heroImage: string;
