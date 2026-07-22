@@ -25,9 +25,9 @@ Stack: Next.js App Router (React 19) + TypeScript + Tailwind CSS v4 + shadcn/ui 
 
 **Auto-merge เปิด** — หลังเปิด PR ให้ merge เข้า main ทันที **เมื่อ verify ครบ**:
 
-- `gh pr checks <num>` — **ปัจจุบัน repo นี้ยังไม่มี CI ใด ๆ** จึงตอบ `no checks reported` เสมอ (ยืนยัน 2026-07-16: ไม่มี `.github/workflows`, ไม่มี Cloudflare Git integration) → นั่นคือสถานะปกติ **ไม่ใช่ว่า check กำลังรัน** · ถ้าวันหนึ่งมี check โผล่มาจริง ต้อง SUCCESS ก่อน merge
-- ถ้ามี check และยัง in-progress → ใช้ `gh pr merge <num> --squash --auto --delete-branch`
-- ถ้า build FAIL → หยุด, แจ้ง user, แก้ก่อน
+- `gh pr checks <num>` — **repo นี้มี CI แล้วตั้งแต่ 2026-07-22** ([.github/workflows/ci.yml](.github/workflows/ci.yml): lint + typecheck + test + build บนทุก PR) → ต้องรอให้ check **SUCCESS ก่อน merge เสมอ** · `main` เปิด branch protection ไว้ (บังคับ PR + CI ผ่าน — push ตรงเข้า main ไม่ได้)
+- ปกติใช้ `gh pr merge <num> --squash --auto --delete-branch` — `--auto` จะ merge ให้เองเมื่อ CI ผ่าน (ไม่ต้องนั่งเฝ้า) · ก่อนหน้านี้ (2026-07-22) เคยตอบ `no checks reported` เพราะยังไม่มี CI — ตอนนี้ไม่ใช่แล้ว
+- ถ้า CI FAIL → หยุด, แจ้ง user, แก้ก่อน (ห้าม override branch protection เพื่อ merge งานที่ CI แดง)
 - ก่อน `gh pr merge` ทุกครั้ง: เช็ค `gh pr view --json headRefOid` ให้ตรงกับ local HEAD ก่อน (sleep 2-3 วิ แล้วเช็คซ้ำถ้าไม่ตรง) — auto-merge ที่ยิงทันทีหลัง push อาจ squash แค่ commit เก่า
 - หลัง merge แล้วรายงาน URL ของ commit บน main — ⚠️ merge เข้า main **ไม่ได้ deploy อะไรทั้งสิ้น** ไม่มี pipeline ที่ทำให้
 - งานที่เปลี่ยน public site / Worker และ user ไม่ได้ห้าม deploy: รัน `pnpm cf:deploy` ต่อให้อัตโนมัติ แล้วรายงานว่า deploy สำเร็จได้ต่อเมื่อคำสั่งคืน `Current Version ID` และตรวจ URL จริงได้ HTTP 200 · งานเอกสารล้วนไม่ต้อง deploy
