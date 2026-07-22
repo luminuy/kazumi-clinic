@@ -38,7 +38,7 @@
 ## ⚠️ ปมค้าง / รู้ไว้
 
 - **เปลี่ยนรูปใน /admin แล้วต้องขึ้นเว็บ**: ต้องมีตาราง `revalidations` ใน D1 (fix แล้ว 2026-07-22, `migrations/0007`, ผูกใน `cf:deploy`) — ถ้าหน้าไม่อัปเดตอีก เช็คตารางนี้ก่อน (CLAUDE.md §0.5)
-- **สองเครื่องมือแก้ร่วมกัน** (Claude ใน worktree · Antigravity ในโฟลเดอร์หลัก): งานที่ไม่ push = มองไม่เห็นตอน deploy — commit+push ทุกครั้งที่หยุด · `main` มี branch protection แล้ว (ต้องผ่าน PR + CI, push ตรงไม่ได้)
+- **สองเครื่องมือแก้ร่วมกัน** (Claude ใน worktree · Antigravity ในโฟลเดอร์หลัก): งานที่ไม่ push = มองไม่เห็นตอน deploy — commit+push ทุกครั้งที่หยุด · ⚠️ `main` **ยังบังคับ branch protection ไม่ได้** (private repo ต้อง GitHub Pro/public) — พึ่งวินัย "ผ่าน PR + CI เสมอ" + CI บน push:main จับของพัง (detection)
 - **deploy เป็น manual**: `pnpm cf:deploy` แล้วยิงเว็บจริง 2 ครั้งเช็ค `x-nextjs-cache` (ISR เสิร์ฟของเก่ารอบแรก) · เช็คสุขภาพเว็บได้ด้วย `pnpm health`
 
 ## 🧰 เครื่องมือ (มีตั้งแต่ 2026-07-22)
