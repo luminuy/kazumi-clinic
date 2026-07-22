@@ -124,7 +124,7 @@ export function CollagenBoosterServicePage({
                 return (
                   <Reveal key={title} delay={index * 60}>
                     <article className="h-full border border-olive/15 bg-surface-container-lowest p-7">
-                      <Icon aria-hidden="true" className="size-8 text-olive" strokeWidth={1.25} />
+                      <Icon aria-hidden="true" className="size-8 text-forest" strokeWidth={1.25} />
                       <h3 lang="en" className="mt-4 font-serif text-xl text-olive-deep">
                         {title}
                       </h3>

@@ -60,19 +60,19 @@ export default function ContactPage() {
         <Reveal>
           <ul className="space-y-6 text-ink/75">
             <li className="flex items-start gap-3">
-              <MapPin className="mt-0.5 size-5 shrink-0 text-olive" />
-              <a href={site.mapsUrl} target="_blank" rel="noopener" className="hover:text-olive">
+              <MapPin className="mt-0.5 size-5 shrink-0 text-forest" />
+              <a href={site.mapsUrl} target="_blank" rel="noopener" className="hover:text-forest">
                 {site.addressFull}
               </a>
             </li>
             <li className="flex items-center gap-3">
-              <Phone className="size-5 shrink-0 text-olive" />
-              <a href={site.phoneUrl} className="hover:text-olive">
+              <Phone className="size-5 shrink-0 text-forest" />
+              <a href={site.phoneUrl} className="hover:text-forest">
                 โทร {site.phone}
               </a>
             </li>
             <li className="flex items-start gap-3">
-              <Clock className="mt-0.5 size-5 shrink-0 text-olive" />
+              <Clock className="mt-0.5 size-5 shrink-0 text-forest" />
               <span>
                 {site.hoursDisplay.weekdays}
                 <br />
@@ -91,7 +91,7 @@ export default function ContactPage() {
             <Button
               render={<a href={site.instagram} target="_blank" rel="noopener" />}
               variant="outline"
-              className="rounded-full border-olive text-olive-deep hover:bg-olive/10"
+              className="rounded-full border-forest text-forest hover:bg-forest/10"
             >
               <InstagramIcon className="text-instagram size-4" />
               Instagram
@@ -99,7 +99,7 @@ export default function ContactPage() {
             <Button
               render={<a href={site.mapsUrl} target="_blank" rel="noopener" />}
               variant="outline"
-              className="rounded-full border-olive text-olive-deep hover:bg-olive/10"
+              className="rounded-full border-forest text-forest hover:bg-forest/10"
             >
               <Navigation className="size-4" />
               เปิด Google Maps
@@ -123,7 +123,7 @@ export default function ContactPage() {
       <section id="booking" className="border-t border-olive/10 bg-cream/40 py-20 scroll-mt-24">
         <div className="mx-auto max-w-2xl px-6">
           <Reveal>
-            <p className="text-center text-[0.7rem] font-medium uppercase tracking-[0.16em] text-olive">
+            <p className="text-center text-[0.7rem] font-medium uppercase tracking-[0.16em] text-forest">
               Book an Appointment
             </p>
             <h2 className="mt-3 text-center font-serif text-3xl text-olive-deep">นัดหมาย / ปรึกษาแพทย์</h2>

@@ -62,7 +62,7 @@ export default function Footer({ logoMark }: { logoMark: string }) {
             <ul className="mt-5 space-y-3 text-xs">
               {navItems.map((item) => (
                 <li key={item.href}>
-                  <Link href={item.href} className="transition-colors hover:text-olive">
+                  <Link href={item.href} className="transition-colors hover:text-forest">
                     {item.label}
                   </Link>
                 </li>
