@@ -14,7 +14,7 @@ import { categoryImageKey, posterKeyByDefaultId } from '@/lib/site-images';
 import { siteSocialImage } from '@/lib/metadata-images';
 import { promotionPosters } from '@/lib/promotions';
 import { Reveal } from '@/components/reveal';
-import { PromotionCarousel } from '@/components/promotion-carousel';
+import { PromotionCardGrid } from '@/components/promotion-card-grid';
 import { ServiceCarousel } from '@/components/service-carousel';
 import { PhysicianPanel } from '@/components/physician-panel';
 import { BrandStrip } from '@/components/brand-strip';
@@ -308,11 +308,8 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </Reveal>
 
         <Reveal>
-          <PromotionCarousel
+          <PromotionCardGrid
             posters={posters}
-            className="homepage-promotion-shelf"
-            hidePreviousAtStart
-            imageSizes="(min-width: 1440px) 19vw, (min-width: 1024px) 22vw, (min-width: 640px) 42vw, 78vw"
           />
         </Reveal>
       </section>

@@ -7,7 +7,8 @@
     "about": "About Us",
     "blog": "Blog",
     "contact": "Contact",
-    "bookLine": "Book via LINE"
+    "bookLine": "Book via LINE",
+    "allServices": "All Services"
   },
   "Footer": {
     "location": "Location",
