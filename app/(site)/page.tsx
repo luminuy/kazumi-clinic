@@ -315,9 +315,10 @@ export default async function HomePage() {
             <h2>บริการของเรา</h2>
             <Link
               href="/services"
-              className="inline-flex shrink-0 items-center gap-1.5 text-[0.9rem] text-forest transition-colors duration-200 hover:text-mint"
+              className="group inline-flex shrink-0 items-center gap-1.5 text-[0.9rem] text-forest transition-colors duration-200 hover:text-mint"
             >
-              ดูบริการทั้งหมด <ArrowUpRight className="size-4" />
+              ดูบริการทั้งหมด{' '}
+              <ArrowUpRight className="size-4 transition-transform duration-200 motion-safe:group-hover:translate-x-0.5 motion-safe:group-hover:-translate-y-0.5" />
             </Link>
           </div>
           <p>
@@ -346,9 +347,10 @@ export default async function HomePage() {
           </div>
           <Link
             href="/about"
-            className="inline-flex items-center gap-1.5 text-[0.9rem] text-forest transition-colors duration-200 hover:text-mint"
+            className="group inline-flex items-center gap-1.5 text-[0.9rem] text-forest transition-colors duration-200 hover:text-mint"
           >
-            ดูทีมแพทย์ทั้งหมด <ArrowUpRight className="size-4" />
+            ดูทีมแพทย์ทั้งหมด{' '}
+            <ArrowUpRight className="size-4 transition-transform duration-200 motion-safe:group-hover:translate-x-0.5 motion-safe:group-hover:-translate-y-0.5" />
           </Link>
         </Reveal>
 
