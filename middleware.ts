@@ -23,6 +23,14 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Strict trailing slash removal for SEO (prevents duplicate content)
+  // Must be done before next-intl processes the URL
+  if (pathname !== '/' && pathname.endsWith('/')) {
+    const url = request.nextUrl.clone();
+    url.pathname = pathname.slice(0, -1);
+    return NextResponse.redirect(url, 308);
+  }
+
   return intlMiddleware(request);
 }
 

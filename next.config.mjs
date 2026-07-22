@@ -5,6 +5,7 @@ const withNextIntl = createNextIntlPlugin();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  trailingSlash: false,
   outputFileTracingRoot: path.resolve(process.cwd()),
   images: {
     // Delegates resizing to Cloudinary (see lib/cloud.ts default export) instead of Next's
