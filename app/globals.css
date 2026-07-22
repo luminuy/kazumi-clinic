@@ -340,7 +340,7 @@
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(to top, rgb(32 38 30 / 72%), transparent 28%);
+  background: linear-gradient(to top, rgb(0 0 0 / 60%), transparent 28%);
   opacity: 0.45;
   transition: opacity 240ms ease-out;
 }
@@ -453,7 +453,7 @@
   line-height: 1;
 }
 .apple-services-heading p {
-  max-width: 36rem;
+  max-width: 64rem;
   color: var(--store-muted);
   font-size: clamp(0.85rem, 1.1vw, 0.95rem);
   line-height: 1.7;
@@ -489,13 +489,13 @@
   display: none;
 }
 .service-stream-card {
-  flex: 0 0 min(65vw, 42rem);
+  flex: 0 0 min(70vw, 50rem);
   scroll-snap-align: center;
 }
 .service-stream-card__link {
   position: relative;
   display: block;
-  aspect-ratio: 1.87;
+  aspect-ratio: 1.85;
   overflow: hidden;
   background: var(--olive-deep);
   color: var(--sand);
@@ -508,7 +508,7 @@
 }
 .service-stream-card__wash {
   z-index: 1;
-  background: linear-gradient(90deg, rgb(15 24 21 / 76%) 0%, rgb(15 24 21 / 28%) 53%, rgb(15 24 21 / 5%) 100%);
+  background: linear-gradient(90deg, rgb(0 0 0 / 60%) 0%, rgb(0 0 0 / 20%) 53%, transparent 100%);
 }
 .service-stream-card__fallback {
   display: flex;

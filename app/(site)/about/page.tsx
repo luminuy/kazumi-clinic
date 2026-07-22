@@ -104,7 +104,7 @@ export default async function AboutPage() {
             </div>
 
             <div className="relative">
-              <div className="relative aspect-[4/5] w-full overflow-hidden border border-olive/10 bg-olive-deep/[0.06]">
+              <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[1.75rem] bg-[var(--store-card)] shadow-2xl shadow-black/5">
                 {heroSrc ? (
                   <Image
                     src={heroSrc}
@@ -119,12 +119,6 @@ export default async function AboutPage() {
                 ) : (
                   <ImagePlaceholder />
                 )}
-              </div>
-              {/* The reference overlaps a dark quote block onto the image's lower-left. */}
-              <div className="absolute -bottom-6 -left-6 hidden max-w-[15rem] bg-olive-deep p-6 text-sand md:block">
-                <p lang="en" className="font-serif text-lg italic leading-snug">
-                  “{site.taglineTh}”
-                </p>
               </div>
             </div>
           </div>
@@ -171,16 +165,14 @@ export default async function AboutPage() {
           <div className="flex flex-col gap-14 md:flex-row md:gap-20">
             <div className="w-full md:w-5/12">
               <Reveal>
-                <div className="border border-olive/10 p-2">
-                  <div className="relative aspect-[3/4] w-full overflow-hidden bg-olive-deep/[0.06]">
-                    <Image
-                      src={doctorSrc}
-                      alt={`${doctor.nameTh} ${doctor.role} ของ ${site.name}`}
-                      fill
-                      sizes="(min-width: 768px) 40vw, 90vw"
-                      className="object-cover"
-                    />
-                  </div>
+                <div className="relative aspect-[3/4] w-full overflow-hidden rounded-[1.75rem] bg-[var(--store-card)] shadow-2xl shadow-black/5">
+                  <Image
+                    src={doctorSrc}
+                    alt={`${doctor.nameTh} ${doctor.role} ของ ${site.name}`}
+                    fill
+                    sizes="(min-width: 768px) 40vw, 90vw"
+                    className="object-cover"
+                  />
                 </div>
                 <div className="mt-6 space-y-2">
                   <p className="text-[0.66rem] uppercase tracking-[0.2em] text-olive-deep">
@@ -267,20 +259,18 @@ export default async function AboutPage() {
           <div className="flex flex-col gap-14 md:flex-row-reverse md:gap-20">
             <div className="w-full md:w-5/12">
               <Reveal>
-                <div className="border border-olive/10 p-2">
-                  <div className="relative aspect-[3/4] w-full overflow-hidden bg-olive-deep/[0.06]">
-                    {eeshaSrc ? (
-                      <Image
-                        src={eeshaSrc}
-                        alt={`${doctorEesha.name} ${doctorEesha.role} ของ ${site.name}`}
-                        fill
-                        sizes="(min-width: 768px) 40vw, 90vw"
-                        className="object-cover"
-                      />
-                    ) : (
-                      <ImagePlaceholder />
-                    )}
-                  </div>
+                <div className="relative aspect-[3/4] w-full overflow-hidden rounded-[1.75rem] bg-[var(--store-card)] shadow-2xl shadow-black/5">
+                  {eeshaSrc ? (
+                    <Image
+                      src={eeshaSrc}
+                      alt={`${doctorEesha.name} ${doctorEesha.role} ของ ${site.name}`}
+                      fill
+                      sizes="(min-width: 768px) 40vw, 90vw"
+                      className="object-cover"
+                    />
+                  ) : (
+                    <ImagePlaceholder />
+                  )}
                 </div>
                 <div className="mt-6 space-y-2">
                   <p className="text-[0.66rem] uppercase tracking-[0.2em] text-olive-deep">

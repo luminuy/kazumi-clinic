@@ -20,14 +20,14 @@ export function BrandStrip() {
       className="border-y border-olive/10 bg-cream"
     >
       <div className="mx-auto max-w-6xl px-6 py-9 md:px-12 md:py-11">
-        <p className="text-center text-[0.62rem] uppercase tracking-[0.24em] text-ink/40">
+        <p className="text-center text-[0.62rem] uppercase tracking-[0.24em] text-ink/80">
           แบรนด์และเทคโนโลยีที่เราเลือกใช้
         </p>
         <ul className="mt-5 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 md:mt-6 md:gap-x-12">
           {brands.map((brand) => (
             <li
               key={brand}
-              className="font-serif text-lg leading-none text-ink/45 md:text-xl"
+              className="font-serif text-lg leading-none text-ink md:text-xl"
               lang="en"
             >
               {brand}

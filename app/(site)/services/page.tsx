@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowUpRight, ChevronDown } from 'lucide-react';
 import { site } from '@/lib/site';
-import { doctor } from '@/lib/doctor';
+import { doctor, doctorEesha } from '@/lib/doctor';
 import { cloudAssets } from '@/lib/cloud';
 import { getImageOverrides } from '@/lib/site-images-store';
 import { categoryImageKey, posterKeyByDefaultId } from '@/lib/site-images';
@@ -16,6 +16,7 @@ import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
 import { PromotionCarousel } from '@/components/promotion-carousel';
 import { LineIcon } from '@/components/brand-icons';
+import { PhysicianPanel } from '@/components/physician-panel';
 
 const pageTitle = 'บริการ / หัตถการ';
 const pageDescription = `บริการและหัตถการทั้งหมดของ ${site.name} — ฟิลเลอร์ โบท็อกซ์ สกินบูสเตอร์ คอลลาเจนบูสเตอร์ และ IV Drip วิตามิน ดูแลโดยแพทย์`;
@@ -67,12 +68,12 @@ function TreatmentCard({
 
   return (
     <Reveal delay={(index % 3) * 60}>
-      <article className="h-full border-l-[0.5px] border-olive/20 pl-6 sm:pl-8">
+      <article className="h-full">
         <Link
           href={`/${category.slug}`}
-          className="group flex h-full flex-col transition-transform duration-300 ease-out hover:-translate-y-1 active:scale-[0.99]"
+          className="apple-doctor-card group flex h-full flex-col overflow-hidden rounded-[1.75rem] bg-[var(--store-card)] border border-black/[0.08] shadow-[0_4px_24px_rgba(0,0,0,0.04)] text-[var(--store-ink)]"
         >
-          <div className="relative aspect-[1.618] overflow-hidden bg-olive-deep/[0.06]">
+          <div className="relative aspect-[16/9] w-full overflow-hidden bg-sand md:aspect-[1.618]">
             {image ? (
               <Image
                 src={image}
@@ -85,34 +86,36 @@ function TreatmentCard({
             ) : (
               <div
                 aria-hidden="true"
-                className="absolute inset-0 flex items-center justify-center border border-olive/10"
+                className="absolute inset-0 flex items-center justify-center border border-[var(--store-control)]"
               >
                 <ServiceIcon
                   slug={category.slug}
-                  className="size-8 text-olive/30 transition-transform duration-700 ease-out group-hover:scale-110"
+                  className="size-8 text-[var(--store-muted)] transition-transform duration-700 ease-out group-hover:scale-110"
                   strokeWidth={1}
                 />
               </div>
             )}
           </div>
 
-          <p className="mt-5 text-[0.62rem] tracking-[0.18em] text-olive/45">
-            {String(index + 1).padStart(2, '0')}
-          </p>
-          <h3 className="mt-1 font-serif text-[1.72rem] leading-none text-olive-deep">
-            {category.titleEn}
-          </h3>
-          <p className="mt-2 text-xs tracking-[0.04em] text-olive/60">{category.title}</p>
-          <p className="mt-3 text-xs leading-[1.75] text-ink/65">{category.shortDescription}</p>
+          <div className="flex flex-1 flex-col px-6 pb-8 pt-6 sm:px-8">
+            <p className="text-[0.62rem] tracking-[0.18em] text-[var(--store-muted)]">
+              {String(index + 1).padStart(2, '0')}
+            </p>
+            <h3 className="mt-2 font-serif text-[1.65rem] leading-none text-[var(--store-ink)]">
+              {category.titleEn}
+            </h3>
+            <p className="mt-2 text-xs tracking-[0.04em] text-[var(--store-muted)]">{category.title}</p>
+            <p className="mt-3 text-[0.82rem] leading-[1.75] text-[var(--store-muted)]">{category.shortDescription}</p>
 
-          <p className="mt-4 text-[0.68rem] leading-[1.7] text-ink/45">
-            {programNames.slice(0, 3).join(' · ')}
-            {programNames.length > 3 && ` · +${programNames.length - 3}`}
-          </p>
+            <p className="mt-4 text-[0.68rem] leading-[1.7] text-[var(--store-muted)]/70">
+              {programNames.slice(0, 3).join(' · ')}
+              {programNames.length > 3 && ` · +${programNames.length - 3}`}
+            </p>
 
-          <span className="mt-auto inline-flex items-center gap-2 pt-6 text-[0.68rem] tracking-wide text-olive-deep transition-[gap] duration-200 ease-out group-hover:gap-3">
-            Explore Details <ArrowUpRight className="size-3" />
-          </span>
+            <span className="mt-auto inline-flex items-center gap-2 pt-6 text-[0.72rem] tracking-wide text-forest transition-[gap] duration-200 ease-out group-hover:gap-3 group-hover:text-mint">
+              Explore Details <ArrowUpRight className="size-3" />
+            </span>
+          </div>
         </Link>
       </article>
     </Reveal>
@@ -162,16 +165,6 @@ export default async function ServicesPage() {
       <section className="px-6 pb-20 pt-28 sm:px-10 md:px-14 lg:px-20">
         <div className="mx-auto grid max-w-6xl items-center gap-12 md:grid-cols-12 md:gap-10">
           <Reveal className="md:col-span-6">
-            <nav
-              aria-label="เส้นทางหน้า"
-              className="flex flex-wrap items-center gap-1.5 text-xs text-ink/40"
-            >
-              <Link href="/" className="transition-colors hover:text-olive-deep">
-                หน้าหลัก
-              </Link>
-              <span className="text-ink/25">/</span>
-              <span className="text-ink/70">บริการ / หัตถการ</span>
-            </nav>
 
             <div className="mt-10 flex items-center gap-3 text-[0.68rem] uppercase tracking-[0.24em] text-olive/60">
               <span className="h-px w-8 bg-clay" />
@@ -217,7 +210,7 @@ export default async function ServicesPage() {
               push the image to the right edge with a margin instead. */}
           <Reveal className="md:col-span-6" delay={80}>
             <div className="relative ml-auto w-full sm:max-w-sm">
-              <div className="relative aspect-[0.72] w-full overflow-hidden border border-olive/10 bg-olive-deep/[0.06] md:aspect-[0.618]">
+              <div className="relative aspect-[0.72] w-full overflow-hidden rounded-[1.75rem] bg-[var(--store-card)] shadow-2xl shadow-black/5 md:aspect-[0.618]">
                 <Image
                   src={pick('hero-iv-drip-2', cloudAssets.heroIvDrip2)}
                   alt="ผู้หญิงในแสงธรรมชาติ สื่อถึงการดูแลความงามอย่างเป็นส่วนตัว"
@@ -228,10 +221,6 @@ export default async function ServicesPage() {
                   className="object-cover"
                 />
               </div>
-              <span
-                aria-hidden="true"
-                className="absolute -bottom-6 -left-6 -z-10 hidden size-40 border-[0.5px] border-olive/20 md:block"
-              />
             </div>
           </Reveal>
         </div>
@@ -285,85 +274,77 @@ export default async function ServicesPage() {
       </section>
 
       {/* ── Doctor-led assessment ────────────────────────────── */}
-      <section className="px-6 py-24 sm:px-10 md:px-14 lg:px-20">
-        <div className="mx-auto grid max-w-6xl items-center gap-12 md:grid-cols-12 md:gap-14">
-          <Reveal className="md:col-span-5">
-            <div className="relative aspect-[1/1.2] w-full overflow-hidden border border-olive/10 bg-olive-deep/[0.06]">
-              <Image
-                src={pick('doctor-pratch', doctor.image)}
-                alt={`${doctor.nameTh} ${doctor.role} ของ ${site.name}`}
-                fill
-                sizes="(min-width: 768px) 38vw, 90vw"
-                className="object-cover"
-              />
-            </div>
-          </Reveal>
-
-          <Reveal className="md:col-span-7" delay={60}>
-            <div className="flex items-center gap-3 text-[0.68rem] uppercase tracking-[0.24em] text-olive/60">
-              <span className="h-px w-8 bg-clay" />
+      <section className="bg-[var(--store-surface)] px-4 py-16 md:px-6 md:py-24">
+        <Reveal className="mx-auto mb-10 flex max-w-6xl flex-wrap items-end justify-between gap-x-6 gap-y-3 md:mb-12">
+          <div>
+            <div className="flex items-center gap-3 text-[0.68rem] uppercase tracking-[0.24em] text-[var(--store-muted)]">
+              <span className="h-px w-8 bg-[var(--store-control)]" />
               Aesthetic Discipline
             </div>
-            <h2 className="mt-5 font-serif text-4xl leading-tight text-olive-deep md:text-5xl">
-              Doctor-led Assessment
-            </h2>
-            <p className="mt-6 max-w-xl text-sm leading-[1.9] text-ink/65">
+            <h2 className="mt-5 font-serif text-4xl text-[var(--store-ink)] md:text-5xl">Doctor-led Assessment</h2>
+            <p className="mt-4 max-w-2xl text-sm leading-[1.8] text-[var(--store-muted)]">
               ที่ {site.name} หัตถการทุกขั้นตอนดูแลโดยแพทย์ผู้มีใบประกอบวิชาชีพเวชกรรม
               เริ่มจากการประเมินโครงสร้างใบหน้าและสภาพผิวอย่างละเอียด
               เพื่อแนะนำแนวทางที่เหมาะกับแต่ละบุคคล
             </p>
-            <p className="mt-4 max-w-xl text-sm leading-[1.9] text-ink/65">{doctor.summary}</p>
+          </div>
+        </Reveal>
 
-            <div className="mt-10 border-t border-olive/10 pt-8">
-              <p className="font-serif text-2xl text-olive-deep">{doctor.nameTh}</p>
-              <p className="mt-1 text-xs text-ink/55">
-                {doctor.role} · เลขที่ใบประกอบวิชาชีพเวชกรรม {doctor.licenseNo}
-              </p>
-
-              <ul className="mt-6 space-y-2">
-                {doctor.education.slice(0, 2).map((edu) => (
-                  <li key={edu.degree} className="flex gap-3 text-xs leading-[1.7] text-ink/55">
-                    <span aria-hidden="true" className="mt-2 h-px w-3 shrink-0 bg-clay" />
-                    <span>
-                      {edu.degree} — {edu.institution}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-
-              <p className="mt-6 text-[0.68rem] tracking-[0.04em] text-olive/60">
-                ใบอนุญาตสถานพยาบาลเลขที่ {site.license}
-              </p>
-
-              <Link
-                href="/about"
-                className="group mt-8 inline-flex items-center gap-2 text-[0.72rem] tracking-wide text-olive-deep transition-[gap] duration-200 ease-out hover:gap-3"
-              >
-                รู้จักทีมแพทย์ <ArrowUpRight className="size-3" />
-              </Link>
-            </div>
-          </Reveal>
+        <div className="home-swipe-rail -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 md:mx-auto md:grid md:max-w-6xl md:grid-cols-2 md:gap-5 md:overflow-visible md:px-0 md:pb-0">
+          <div className="w-[85%] shrink-0 snap-center md:w-auto md:shrink">
+            <PhysicianPanel
+              label="The Lead Physician"
+              name={doctor.nameTh}
+              nameSecondary={doctor.name}
+              role={doctor.role}
+              licenseNo={doctor.licenseNo}
+              summary={doctor.summary}
+              expertise={doctor.expertise}
+              languages={doctor.languages}
+              imageSrc={pick('doctor-pratch', doctor.image)}
+              imageAlt={`${doctor.nameTh} ${doctor.role} ของ ${site.name}`}
+            />
+          </div>
+          <div className="w-[85%] shrink-0 snap-center md:w-auto md:shrink">
+            <PhysicianPanel
+              label="Clinic Physician"
+              name={doctorEesha.name}
+              nameSecondary={doctorEesha.nameTh}
+              role={doctorEesha.role}
+              licenseNo={doctorEesha.licenseNo}
+              summary={doctorEesha.summary}
+              expertise={doctorEesha.expertise}
+              languages={doctorEesha.languages}
+              imageSrc={overrides.get('doctor-eesha')?.public_id}
+              imageAlt={`${doctorEesha.name} ${doctorEesha.role} ของ ${site.name}`}
+              delay={80}
+            />
+          </div>
         </div>
       </section>
 
       {/* ── Curated promotions ───────────────────────────────── */}
-      <section className="bg-cream py-24">
-        <div className="mx-auto mb-12 max-w-6xl px-6 sm:px-10 md:px-14 lg:px-20">
-          <Reveal>
-            <span className="mb-2 block text-[0.68rem] uppercase tracking-[0.24em] text-olive/60">
-              Curated Promotions
-            </span>
-            <h2 className="font-serif text-4xl leading-tight text-olive-deep md:text-5xl">
-              โปรแกรมแนะนำ
-            </h2>
-            <p className="mt-5 max-w-md text-xs leading-[1.9] text-ink/60">
-              ภาพโปรแกรมที่คลินิกจัดทำไว้ กรุณาสอบถามราคาและช่วงเวลาที่ใช้ได้กับทีม Kazumi
-              ก่อนจองทุกครั้ง
-            </p>
-          </Reveal>
-        </div>
-        <Reveal className="mx-auto max-w-6xl px-2 sm:px-6 md:px-10 lg:px-16">
-          <PromotionCarousel posters={posters} />
+      <section className="apple-promotion-section overflow-hidden">
+        <Reveal className="apple-promotion-heading">
+          <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <h2 className="text-[1.35rem] font-semibold tracking-[-0.025em] md:text-[1.55rem]">
+                โปรแกรมแนะนำ
+              </h2>
+            </div>
+          </div>
+          <p className="mt-2 max-w-md text-[0.85rem] leading-[1.8] text-[var(--store-muted)]">
+            ภาพโปรแกรมที่คลินิกจัดทำไว้ กรุณาสอบถามราคาและช่วงเวลาที่ใช้ได้กับทีม {site.name} ก่อนจองทุกครั้ง
+          </p>
+        </Reveal>
+
+        <Reveal>
+          <PromotionCarousel
+            posters={posters}
+            className="homepage-promotion-shelf"
+            hidePreviousAtStart
+            imageSizes="(min-width: 1440px) 19vw, (min-width: 1024px) 22vw, (min-width: 640px) 42vw, 78vw"
+          />
         </Reveal>
       </section>
 
