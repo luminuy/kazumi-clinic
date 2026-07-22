@@ -279,5 +279,46 @@
     "notFound": "Article not found",
     "breadcrumb": "Articles",
     "allArticles": "All articles"
+  },
+  "Account": {
+    "login": {
+      "title": "Sign in",
+      "lead": "Sign in to your Kazumi membership to manage your bookings and cart."
+    },
+    "register": {
+      "title": "Create account",
+      "lead": "Create a free Kazumi membership to book services and track their status."
+    },
+    "dashboard": {
+      "title": "My account",
+      "eyebrow": "Kazumi Member",
+      "greeting": "Hello {name}",
+      "member": "there",
+      "profile": "Account details",
+      "orders": "Bookings & cart",
+      "ordersDesc": "View your cart and service bookings."
+    },
+    "field": {
+      "name": "Name",
+      "namePlaceholder": "Full name",
+      "email": "Email",
+      "password": "Password",
+      "passwordHint": "At least 8 characters"
+    },
+    "submit": {
+      "login": "Sign in",
+      "register": "Sign up"
+    },
+    "switch": {
+      "haveAccount": "Already have an account?",
+      "noAccount": "No account yet?"
+    },
+    "logout": "Sign out",
+    "error": {
+      "email": "Please enter your email",
+      "password": "Invalid password",
+      "generic": "Something went wrong (status {status})",
+      "submit": "Request failed"
+    }
   }
 }
