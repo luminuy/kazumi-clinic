@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FileText, ImageIcon, Package, Star, Tag } from 'lucide-react';
+import { CalendarCheck, FileText, ImageIcon, Package, Star, Tag } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const items = [
@@ -12,6 +12,7 @@ const items = [
   { href: '/admin/promotions', label: 'โปรโมชั่น', icon: Tag },
   { href: '/admin/reviews', label: 'รีวิว', icon: Star },
   { href: '/admin/blog', label: 'บทความ', icon: FileText },
+  { href: '/admin/leads', label: 'นัดหมาย', icon: CalendarCheck },
 ] as const;
 
 /** Header section switcher with an active-page pill. */
