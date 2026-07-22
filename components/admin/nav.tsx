@@ -3,13 +3,14 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ImageIcon, Package, Tag } from 'lucide-react';
+import { ImageIcon, Package, Star, Tag } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const items = [
   { href: '/admin', label: 'รูปภาพ', icon: ImageIcon },
   { href: '/admin/products', label: 'สินค้า', icon: Package },
   { href: '/admin/promotions', label: 'โปรโมชั่น', icon: Tag },
+  { href: '/admin/reviews', label: 'รีวิว', icon: Star },
 ] as const;
 
 /** Header section switcher with an active-page pill. */
