@@ -46,4 +46,5 @@
 - **CI** ([.github/workflows/ci.yml](.github/workflows/ci.yml)) — lint + typecheck + test + build บนทุก PR (รันบน GitHub runner)
 - **Test** — `pnpm test` (vitest) · invariant tests ใน `tests/` (no-trailing-slash, service catalog)
 - **Health** — `pnpm health` เช็คทุกหน้า 200 · uptime workflow ยิงทุก 6 ชม. ([.github/workflows/uptime.yml](.github/workflows/uptime.yml)) fail แล้ว GitHub เมลเตือน
+- **Pre-push hook** ([.githooks/pre-push](.githooks/pre-push)) — กัน `git push` ตรงเข้า main (เปิดใช้ตอน `pnpm install` หรือ `pnpm setup:hooks`) · soft guardrail แทน branch protection ที่เปิดไม่ได้ · bypass: `--no-verify`
 - **ต้องเปิด R2** (ยังใช้ KV แทน) และ **ขึ้นโดเมนจริง** = งานที่ต้องกดใน Cloudflare dashboard เอง
