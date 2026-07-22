@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, FlaskConical, ShieldCheck, Syringe } from 'lucide-react';
 import type { ServiceCategory } from '@/lib/services';
-import { doctor } from '@/lib/doctor';
+import { doctors } from '@/lib/doctor';
 import { site } from '@/lib/site';
 import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/reveal';
@@ -21,6 +21,7 @@ export function FillerServicePage({
   /** ServiceItem.id → Cloudinary public ID, resolved from /admin by the server component. */
   itemImages?: Record<string, string>;
   doctorImage?: string;
+  eeshaImage?: string;
 }) {
   return (
     <div className="overflow-hidden bg-[var(--background)]">
@@ -200,19 +201,34 @@ export function FillerServicePage({
           </div>
         </Reveal>
 
-        <div className="mx-auto max-w-3xl">
-          <PhysicianPanel
-            label="The Lead Physician"
-            name={doctor.nameTh}
-            nameSecondary={doctor.name}
-            role={doctor.role}
-            licenseNo={doctor.licenseNo}
-            summary={doctor.summary}
-            expertise={doctor.expertise}
-            languages={doctor.languages}
-            imageSrc={doctorImage}
-            imageAlt={`${doctor.nameTh} ${doctor.role} ของ ${site.name}`}
-          />
+        <div className="mx-auto max-w-5xl">
+          <div className="grid gap-8 sm:grid-cols-2 lg:gap-10">
+            <PhysicianPanel
+              label="The Lead Physician"
+              name={doctors[0].nameTh}
+              nameSecondary={doctors[0].name}
+              role={doctors[0].role}
+              licenseNo={doctors[0].licenseNo}
+              summary={doctors[0].summary}
+              expertise={doctors[0].expertise}
+              languages={doctors[0].languages}
+              imageSrc={doctorImage}
+              imageAlt={`${doctors[0].nameTh} ${doctors[0].role} ของ ${site.name}`}
+            />
+            <PhysicianPanel
+              label="Clinic Physician"
+              name={doctors[1].name}
+              nameSecondary={doctors[1].nameTh}
+              role={doctors[1].role}
+              licenseNo={doctors[1].licenseNo}
+              summary={doctors[1].summary}
+              expertise={doctors[1].expertise}
+              languages={doctors[1].languages}
+              imageSrc={eeshaImage}
+              imageAlt={`${doctors[1].name} ${doctors[1].role} ของ ${site.name}`}
+              delay={60}
+            />
+          </div>
         </div>
       </section>
 
