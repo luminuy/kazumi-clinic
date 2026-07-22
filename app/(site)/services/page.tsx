@@ -147,7 +147,7 @@ export default async function ServicesPage() {
   const visitPhoto = overrides.get('home-visit')?.public_id;
 
   return (
-    <div className="bg-sand">
+    <div className="bg-[var(--background)]">
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
@@ -166,21 +166,21 @@ export default async function ServicesPage() {
         <div className="mx-auto grid max-w-6xl items-center gap-12 md:grid-cols-12 md:gap-10">
           <Reveal className="md:col-span-6">
 
-            <div className="mt-10 flex items-center gap-3 text-[0.68rem] uppercase tracking-[0.24em] text-olive/60">
-              <span className="h-px w-8 bg-clay" />
+            <div className="mt-10 flex items-center gap-3 text-[0.68rem] uppercase tracking-[0.24em] text-[var(--store-muted)]">
+              <span className="h-px w-8 bg-[var(--store-control)]" />
               Clinical Services
             </div>
 
             <h1 className="mt-5">
-              <span className="block font-serif text-5xl leading-[1.05] text-olive-deep md:text-6xl">
+              <span className="block font-serif text-5xl leading-[1.05] text-[var(--store-ink)] md:text-6xl">
                 Treatment Atlas
               </span>
-              <span className="mt-4 block text-base leading-[1.7] text-ink/70">
+              <span className="mt-4 block text-base leading-[1.7] text-[var(--store-muted)]">
                 บริการและหัตถการทั้งหมดของ {site.nameTh}
               </span>
             </h1>
 
-            <p className="mt-6 max-w-md text-sm leading-[1.9] text-ink/60">
+            <p className="mt-6 max-w-md text-sm leading-[1.9] text-[var(--store-muted)]">
               ความงามที่พอดีเริ่มจากการประเมินโดยแพทย์
               ทุกหัตถการด้านล่างออกแบบตามโครงหน้าและสภาพผิวของแต่ละบุคคล
               เพื่อผลลัพธ์ที่เป็นธรรมชาติในแบบของคุณ
@@ -198,7 +198,7 @@ export default async function ServicesPage() {
               </a>
               <a
                 href="#treatment-atlas"
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-olive-deep/30 bg-transparent px-7 py-3.5 text-xs font-medium text-olive-deep transition-all duration-200 hover:border-olive-deep hover:bg-olive-deep/5 active:scale-[0.98]"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-black/20 bg-transparent px-7 py-3.5 text-xs font-medium text-[var(--store-ink)] transition-all duration-200 hover:border-black/30 hover:bg-black/5 active:scale-[0.98]"
               >
                 ดูหัตถการทั้งหมด
               </a>
@@ -229,20 +229,20 @@ export default async function ServicesPage() {
       {/* ── Treatment Atlas ──────────────────────────────────── */}
       <section
         id="treatment-atlas"
-        className="scroll-mt-24 bg-cream px-6 py-24 sm:px-10 md:px-14 lg:px-20"
+        className="scroll-mt-24 bg-[var(--store-surface)] px-6 py-24 sm:px-10 md:px-14 lg:px-20"
       >
         <div className="mx-auto max-w-6xl">
           <div className="mb-16 flex flex-col justify-between gap-6 md:flex-row md:items-baseline">
             <Reveal>
-              <span className="mb-2 block text-[0.68rem] uppercase tracking-[0.24em] text-olive/60">
+              <span className="mb-2 block text-[0.68rem] uppercase tracking-[0.24em] text-[var(--store-muted)]">
                 {serviceCategories.length} Treatments
               </span>
-              <h2 className="font-serif text-4xl leading-tight text-olive-deep md:text-5xl">
+              <h2 className="font-serif text-4xl leading-tight text-[var(--store-ink)] md:text-5xl">
                 หัตถการทั้งหมด
               </h2>
             </Reveal>
             <Reveal delay={60}>
-              <p className="max-w-xs text-xs leading-[1.9] text-ink/60">
+              <p className="max-w-xs text-xs leading-[1.9] text-[var(--store-muted)]">
                 นิยามความสวยที่เป็นปัจเจก
                 ผ่านการดูแลอย่างพิถีพิถันและเครื่องมือแพทย์ที่ได้มาตรฐาน
               </p>
@@ -264,8 +264,8 @@ export default async function ServicesPage() {
             })}
           </div>
 
-          <Reveal className="mt-16 border-t border-olive/10 pt-8">
-            <p className="text-[0.68rem] leading-[1.9] text-ink/45">
+          <Reveal className="mt-16 border-t border-black/10 pt-8">
+            <p className="text-[0.68rem] leading-[1.9] text-[var(--store-muted)]">
               ราคาและรายละเอียดของแต่ละโปรแกรมอยู่ในหน้าหัตถการนั้น ๆ
               การเลือกโปรแกรมและปริมาณที่เหมาะสมขึ้นอยู่กับการประเมินของแพทย์เป็นรายบุคคล
             </p>
@@ -349,15 +349,15 @@ export default async function ServicesPage() {
       </section>
 
       {/* ── Location: Apple-style accordion card ─────────────── */}
-      <section className="bg-cream py-20 md:py-32">
+      <section className="bg-[var(--background)] py-20 md:py-32">
         <div className="mx-auto max-w-6xl px-4 md:px-6">
           <Reveal className="mb-8 flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
-            <h2 className="font-serif text-4xl text-olive-deep md:text-5xl">มาเยี่ยมเรา</h2>
+            <h2 className="font-serif text-4xl text-[var(--store-ink)] md:text-5xl">มาเยี่ยมเรา</h2>
             <a
               href={site.mapsUrl}
               target="_blank"
               rel="noopener"
-              className="inline-flex items-center gap-1.5 text-[0.9rem] text-forest transition-colors duration-200 hover:text-mint"
+              className="inline-flex items-center gap-1.5 text-[0.9rem] text-[var(--store-ink)] transition-colors duration-200 hover:opacity-60"
             >
               เปิดใน Google Maps <ArrowUpRight className="size-4" />
             </a>
@@ -414,7 +414,7 @@ export default async function ServicesPage() {
               </div>
 
               {/* Right: clinic photo / map */}
-              <div className="relative order-first min-h-[16rem] bg-sand md:order-last md:min-h-[30rem]">
+              <div className="relative order-first min-h-[16rem] bg-[var(--store-card)] md:order-last md:min-h-[30rem]">
                 {visitPhoto ? (
                   <Image
                     src={visitPhoto}

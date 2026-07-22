@@ -114,7 +114,7 @@ export default async function HomePage() {
       />
 
       {/* ── Hero: full-bleed portrait with overlaid copy ─────── */}
-      <section className="relative isolate flex min-h-[60vh] items-end overflow-hidden bg-olive-deep text-sand md:min-h-[74vh] md:items-center">
+      <section className="relative isolate flex min-h-[60vh] items-end overflow-hidden bg-black text-white md:min-h-[74vh] md:items-center">
         <Image
           src={heroSrc}
           alt=""
@@ -127,26 +127,26 @@ export default async function HomePage() {
         />
         <div
           aria-hidden="true"
-          className="absolute inset-0 bg-gradient-to-t from-olive-deep/70 via-olive-deep/35 to-olive-deep/5 md:bg-gradient-to-r md:from-olive-deep/70 md:via-olive-deep/25 md:to-transparent"
+          className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/35 to-black/5 md:bg-gradient-to-r md:from-black/70 md:via-black/25 md:to-transparent"
         />
         <div className="hero-grid absolute inset-0 opacity-[0.1]" aria-hidden="true" />
 
         <div className="relative mx-auto grid w-full max-w-7xl gap-10 px-6 py-14 sm:px-10 md:grid-cols-[minmax(0,1.55fr)_minmax(15rem,1fr)] md:items-center md:gap-12 md:px-12 md:py-24 lg:px-16">
           <div className="max-w-2xl">
-            <div className="hero-enter flex items-center gap-3 text-[0.64rem] uppercase tracking-[0.32em] text-sand/60">
-              <span aria-hidden="true" className="h-px w-10 bg-mint-glow" />
+            <div className="hero-enter flex items-center gap-3 text-[0.64rem] uppercase tracking-[0.32em] text-white/60">
+              <span aria-hidden="true" className="h-px w-10 bg-white/30" />
               Kazumi Clinic · เวชศาสตร์ความงาม สุขุมวิท
             </div>
             <h1
               lang="en"
-              className="hero-enter hero-enter--slow mt-6 font-serif text-[11vw] leading-[0.98] tracking-[-0.03em] text-sand sm:text-6xl md:mt-7 md:text-[4rem] md:leading-[0.95] lg:text-[4.7rem]"
+              className="hero-enter hero-enter--slow mt-6 font-serif text-[11vw] leading-[0.98] tracking-[-0.03em] text-white sm:text-6xl md:mt-7 md:text-[4rem] md:leading-[0.95] lg:text-[4.7rem]"
             >
               Where thoughtful care
               <br />
-              becomes <span className="text-mint-glow">natural</span> beauty.
+              becomes <span className="text-white/70">natural</span> beauty.
             </h1>
-            <p className="hero-enter hero-enter--later mt-7 max-w-xl text-sm leading-[1.95] text-sand/75 md:text-base">
-              <span lang="ja" className="text-sand/55">
+            <p className="hero-enter hero-enter--later mt-7 max-w-xl text-sm leading-[1.95] text-white/75 md:text-base">
+              <span lang="ja" className="text-white/55">
                 純粋さは永遠の美へ
               </span>{' '}
               — ความงามที่เริ่มจากความเข้าใจ แพทย์ประเมินและออกแบบการดูแลเฉพาะคุณ ในบรรยากาศที่สงบและเป็นส่วนตัว
@@ -156,14 +156,14 @@ export default async function HomePage() {
                 href={site.lineUrl}
                 target="_blank"
                 rel="noopener"
-                className="inline-flex items-center gap-2 rounded-full bg-mint px-7 py-3 text-sm font-medium text-white shadow-lg shadow-black/10 transition-transform duration-300 hover:-translate-y-0.5 hover:bg-forest active:translate-y-0"
+                className="inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 text-sm font-medium text-black shadow-lg shadow-black/10 transition-transform duration-300 hover:-translate-y-0.5 hover:bg-white/90 active:translate-y-0"
               >
                 <LineIcon className="size-4" />
                 จองคิวผ่าน LINE <ArrowUpRight className="size-4" />
               </a>
               <Link
                 href="/services"
-                className="inline-flex items-center rounded-full border border-sand/35 px-7 py-3 text-sm font-medium text-sand transition-colors duration-200 hover:border-sand/70 hover:bg-sand/10"
+                className="inline-flex items-center rounded-full border border-white/35 px-7 py-3 text-sm font-medium text-white transition-colors duration-200 hover:border-white/70 hover:bg-white/10"
               >
                 ดูบริการทั้งหมด
               </Link>
@@ -174,12 +174,12 @@ export default async function HomePage() {
             aria-hidden="true"
             className="hero-enter hero-enter--image hidden flex-col items-center justify-center gap-5 text-center md:flex"
           >
-            <FlowerMark className="size-24 text-sand/25 lg:size-32" />
+            <FlowerMark className="size-24 text-white/25 lg:size-32" />
             <div>
-              <p lang="en" className="font-serif text-xl italic leading-snug text-sand/25 lg:text-2xl">
+              <p lang="en" className="font-serif text-xl italic leading-snug text-white/25 lg:text-2xl">
                 Where thoughtful care becomes natural beauty.
               </p>
-              <p lang="ja" className="mt-2 font-serif text-base text-sand/20 lg:text-lg">
+              <p lang="ja" className="mt-2 font-serif text-base text-white/20 lg:text-lg">
                 純粋さは永遠の美へ
               </p>
             </div>
@@ -188,8 +188,8 @@ export default async function HomePage() {
       </section>
 
       {/* ── Trust strip: verifiable credibility signals ──────── */}
-      <section className="border-b border-olive/10 bg-cream">
-        <ul className="mx-auto grid max-w-6xl grid-cols-2 gap-x-6 gap-y-6 px-6 py-7 text-olive-deep sm:px-10 md:grid-cols-4 md:gap-8 md:px-12">
+      <section className="border-b border-black/[0.08] bg-[var(--store-surface)]">
+        <ul className="mx-auto grid max-w-6xl grid-cols-2 gap-x-6 gap-y-6 px-6 py-7 text-[var(--store-ink)] sm:px-10 md:grid-cols-4 md:gap-8 md:px-12">
           {[
             { icon: Stethoscope, label: 'ดูแลโดยแพทย์เวชกรรม', sub: 'ประเมินทุกเคสก่อนหัตถการ' },
             { icon: BadgeCheck, label: 'ใบอนุญาตสถานพยาบาล', sub: site.license },
@@ -197,10 +197,10 @@ export default async function HomePage() {
             { icon: Clock, label: 'เปิดทุกวัน', sub: site.hoursDisplay.short },
           ].map(({ icon: Icon, label, sub }) => (
             <li key={label} className="flex items-center gap-3">
-              <Icon className="size-5 shrink-0 text-forest" strokeWidth={1.5} aria-hidden="true" />
+              <Icon className="size-5 shrink-0 text-[#06C755]" strokeWidth={1.5} aria-hidden="true" />
               <div className="min-w-0">
                 <p className="text-[0.8rem] font-medium leading-tight">{label}</p>
-                <p className="mt-0.5 text-[0.72rem] leading-tight text-ink/55">{sub}</p>
+                <p className="mt-0.5 text-[0.72rem] leading-tight text-[var(--store-muted)]">{sub}</p>
               </div>
             </li>
           ))}
@@ -224,7 +224,7 @@ export default async function HomePage() {
             ฟิลเลอร์ โบท็อกซ์ IV Drip วิตามิน สกินบูสเตอร์ คอลลาเจนบูสเตอร์ และอีกหลายโปรแกรม —
             ประเมินและดูแลโดยแพทย์ทุกขั้นตอน
           </p>
-          <p className="text-[0.72rem] leading-relaxed text-[var(--store-muted)]/70">
+          <p className="text-[0.72rem] leading-relaxed text-[var(--store-muted)]">
             *ราคาเริ่มต้นต่อครั้ง อาจมีการเปลี่ยนแปลง — สอบถามราคาปัจจุบันและเงื่อนไขกับคลินิกก่อนเข้ารับบริการ
           </p>
         </Reveal>
@@ -320,10 +320,10 @@ export default async function HomePage() {
       </section>
 
       {/* ── Location: Apple-style accordion card ─────────────── */}
-      <section className="bg-cream py-20 md:py-32">
+      <section className="bg-[var(--background)] py-20 md:py-32">
         <div className="mx-auto max-w-6xl px-4 md:px-6">
           <Reveal className="mb-8 flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
-            <h2 className="font-serif text-4xl text-olive-deep md:text-5xl">มาเยี่ยมเรา</h2>
+            <h2 className="font-serif text-4xl text-[var(--store-ink)] md:text-5xl">มาเยี่ยมเรา</h2>
             <a
               href={site.mapsUrl}
               target="_blank"
@@ -385,7 +385,7 @@ export default async function HomePage() {
               </div>
 
               {/* Right: clinic photo / map */}
-              <div className="relative order-first min-h-[16rem] bg-sand md:order-last md:min-h-[30rem]">
+              <div className="relative order-first min-h-[16rem] bg-[var(--store-card)] md:order-last md:min-h-[30rem]">
                 {visitPhoto ? (
                   <Image
                     src={visitPhoto}
@@ -420,7 +420,7 @@ export default async function HomePage() {
           <Reveal className="h-full w-[88%] shrink-0 snap-center md:w-auto md:shrink">
             <div className="apple-doctor-card flex h-full flex-col rounded-[1.75rem] bg-[var(--store-card)] px-8 py-10 text-[var(--store-ink)] sm:px-10 md:py-12">
               <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
-                <h2 className="font-serif text-3xl text-olive-deep md:text-4xl">เสียงจากผู้ใช้บริการ</h2>
+                <h2 className="font-serif text-3xl text-[var(--store-ink)] md:text-4xl">เสียงจากผู้ใช้บริการ</h2>
                 <Link
                   href="/reviews"
                   className="inline-flex shrink-0 items-center gap-1.5 text-[0.9rem] text-forest transition-colors duration-200 hover:text-mint"
@@ -432,7 +432,7 @@ export default async function HomePage() {
                 อ่านรีวิวจริงและผลลัพธ์ก่อน–หลังจากผู้ใช้บริการของเราได้บน Google และ Instagram
                 หรือสอบถามผลลัพธ์เฉพาะบุคคลกับทีมแพทย์ผ่าน LINE
               </p>
-              <p className="mt-3 text-xs text-[var(--store-muted)]/70">
+              <p className="mt-3 text-xs text-[var(--store-muted)]">
                 *ผลลัพธ์ขึ้นอยู่กับสภาพผิวและปัญหาเฉพาะบุคคล
               </p>
               <div className="mt-auto flex flex-wrap gap-3 pt-8">
@@ -440,7 +440,7 @@ export default async function HomePage() {
                   href={site.mapsUrl}
                   target="_blank"
                   rel="noopener"
-                  className="inline-flex items-center gap-2.5 rounded-full border border-olive-deep/20 bg-white px-7 py-3 text-sm font-medium text-olive-deep transition-colors duration-200 hover:bg-sand"
+                  className="inline-flex items-center gap-2.5 rounded-full border border-black/10 bg-white px-7 py-3 text-sm font-medium text-[var(--store-ink)] transition-colors duration-200 hover:bg-black/5"
                 >
                   <GoogleIcon className="size-4" />
                   ดูรีวิวบน Google <ArrowUpRight className="size-4" />
@@ -449,7 +449,7 @@ export default async function HomePage() {
                   href={site.instagram}
                   target="_blank"
                   rel="noopener"
-                  className="inline-flex items-center gap-2.5 rounded-full border border-olive-deep/25 px-7 py-3 text-sm font-medium text-olive-deep transition-colors duration-200 hover:bg-olive-deep hover:text-sand"
+                  className="inline-flex items-center gap-2.5 rounded-full border border-black/20 px-7 py-3 text-sm font-medium text-[var(--store-ink)] transition-colors duration-200 hover:bg-[var(--store-ink)] hover:text-white"
                 >
                   <InstagramIcon className="text-instagram size-4" />
                   Instagram {site.instagramHandle} <ArrowUpRight className="size-4" />
@@ -464,21 +464,21 @@ export default async function HomePage() {
               <div className="flex items-center gap-3 text-[0.66rem] uppercase tracking-[0.22em] text-forest">
                 <span aria-hidden="true" className="h-px w-10 bg-forest" /> คำถามที่พบบ่อย
               </div>
-              <dl className="mt-4 border-t border-olive/12">
+              <dl className="mt-4 border-t border-black/10">
                 {faqs.map((f, index) => (
                   <details
                     key={f.question}
                     open={index === 0}
-                    className="visit-accordion group border-b border-olive/12"
+                    className="visit-accordion group border-b border-black/10"
                   >
                     <summary className="flex cursor-pointer list-none items-start gap-3 py-4 [&::-webkit-details-marker]:hidden">
                       <span className="mt-1 font-sans text-xs tracking-[0.15em] text-forest">0{index + 1}</span>
-                      <dt className="flex-1 font-serif text-base leading-snug text-olive-deep md:text-lg">
+                      <dt className="flex-1 font-serif text-base leading-snug text-[var(--store-ink)] md:text-lg">
                         {f.question}
                       </dt>
-                      <ChevronDown className="mt-1 size-4 shrink-0 text-olive-light transition-transform duration-300 group-open:rotate-180" />
+                      <ChevronDown className="mt-1 size-4 shrink-0 text-[var(--store-muted)] transition-transform duration-300 group-open:rotate-180" />
                     </summary>
-                    <dd className="pb-5 pl-9 pr-2 text-sm leading-relaxed text-ink/65">{f.answer}</dd>
+                    <dd className="pb-5 pl-9 pr-2 text-sm leading-relaxed text-[var(--store-muted)]">{f.answer}</dd>
                   </details>
                 ))}
               </dl>

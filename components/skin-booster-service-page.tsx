@@ -19,19 +19,19 @@ function splitBenefit(benefit: string) {
 
 function TreatmentCard({ item }: { item: ServiceItem }) {
   return (
-    <article className="border border-olive/20 bg-surface-container-lowest p-8 md:p-10">
+    <article className="rounded-3xl border border-black/[0.08] bg-[var(--store-card)] p-8 shadow-sm md:p-10">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h3 className="font-serif text-2xl text-olive-deep md:text-3xl">{item.name}</h3>
+          <h3 className="font-serif text-2xl text-[var(--store-ink)] md:text-3xl">{item.name}</h3>
           {/* The reference labels this "Premium Bio-Stimulator"; we show the real detail
               ("Product from Italy") the item actually carries. */}
           {item.detail && (
-            <p lang="en" className="mt-1 text-[0.66rem] uppercase tracking-[0.18em] text-olive/55">
+            <p lang="en" className="mt-1 text-[0.66rem] uppercase tracking-[0.18em] text-[var(--store-muted)]">
               {item.detail}
             </p>
           )}
         </div>
-        <BadgeCheck aria-hidden="true" className="size-6 shrink-0 text-forest" />
+        <BadgeCheck aria-hidden="true" className="size-6 shrink-0 text-[#06C755]" />
       </div>
 
       {item.benefits && item.benefits.length > 0 && (
@@ -40,12 +40,12 @@ function TreatmentCard({ item }: { item: ServiceItem }) {
             const { label, description } = splitBenefit(benefit);
             return (
               <div key={label}>
-                <p lang="en" className="text-[0.78rem] font-medium text-olive-deep">
+                <p lang="en" className="text-[0.78rem] font-medium text-[var(--store-ink)]">
                   {label}
                 </p>
-                <span aria-hidden="true" className="mt-2 block h-px w-full bg-olive/20" />
+                <span aria-hidden="true" className="mt-2 block h-px w-full bg-black/10" />
                 {description && (
-                  <p className="mt-2 text-xs leading-[1.7] text-ink/60">{description}</p>
+                  <p className="mt-2 text-xs leading-[1.7] text-[var(--store-muted)]">{description}</p>
                 )}
               </div>
             );
@@ -55,12 +55,12 @@ function TreatmentCard({ item }: { item: ServiceItem }) {
 
       <div className="mt-10 flex items-end justify-between gap-4">
         <div>
-          <p lang="en" className="text-[0.62rem] uppercase tracking-[0.18em] text-olive/50">
+          <p lang="en" className="text-[0.62rem] uppercase tracking-[0.18em] text-[var(--store-muted)]">
             Price
           </p>
           {/* No price in lib/services.ts for this item; the reference also prints "สอบถามราคา",
               so the two agree — nothing invented. */}
-          <p className="mt-1 font-serif text-xl text-olive-deep">
+          <p className="mt-1 font-serif text-xl text-[var(--store-ink)]">
             {item.priceFrom !== undefined
               ? `${item.priceFrom.toLocaleString('th-TH')} บาท / ${item.unit}`
               : 'สอบถามราคา'}
@@ -91,21 +91,21 @@ export function SkinBoosterServicePage({
   disciplineImage?: string;
 }) {
   return (
-    <div className="bg-sand">
+    <div className="bg-[var(--background)]">
       {/* ── Hero: title, editorial image, then licence + intro ───────────────── */}
       <section className="px-6 pb-24 pt-24 sm:px-10 md:px-14 md:pt-28 lg:px-20">
         <div className="mx-auto max-w-5xl">
-          <h1 className="mt-12 font-serif text-4xl leading-none text-olive-deep md:text-6xl">
+          <h1 className="mt-12 font-serif text-4xl leading-none text-[var(--store-ink)] md:text-6xl">
             {service.title}
           </h1>
           <p
             lang="en"
-            className="mt-6 max-w-xs border-l border-olive/30 py-1 pl-4 text-base italic text-olive/70"
+            className="mt-6 max-w-xs border-l border-black/[0.08] py-1 pl-4 text-base italic text-[var(--store-muted)]"
           >
             Precision &amp; Refinement in Medical Aesthetics.
           </p>
 
-          <div className="relative mt-10 h-80 w-full overflow-hidden border border-olive/10 bg-olive-deep/[0.06] md:h-[31rem]">
+          <div className="relative mt-10 h-80 w-full overflow-hidden rounded-[1.75rem] border border-black/[0.08] bg-[var(--store-card)] shadow-[0_4px_24px_rgba(0,0,0,0.04)] md:h-[31rem]">
             {heroImage ? (
               <Image
                 src={heroImage}
@@ -124,7 +124,7 @@ export function SkinBoosterServicePage({
               >
                 <ServiceIcon
                   slug={service.slug}
-                  className="size-12 text-olive/25"
+                  className="size-12 text-[var(--store-muted)]"
                   strokeWidth={0.75}
                 />
               </span>
@@ -132,10 +132,10 @@ export function SkinBoosterServicePage({
           </div>
 
           <div className="mt-8 max-w-xl">
-            <p className="text-[0.64rem] uppercase tracking-[0.16em] text-olive/55">
+            <p className="text-[0.64rem] uppercase tracking-[0.16em] text-[var(--store-muted)]">
               ใบอนุญาตสถานพยาบาลเลขที่ {site.license}
             </p>
-            <p className="mt-3 text-sm leading-[1.9] text-ink/65 md:text-base">
+            <p className="mt-3 text-sm leading-[1.9] text-[var(--store-muted)] md:text-base">
               {service.description}
             </p>
           </div>
@@ -143,13 +143,13 @@ export function SkinBoosterServicePage({
       </section>
 
       {/* ── Philosophy ───────────────────────────────────────── */}
-      <section className="bg-cream px-6 py-24 text-center sm:px-10 md:py-28">
+      <section className="bg-[var(--store-surface)] px-6 py-24 text-center sm:px-10 md:py-28">
         <Reveal className="mx-auto max-w-xl">
-          <Sparkles aria-hidden="true" className="mx-auto size-7 text-olive/50" strokeWidth={0.9} />
-          <h2 lang="en" className="mt-6 font-serif text-3xl text-olive-deep md:text-4xl">
+          <Sparkles aria-hidden="true" className="mx-auto size-7 text-black/20" strokeWidth={0.9} />
+          <h2 lang="en" className="mt-6 font-serif text-3xl text-[var(--store-ink)] md:text-4xl">
             “Precision &amp; Refinement”
           </h2>
-          <p className="mt-6 text-sm leading-[1.9] text-ink/65 md:text-base">
+          <p className="mt-6 text-sm leading-[1.9] text-[var(--store-muted)] md:text-base">
             หัวใจหลักของ {site.name} คือความแม่นยำในการรักษาและความประณีตในการวิเคราะห์ปัญหาผิว
             เพราะเราเชื่อว่าทุกรายละเอียดสำคัญต่อผลลัพธ์
           </p>
@@ -162,7 +162,7 @@ export function SkinBoosterServicePage({
           <Reveal>
             <h2
               lang="en"
-              className="border-b border-olive/15 pb-4 font-serif text-3xl text-olive-deep md:text-4xl"
+              className="border-b border-black/[0.08] pb-4 font-serif text-3xl text-[var(--store-ink)] md:text-4xl"
             >
               Treatment Menu
             </h2>
@@ -175,7 +175,7 @@ export function SkinBoosterServicePage({
             ))}
           </div>
           <Reveal>
-            <p className="mt-8 text-[0.66rem] italic leading-[1.8] text-ink/45">
+            <p className="mt-8 text-[0.66rem] italic leading-[1.8] text-[var(--store-muted)]">
               *ราคาและความเหมาะสมขึ้นอยู่กับการประเมินของแพทย์ ·
               ทุกหัตถการไม่แนะนำสำหรับผู้มีอายุต่ำกว่า 18 ปี · ผลลัพธ์แตกต่างกันในแต่ละบุคคล
             </p>
@@ -195,26 +195,26 @@ export function SkinBoosterServicePage({
             className="object-cover opacity-20 grayscale"
           />
         ) : (
-          <span aria-hidden="true" className="absolute inset-0 bg-olive-deep/[0.08]" />
+          <span aria-hidden="true" className="absolute inset-0 bg-[var(--store-surface)]" />
         )}
         <Reveal className="relative">
-          <h2 lang="en" className="font-serif text-4xl text-olive-deep md:text-5xl">
+          <h2 lang="en" className="font-serif text-4xl text-[var(--store-ink)] md:text-5xl">
             The Kazumi Discipline
           </h2>
-          <span aria-hidden="true" className="mx-auto mt-6 block h-px w-12 bg-olive/40" />
-          <p lang="en" className="mt-6 text-base italic text-olive/70">
+          <span aria-hidden="true" className="mx-auto mt-6 block h-px w-12 bg-black/10" />
+          <p lang="en" className="mt-6 text-base italic text-[var(--store-muted)]">
             “{site.taglineTh}”
           </p>
         </Reveal>
       </section>
 
       {/* ── CTA ──────────────────────────────────────────────── */}
-      <section className="bg-olive-deep px-6 py-24 text-center text-sand sm:px-10 md:py-28">
+      <section className="bg-[var(--store-ink)] px-6 py-24 text-center text-[var(--background)] sm:px-10 md:py-28">
         <Reveal className="mx-auto max-w-xl">
           <h2 lang="en" className="font-serif text-3xl md:text-4xl">
             Ready for your transformation?
           </h2>
-          <p className="mx-auto mt-6 max-w-md text-sm leading-[1.9] text-sand/75">
+          <p className="mx-auto mt-6 max-w-md text-sm leading-[1.9] text-white/75">
             เริ่มต้นดูแลผิวพรรณของคุณกับทีมแพทย์ {site.name}
           </p>
           <div className="mt-10 flex flex-col items-center gap-4">
@@ -229,7 +229,7 @@ export function SkinBoosterServicePage({
             </a>
             <Link
               href="/services"
-              className="border-b border-sand/30 pb-1 text-[0.66rem] uppercase tracking-[0.18em] text-sand/80 transition-colors hover:text-sand"
+              className="border-b border-white/30 pb-1 text-[0.66rem] uppercase tracking-[0.18em] text-white/80 transition-colors hover:text-white"
             >
               ดูบริการทั้งหมด
             </Link>

@@ -60,13 +60,13 @@ export default function ContactPage() {
           <Reveal className="flex flex-col gap-6">
           {/* Card 1: Address */}
           <div className="group relative flex flex-col gap-4 overflow-hidden rounded-[1.75rem] border border-black/5 bg-[var(--store-card)] p-8 shadow-xl shadow-black/5 transition-transform duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/10">
-            <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-olive/10 text-olive-deep">
+            <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[var(--store-control)] text-[var(--store-ink)]">
               <MapPin strokeWidth={1.5} className="size-6" />
             </div>
             <div>
-              <h3 className="font-serif text-xl text-olive-deep">ที่ตั้งคลินิก</h3>
-              <p className="mt-2 text-sm leading-[1.8] text-ink/75">{site.addressFull}</p>
-              <a href={site.mapsUrl} target="_blank" rel="noopener" className="mt-4 inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.1em] text-olive-deep hover:text-forest">
+              <h3 className="font-serif text-xl text-[var(--store-ink)]">ที่ตั้งคลินิก</h3>
+              <p className="mt-2 text-sm leading-[1.8] text-[var(--store-muted)]">{site.addressFull}</p>
+              <a href={site.mapsUrl} target="_blank" rel="noopener" className="mt-4 inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.1em] text-[var(--store-ink)] hover:opacity-60">
                 ดูบน Google Maps <Navigation className="size-3" />
               </a>
             </div>
@@ -75,22 +75,22 @@ export default function ContactPage() {
           {/* Card 2: Contact Info */}
           <div className="grid gap-6 sm:grid-cols-2">
             <div className="group relative flex flex-col gap-4 overflow-hidden rounded-[1.75rem] border border-black/5 bg-[var(--store-card)] p-8 shadow-xl shadow-black/5 transition-transform duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/10">
-              <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-olive/10 text-olive-deep">
+              <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[var(--store-control)] text-[var(--store-ink)]">
                 <Phone strokeWidth={1.5} className="size-6" />
               </div>
               <div>
-                <h3 className="font-serif text-xl text-olive-deep">โทรศัพท์</h3>
-                <a href={site.phoneUrl} className="mt-2 block text-sm leading-[1.8] text-ink/75 hover:text-forest">{site.phone}</a>
+                <h3 className="font-serif text-xl text-[var(--store-ink)]">โทรศัพท์</h3>
+                <a href={site.phoneUrl} className="mt-2 block text-sm leading-[1.8] text-[var(--store-muted)] hover:opacity-60">{site.phone}</a>
               </div>
             </div>
 
             <div className="group relative flex flex-col gap-4 overflow-hidden rounded-[1.75rem] border border-black/5 bg-[var(--store-card)] p-8 shadow-xl shadow-black/5 transition-transform duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/10">
-              <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-olive/10 text-olive-deep">
+              <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[var(--store-control)] text-[var(--store-ink)]">
                 <Clock strokeWidth={1.5} className="size-6" />
               </div>
               <div>
-                <h3 className="font-serif text-xl text-olive-deep">เวลาทำการ</h3>
-                <p className="mt-2 text-sm leading-[1.8] text-ink/75">
+                <h3 className="font-serif text-xl text-[var(--store-ink)]">เวลาทำการ</h3>
+                <p className="mt-2 text-sm leading-[1.8] text-[var(--store-muted)]">
                   {site.hoursDisplay.weekdays}
                   <br />
                   {site.hoursDisplay.sunday}
@@ -114,7 +114,7 @@ export default function ContactPage() {
               href={site.instagram}
               target="_blank"
               rel="noopener"
-              className="flex items-center gap-2.5 rounded-full border border-ink/10 bg-white px-6 py-3 text-xs font-medium tracking-[0.1em] text-ink shadow-lg shadow-black/5 transition-all duration-300 hover:-translate-y-0.5 hover:border-[#E1306C] hover:text-[#E1306C] hover:shadow-xl active:scale-95"
+              className="flex items-center gap-2.5 rounded-full border border-black/10 bg-white px-6 py-3 text-xs font-medium tracking-[0.1em] text-[var(--store-ink)] shadow-lg shadow-black/5 transition-all duration-300 hover:-translate-y-0.5 hover:border-[#E1306C] hover:text-[#E1306C] hover:shadow-xl active:scale-95"
             >
               <InstagramIcon className="size-4" />
               Instagram
