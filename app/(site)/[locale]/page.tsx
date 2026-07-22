@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowUpRight, BadgeCheck, ChevronDown, Clock, MapPin, Stethoscope } from 'lucide-react';
@@ -15,16 +16,16 @@ import { promotionPosters } from '@/lib/promotions';
 import { Reveal } from '@/components/reveal';
 import { PromotionCarousel } from '@/components/promotion-carousel';
 import { ServiceCarousel } from '@/components/service-carousel';
+import { PhysicianPanel } from '@/components/physician-panel';
 import { BrandStrip } from '@/components/brand-strip';
 import { GoogleIcon, InstagramIcon, LineIcon } from '@/components/brand-icons';
 
-const homeTitle = 'คลินิกความงามสุขุมวิท กรุงเทพฯ | Kazumi Clinic';
-const homeDescription =
-  'Kazumi Clinic คลินิกความงามย่านสุขุมวิท กรุงเทพฯ ให้บริการฟิลเลอร์ โบท็อกซ์ IV Drip วิตามิน สกินบูสเตอร์ และคอลลาเจนบูสเตอร์ โดยแพทย์ประเมินและวางแผนการดูแลเฉพาะบุคคล';
-
-import { PhysicianPanel } from '@/components/physician-panel';
-export async function generateMetadata(): Promise<Metadata> {
-  const socialImage = await siteSocialImage('hero-home', `${site.name} คลินิกความงามสุขุมวิท`);
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'HomePage' });
+  const homeTitle = t('metaTitle');
+  const homeDescription = t('metaDescription');
+  const socialImage = await siteSocialImage('hero-home', `${site.name} ${homeTitle}`);
 
   return {
     title: homeTitle,
@@ -36,7 +37,7 @@ export async function generateMetadata(): Promise<Metadata> {
       url: site.url,
       siteName: site.name,
       type: 'website',
-      locale: 'th_TH',
+      locale: locale === 'en' ? 'en_US' : 'th_TH',
       images: [socialImage],
     },
     twitter: {
@@ -48,34 +49,34 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-const faqs = [
-  {
-    question: `${site.name} ให้บริการอะไรบ้าง?`,
-    answer: `${site.name} ให้บริการ${serviceCategories.map((c) => c.title).join(' ')} โดยแพทย์เป็นผู้ประเมินก่อนรับบริการ`,
-  },
-  {
-    question: 'คลินิกเปิดกี่โมงถึงกี่โมง?',
-    answer: `${site.hoursDisplay.weekdays} และ${site.hoursDisplay.sunday}`,
-  },
-  {
-    question: 'คลินิกอยู่ที่ไหน?',
-    answer: `${site.name} ตั้งอยู่ที่ ${site.addressFull} ใบอนุญาตสถานพยาบาลเลขที่ ${site.license}`,
-  },
-  {
-    question: 'ใครเป็นผู้ทำหัตถการ?',
-    answer: `หัตถการดำเนินการโดยแพทย์ผู้มีใบประกอบวิชาชีพเวชกรรม — ${site.doctors
-      .map((d) => `${d.name} (เลขที่ ${d.licenseNo})`)
-      .join(', ')}`,
-  },
-  {
-    question: 'จองคิวได้ที่ไหน?',
-    answer: `จองคิวผ่าน LINE Official Account หรือโทร ${site.phone}`,
-  },
-];
+export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations('HomePage');
 
-export const revalidate = 3600;
+  const faqs = [
+    {
+      question: t('faq.q1', { siteName: site.name }),
+      answer: t('faq.a1', { siteName: site.name, categories: serviceCategories.map((c) => c.title).join(' ') }),
+    },
+    {
+      question: t('faq.q2'),
+      answer: t('faq.a2', { weekdays: site.hoursDisplay.weekdays, sunday: site.hoursDisplay.sunday }),
+    },
+    {
+      question: t('faq.q3'),
+      answer: t('faq.a3', { siteName: site.name, addressFull: site.addressFull, license: site.license }),
+    },
+    {
+      question: t('faq.q4'),
+      answer: t('faq.a4', { doctors: site.doctors.map((d) => `${d.name} (เลขที่ ${d.licenseNo})`).join(', ') }),
+    },
+    {
+      question: t('faq.q5'),
+      answer: t('faq.a5', { phone: site.phone }),
+    },
+  ];
 
-export default async function HomePage() {
   const overrides = await getImageOverrides();
   const pick = (key: string, fallback: string) => overrides.get(key)?.public_id ?? fallback;
 
@@ -135,7 +136,7 @@ export default async function HomePage() {
           <div className="max-w-2xl">
             <div className="hero-enter flex items-center gap-3 text-[0.64rem] uppercase tracking-[0.32em] text-white/60">
               <span aria-hidden="true" className="h-px w-10 bg-mint-glow" />
-              Kazumi Clinic · เวชศาสตร์ความงาม สุขุมวิท
+              {t('hero.subtitle')}
             </div>
             <h1
               lang="en"
@@ -149,7 +150,7 @@ export default async function HomePage() {
               <span lang="ja" className="text-white/55">
                 純粋さは永遠の美へ
               </span>{' '}
-              — ความงามที่เริ่มจากความเข้าใจ แพทย์ประเมินและออกแบบการดูแลเฉพาะคุณ ในบรรยากาศที่สงบและเป็นส่วนตัว
+              — {t('hero.description')}
             </p>
             <div className="hero-enter hero-enter--later mt-9 flex flex-wrap items-center gap-3">
               <a
@@ -159,13 +160,13 @@ export default async function HomePage() {
                 className="inline-flex items-center gap-2 rounded-full bg-mint px-7 py-3 text-sm font-medium text-white shadow-lg shadow-black/10 transition-transform duration-300 hover:-translate-y-0.5 hover:bg-forest active:translate-y-0"
               >
                 <LineIcon className="size-4" />
-                จองคิวผ่าน LINE <ArrowUpRight className="size-4" />
+                {t('hero.bookLine')} <ArrowUpRight className="size-4" />
               </a>
               <Link
                 href="/services"
                 className="inline-flex items-center rounded-full border border-white/35 px-7 py-3 text-sm font-medium text-white transition-colors duration-200 hover:border-white/70 hover:bg-white/10"
               >
-                ดูบริการทั้งหมด
+                {t('hero.viewAllServices')}
               </Link>
             </div>
           </div>
@@ -191,10 +192,10 @@ export default async function HomePage() {
       <section className="border-b border-black/[0.08] bg-[var(--store-surface)]">
         <ul className="mx-auto grid max-w-6xl grid-cols-2 gap-x-6 gap-y-6 px-6 py-7 text-[var(--store-ink)] sm:px-10 md:grid-cols-4 md:gap-8 md:px-12">
           {[
-            { icon: Stethoscope, label: 'ดูแลโดยแพทย์เวชกรรม', sub: 'ประเมินทุกเคสก่อนหัตถการ' },
-            { icon: BadgeCheck, label: 'ใบอนุญาตสถานพยาบาล', sub: site.license },
-            { icon: MapPin, label: 'ใจกลางสุขุมวิท', sub: 'กรุงเทพฯ' },
-            { icon: Clock, label: 'เปิดทุกวัน', sub: site.hoursDisplay.short },
+            { icon: Stethoscope, label: t('trust.doctor'), sub: t('trust.doctorSub') },
+            { icon: BadgeCheck, label: t('trust.license'), sub: site.license },
+            { icon: MapPin, label: t('trust.location'), sub: t('trust.locationSub') },
+            { icon: Clock, label: t('trust.openDaily'), sub: site.hoursDisplay.short },
           ].map(({ icon: Icon, label, sub }) => (
             <li key={label} className="flex items-center gap-3">
               <Icon className="size-5 shrink-0 text-[#06C755]" strokeWidth={1.5} aria-hidden="true" />
@@ -211,21 +212,18 @@ export default async function HomePage() {
       <section className="apple-services-section overflow-hidden">
         <Reveal className="apple-services-heading">
           <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-            <h2>บริการของเรา</h2>
+            <h2>{t('services.title')}</h2>
             <Link
               href="/services"
               className="group inline-flex shrink-0 items-center gap-1.5 text-[0.9rem] text-forest transition-colors duration-200 hover:text-mint"
             >
-              ดูบริการทั้งหมด{' '}
+              {t('services.viewAll')}{' '}
               <ArrowUpRight className="size-4 transition-transform duration-200 motion-safe:group-hover:translate-x-0.5 motion-safe:group-hover:-translate-y-0.5" />
             </Link>
           </div>
-          <p>
-            ฟิลเลอร์ โบท็อกซ์ IV Drip วิตามิน สกินบูสเตอร์ คอลลาเจนบูสเตอร์ และอีกหลายโปรแกรม —
-            ประเมินและดูแลโดยแพทย์ทุกขั้นตอน
-          </p>
+          <p>{t('services.description')}</p>
           <p className="text-[0.72rem] leading-relaxed text-[var(--store-muted)]">
-            *ราคาเริ่มต้นต่อครั้ง อาจมีการเปลี่ยนแปลง — สอบถามราคาปัจจุบันและเงื่อนไขกับคลินิกก่อนเข้ารับบริการ
+            {t('services.note')}
           </p>
         </Reveal>
 
@@ -239,9 +237,9 @@ export default async function HomePage() {
       <section className="bg-[var(--store-surface)] px-4 py-12 md:px-6 md:py-20">
         <Reveal className="mx-auto mb-10 flex max-w-6xl flex-wrap items-end justify-between gap-x-6 gap-y-3 md:mb-12">
           <div>
-            <h2 className="font-serif text-4xl text-[var(--store-ink)] md:text-5xl">ทีมแพทย์ของเรา</h2>
+            <h2 className="font-serif text-4xl text-[var(--store-ink)] md:text-5xl">{t('team.title')}</h2>
             <p className="mt-4 max-w-2xl text-sm leading-[1.8] text-[var(--store-muted)]">
-              รู้จักประวัติการศึกษา ขอบเขตการดูแล และข้อมูลใบประกอบวิชาชีพของแพทย์ประจำคลินิก
+              {t('team.description')}
             </p>
           </div>
           <Link
@@ -294,17 +292,17 @@ export default async function HomePage() {
           <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
             <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
               <h2 className="text-[1.35rem] font-semibold tracking-[-0.025em] md:text-[1.55rem]">
-                โปรโมชั่นล่าสุด
+                {t('promotions.title')}
               </h2>
               <p className="text-[1.15rem] tracking-[-0.02em] md:text-[1.3rem]">
-                เลือกดูโปรแกรมที่คลินิกคัดสรรไว้ได้เลย
+                {t('promotions.subtitle')}
               </p>
             </div>
             <Link
               href="/promotions"
               className="inline-flex shrink-0 items-center gap-1.5 text-[0.9rem] text-forest transition-colors duration-200 hover:text-mint"
             >
-              ดูโปรโมชั่นทั้งหมด <ArrowUpRight className="size-4" />
+              {t('promotions.viewAll')} <ArrowUpRight className="size-4" />
             </Link>
           </div>
         </Reveal>
@@ -323,14 +321,14 @@ export default async function HomePage() {
       <section className="bg-[var(--background)] py-20 md:py-32">
         <div className="mx-auto max-w-6xl px-4 md:px-6">
           <Reveal className="mb-8 flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
-            <h2 className="font-serif text-4xl text-[var(--store-ink)] md:text-5xl">มาเยี่ยมเรา</h2>
+            <h2 className="font-serif text-4xl text-[var(--store-ink)] md:text-5xl">{t('visit.title')}</h2>
             <a
               href={site.mapsUrl}
               target="_blank"
               rel="noopener"
               className="inline-flex items-center gap-1.5 text-[0.9rem] text-forest transition-colors duration-200 hover:text-mint"
             >
-              เปิดใน Google Maps <ArrowUpRight className="size-4" />
+              {t('visit.openMaps')} <ArrowUpRight className="size-4" />
             </a>
           </Reveal>
 
@@ -339,13 +337,12 @@ export default async function HomePage() {
               {/* Left: intro + accordion */}
               <div className="flex flex-col justify-center px-7 py-10 sm:px-12 md:py-14 lg:px-16">
                 <p className="max-w-md text-sm leading-[1.9] text-[var(--store-muted)]">
-                  คลินิกความงามใจกลางสุขุมวิท พื้นที่สงบเป็นส่วนตัวสำหรับการปรึกษาและดูแลอย่างพิถีพิถัน
+                  {t('visit.description')}
                 </p>
-
                 <div className="mt-8">
                   <details open className="visit-accordion group border-t border-[var(--store-control)]/70">
                     <summary className="flex cursor-pointer list-none items-center justify-between py-5 [&::-webkit-details-marker]:hidden">
-                      <span className="font-serif text-xl text-[var(--store-ink)] md:text-2xl">ที่ตั้ง</span>
+                      <span className="font-serif text-xl text-[var(--store-ink)] md:text-2xl">{t('visit.location')}</span>
                       <ChevronDown className="size-5 text-[var(--store-muted)] transition-transform duration-300 group-open:rotate-180" />
                     </summary>
                     <div className="pb-6 pr-6 text-sm leading-[1.9] text-[var(--store-muted)]">
@@ -357,7 +354,7 @@ export default async function HomePage() {
 
                   <details className="visit-accordion group border-t border-[var(--store-control)]/70">
                     <summary className="flex cursor-pointer list-none items-center justify-between py-5 [&::-webkit-details-marker]:hidden">
-                      <span className="font-serif text-xl text-[var(--store-ink)] md:text-2xl">เวลาทำการ</span>
+                      <span className="font-serif text-xl text-[var(--store-ink)] md:text-2xl">{t('visit.hours')}</span>
                       <ChevronDown className="size-5 text-[var(--store-muted)] transition-transform duration-300 group-open:rotate-180" />
                     </summary>
                     <div className="pb-6 pr-6 text-sm leading-[1.9] text-[var(--store-muted)]">
@@ -369,7 +366,7 @@ export default async function HomePage() {
 
                   <details className="visit-accordion group border-y border-[var(--store-control)]/70">
                     <summary className="flex cursor-pointer list-none items-center justify-between py-5 [&::-webkit-details-marker]:hidden">
-                      <span className="font-serif text-xl text-[var(--store-ink)] md:text-2xl">ช่องทางติดต่อ</span>
+                      <span className="font-serif text-xl text-[var(--store-ink)] md:text-2xl">{t('visit.contact')}</span>
                       <ChevronDown className="size-5 text-[var(--store-muted)] transition-transform duration-300 group-open:rotate-180" />
                     </summary>
                     <div className="space-y-1.5 pb-6 pr-6 text-sm leading-[1.9] text-[var(--store-muted)]">
@@ -377,7 +374,7 @@ export default async function HomePage() {
                         {site.phone}
                       </a>
                       <a href={site.lineUrl} target="_blank" rel="noopener" className="block transition-colors hover:text-forest">
-                        LINE Official
+                        {t('visit.line')}
                       </a>
                     </div>
                   </details>
@@ -420,20 +417,19 @@ export default async function HomePage() {
           <Reveal className="h-full w-[88%] shrink-0 snap-center md:w-auto md:shrink">
             <div className="apple-doctor-card flex h-full flex-col rounded-[1.75rem] bg-[var(--store-card)] px-8 py-10 text-[var(--store-ink)] sm:px-10 md:py-12">
               <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
-                <h2 className="font-serif text-3xl text-[var(--store-ink)] md:text-4xl">เสียงจากผู้ใช้บริการ</h2>
+                <h2 className="font-serif text-3xl text-[var(--store-ink)] md:text-4xl">{t('reviews.title')}</h2>
                 <Link
                   href="/reviews"
                   className="inline-flex shrink-0 items-center gap-1.5 text-[0.9rem] text-forest transition-colors duration-200 hover:text-mint"
                 >
-                  ดูหน้ารีวิวทั้งหมด <ArrowUpRight className="size-4" />
+                  {t('reviews.viewAll')} <ArrowUpRight className="size-4" />
                 </Link>
               </div>
               <p className="mt-4 max-w-md text-sm leading-[1.9] text-[var(--store-muted)]">
-                อ่านรีวิวจริงและผลลัพธ์ก่อน–หลังจากผู้ใช้บริการของเราได้บน Google และ Instagram
-                หรือสอบถามผลลัพธ์เฉพาะบุคคลกับทีมแพทย์ผ่าน LINE
+                {t('reviews.description')}
               </p>
               <p className="mt-3 text-xs text-[var(--store-muted)]">
-                *ผลลัพธ์ขึ้นอยู่กับสภาพผิวและปัญหาเฉพาะบุคคล
+                {t('reviews.disclaimer')}
               </p>
               <div className="mt-auto flex flex-wrap gap-3 pt-8">
                 <a
@@ -443,7 +439,7 @@ export default async function HomePage() {
                   className="inline-flex items-center gap-2.5 rounded-full border border-black/10 bg-white px-7 py-3 text-sm font-medium text-[var(--store-ink)] transition-colors duration-200 hover:bg-black/5"
                 >
                   <GoogleIcon className="size-4" />
-                  ดูรีวิวบน Google <ArrowUpRight className="size-4" />
+                  {t('reviews.google')} <ArrowUpRight className="size-4" />
                 </a>
                 <a
                   href={site.instagram}
@@ -462,7 +458,7 @@ export default async function HomePage() {
           <Reveal delay={80} className="h-full w-[88%] shrink-0 snap-center md:w-auto md:shrink">
             <div className="apple-doctor-card flex h-full flex-col rounded-[1.75rem] bg-[var(--store-card)] px-8 py-10 text-[var(--store-ink)] sm:px-10 md:py-12">
               <div className="flex items-center gap-3 text-[0.66rem] uppercase tracking-[0.22em] text-forest">
-                <span aria-hidden="true" className="h-px w-10 bg-forest" /> คำถามที่พบบ่อย
+                <span aria-hidden="true" className="h-px w-10 bg-forest" /> {t('reviews.faq')}
               </div>
               <dl className="mt-4 border-t border-black/10">
                 {faqs.map((f, index) => (

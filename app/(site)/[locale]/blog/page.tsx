@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Link from 'next/link';
 import Image from 'next/image';
 import { FileText } from 'lucide-react';
@@ -9,11 +10,13 @@ import { getPublishedPosts } from '@/lib/blog-store';
 import { Reveal } from '@/components/reveal';
 import { PageHero } from '@/components/page-hero';
 
-const pageTitle = 'บทความ / สาระความรู้';
-const pageDescription = `บทความและสาระความรู้เรื่องผิวพรรณ ฟิลเลอร์ โบท็อกซ์ และการดูแลตัวเองหลังทำหัตถการ โดย ${site.name}`;
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'BlogPage' });
+  const pageTitle = t('metaTitle');
+  const pageDescription = t('metaDescription', { siteName: site.name });
 
-export async function generateMetadata(): Promise<Metadata> {
-  const socialImage = await siteSocialImage('hero-iv-drip-2', `${site.name} บทความและสาระความรู้`);
+  const socialImage = await siteSocialImage('hero-iv-drip-2', `${site.name} ${pageTitle}`);
 
   return {
     title: pageTitle,
@@ -39,17 +42,21 @@ export async function generateMetadata(): Promise<Metadata> {
 // revalidatePath so a newly published post appears without a redeploy.
 export const revalidate = 3600;
 
-function formatThaiDate(ms: number | null) {
+function formatThaiDate(ms: number | null, locale: string) {
   if (ms === null) return null;
-  return new Date(ms).toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' });
+  return new Date(ms).toLocaleDateString(locale === 'th' ? 'th-TH' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
-export default async function BlogPage() {
+export default async function BlogPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations('BlogPage');
+  const tHome = await getTranslations('HomePage');
   const posts = await getPublishedPosts();
 
   const breadcrumb = breadcrumbSchema([
-    { name: 'หน้าหลัก', path: '/' },
-    { name: 'บทความ / สาระความรู้', path: '/blog' },
+    { name: tHome('Navigation.home'), path: '/' },
+    { name: t('breadcrumb'), path: '/blog' },
   ]);
 
   return (
@@ -61,9 +68,9 @@ export default async function BlogPage() {
       />
 
       <PageHero
-        eyebrow="Blog / Knowledge Hub"
-        title="บทความ / สาระความรู้"
-        lead={`สาระความรู้เรื่องผิวพรรณและการดูแลตัวเองหลังทำหัตถการ จากทีมแพทย์ของ ${site.name}`}
+        eyebrow={t('hero.eyebrow')}
+        title={t('hero.title')}
+        lead={t('hero.lead', { siteName: site.name })}
       />
 
       <section className="mx-auto max-w-6xl px-6 py-20">
@@ -92,8 +99,8 @@ export default async function BlogPage() {
                     )}
                   </div>
                   <div className="flex flex-1 flex-col p-5">
-                    {formatThaiDate(post.published_at) && (
-                      <time className="text-xs text-ink/45">{formatThaiDate(post.published_at)}</time>
+                    {formatThaiDate(post.published_at, locale) && (
+                      <time className="text-xs text-ink/45">{formatThaiDate(post.published_at, locale)}</time>
                     )}
                     <h2 className="mt-1.5 font-serif text-xl leading-snug text-olive-deep">
                       {post.title}
@@ -103,7 +110,7 @@ export default async function BlogPage() {
                         {post.excerpt}
                       </p>
                     )}
-                    <span className="mt-auto pt-4 text-sm font-medium text-forest">อ่านต่อ →</span>
+                    <span className="mt-auto pt-4 text-sm font-medium text-forest">{t('readMore')}</span>
                   </div>
                 </Link>
               </Reveal>
@@ -112,9 +119,9 @@ export default async function BlogPage() {
         ) : (
           <Reveal className="rounded-2xl border border-dashed border-olive/30 bg-cream p-14 text-center">
             <FileText className="mx-auto size-8 text-olive-light" />
-            <p className="mt-4 font-serif text-xl text-olive-deep">กำลังเตรียมบทความ</p>
+            <p className="mt-4 font-serif text-xl text-olive-deep">{t('empty.title')}</p>
             <p className="mx-auto mt-2 max-w-md text-sm text-ink/60">
-              บทความและสาระความรู้เรื่องผิวพรรณและหัตถการกำลังจะมาเร็ว ๆ นี้
+              {t('empty.desc')}
             </p>
           </Reveal>
         )}
