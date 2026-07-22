@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { MapPin, Phone, Clock, Navigation } from 'lucide-react';
 import { site } from '@/lib/site';
 import { serviceCategories } from '@/lib/services';
@@ -9,11 +10,13 @@ import { PageHero } from '@/components/page-hero';
 import { BookingForm } from '@/components/booking-form';
 import { LineIcon, InstagramIcon } from '@/components/brand-icons';
 
-const pageTitle = 'ติดต่อเรา';
-const pageDescription = `ที่อยู่ เบอร์โทร และเวลาทำการของ ${site.name} ย่านสุขุมวิท กรุงเทพฯ`;
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'ContactPage' });
+  const pageTitle = t('metaTitle');
+  const pageDescription = t('metaDescription', { siteName: site.name });
 
-export async function generateMetadata(): Promise<Metadata> {
-  const socialImage = await siteSocialImage('hero-iv-drip-2', `ติดต่อ ${site.name}`);
+  const socialImage = await siteSocialImage('hero-iv-drip-2', `${site.name} ${pageTitle}`);
 
   return {
     title: pageTitle,
@@ -35,10 +38,15 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function ContactPage() {
+export default async function ContactPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations('ContactPage');
+  const tHome = await getTranslations('HomePage');
+  
   const breadcrumb = breadcrumbSchema([
-    { name: 'หน้าหลัก', path: '/' },
-    { name: 'ติดต่อเรา', path: '/contact' },
+    { name: tHome('Navigation.home'), path: '/' },
+    { name: t('breadcrumb'), path: '/contact' },
   ]);
 
   return (
@@ -50,9 +58,9 @@ export default function ContactPage() {
       />
 
       <PageHero
-        eyebrow="Contact Us"
-        title="ติดต่อเรา"
-        lead={`${site.name} ยินดีให้คำปรึกษาและดูแลทุกหัตถการ — นัดหมายหรือสอบถามได้ทุกวัน`}
+        eyebrow={t('hero.eyebrow')}
+        title={t('hero.title')}
+        lead={t('hero.lead', { siteName: site.name })}
       />
 
       <section className="bg-[var(--store-surface)] pt-8 pb-20">
@@ -64,10 +72,10 @@ export default function ContactPage() {
               <MapPin strokeWidth={1.5} className="size-6" />
             </div>
             <div>
-              <h3 className="font-serif text-xl text-[var(--store-ink)]">ที่ตั้งคลินิก</h3>
+              <h3 className="font-serif text-xl text-[var(--store-ink)]">{t('location.title')}</h3>
               <p className="mt-2 text-sm leading-[1.8] text-[var(--store-muted)]">{site.addressFull}</p>
               <a href={site.mapsUrl} target="_blank" rel="noopener" className="mt-4 inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.1em] text-[var(--store-ink)] hover:opacity-60">
-                ดูบน Google Maps <Navigation className="size-3" />
+                {t('location.viewMap')} <Navigation className="size-3" />
               </a>
             </div>
           </div>
@@ -79,7 +87,7 @@ export default function ContactPage() {
                 <Phone strokeWidth={1.5} className="size-6" />
               </div>
               <div>
-                <h3 className="font-serif text-xl text-[var(--store-ink)]">โทรศัพท์</h3>
+                <h3 className="font-serif text-xl text-[var(--store-ink)]">{t('contact.phone')}</h3>
                 <a href={site.phoneUrl} className="mt-2 block text-sm leading-[1.8] text-[var(--store-muted)] hover:opacity-60">{site.phone}</a>
               </div>
             </div>
@@ -89,7 +97,7 @@ export default function ContactPage() {
                 <Clock strokeWidth={1.5} className="size-6" />
               </div>
               <div>
-                <h3 className="font-serif text-xl text-[var(--store-ink)]">เวลาทำการ</h3>
+                <h3 className="font-serif text-xl text-[var(--store-ink)]">{t('hours.title')}</h3>
                 <p className="mt-2 text-sm leading-[1.8] text-[var(--store-muted)]">
                   {site.hoursDisplay.weekdays}
                   <br />
@@ -108,7 +116,7 @@ export default function ContactPage() {
               className="flex items-center gap-2.5 rounded-full bg-[#06C755] px-6 py-3 text-xs font-medium tracking-[0.1em] text-white shadow-lg shadow-[#06C755]/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-[#06C755]/30 active:scale-95"
             >
               <LineIcon className="size-4" />
-              ติดต่อผ่าน LINE
+              {t('social.line')}
             </a>
             <a
               href={site.instagram}
@@ -117,7 +125,7 @@ export default function ContactPage() {
               className="flex items-center gap-2.5 rounded-full border border-black/10 bg-white px-6 py-3 text-xs font-medium tracking-[0.1em] text-[var(--store-ink)] shadow-lg shadow-black/5 transition-all duration-300 hover:-translate-y-0.5 hover:border-[#E1306C] hover:text-[#E1306C] hover:shadow-xl active:scale-95"
             >
               <InstagramIcon className="size-4" />
-              Instagram
+              {t('social.instagram')}
             </a>
           </div>
         </Reveal>
@@ -126,11 +134,11 @@ export default function ContactPage() {
         <div id="booking" className="flex flex-col scroll-mt-24">
           <Reveal delay={80} className="flex-1 overflow-hidden rounded-[1.75rem] border border-black/5 bg-[var(--store-card)] p-8 shadow-2xl shadow-black/5 md:p-10">
             <p className="text-[0.7rem] font-medium uppercase tracking-[0.16em] text-forest">
-              Book an Appointment
+              {t('booking.eyebrow')}
             </p>
-            <h2 className="mt-2 font-serif text-3xl text-[var(--store-ink)]">นัดหมาย / ปรึกษาแพทย์</h2>
+            <h2 className="mt-2 font-serif text-3xl text-[var(--store-ink)]">{t('booking.title')}</h2>
             <p className="mb-8 mt-2 text-sm leading-[1.8] text-[var(--store-muted)]">
-              กรอกแบบฟอร์มสั้น ๆ ทีมงานจะติดต่อกลับเพื่อยืนยันนัดหมาย หรือทักผ่าน LINE ได้ทันที
+              {t('booking.desc')}
             </p>
             <BookingForm interests={serviceCategories.map((category) => category.title)} />
           </Reveal>
@@ -149,7 +157,7 @@ export default function ContactPage() {
               loading="lazy"
               referrerPolicy="strict-origin-when-cross-origin"
               allowFullScreen
-              title={`แผนที่ ${site.name}`}
+              title={t('mapTitle', { siteName: site.name })}
             />
           </Reveal>
         </div>

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
@@ -13,12 +14,13 @@ import { Prose } from '@/components/prose';
 // ISR (re-rendered on the blog API's revalidatePath). No generateStaticParams.
 export const revalidate = 3600;
 
-type Params = { params: Promise<{ slug: string }> };
+type Params = { params: Promise<{ slug: string; locale: string }> };
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug, locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'BlogPostPage' });
   const post = await getPublishedPostBySlug(slug);
-  if (!post) return { title: 'ไม่พบบทความ', robots: { index: false, follow: false } };
+  if (!post) return { title: t('notFound'), robots: { index: false, follow: false } };
 
   const description = post.excerpt ?? `${post.title} — ${site.name}`;
   const image = post.cover_image_public_id
@@ -46,13 +48,16 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   };
 }
 
-function formatThaiDate(ms: number | null) {
+function formatThaiDate(ms: number | null, locale: string) {
   if (ms === null) return null;
-  return new Date(ms).toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' });
+  return new Date(ms).toLocaleDateString(locale === 'th' ? 'th-TH' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
 export default async function BlogPostPage({ params }: Params) {
-  const { slug } = await params;
+  const { slug, locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations('BlogPostPage');
+  
   const post = await getPublishedPostBySlug(slug);
   if (!post) notFound();
 
@@ -69,9 +74,10 @@ export default async function BlogPostPage({ params }: Params) {
     imagePublicId: post.cover_image_public_id ?? undefined,
   });
 
+  const tHome = await getTranslations('HomePage');
   const breadcrumb = breadcrumbSchema([
-    { name: 'หน้าหลัก', path: '/' },
-    { name: 'บทความ', path: '/blog' },
+    { name: tHome('Navigation.home'), path: '/' },
+    { name: t('breadcrumb'), path: '/blog' },
     { name: post.title, path: `/blog/${post.slug}` },
   ]);
 
@@ -94,7 +100,7 @@ export default async function BlogPostPage({ params }: Params) {
           className="inline-flex items-center gap-1.5 text-sm text-ink/50 transition-colors hover:text-forest"
         >
           <ArrowLeft className="size-4" />
-          บทความทั้งหมด
+          {t('allArticles')}
         </Link>
 
         <header className="mt-6 border-b border-olive/15 pb-8">
@@ -103,9 +109,9 @@ export default async function BlogPostPage({ params }: Params) {
           </h1>
           <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-ink/45">
             {post.author && <span>{post.author}</span>}
-            {post.author && formatThaiDate(post.published_at) && <span aria-hidden="true">·</span>}
-            {formatThaiDate(post.published_at) && (
-              <time dateTime={published}>{formatThaiDate(post.published_at)}</time>
+            {post.author && formatThaiDate(post.published_at, locale) && <span aria-hidden="true">·</span>}
+            {formatThaiDate(post.published_at, locale) && (
+              <time dateTime={published}>{formatThaiDate(post.published_at, locale)}</time>
             )}
           </p>
         </header>

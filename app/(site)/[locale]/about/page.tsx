@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, MapPin, ShieldCheck, Sparkles } from 'lucide-react';
@@ -11,18 +12,19 @@ import { Reveal } from '@/components/reveal';
 import { SectionLabel } from '@/components/page-hero';
 import { LineIcon } from '@/components/brand-icons';
 
-const pageTitle = 'เกี่ยวกับเรา / แพทย์';
-const pageDescription = `รู้จัก ${site.name} สถานเสริมความงามย่านสุขุมวิท กรุงเทพฯ และ ${doctor.name} ${doctor.role} ใบอนุญาตสถานพยาบาลเลขที่ ${site.license}`;
-
-export async function generateMetadata(): Promise<Metadata> {
-  const socialImage = await siteSocialImage('og-about', `เกี่ยวกับ ${site.name}`);
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'AboutPage' });
+  const pageTitle = t('metaTitle');
+  const pageDescription = t('metaDescription', { siteName: site.name, doctorName: doctor.name, doctorRole: doctor.role, license: site.license });
+  const socialImage = await siteSocialImage('og-about', `${pageTitle} — ${site.name}`);
 
   return {
     title: pageTitle,
     description: pageDescription,
     alternates: { canonical: `${site.url}/about` },
     openGraph: {
-      title: `เกี่ยวกับเรา — ${site.name}`,
+      title: `${pageTitle} — ${site.name}`,
       description: pageDescription,
       url: `${site.url}/about`,
       type: 'website',
@@ -30,7 +32,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: 'summary_large_image',
-      title: `เกี่ยวกับเรา — ${site.name}`,
+      title: `${pageTitle} — ${site.name}`,
       description: pageDescription,
       images: [socialImage.url],
     },
@@ -46,7 +48,12 @@ function ImagePlaceholder() {
   );
 }
 
-export default async function AboutPage() {
+export default async function AboutPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations('AboutPage');
+  const tHome = await getTranslations('HomePage');
+
   const overrides = await getImageOverrides();
   const doctorSrc = overrides.get('doctor-pratch')?.public_id ?? doctor.image;
   // Dr. Eesha has no shipped default photo — undefined until the clinic uploads one via /admin.
@@ -55,8 +62,8 @@ export default async function AboutPage() {
   const interiorSrc = overrides.get('about-interior')?.public_id;
 
   const breadcrumb = breadcrumbSchema([
-    { name: 'หน้าหลัก', path: '/' },
-    { name: 'เกี่ยวกับเรา', path: '/about' },
+    { name: tHome('Navigation.home'), path: '/' },
+    { name: t('breadcrumb'), path: '/about' },
   ]);
 
   return (
@@ -83,10 +90,10 @@ export default async function AboutPage() {
           <div className="mt-12 grid items-center gap-12 md:grid-cols-2 md:gap-16">
             <div>
               <p lang="en" className="text-[0.68rem] uppercase tracking-[0.28em] text-[var(--store-muted)]">
-                About Us / Our Doctors
+                {t('hero.subtitle')}
               </p>
               <h1 className="mt-6 font-serif text-4xl leading-[1.15] text-[var(--store-ink)] md:text-5xl">
-                เกี่ยวกับ {site.name}
+                {t('hero.title', { siteName: site.name })}
               </h1>
               {/* The clinic's own identity lines, straight from lib/site.ts — not new copy. */}
               <p lang="en" className="mt-6 font-serif text-xl italic leading-snug text-[var(--store-muted)]">
@@ -130,23 +137,21 @@ export default async function AboutPage() {
         <div className="mx-auto grid max-w-6xl gap-12 md:grid-cols-12 md:gap-10">
           <div className="md:col-span-4">
             <Reveal>
-              <SectionLabel index={1}>ปรัชญาของเรา</SectionLabel>
+              <SectionLabel index={1}>{t('philosophy.sectionLabel')}</SectionLabel>
             </Reveal>
           </div>
           <div className="md:col-span-8">
             <Reveal className="grid gap-10 sm:grid-cols-2">
               <div>
-                <h2 className="font-serif text-2xl text-[var(--store-ink)]">ความพิถีพิถัน</h2>
+                <h2 className="font-serif text-2xl text-[var(--store-ink)]">{t('philosophy.title1')}</h2>
                 <p className="mt-4 text-sm leading-[1.9] text-[var(--store-muted)]">
-                  {site.name} ยึดหลักปรัชญาความงามแบบมินิมอลสไตล์ญี่ปุ่น เน้นการปรับแต่งอย่างพอดี
-                  โดยแพทย์เป็นผู้ประเมินและวางแผนการดูแล ในบรรยากาศที่สงบและเป็นส่วนตัว
+                  {t('philosophy.desc1', { siteName: site.name })}
                 </p>
               </div>
               <div>
-                <h2 className="font-serif text-2xl text-[var(--store-ink)]">มาตรฐานทางการแพทย์</h2>
+                <h2 className="font-serif text-2xl text-[var(--store-ink)]">{t('philosophy.title2')}</h2>
                 <p className="mt-4 text-sm leading-[1.9] text-[var(--store-muted)]">
-                  ให้บริการฟิลเลอร์ โบท็อกซ์ IV Drip วิตามิน สกินบูสเตอร์ และคอลลาเจนบูสเตอร์
-                  โดยคำนึงถึงความปลอดภัยและความเป็นธรรมชาติเป็นสำคัญ
+                  {t('philosophy.desc2')}
                 </p>
               </div>
             </Reveal>
@@ -176,10 +181,10 @@ export default async function AboutPage() {
                 </div>
                 <div className="mt-6 space-y-2">
                   <p className="text-[0.66rem] uppercase tracking-[0.2em] text-[var(--store-ink)]">
-                    ใบประกอบวิชาชีพเวชกรรมเลขที่ {doctor.licenseNo}
+                    {t('director.license', { license: doctor.licenseNo })}
                   </p>
                   <p className="text-[0.66rem] tracking-wide text-[var(--store-muted)]">
-                    ให้คำปรึกษาเป็นภาษา {doctor.languages.join(' · ')}
+                    {t('director.languages', { languages: doctor.languages.join(' · ') })}
                   </p>
                 </div>
               </Reveal>
@@ -188,7 +193,7 @@ export default async function AboutPage() {
             <div className="w-full md:w-7/12">
               <Reveal className="space-y-12 border-l border-black/10 pl-8 md:pl-12">
                 <div>
-                  <SectionLabel index={2}>แพทย์ผู้อำนวยการ</SectionLabel>
+                  <SectionLabel index={2}>{t('director.sectionLabel')}</SectionLabel>
                   <h2 className="mt-4 font-serif text-4xl text-[var(--store-ink)] md:text-5xl">
                     {doctor.nameTh}
                   </h2>
@@ -205,7 +210,7 @@ export default async function AboutPage() {
                     lang="en"
                     className="border-b border-black/[0.08] pb-2 text-[0.66rem] font-medium uppercase tracking-[0.2em] text-[var(--store-ink)]"
                   >
-                    Academic Excellence
+                    {t('director.academic')}
                   </h3>
                   <ul className="mt-6 space-y-6">
                     {doctor.education.map((item) => (
@@ -229,7 +234,7 @@ export default async function AboutPage() {
                     lang="en"
                     className="border-b border-black/[0.08] pb-2 text-[0.66rem] font-medium uppercase tracking-[0.2em] text-[var(--store-ink)]"
                   >
-                    Experience
+                    {t('director.experience')}
                   </h3>
                   <ul className="mt-6 mb-12 space-y-3">
                     {doctor.experience.map((item) => (
@@ -246,7 +251,7 @@ export default async function AboutPage() {
                     lang="en"
                     className="text-[0.66rem] font-medium uppercase tracking-[0.2em] text-[var(--store-ink)]"
                   >
-                    Specializations
+                    {t('director.specializations')}
                   </h3>
                   <ul className="mt-5 flex flex-wrap gap-3">
                     {doctor.expertise.map((item) => (
@@ -261,7 +266,7 @@ export default async function AboutPage() {
                   </ul>
                   <p className="mt-8 flex items-start gap-2 text-xs leading-relaxed text-[var(--store-muted)]">
                     <Sparkles aria-hidden="true" className="mt-0.5 size-3.5 shrink-0" />
-                    แผนการดูแลและผลลัพธ์แตกต่างกันตามการประเมินของแพทย์และแต่ละบุคคล
+                    {t('director.note')}
                   </p>
                 </div>
               </Reveal>
@@ -291,10 +296,10 @@ export default async function AboutPage() {
                 </div>
                 <div className="mt-6 space-y-2">
                   <p className="text-[0.66rem] uppercase tracking-[0.2em] text-[var(--store-ink)]">
-                    ใบประกอบวิชาชีพเวชกรรมเลขที่ {doctorEesha.licenseNo}
+                    {t('physician.license', { license: doctorEesha.licenseNo })}
                   </p>
                   <p className="text-[0.66rem] tracking-wide text-[var(--store-muted)]">
-                    ให้คำปรึกษาเป็นภาษา {doctorEesha.languages.join(' · ')}
+                    {t('physician.languages', { languages: doctorEesha.languages.join(' · ') })}
                   </p>
                 </div>
               </Reveal>
@@ -303,7 +308,7 @@ export default async function AboutPage() {
             <div className="w-full md:w-7/12">
               <Reveal className="space-y-12 border-l border-black/10 pl-8 md:pl-12">
                 <div>
-                  <SectionLabel index={3}>แพทย์ประจำคลินิก</SectionLabel>
+                  <SectionLabel index={3}>{t('physician.sectionLabel')}</SectionLabel>
                   <h2 className="mt-4 font-serif text-4xl text-[var(--store-ink)] md:text-5xl">
                     {doctorEesha.name}
                   </h2>
@@ -325,7 +330,7 @@ export default async function AboutPage() {
                     lang="en"
                     className="border-b border-black/[0.08] pb-2 text-[0.66rem] font-medium uppercase tracking-[0.2em] text-[var(--store-ink)]"
                   >
-                    Education &amp; Credentials
+                    {t('physician.education')}
                   </h3>
                   <ul className="mt-6 space-y-6">
                     {doctorEesha.education.map((item) => (
@@ -349,7 +354,7 @@ export default async function AboutPage() {
                     lang="en"
                     className="border-b border-black/[0.08] pb-2 text-[0.66rem] font-medium uppercase tracking-[0.2em] text-[var(--store-ink)]"
                   >
-                    Experience
+                    {t('physician.experience')}
                   </h3>
                   <ul className="mt-5 space-y-3">
                     {doctorEesha.experience.map((item) => (
@@ -367,7 +372,7 @@ export default async function AboutPage() {
                       lang="en"
                       className="border-b border-black/[0.08] pb-2 text-[0.66rem] font-medium uppercase tracking-[0.2em] text-[var(--store-ink)]"
                     >
-                      Selected Training
+                      {t('physician.training')}
                     </h3>
                     <ul className="mt-5 space-y-3">
                       {doctorEesha.training.map((item) => (
@@ -383,7 +388,7 @@ export default async function AboutPage() {
                       lang="en"
                       className="border-b border-black/[0.08] pb-2 text-[0.66rem] font-medium uppercase tracking-[0.2em] text-[var(--store-ink)]"
                     >
-                      Professional &amp; Research
+                      {t('physician.research')}
                     </h3>
                     <ul className="mt-5 space-y-3">
                       {doctorEesha.memberships.map((item) => (
@@ -401,7 +406,7 @@ export default async function AboutPage() {
                     lang="en"
                     className="text-[0.66rem] font-medium uppercase tracking-[0.2em] text-[var(--store-ink)]"
                   >
-                    Clinical Focus
+                    {t('physician.clinical')}
                   </h3>
                   <ul className="mt-5 flex flex-wrap gap-3">
                     {doctorEesha.expertise.map((item) => (
@@ -421,14 +426,14 @@ export default async function AboutPage() {
                     lang="en"
                     className="text-[0.66rem] font-medium uppercase tracking-[0.2em] text-[var(--store-ink)]"
                   >
-                    Technologies &amp; Modalities
+                    {t('physician.technologies')}
                   </h3>
                   <p lang="en" className="mt-5 text-sm leading-[2] text-[var(--store-muted)]">
                     {doctorEesha.technologies.join(' · ')}
                   </p>
                   <p className="mt-8 flex items-start gap-2 text-xs leading-relaxed text-[var(--store-muted)]">
                     <Sparkles aria-hidden="true" className="mt-0.5 size-3.5 shrink-0" />
-                    แผนการดูแลและผลลัพธ์แตกต่างกันตามการประเมินของแพทย์และแต่ละบุคคล
+                    {t('physician.note')}
                   </p>
                 </div>
               </Reveal>
@@ -458,7 +463,7 @@ export default async function AboutPage() {
           <div className="max-w-2xl">
             <h2 className="font-serif text-3xl text-white md:text-5xl">{site.name}</h2>
             <p className="mt-4 text-sm tracking-wide text-white/80">
-              {site.address.street} · {site.address.district} · กรุงเทพฯ
+              {t('location.bangkok', { street: site.address.street, district: site.address.district })}
             </p>
           </div>
         </div>
@@ -468,9 +473,9 @@ export default async function AboutPage() {
       <section className="bg-[var(--store-surface)] px-6 py-24 sm:px-10 md:px-14 md:py-28 lg:px-20">
         <div className="mx-auto flex max-w-6xl flex-col gap-14 md:flex-row md:justify-between">
           <div className="w-full space-y-8 md:w-1/2">
-            <h2 className="font-serif text-3xl text-[var(--store-ink)] md:text-4xl">นัดหมายปรึกษาแพทย์</h2>
+            <h2 className="font-serif text-3xl text-[var(--store-ink)] md:text-4xl">{t('consultation.title')}</h2>
             <p className="max-w-md text-sm leading-[1.9] text-[var(--store-muted)] md:text-base">
-              ทุกหัตถการเริ่มต้นจากการประเมินโครงหน้าและเป้าหมายของแต่ละบุคคลอย่างละเอียดโดยแพทย์
+              {t('consultation.description')}
             </p>
             <div className="flex flex-col gap-4">
               <a
@@ -481,7 +486,7 @@ export default async function AboutPage() {
               >
                 <span className="flex items-center gap-2.5 text-xs font-medium tracking-[0.1em]">
                   <LineIcon className="size-4" />
-                  จองคิวผ่าน LINE
+                  {t('consultation.bookLine')}
                 </span>
                 <ArrowRight
                   aria-hidden="true"
@@ -492,7 +497,7 @@ export default async function AboutPage() {
                 href="/services"
                 className="group flex items-center justify-between rounded-full border border-black/20 bg-transparent px-8 py-4 text-[var(--store-ink)] transition-all duration-200 hover:border-black/30 hover:bg-black/5 active:scale-[0.98]"
               >
-                <span className="text-xs font-medium tracking-[0.1em]">ดูบริการทั้งหมด</span>
+                <span className="text-xs font-medium tracking-[0.1em]">{t('consultation.viewServices')}</span>
                 <ArrowRight
                   aria-hidden="true"
                   className="size-4 transition-transform duration-200 group-hover:translate-x-1"
@@ -504,7 +509,7 @@ export default async function AboutPage() {
           <div className="w-full space-y-8 border-t border-black/[0.08] pt-12 md:w-1/3 md:border-l md:border-t-0 md:pl-12 md:pt-0">
             <div>
               <h3 className="text-[0.66rem] font-medium uppercase tracking-[0.2em] text-[var(--store-ink)]">
-                ที่ตั้ง
+                {t('location.title')}
               </h3>
               <p className="mt-4 text-sm leading-[1.9] text-[var(--store-muted)]">{site.addressFull}</p>
               <a
@@ -513,12 +518,12 @@ export default async function AboutPage() {
                 rel="noopener"
                 className="mt-3 inline-flex items-center gap-1.5 text-[0.66rem] uppercase tracking-wide text-[var(--store-ink)] underline underline-offset-4 hover:opacity-60"
               >
-                <MapPin aria-hidden="true" className="size-3.5" /> ดูแผนที่
+                <MapPin aria-hidden="true" className="size-3.5" /> {t('location.viewMap')}
               </a>
             </div>
             <div>
               <h3 className="flex items-center gap-2 text-[0.66rem] font-medium uppercase tracking-[0.2em] text-[var(--store-ink)]">
-                <ShieldCheck aria-hidden="true" className="size-3.5" /> ใบอนุญาตสถานพยาบาล
+                <ShieldCheck aria-hidden="true" className="size-3.5" /> {t('location.license')}
               </h3>
               <p className="mt-3 text-sm text-[var(--store-muted)]">{site.license}</p>
             </div>
