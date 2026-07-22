@@ -57,6 +57,8 @@
 
 `queue` + `tagCache` **ห้ามปล่อย default** — จะได้ dummy queue ที่ throw `"Dummy queue is not implemented"` แล้วหน้า ISR จะไม่มีวัน regenerate
 
+⚠️ **`d1NextTagCache` ต้องมีตาราง `revalidations` (tag, revalidatedAt, stale, expire) ใน D1 นี้** — ปกติ `opennextjs-cloudflare populateCache` เป็นคนสร้าง แต่ `cf:deploy` ของเราข้าม populateCache (deploy ตรงด้วย `wrangler deploy` เลี่ยง workerd) จึงเป็นเจ้าของตารางเองใน [migrations/0007_tag_cache_revalidations.sql](../migrations/0007_tag_cache_revalidations.sql) และ `cf:deploy` รัน migration นี้ทุกครั้ง (idempotent) · **ถ้าตารางนี้หาย = on-demand revalidation ตายเงียบ**: `revalidatePath()` จาก /admin ไม่มีที่บันทึก หน้าเลยค้างรูปเก่าจน time-based `revalidate` ครบ (บั๊ก 2026-07-22 ที่เปลี่ยนรูปแล้วหน้าแรกไม่อัปเดต) · อย่าสับสนกับ schema ของ `d1TagCache` ตัวเก่า (2 คอลัมน์ + ตาราง `tags`) ที่ `.open-next/cloudflare/cache-assets-manifest.sql` สร้าง — คนละตัว ห้ามรันไฟล์นั้นกับ D1 นี้
+
 ---
 
 ## Vars (ใน `wrangler.jsonc` — commit ลง git)
