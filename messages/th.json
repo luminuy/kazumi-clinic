@@ -8,7 +8,10 @@
     "blog": "บทความ",
     "contact": "ติดต่อเรา",
     "bookLine": "จองคิวผ่าน LINE",
-    "allServices": "บริการทั้งหมด"
+    "allServices": "บริการทั้งหมด",
+    "search": "ค้นหา",
+    "cart": "ตะกร้าสินค้า",
+    "account": "บัญชีสมาชิก"
   },
   "Footer": {
     "location": "ที่ตั้ง",

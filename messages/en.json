@@ -8,7 +8,10 @@
     "blog": "Blog",
     "contact": "Contact",
     "bookLine": "Book via LINE",
-    "allServices": "All Services"
+    "allServices": "All Services",
+    "search": "Search",
+    "cart": "Cart",
+    "account": "Account"
   },
   "Footer": {
     "location": "Location",

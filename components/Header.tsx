@@ -1,6 +1,6 @@
 import { Link } from '@/i18n/routing';
 import Image from 'next/image';
-import { Menu, ChevronDown, ArrowRight } from 'lucide-react';
+import { Menu, ChevronDown, ArrowRight, Search, ShoppingBag, User } from 'lucide-react';
 import { site } from '@/lib/site';
 import { navItems, resolvedServiceNavGroups } from '@/lib/nav';
 import { Button } from '@/components/ui/button';
@@ -111,14 +111,34 @@ export default function Header({ logoMark }: { logoMark: string }) {
           })}
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <LanguageSwitcher />
           <Button
-            render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
-            className="hidden bg-line text-white hover:bg-line/90 sm:inline-flex"
+            variant="ghost"
+            size="icon"
+            className="text-foreground/80 hover:text-primary"
+            aria-label={t('search')}
+            render={<Link href="/search" />}
           >
-            <LineIcon className="size-4" />
-            {t('bookLine')}
+            <Search className="size-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-foreground/80 hover:text-primary"
+            aria-label={t('cart')}
+            render={<Link href="/cart" />}
+          >
+            <ShoppingBag className="size-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-foreground/80 hover:text-primary"
+            aria-label={t('account')}
+            render={<Link href="/account" />}
+          >
+            <User className="size-4" />
           </Button>
 
           <Sheet>
