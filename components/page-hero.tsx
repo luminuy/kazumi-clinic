@@ -73,7 +73,7 @@ export function PageHero({
 // Numbered editorial section label, e.g. (01) บริการ
 export function SectionLabel({ index, children }: { index: number; children: React.ReactNode }) {
   return (
-    <span className="text-xs uppercase tracking-[0.3em] text-olive-light">
+    <span className="text-xs uppercase tracking-[0.3em] text-forest">
       ({String(index).padStart(2, '0')}) {children}
     </span>
   );

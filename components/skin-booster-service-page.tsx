@@ -31,7 +31,7 @@ function TreatmentCard({ item }: { item: ServiceItem }) {
             </p>
           )}
         </div>
-        <BadgeCheck aria-hidden="true" className="size-6 shrink-0 text-olive" />
+        <BadgeCheck aria-hidden="true" className="size-6 shrink-0 text-forest" />
       </div>
 
       {item.benefits && item.benefits.length > 0 && (

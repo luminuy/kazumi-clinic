@@ -82,7 +82,7 @@ export function PromotionsGrid({ promos, tabs }: { promos: PromoCard[]; tabs: Pr
                     {p.detail}
                   </Badge>
                 )}
-                <p className="mt-4 text-xl font-medium text-olive">
+                <p className="mt-4 text-xl font-medium text-forest">
                   {p.price.toLocaleString('th-TH')} บาท
                   {p.originalPrice && (
                     <span className="ml-2 text-sm font-normal text-ink/40 line-through">
