@@ -15,7 +15,10 @@ const brands = [
 
 export function BrandStrip() {
   return (
-    <section aria-label="แบรนด์และเทคโนโลยีที่คลินิกเลือกใช้" className="border-b border-olive/10 bg-cream">
+    <section
+      aria-label="แบรนด์และเทคโนโลยีที่คลินิกเลือกใช้"
+      className="border-y border-olive/10 bg-cream"
+    >
       <div className="mx-auto max-w-6xl px-6 py-9 md:px-12 md:py-11">
         <p className="text-center text-[0.62rem] uppercase tracking-[0.24em] text-ink/40">
           แบรนด์และเทคโนโลยีที่เราเลือกใช้
