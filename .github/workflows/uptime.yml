@@ -1,0 +1,21 @@
+name: Uptime
+
+# Lightweight monitoring: hit every public route on a schedule so an outage or a
+# broken page surfaces on its own. When this job fails, GitHub emails the repo owner —
+# that is the "make silent failures loud" fix (weakness #4), no external service needed.
+on:
+  schedule:
+    - cron: '0 */6 * * *' # every 6 hours
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # BASE points at workers.dev for now; switch it to the real domain when it goes live
+      # (or set a repo variable BASE and reference ${{ vars.BASE }} here).
+      - name: Health check
+        run: bash scripts/healthcheck.sh
+        env:
+          BASE: https://kazumi-clinic.bankjack10452.workers.dev

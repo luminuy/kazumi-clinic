@@ -1,0 +1,46 @@
+name: CI
+
+# Quality gate for every PR and every push to main — the automated version of
+# CLAUDE.md §0.3. Runs on GitHub's runners, so it also covers the build that the
+# dev machine (old macOS, no workerd) struggles to run locally.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# One run per ref; a newer push cancels an in-flight run on the same branch.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.1.2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test
+
+      # next build (not the Cloudflare/OpenNext build) — verifies the app compiles and
+      # every /[category] static param generates. No Cloudflare bindings needed: the D1
+      # image store degrades to shipped defaults when the binding is absent (lib/site-images-store.ts).
+      - name: Build
+        run: pnpm build
