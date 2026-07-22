@@ -54,8 +54,8 @@ export default async function AdminImagesPage() {
         }
       />
 
-      {/* Direct child of <main> on purpose: position:sticky can only travel within its parent's
-          box, so wrapping this in a short div would pin it for a few pixels and drop it. */}
+      {/* Direct child of the page content column on purpose: position:sticky can only travel within
+          its parent's box, so wrapping this in a short div would pin it for a few pixels and drop it. */}
       <SectionNav
         items={groups.map((group) => ({ id: `group-${group.id}`, label: group.title }))}
       />
