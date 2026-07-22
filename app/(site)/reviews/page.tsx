@@ -119,7 +119,7 @@ export default async function ReviewsPage() {
                       <div className="flex items-center justify-between gap-2">
                         <p className="font-serif text-lg text-olive-deep">{review.name}</p>
                         {review.rating !== null && (
-                          <span className="flex items-center gap-0.5 text-olive">
+                          <span className="flex items-center gap-0.5 text-forest">
                             {Array.from({ length: review.rating }).map((_, s) => (
                               <Star key={s} className="size-3.5 fill-current" />
                             ))}
@@ -162,7 +162,7 @@ export default async function ReviewsPage() {
             render={<a href={site.mapsUrl} target="_blank" rel="noopener" />}
             size="lg"
             variant="outline"
-            className="rounded-full border-olive px-8 text-olive-deep hover:bg-olive/10"
+            className="rounded-full border-forest px-8 text-forest hover:bg-forest/10"
           >
             <ExternalLink className="size-4" />
             ดูรีวิวจริงบน Google Maps

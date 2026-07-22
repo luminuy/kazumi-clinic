@@ -36,13 +36,13 @@ function RecommendedSession({ item }: { item: ServiceItem }) {
 
       <div className="mt-8 grid grid-cols-2 gap-4">
         <div className="flex items-center gap-3 border border-olive/20 p-4">
-          <ShieldCheck aria-hidden="true" className="size-4 shrink-0 text-olive" />
+          <ShieldCheck aria-hidden="true" className="size-4 shrink-0 text-forest" />
           <p className="text-[0.62rem] uppercase tracking-[0.1em] text-olive-deep">
             เครื่องมือมาตรฐาน
           </p>
         </div>
         <div className="flex items-center gap-3 border border-olive/20 p-4">
-          <Stethoscope aria-hidden="true" className="size-4 shrink-0 text-olive" />
+          <Stethoscope aria-hidden="true" className="size-4 shrink-0 text-forest" />
           <p className="text-[0.62rem] uppercase tracking-[0.1em] text-olive-deep">ดูแลโดยแพทย์</p>
         </div>
       </div>
