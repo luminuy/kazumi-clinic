@@ -1,0 +1,19 @@
+{
+  "Navigation": {
+    "home": "หน้าแรก",
+    "services": "บริการ",
+    "promotions": "โปรโมชั่น",
+    "reviews": "รีวิว",
+    "about": "เกี่ยวกับเรา",
+    "blog": "บทความ",
+    "contact": "ติดต่อเรา",
+    "bookLine": "จองคิวผ่าน LINE"
+  },
+  "Footer": {
+    "location": "ที่ตั้ง",
+    "operatingHours": "เวลาทำการ",
+    "contact": "ติดต่อ",
+    "social": "ติดตามเรา",
+    "license": "ใบอนุญาตสถานพยาบาลเลขที่ {license}"
+  }
+}
