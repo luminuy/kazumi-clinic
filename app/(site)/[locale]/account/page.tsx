@@ -61,7 +61,7 @@ export default async function AccountPage({ params }: { params: Promise<{ locale
           </div>
 
           <Link
-            href="/cart"
+            href="/account/orders"
             className="group rounded-[1.25rem] border border-black/5 bg-[var(--store-card)] p-6 shadow-lg shadow-black/5 transition-transform hover:-translate-y-0.5"
           >
             <div className="flex size-11 items-center justify-center rounded-full bg-[var(--store-control)] text-[var(--store-ink)]">

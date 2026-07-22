@@ -133,16 +133,12 @@ export function CartView({ initialCart, lineUrl }: { initialCart: CartSummary; l
           </span>
         </div>
 
-        <button
-          type="button"
-          disabled
-          className="mt-6 w-full cursor-not-allowed rounded-full bg-forest/50 py-3.5 text-xs font-medium text-white"
+        <Link
+          href="/cart/checkout"
+          className="mt-6 flex w-full items-center justify-center rounded-full bg-forest py-3.5 text-xs font-medium text-white transition-colors hover:bg-mint"
         >
           {t('summary.checkout')}
-        </button>
-        <p className="mt-3 text-center text-[0.66rem] leading-[1.7] text-[var(--store-muted)]">
-          {t('summary.checkoutSoon')}
-        </p>
+        </Link>
         <a
           href={lineUrl}
           target="_blank"

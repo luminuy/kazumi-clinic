@@ -117,6 +117,24 @@ export async function getCart(): Promise<CartSummary> {
   return readCart(db, cartId);
 }
 
+/**
+ * The current visitor's active cart WITH its id, for the checkout/order path. Read-only (never
+ * creates or writes a cookie). Returns null when there's no active cart or it's empty.
+ */
+export async function getActiveCartForOrder(): Promise<{
+  id: string;
+  items: CartLine[];
+  subtotalSatang: number;
+} | null> {
+  const db = await memberDb();
+  if (!db) return null;
+  const cartId = await currentCartId(db, false);
+  if (!cartId) return null;
+  const summary = await readCart(db, cartId);
+  if (summary.items.length === 0) return null;
+  return { id: cartId, items: summary.items, subtotalSatang: summary.subtotalSatang };
+}
+
 /** Item count only — cheap enough for the header badge on every request. */
 export async function getCartCount(): Promise<number> {
   const db = await memberDb();

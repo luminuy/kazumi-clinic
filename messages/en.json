@@ -343,5 +343,80 @@
       "bookLine": "Book via LINE now",
       "priceNote": "Prices shown may change; please confirm current prices and conditions with the clinic before your visit. Results vary by individual and depend on a doctor's assessment."
     }
+  },
+  "Checkout": {
+    "title": "Confirm booking",
+    "eyebrow": "Checkout / Confirm",
+    "contact": {
+      "title": "Your details",
+      "name": "Full name",
+      "phone": "Phone",
+      "email": "Email",
+      "emailOptional": "Email (optional)",
+      "time": "Preferred date/time",
+      "timePlaceholder": "e.g. this Saturday afternoon",
+      "note": "Note to the clinic"
+    },
+    "fulfillment": {
+      "title": "Booking type",
+      "booking": "Book now, pay at clinic",
+      "bookingHint": "Send a booking request; pay nothing now. The team confirms your slot.",
+      "deposit": "Deposit {percent}%",
+      "depositHint": "Pay a deposit to secure your slot; the balance is paid at the clinic.",
+      "full": "Pay in full",
+      "fullHint": "Pay the full amount in advance."
+    },
+    "payment": {
+      "title": "Payment method",
+      "pay_at_clinic": "Pay at clinic",
+      "gateway": "Pay online (card/PromptPay)",
+      "gatewayNote": "Online payment is being connected — once you confirm, the team will send a payment link or contact you."
+    },
+    "summary": {
+      "title": "Summary",
+      "subtotal": "Subtotal",
+      "dueNow": "Due now",
+      "note": "Prices shown may change; this is a booking request the clinic will confirm. Results vary by individual and depend on a doctor's assessment."
+    },
+    "submit": "Confirm booking",
+    "error": {
+      "name": "Please enter your name",
+      "phone": "Please enter a valid phone number",
+      "submit": "Request failed"
+    }
+  },
+  "Orders": {
+    "list": {
+      "title": "Booking history",
+      "eyebrow": "Kazumi Member",
+      "emptyTitle": "No bookings yet",
+      "emptyCta": "View all services",
+      "items": "{count} items"
+    },
+    "detail": {
+      "title": "Booking details",
+      "thanksTitle": "Booking request received",
+      "awaitingTitle": "Awaiting payment",
+      "orderId": "Order number",
+      "status": "Status",
+      "subtotal": "Subtotal",
+      "dueNow": "Due now",
+      "contactLine": "Contact via LINE",
+      "myOrders": "Booking history",
+      "moreServices": "More services"
+    },
+    "next": {
+      "booking": "We've received your booking request. Our team will contact you to confirm the date and time.",
+      "payAtClinic": "We've received your booking request. Please pay at the clinic on the day of your visit; our team will confirm your slot.",
+      "gateway": "We've received your order. Online payment is being connected — our team will send a payment link or contact you shortly."
+    },
+    "status": {
+      "pending": "Pending",
+      "awaiting_payment": "Awaiting payment",
+      "paid": "Paid",
+      "confirmed": "Confirmed",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    }
   }
 }
