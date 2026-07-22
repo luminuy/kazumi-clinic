@@ -5,9 +5,34 @@ import { Loader2, TriangleAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from '@/i18n/routing';
 import { useTranslations } from 'next-intl';
+import { LineIcon } from '@/components/brand-icons';
 
 type Mode = 'login' | 'register';
 type State = { kind: 'idle' | 'sending' } | { kind: 'error'; message: string };
+
+/** The multi-colour Google "G" — inline so the button needs no external asset. */
+function GoogleIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        fill="#4285F4"
+        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1Z"
+      />
+      <path
+        fill="#34A853"
+        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23Z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M5.84 14.09a6.6 6.6 0 0 1 0-4.18V7.07H2.18a11 11 0 0 0 0 9.86l3.66-2.84Z"
+      />
+      <path
+        fill="#EA4335"
+        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38Z"
+      />
+    </svg>
+  );
+}
 
 const fieldClass =
   'w-full rounded-xl border border-olive/20 bg-cream px-4 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-ink/35 focus:border-olive/50';
@@ -19,9 +44,24 @@ const fieldClass =
  *
  * `redirectTo` is where to land after auth; defaults to /account. OAuth buttons arrive in Phase 4.
  */
-export function AuthForm({ mode, redirectTo = '/account' }: { mode: Mode; redirectTo?: string }) {
+export function AuthForm({
+  mode,
+  redirectTo = '/account',
+  oauthError,
+}: {
+  mode: Mode;
+  redirectTo?: string;
+  oauthError?: string;
+}) {
   const t = useTranslations('Account');
-  const [state, setState] = useState<State>({ kind: 'idle' });
+  const oauthErrorMessage = oauthError
+    ? t.has(`oauth.errors.${oauthError}`)
+      ? t(`oauth.errors.${oauthError}`)
+      : t('oauth.errors.oauth_failed')
+    : null;
+  const [state, setState] = useState<State>(
+    oauthErrorMessage ? { kind: 'error', message: oauthErrorMessage } : { kind: 'idle' },
+  );
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const sending = state.kind === 'sending';
 
@@ -64,8 +104,36 @@ export function AuthForm({ mode, redirectTo = '/account' }: { mode: Mode; redire
     }
   }
 
+  const oauthHref = (provider: 'google' | 'line') =>
+    `/api/account/oauth/${provider}?next=${encodeURIComponent(redirectTo)}`;
+
   return (
     <form onSubmit={submit} className="space-y-4" noValidate>
+      {/* Social sign-in. The buttons always render so the clinic can see them; if a provider's
+          keys aren't set yet, the start route bounces back here with an explanatory message. */}
+      <div className="grid gap-2.5">
+        <a
+          href={oauthHref('line')}
+          className="flex items-center justify-center gap-2.5 rounded-full bg-[#06C755] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#05b34c]"
+        >
+          <LineIcon className="size-4" />
+          {t('oauth.line')}
+        </a>
+        <a
+          href={oauthHref('google')}
+          className="flex items-center justify-center gap-2.5 rounded-full border border-olive/20 bg-white px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-cream"
+        >
+          <GoogleIcon className="size-4" />
+          {t('oauth.google')}
+        </a>
+      </div>
+
+      <div className="flex items-center gap-3 py-1">
+        <span className="h-px flex-1 bg-olive/15" />
+        <span className="text-[0.7rem] uppercase tracking-[0.14em] text-ink/40">{t('oauth.or')}</span>
+        <span className="h-px flex-1 bg-olive/15" />
+      </div>
+
       {mode === 'register' && (
         <div>
           <label htmlFor="name" className="mb-1.5 block text-sm text-ink/70">

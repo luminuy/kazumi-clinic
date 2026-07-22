@@ -319,6 +319,17 @@
       "password": "Invalid password",
       "generic": "Something went wrong (status {status})",
       "submit": "Request failed"
+    },
+    "oauth": {
+      "google": "Continue with Google",
+      "line": "Continue with LINE",
+      "or": "or",
+      "errors": {
+        "oauth_not_configured": "This sign-in method isn't set up yet. Please use email/password for now.",
+        "oauth_state": "Your session expired. Please try signing in again.",
+        "oauth_failed": "Sign-in failed. Please try again.",
+        "oauth_unknown": "Invalid sign-in method"
+      }
     }
   },
   "Cart": {
