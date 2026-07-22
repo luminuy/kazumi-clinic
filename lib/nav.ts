@@ -5,12 +5,16 @@ import { serviceCategories, type ServiceCategory } from './services';
 
 export type NavItem = { href: string; label: string };
 
+// Ordered by the customer decision funnel for aesthetic procedures: what we offer →
+// does it work (social proof) → is the deal worth it (commercial intent) → can I trust
+// the clinic → learn more → get in touch. The two strongest booking drivers (results/
+// reviews + promotions) sit up front rather than buried mid-row; contact stays last.
 export const navItems: NavItem[] = [
   { href: '/services', label: 'บริการ' },
-  { href: '/about', label: 'เกี่ยวกับ Kazumi' },
   { href: '/reviews', label: 'ผลลัพธ์และรีวิว' },
-  { href: '/blog', label: 'บทความ' },
   { href: '/promotions', label: 'โปรโมชั่น' },
+  { href: '/about', label: 'เกี่ยวกับ Kazumi' },
+  { href: '/blog', label: 'บทความ' },
   { href: '/contact', label: 'ติดต่อเรา' },
 ];
 
