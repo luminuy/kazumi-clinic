@@ -193,6 +193,7 @@ export default async function ServiceCategoryPage({ params }: Props) {
 
   const pick = (key: string, fallback: string) => overrides.get(key)?.public_id ?? fallback;
   const doctorImage = pick('doctor-pratch', 'v1731671042/doctor-pratch_b4r3p1');
+  const eeshaImage = overrides.get('doctor-eesha')?.public_id;
 
   // Only categories with a published price need the price caveat — the rest already say
   // "สอบถามราคา", and a note about prices changing would be about nothing.
@@ -220,7 +221,7 @@ export default async function ServiceCategoryPage({ params }: Props) {
   // and gating would drop it back to the generic template — its own page handles the empty slot.
   const pageContent =
     service.slug === 'filler' && heroImage ? (
-      <FillerServicePage service={service} heroImage={heroImage} itemImages={itemImages} doctorImage={doctorImage} />
+      <FillerServicePage service={service} heroImage={heroImage} itemImages={itemImages} doctorImage={doctorImage} eeshaImage={eeshaImage} />
     ) : service.slug === 'thread-lift' ? (
       <ThreadLiftServicePage
         service={service}
