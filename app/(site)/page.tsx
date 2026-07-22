@@ -308,9 +308,6 @@ export default async function HomePage() {
         </ul>
       </section>
 
-      {/* ── Brand & technology strip ─────────────────────────── */}
-      <BrandStrip />
-
       {/* ── Services: Apple-inspired media stream ────────────── */}
       <section className="apple-services-section overflow-hidden">
         <Reveal className="apple-services-heading">
@@ -334,6 +331,9 @@ export default async function HomePage() {
 
         <ServiceCarousel categories={mergedCategories} heroOverrides={serviceHeroOverrides} />
       </section>
+
+      {/* ── Brand & technology strip: the brands behind the services above ──────── */}
+      <BrandStrip />
 
       {/* ── Physicians: Apple-style cards, photo on top ──────── */}
       <section className="bg-[var(--store-surface)] px-4 py-12 md:px-6 md:py-20">
