@@ -179,6 +179,8 @@ Stack: Next.js App Router (React 19) + TypeScript + Tailwind CSS v4 + shadcn/ui 
 ## 1. URL conventions — **ห้ามมี trailing slash**
 
 มาตรฐานของไซต์นี้คือ **ไม่มี trailing slash** ทุกที่ (Next.js default)
+- มีการตั้งค่า `trailingSlash: false` ไว้ใน `next.config.mjs` อย่างชัดเจน
+- **CRITICAL**: มีการบังคับใช้ 308 Permanent Redirect ใน `middleware.ts` สำหรับ URL ที่มี trailing slash (ยกเว้น root `/`) เพื่อป้องกันปัญหา Duplicate Content อย่างเด็ดขาด และกระบวนการนี้ต้องทำ *ก่อน* ที่ `next-intl` จะทำงาน
 
 ### ถูก ✓
 
