@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Soft guardrail: block pushing straight to main — changes go through a branch + PR + green CI
+# (CLAUDE.md §0). This is the free stand-in for branch protection, which needs GitHub Pro or a
+# public repo. It is bypassable (git push --no-verify) and only works where the hook is installed
+# (activate with `pnpm install`, which sets core.hooksPath, or run `pnpm setup:hooks`).
+protected="main"
+while read -r _local_ref _local_sha remote_ref _remote_sha; do
+  if [ "$remote_ref" = "refs/heads/$protected" ]; then
+    echo "" >&2
+    echo "  ✋ ห้าม push ตรงเข้า '$protected' — เปิด branch + PR แทน (CLAUDE.md §0)" >&2
+    echo "     ตัวอย่าง: git switch -c my-change && git push -u origin my-change && gh pr create" >&2
+    echo "     ถ้าจำเป็นจริง ๆ (เช่น ต้อง hotfix): git push --no-verify" >&2
+    echo "" >&2
+    exit 1
+  fi
+done
+exit 0

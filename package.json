@@ -10,6 +10,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "health": "bash scripts/healthcheck.sh",
+    "setup:hooks": "git config core.hooksPath .githooks",
+    "postinstall": "git config core.hooksPath .githooks || true",
     "cf:build": "opennextjs-cloudflare build",
     "cf:preview": "opennextjs-cloudflare preview",
     "cf:tagcache": "wrangler d1 execute kazumi-clinic-tag-cache --remote -y --file migrations/0007_tag_cache_revalidations.sql",
