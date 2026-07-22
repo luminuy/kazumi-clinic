@@ -24,6 +24,16 @@ export type PromotionPoster = {
   alt: string;
   label: string;
   categorySlug: string;
+  /** Display category name for the card layout (uppercase). */
+  categoryLabel: string;
+  /** Card title shown below the poster image. */
+  title: string;
+  /** Card subtitle / tagline shown below the title. */
+  subtitle: string;
+  /** Optional badge shown on the poster image (e.g. "LIMITED", "HOT"). */
+  badge?: string;
+  /** Badge colour variant: 'red' | 'blue' (default: 'blue'). */
+  badgeVariant?: 'red' | 'blue';
 };
 
 /**
@@ -37,38 +47,58 @@ export const promotionPosters: PromotionPoster[] = [
     alt: 'โปสเตอร์ Signature Flawless IV Drip พร้อมภาพผู้หญิงและถุงสารน้ำ',
     label: 'IV Drip · Signature Flawless',
     categorySlug: 'iv-drip',
+    categoryLabel: 'VITAMIN THERAPY',
+    title: 'Signature Flawless',
+    subtitle: 'The Masterpiece of Skin Perfection.',
+    badge: 'LIMITED',
+    badgeVariant: 'red',
   },
   {
     src: cloudAssets.promoRadiantBright,
     alt: 'โปสเตอร์ Radiant Bright IV Drip พร้อมภาพผู้หญิงผมสีน้ำตาล',
     label: 'IV Drip · Radiant Bright',
     categorySlug: 'iv-drip',
+    categoryLabel: 'GLOW PROGRAM',
+    title: 'Radiant Bright IV',
+    subtitle: 'The Shield for Radiant Skin.',
   },
   {
     src: cloudAssets.promoFillerNeura,
     alt: 'โปสเตอร์ Filler Neura Deep และ Neura Volume พร้อมภาพใบหน้าด้านข้าง',
     label: 'Filler · Neura',
     categorySlug: 'filler',
+    categoryLabel: 'FACIAL SCULPTING',
+    title: 'Filler Exclusive Offer',
+    subtitle: 'Starting from ฿3,990',
+    badge: 'HOT',
+    badgeVariant: 'blue',
   },
   {
     src: cloudAssets.promoOxelleSkinBooster,
     alt: 'โปสเตอร์ Oxelle Skin Boosters พร้อมภาพผิวก่อนและหลัง',
     label: 'Skin Booster · Oxelle',
     categorySlug: 'skin-booster',
+    categoryLabel: 'SKIN BOOSTER',
+    title: 'Oxelle Skin Boosters',
+    subtitle: 'Revive & Restore Your Skin.',
   },
   {
-    // promo-karisma-collagen is the asset that actually holds the Velvet Glow poster — the two
-    // source files were swapped before they ever reached Cloudinary.
     src: cloudAssets.promoKarismaCollagen,
     alt: 'โปสเตอร์ Velvet Glow IV Drip พร้อมภาพผู้หญิงและถุงสารน้ำ',
     label: 'IV Drip · Velvet Glow',
     categorySlug: 'iv-drip',
+    categoryLabel: 'IV DRIP',
+    title: 'Velvet Glow IV',
+    subtitle: 'Luxurious Glow from Within.',
   },
   {
     src: cloudAssets.promoActiveRefresh,
     alt: 'โปสเตอร์ Active & Refresh IV Drip พร้อมภาพผู้หญิงกลางแจ้ง',
     label: 'IV Drip · Active & Refresh',
     categorySlug: 'iv-drip',
+    categoryLabel: 'IV DRIP',
+    title: 'Active & Refresh',
+    subtitle: 'Energize Your Body & Mind.',
   },
   {
     // ...and promo-velvet-glow holds the KARISMA poster. See the note above.
@@ -76,6 +106,9 @@ export const promotionPosters: PromotionPoster[] = [
     alt: 'โปสเตอร์ Karisma Rh Collagen พร้อมภาพแพ็กเกจผลิตภัณฑ์',
     label: 'Collagen · Karisma',
     categorySlug: 'collagen-booster',
+    categoryLabel: 'COLLAGEN BOOSTER',
+    title: 'Karisma Rh Collagen',
+    subtitle: 'Premium Collagen Treatment.',
   },
 ];
 
