@@ -134,7 +134,7 @@ export default async function HomePage() {
         <div className="relative mx-auto grid w-full max-w-7xl gap-10 px-6 py-14 sm:px-10 md:grid-cols-[minmax(0,1.55fr)_minmax(15rem,1fr)] md:items-center md:gap-12 md:px-12 md:py-24 lg:px-16">
           <div className="max-w-2xl">
             <div className="hero-enter flex items-center gap-3 text-[0.64rem] uppercase tracking-[0.32em] text-white/60">
-              <span aria-hidden="true" className="h-px w-10 bg-white/30" />
+              <span aria-hidden="true" className="h-px w-10 bg-mint-glow" />
               Kazumi Clinic · เวชศาสตร์ความงาม สุขุมวิท
             </div>
             <h1
@@ -143,7 +143,7 @@ export default async function HomePage() {
             >
               Where thoughtful care
               <br />
-              becomes <span className="text-white/70">natural</span> beauty.
+              becomes <span className="text-mint-glow">natural</span> beauty.
             </h1>
             <p className="hero-enter hero-enter--later mt-7 max-w-xl text-sm leading-[1.95] text-white/75 md:text-base">
               <span lang="ja" className="text-white/55">
@@ -156,7 +156,7 @@ export default async function HomePage() {
                 href={site.lineUrl}
                 target="_blank"
                 rel="noopener"
-                className="inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 text-sm font-medium text-black shadow-lg shadow-black/10 transition-transform duration-300 hover:-translate-y-0.5 hover:bg-white/90 active:translate-y-0"
+                className="inline-flex items-center gap-2 rounded-full bg-mint px-7 py-3 text-sm font-medium text-white shadow-lg shadow-black/10 transition-transform duration-300 hover:-translate-y-0.5 hover:bg-forest active:translate-y-0"
               >
                 <LineIcon className="size-4" />
                 จองคิวผ่าน LINE <ArrowUpRight className="size-4" />
