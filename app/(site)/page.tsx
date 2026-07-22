@@ -8,12 +8,14 @@ import { serviceCategories } from '@/lib/services';
 import { faqSchema, homePageSchema } from '@/lib/schema';
 import { cloudAssets, heroHomePortrait } from '@/lib/cloud';
 import { getImageOverrides } from '@/lib/site-images-store';
+import { getAllMergedCategories } from '@/lib/service-products-store';
 import { categoryImageKey, posterKeyByDefaultId } from '@/lib/site-images';
 import { siteSocialImage } from '@/lib/metadata-images';
 import { promotionPosters } from '@/lib/promotions';
 import { Reveal } from '@/components/reveal';
 import { PromotionCarousel } from '@/components/promotion-carousel';
 import { ServiceCarousel } from '@/components/service-carousel';
+import { BrandStrip } from '@/components/brand-strip';
 import { GoogleIcon, InstagramIcon, LineIcon } from '@/components/brand-icons';
 
 const homeTitle = 'คลินิกความงามสุขุมวิท กรุงเทพฯ | Kazumi Clinic';
@@ -196,6 +198,8 @@ export default async function HomePage() {
       return override ? [[category.slug, override]] : [];
     }),
   );
+  // Merged so the carousel's "เริ่มต้น ฿x" reflects prices the clinic edits through /admin.
+  const mergedCategories = await getAllMergedCategories();
 
   return (
     <>
@@ -304,6 +308,9 @@ export default async function HomePage() {
         </ul>
       </section>
 
+      {/* ── Brand & technology strip ─────────────────────────── */}
+      <BrandStrip />
+
       {/* ── Services: Apple-inspired media stream ────────────── */}
       <section className="apple-services-section overflow-hidden">
         <Reveal className="apple-services-heading">
@@ -320,9 +327,12 @@ export default async function HomePage() {
             ฟิลเลอร์ โบท็อกซ์ IV Drip วิตามิน สกินบูสเตอร์ คอลลาเจนบูสเตอร์ และอีกหลายโปรแกรม —
             ประเมินและดูแลโดยแพทย์ทุกขั้นตอน
           </p>
+          <p className="text-[0.72rem] leading-relaxed text-[var(--store-muted)]/70">
+            *ราคาเริ่มต้นต่อครั้ง อาจมีการเปลี่ยนแปลง — สอบถามราคาปัจจุบันและเงื่อนไขกับคลินิกก่อนเข้ารับบริการ
+          </p>
         </Reveal>
 
-        <ServiceCarousel categories={serviceCategories} heroOverrides={serviceHeroOverrides} />
+        <ServiceCarousel categories={mergedCategories} heroOverrides={serviceHeroOverrides} />
       </section>
 
       {/* ── Physicians: Apple-style cards, photo on top ──────── */}
@@ -484,10 +494,16 @@ export default async function HomePage() {
                     className="object-cover"
                   />
                 ) : (
-                  <span aria-hidden="true" className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-[var(--store-muted)]/50">
-                    <MapPin className="size-10" strokeWidth={0.9} />
-                    <span className="text-xs uppercase tracking-[0.2em]">สุขุมวิท · กรุงเทพฯ</span>
-                  </span>
+                  // No clinic photo uploaded yet — show the real embedded map instead of a
+                  // placeholder icon. Uploading a photo via /admin (home-visit) takes over.
+                  <iframe
+                    src={site.mapsEmbedUrl}
+                    title={`แผนที่ ${site.name} — ${site.addressFull}`}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    allowFullScreen
+                    className="absolute inset-0 size-full border-0"
+                  />
                 )}
               </div>
             </div>

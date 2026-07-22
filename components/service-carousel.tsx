@@ -173,6 +173,10 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
           {orderedItems.map(({ category, position }) => {
             const imageSrc = heroOverrides[category.slug] ?? category.heroImage;
             const hasImage = Boolean(imageSrc);
+            const prices = category.items
+              .map((item) => item.priceFrom)
+              .filter((price): price is number => price !== undefined);
+            const startingPrice = prices.length > 0 ? Math.min(...prices) : undefined;
 
             return (
               <article key={category.slug} data-service-index={position} className="service-stream-card">
@@ -201,6 +205,14 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
                     <p className="service-stream-card__eyebrow">{category.titleEn}</p>
                     <h3>{category.title}</h3>
                     <p>{category.shortDescription}</p>
+                    {startingPrice !== undefined && (
+                      <p className="mt-2 text-[0.82rem] text-[rgb(238_233_223/0.85)]">
+                        เริ่มต้น{' '}
+                        <span className="font-medium text-sand">
+                          ฿{startingPrice.toLocaleString('th-TH')}
+                        </span>
+                      </p>
+                    )}
                     <span className="service-stream-card__action">
                       ดูรายละเอียด <ArrowUpRight className="size-4" />
                     </span>
