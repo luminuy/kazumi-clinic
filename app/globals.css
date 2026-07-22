@@ -421,6 +421,145 @@
   width: 1.5rem;
   background: var(--clay);
 }
+
+/* ── Promotion Card Grid — card-based poster layout with category/title/subtitle ── */
+.promo-card-grid {
+  min-width: 0;
+}
+.promo-card-grid__viewport {
+  position: relative;
+}
+.promo-card-grid__rail {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding: 0 clamp(1rem, 2.3vw, 3rem) 0.5rem;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.promo-card-grid__rail::-webkit-scrollbar {
+  display: none;
+}
+.promo-card-grid__card {
+  flex: 0 0 clamp(17rem, 28vw, 22rem);
+  scroll-snap-align: start;
+}
+.promo-card-grid__link {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 1rem;
+  background: #fff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.06), 0 4px 16px rgb(0 0 0 / 0.04);
+  transition: box-shadow 300ms ease, transform 300ms ease;
+  text-decoration: none;
+  color: inherit;
+}
+.promo-card-grid__image-wrap {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: 1rem 1rem 0 0;
+}
+.promo-card-grid__image {
+  transition: transform 500ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.promo-card-grid__badge {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fff;
+  z-index: 2;
+}
+.promo-card-grid__badge--red {
+  background: #e74c3c;
+}
+.promo-card-grid__badge--blue {
+  background: #3b82f6;
+}
+.promo-card-grid__meta {
+  padding: 1rem 1.25rem 1.25rem;
+}
+.promo-card-grid__category {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #3b82f6;
+}
+.promo-card-grid__title {
+  font-family: var(--font-serif, serif);
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--store-ink, #1a1a1a);
+  margin: 0;
+}
+.promo-card-grid__subtitle {
+  margin-top: 0.25rem;
+  font-size: 0.82rem;
+  color: #888;
+  line-height: 1.4;
+}
+.promo-card-grid__arrow {
+  position: absolute;
+  top: 40%;
+  transform: translateY(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 0;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+  color: #333;
+  cursor: pointer;
+  transition: opacity 200ms ease, background 200ms ease;
+}
+.promo-card-grid__arrow--left {
+  left: 0.5rem;
+}
+.promo-card-grid__arrow--right {
+  right: 0.5rem;
+}
+.promo-card-grid__arrow--hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+@media (hover: hover) {
+  .promo-card-grid__link:hover {
+    box-shadow: 0 6px 24px rgb(0 0 0 / 0.1);
+    transform: translateY(-2px);
+  }
+  .promo-card-grid__link:hover .promo-card-grid__image {
+    transform: scale(1.04);
+  }
+  .promo-card-grid__arrow:hover {
+    background: #fff;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 0.15);
+  }
+}
+@media (min-width: 1024px) {
+  .promo-card-grid__card {
+    flex-basis: clamp(18rem, 22vw, 22rem);
+  }
+}
+/* ── End Promotion Card Grid ── */
+
 /* The home-service stream uses an Apple-inspired media composition: a single feature card stays
    centred while adjacent categories remain visible, and the lower rail gives every category a
    direct route without turning the section back into a text-card grid. */
