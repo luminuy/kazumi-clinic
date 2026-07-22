@@ -6,6 +6,7 @@ import { site } from '@/lib/site';
 import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
 import { LineIcon } from '@/components/brand-icons';
+import { AddToCartButton } from '@/components/account/add-to-cart-button';
 
 /** Groups items by their `collection`, preserving declaration order. */
 function groupByCollection(items: ServiceItem[]) {
@@ -61,7 +62,14 @@ function VitaminCard({ item, index }: { item: ServiceItem; index: number }) {
         <h4 className="mt-4 font-serif text-2xl text-[var(--store-ink)]">{item.name}</h4>
         {item.detail && <p className="mt-2 text-sm leading-[1.9] text-[var(--store-muted)]">{item.detail}</p>}
       </div>
-      <EnquireLink item={item} />
+      {item.id && item.priceFrom !== undefined ? (
+        <div className="mt-6 flex flex-col gap-2">
+          <AddToCartButton productId={item.id} className="w-full" />
+          <EnquireLink item={item} />
+        </div>
+      ) : (
+        <EnquireLink item={item} />
+      )}
     </article>
   );
 }
@@ -178,6 +186,9 @@ export function IvDripServicePage({
                               </p>
                             )}
                             <Price item={item} className="mt-4 block font-serif text-2xl" />
+                            {item.id && item.priceFrom !== undefined && (
+                              <AddToCartButton productId={item.id} className="mt-5 w-full sm:w-auto" />
+                            )}
                             <EnquireLink item={item} dark />
                           </div>
                         ))}

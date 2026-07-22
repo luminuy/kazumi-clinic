@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import { createMember, toPublicMember } from '@/lib/members/store';
 import { createSession } from '@/lib/members/session';
+import { mergeGuestCartIntoMember } from '@/lib/members/cart';
 
 // PUBLIC endpoint — creates an email/password member account and starts a session. Validation
 // mirrors app/api/leads: strict Zod, a body-size guard, and generic error text that never reveals
@@ -40,6 +41,7 @@ export async function POST(request: NextRequest) {
       name: parsed.data.name ?? null,
     });
     await createSession(member.id, request.headers.get('user-agent'));
+    await mergeGuestCartIntoMember(member.id);
     return NextResponse.json({ ok: true, member: toPublicMember(member) });
   } catch (error) {
     if (error instanceof Error && error.message === 'EMAIL_TAKEN') {

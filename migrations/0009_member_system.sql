@@ -69,12 +69,12 @@ CREATE INDEX IF NOT EXISTS idx_carts_member ON carts (member_id);
 CREATE TABLE IF NOT EXISTS cart_items (
   id                TEXT PRIMARY KEY NOT NULL,
   cart_id           TEXT NOT NULL REFERENCES carts(id) ON DELETE CASCADE,
-  service_slug      TEXT NOT NULL,
+  product_id        TEXT NOT NULL,
   title             TEXT NOT NULL,
   unit_price_satang INTEGER NOT NULL,
   quantity          INTEGER NOT NULL DEFAULT 1,
   created_at        INTEGER NOT NULL,
-  UNIQUE (cart_id, service_slug)
+  UNIQUE (cart_id, product_id)
 );
 CREATE INDEX IF NOT EXISTS idx_cart_items_cart ON cart_items (cart_id);
 
@@ -106,7 +106,7 @@ CREATE INDEX IF NOT EXISTS idx_orders_status ON orders (status);
 CREATE TABLE IF NOT EXISTS order_items (
   id                TEXT PRIMARY KEY NOT NULL,
   order_id          TEXT NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
-  service_slug      TEXT NOT NULL,
+  product_id        TEXT NOT NULL,
   title             TEXT NOT NULL,
   unit_price_satang INTEGER NOT NULL,
   quantity          INTEGER NOT NULL DEFAULT 1

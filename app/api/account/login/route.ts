@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { findMemberByEmail, toPublicMember } from '@/lib/members/store';
 import { verifyPassword } from '@/lib/members/password';
 import { createSession } from '@/lib/members/session';
+import { mergeGuestCartIntoMember } from '@/lib/members/cart';
 
 // PUBLIC endpoint — verifies an email/password pair and starts a session. A wrong email and a wrong
 // password return the SAME 401 message so the response can't be used to enumerate accounts.
@@ -45,6 +46,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: INVALID }, { status: 401 });
     }
     await createSession(member.id, request.headers.get('user-agent'));
+    await mergeGuestCartIntoMember(member.id);
     return NextResponse.json({ ok: true, member: toPublicMember(member) });
   } catch (error) {
     return NextResponse.json(

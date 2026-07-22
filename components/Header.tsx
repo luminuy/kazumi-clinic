@@ -17,7 +17,13 @@ import {
 import { useTranslations } from 'next-intl';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
-export default function Header({ logoMark }: { logoMark: string }) {
+export default function Header({
+  logoMark,
+  cartCount = 0,
+}: {
+  logoMark: string;
+  cartCount?: number;
+}) {
   const t = useTranslations('Navigation');
   const serviceGroups = resolvedServiceNavGroups();
 
@@ -122,15 +128,25 @@ export default function Header({ logoMark }: { logoMark: string }) {
           >
             <Search className="size-4" />
           </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-foreground/80 hover:text-primary"
-            aria-label={t('cart')}
-            render={<Link href="/cart" />}
-          >
-            <ShoppingBag className="size-4" />
-          </Button>
+          <span className="relative inline-flex">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-foreground/80 hover:text-primary"
+              aria-label={t('cart')}
+              render={<Link href="/cart" />}
+            >
+              <ShoppingBag className="size-4" />
+            </Button>
+            {cartCount > 0 && (
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-forest px-1 text-[0.6rem] font-medium leading-none text-white"
+              >
+                {cartCount > 99 ? '99+' : cartCount}
+              </span>
+            )}
+          </span>
           <Button
             variant="ghost"
             size="icon"

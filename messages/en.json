@@ -320,5 +320,28 @@
       "generic": "Something went wrong (status {status})",
       "submit": "Request failed"
     }
+  },
+  "Cart": {
+    "title": "My cart",
+    "eyebrow": "Shopping cart",
+    "add": "Add to cart",
+    "added": "Added",
+    "addError": "Try again",
+    "decrease": "Decrease",
+    "increase": "Increase",
+    "remove": "Remove",
+    "empty": {
+      "title": "Your cart is empty",
+      "desc": "Pick a service with a listed price and tap “Add to cart” to start a booking.",
+      "cta": "View all services"
+    },
+    "summary": {
+      "title": "Summary",
+      "subtotal": "Subtotal ({count} items)",
+      "checkout": "Checkout / Book",
+      "checkoutSoon": "Ordering & payment is coming very soon.",
+      "bookLine": "Book via LINE now",
+      "priceNote": "Prices shown may change; please confirm current prices and conditions with the clinic before your visit. Results vary by individual and depend on a doctor's assessment."
+    }
   }
 }
