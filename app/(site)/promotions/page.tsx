@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Sparkles } from 'lucide-react';
 import { site } from '@/lib/site';
-import { activePromotions } from '@/lib/promotions';
+import { getActivePromotions } from '@/lib/promotions-store';
 import { breadcrumbSchema } from '@/lib/schema';
 import { siteSocialImage } from '@/lib/metadata-images';
 import { Button } from '@/components/ui/button';
@@ -44,8 +44,8 @@ export async function generateMetadata(): Promise<Metadata> {
 // an expired promo drops off within the hour without a redeploy.
 export const revalidate = 3600;
 
-export default function PromotionsPage() {
-  const promos = activePromotions();
+export default async function PromotionsPage() {
+  const promos = await getActivePromotions();
 
   const breadcrumb = breadcrumbSchema([
     { name: 'หน้าหลัก', path: '/' },
