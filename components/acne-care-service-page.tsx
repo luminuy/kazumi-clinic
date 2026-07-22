@@ -179,14 +179,14 @@ export function AcneCareServicePage({
               href={site.lineUrl}
               target="_blank"
               rel="noopener"
-              className="inline-flex items-center justify-center gap-3 bg-line px-10 py-4 text-[0.68rem] uppercase tracking-[0.18em] text-white transition-opacity duration-200 hover:opacity-90 active:scale-[0.98]"
+              className="inline-flex items-center justify-center gap-2.5 rounded-full bg-[#06C755] px-8 py-3.5 text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.98]"
             >
               <LineIcon className="size-4" />
               จองคิวผ่าน LINE
             </a>
             <Link
               href="/services"
-              className="inline-flex items-center justify-center border border-olive-deep px-10 py-4 text-[0.68rem] uppercase tracking-[0.18em] text-olive-deep transition-colors duration-200 hover:bg-olive-deep hover:text-sand"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-olive-deep/30 bg-transparent px-8 py-3.5 text-xs font-medium text-olive-deep transition-all duration-200 hover:border-olive-deep hover:bg-olive-deep/5 active:scale-[0.98]"
             >
               ดูบริการอื่น
             </Link>

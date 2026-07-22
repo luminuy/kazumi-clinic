@@ -203,14 +203,14 @@ export function CollagenBoosterServicePage({
               href={site.lineUrl}
               target="_blank"
               rel="noopener"
-              className="inline-flex w-full items-center justify-center gap-3 bg-sand px-10 py-4 text-[0.68rem] uppercase tracking-[0.2em] text-olive-deep transition-colors duration-200 hover:bg-cream active:scale-[0.98] sm:w-auto"
+              className="inline-flex w-full items-center justify-center gap-2.5 rounded-full bg-[#06C755] px-8 py-3.5 text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.98] sm:w-auto"
             >
               <LineIcon className="size-4" />
               จองคิวผ่าน LINE
             </a>
             <a
               href={site.phoneUrl}
-              className="inline-flex w-full items-center justify-center gap-3 border border-sand/50 px-10 py-4 text-[0.68rem] uppercase tracking-[0.2em] text-sand transition-colors duration-200 hover:bg-sand hover:text-olive-deep sm:w-auto"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-sand/50 bg-transparent px-8 py-3.5 text-xs font-medium text-sand transition-all duration-200 hover:border-sand hover:bg-sand/10 active:scale-[0.98] sm:w-auto"
             >
               <Phone aria-hidden="true" className="size-4" />
               โทร {site.phone}

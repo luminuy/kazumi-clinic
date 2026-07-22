@@ -17,6 +17,11 @@ next-env.d.ts
 # claude code local settings
 .claude/settings.local.json
 
+# agent tooling artifacts (Antigravity / local skill caches) — not part of the site
+.agents/
+.pnpm-store/
+skills-lock.json
+
 # misc
 .DS_Store
 * 2.*

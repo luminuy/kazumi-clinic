@@ -198,7 +198,7 @@ export function ThreadLiftServicePage({
                 href={site.lineUrl}
                 target="_blank"
                 rel="noopener"
-                className="flex w-full items-center justify-center gap-3 bg-line px-10 py-4 text-[0.68rem] uppercase tracking-[0.18em] text-white transition-opacity duration-200 hover:opacity-90 active:scale-[0.98] md:w-auto"
+                className="flex w-full items-center justify-center gap-2.5 rounded-full bg-[#06C755] px-8 py-3.5 text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.98] md:w-auto"
               >
                 <LineIcon className="size-4" />
                 จองคิว / สอบถามราคา ผ่าน LINE
@@ -263,14 +263,14 @@ export function ThreadLiftServicePage({
               href={site.lineUrl}
               target="_blank"
               rel="noopener"
-              className="inline-flex items-center justify-center gap-2.5 bg-sand px-10 py-4 text-center text-[0.68rem] uppercase tracking-[0.2em] text-olive-deep transition-colors duration-200 hover:bg-cream active:scale-[0.98]"
+              className="inline-flex items-center justify-center gap-2.5 rounded-full bg-[#06C755] px-8 py-3.5 text-center text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.98]"
             >
               <LineIcon className="size-4" />
               จองคิวผ่าน LINE
             </a>
             <Link
               href="/services"
-              className="group inline-flex items-center justify-center gap-2 border border-sand/30 px-10 py-4 text-center text-[0.68rem] uppercase tracking-[0.2em] text-sand transition-colors duration-200 hover:bg-sand/10"
+              className="group inline-flex items-center justify-center gap-2 rounded-full border border-sand/40 bg-transparent px-8 py-3.5 text-center text-xs font-medium text-sand transition-all duration-200 hover:border-sand hover:bg-sand/10 active:scale-[0.98]"
             >
               ดูบริการอื่น
               <ArrowUpRight className="size-3.5 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
