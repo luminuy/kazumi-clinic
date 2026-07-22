@@ -1,0 +1,19 @@
+{
+  "Navigation": {
+    "home": "Home",
+    "services": "Services",
+    "promotions": "Promotions",
+    "reviews": "Reviews",
+    "about": "About Us",
+    "blog": "Blog",
+    "contact": "Contact",
+    "bookLine": "Book via LINE"
+  },
+  "Footer": {
+    "location": "Location",
+    "operatingHours": "Operating Hours",
+    "contact": "Contact",
+    "social": "Follow Us",
+    "license": "Clinic License No. {license}"
+  }
+}
