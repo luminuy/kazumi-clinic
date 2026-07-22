@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
 import { Sparkles } from 'lucide-react';
 import { site } from '@/lib/site';
+import { serviceCategories } from '@/lib/services';
 import { getActivePromotions } from '@/lib/promotions-store';
 import { breadcrumbSchema } from '@/lib/schema';
 import { siteSocialImage } from '@/lib/metadata-images';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Reveal } from '@/components/reveal';
 import { PageHero } from '@/components/page-hero';
+import { PromotionsGrid, type PromoCard, type PromoTab } from '@/components/promotions-grid';
 import { LineIcon } from '@/components/brand-icons';
 
 const pageTitle = 'โปรโมชั่น / แพ็กเกจ';
@@ -47,6 +47,24 @@ export const revalidate = 3600;
 export default async function PromotionsPage() {
   const promos = await getActivePromotions();
 
+  // Cards for the client grid, each carrying its category slug for filtering.
+  const cards: PromoCard[] = promos.map((p, i) => ({
+    key: `${p.name}-${p.detail ?? ''}-${i}`,
+    name: p.name,
+    detail: p.detail ?? null,
+    price: p.price,
+    originalPrice: p.originalPrice ?? null,
+    note: p.note ?? null,
+    validUntil: p.validUntil,
+    categorySlug: p.categorySlug ?? null,
+  }));
+
+  // Filter tabs = the categories actually present among the active promos, in catalogue order.
+  const present = new Set(cards.map((c) => c.categorySlug).filter(Boolean));
+  const tabs: PromoTab[] = serviceCategories
+    .filter((category) => present.has(category.slug))
+    .map((category) => ({ slug: category.slug, title: category.title }));
+
   const breadcrumb = breadcrumbSchema([
     { name: 'หน้าหลัก', path: '/' },
     { name: 'โปรโมชั่น / แพ็กเกจ', path: '/promotions' },
@@ -67,40 +85,8 @@ export default async function PromotionsPage() {
       />
 
       <section className="mx-auto max-w-6xl px-6 py-20">
-        {promos.length > 0 ? (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {promos.map((p, i) => (
-              <Reveal key={`${p.name}-${p.detail ?? ''}`} delay={i * 50}>
-                <Card className="h-full rounded-2xl border-olive/15 ring-0">
-                  <CardContent>
-                    <p className="font-serif text-lg text-olive-deep">{p.name}</p>
-                    {p.detail && (
-                      <Badge variant="outline" className="mt-2 border-olive/30 text-ink/60">
-                        {p.detail}
-                      </Badge>
-                    )}
-                    <p className="mt-4 text-xl font-medium text-olive">
-                      {p.price.toLocaleString('th-TH')} บาท
-                      {p.originalPrice && (
-                        <span className="ml-2 text-sm font-normal text-ink/40 line-through">
-                          {p.originalPrice.toLocaleString('th-TH')}
-                        </span>
-                      )}
-                    </p>
-                    {p.note && <p className="mt-1 text-xs text-olive-light">{p.note}</p>}
-                    <p className="mt-2 text-xs text-ink/50">
-                      ใช้ได้ถึง{' '}
-                      {new Date(p.validUntil).toLocaleDateString('th-TH', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric',
-                      })}
-                    </p>
-                  </CardContent>
-                </Card>
-              </Reveal>
-            ))}
-          </div>
+        {cards.length > 0 ? (
+          <PromotionsGrid promos={cards} tabs={tabs} />
         ) : (
           <Reveal className="rounded-2xl border border-dashed border-olive/30 bg-cream p-14 text-center">
             <Sparkles className="mx-auto size-8 text-olive-light" />
