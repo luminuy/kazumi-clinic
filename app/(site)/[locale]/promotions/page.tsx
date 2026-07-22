@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Sparkles } from 'lucide-react';
 import { site } from '@/lib/site';
 import { serviceCategories } from '@/lib/services';
@@ -11,13 +12,15 @@ import { PageHero } from '@/components/page-hero';
 import { PromotionsGrid, type PromoCard, type PromoTab } from '@/components/promotions-grid';
 import { LineIcon } from '@/components/brand-icons';
 
-const pageTitle = 'โปรโมชั่น / แพ็กเกจ';
-const pageDescription = `โปรโมชั่นและแพ็กเกจราคาพิเศษของ ${site.name} — ฟิลเลอร์ โบท็อกซ์ สกินบูสเตอร์ และ IV Drip วิตามิน`;
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'PromotionsPage' });
+  const pageTitle = t('metaTitle');
+  const pageDescription = t('metaDescription', { siteName: site.name });
 
-export async function generateMetadata(): Promise<Metadata> {
   const socialImage = await siteSocialImage(
     'hero-skin-booster',
-    `${site.name} โปรโมชั่นและแพ็กเกจ`,
+    `${site.name} ${pageTitle}`,
   );
 
   return {
@@ -44,7 +47,12 @@ export async function generateMetadata(): Promise<Metadata> {
 // an expired promo drops off within the hour without a redeploy.
 export const revalidate = 3600;
 
-export default async function PromotionsPage() {
+export default async function PromotionsPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations('PromotionsPage');
+  const tHome = await getTranslations('HomePage');
+  
   const promos = await getActivePromotions();
 
   // Cards for the client grid, each carrying its category slug for filtering.
@@ -66,8 +74,8 @@ export default async function PromotionsPage() {
     .map((category) => ({ slug: category.slug, title: category.title }));
 
   const breadcrumb = breadcrumbSchema([
-    { name: 'หน้าหลัก', path: '/' },
-    { name: 'โปรโมชั่น / แพ็กเกจ', path: '/promotions' },
+    { name: tHome('Navigation.home'), path: '/' },
+    { name: t('breadcrumb'), path: '/promotions' },
   ]);
 
   return (
@@ -79,9 +87,9 @@ export default async function PromotionsPage() {
       />
 
       <PageHero
-        eyebrow="Promotions & Pricing"
-        title="โปรโมชั่น / แพ็กเกจ"
-        lead={`โปรโมชั่นและแพ็กเกจราคาพิเศษประจำเดือนของ ${site.name} จองคิวหรือสอบถามรายละเอียดเพิ่มเติมผ่าน LINE`}
+        eyebrow={t('hero.eyebrow')}
+        title={t('hero.title')}
+        lead={t('hero.lead', { siteName: site.name })}
       />
 
       <section className="mx-auto max-w-6xl px-6 py-20">
@@ -90,9 +98,9 @@ export default async function PromotionsPage() {
         ) : (
           <Reveal className="rounded-2xl border border-dashed border-olive/30 bg-cream p-14 text-center">
             <Sparkles className="mx-auto size-8 text-olive-light" />
-            <p className="mt-4 font-serif text-xl text-olive-deep">ยังไม่มีโปรโมชั่นในขณะนี้</p>
+            <p className="mt-4 font-serif text-xl text-olive-deep">{t('empty.title')}</p>
             <p className="mx-auto mt-2 max-w-md text-sm text-ink/60">
-              ติดตามโปรโมชั่นและแพ็กเกจใหม่ได้ทาง LINE Official Account และ Instagram ของเรา
+              {t('empty.desc')}
             </p>
           </Reveal>
         )}
@@ -103,7 +111,7 @@ export default async function PromotionsPage() {
           className="mt-12 rounded-full bg-line px-8 text-white hover:bg-line/90"
         >
           <LineIcon className="size-4" />
-          สอบถามโปรโมชั่นผ่าน LINE
+          {t('inquireLine')}
         </Button>
       </section>
     </>
