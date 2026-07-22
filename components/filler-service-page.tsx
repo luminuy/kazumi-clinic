@@ -164,8 +164,9 @@ export function FillerServicePage({
                       target="_blank"
                       rel="noopener"
                       aria-label={`จอง ${item.name}${item.detail ? ` ${item.detail}` : ''} ผ่าน LINE`}
-                      className="mt-auto block border border-olive-deep px-4 py-3.5 pt-3.5 text-center text-[0.66rem] uppercase tracking-[0.18em] text-olive-deep transition-colors duration-200 hover:bg-olive-deep hover:text-sand active:scale-[0.98]"
+                      className="mt-auto inline-flex items-center justify-center gap-2 rounded-full bg-[#06C755] px-5 py-3 text-center text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] active:scale-[0.98]"
                     >
+                      <LineIcon className="size-3.5" />
                       Book Session
                     </a>
                   </article>
@@ -216,7 +217,7 @@ export function FillerServicePage({
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
             <Button
               render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
-              className="h-14 rounded-none bg-sand px-8 text-olive-deep transition-[transform,background-color] duration-150 hover:bg-cream active:scale-[0.97]"
+              className="h-12 rounded-full bg-[#06C755] px-8 text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.97]"
             >
               <LineIcon className="size-4" />
               จองคิว {service.title} ผ่าน LINE
@@ -224,7 +225,7 @@ export function FillerServicePage({
             <Button
               render={<Link href="/services" />}
               variant="outline"
-              className="h-14 rounded-none border-sand/35 bg-transparent px-8 text-sand transition-[transform,background-color] duration-150 hover:bg-sand/10 hover:text-sand active:scale-[0.97]"
+              className="h-12 rounded-full border-sand/40 bg-transparent px-8 text-xs font-medium text-sand transition-all duration-200 hover:border-sand hover:bg-sand/10 active:scale-[0.97]"
             >
               ดูบริการอื่น <ArrowRight className="size-4" />
             </Button>

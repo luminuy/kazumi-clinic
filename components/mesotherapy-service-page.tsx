@@ -181,10 +181,10 @@ export function MesotherapyServicePage({
               href={site.lineUrl}
               target="_blank"
               rel="noopener"
-              className="mt-10 inline-flex items-center gap-3 bg-line px-10 py-4 text-[0.68rem] uppercase tracking-[0.2em] text-white transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98]"
+              className="mt-10 inline-flex items-center gap-2.5 rounded-full bg-[#06C755] px-8 py-3.5 text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.98]"
             >
-              จองคิวผ่าน LINE
               <LineIcon className="size-4" />
+              จองคิวผ่าน LINE
             </a>
           </div>
         </Reveal>
@@ -231,7 +231,7 @@ export function MesotherapyServicePage({
             <div className="mt-10 flex flex-col gap-4">
               <a
                 href={site.phoneUrl}
-                className="inline-flex items-center justify-center gap-2 border border-olive-deep px-8 py-3.5 text-[0.66rem] uppercase tracking-[0.18em] text-olive-deep transition-colors duration-200 hover:bg-olive-deep hover:text-sand"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-olive-deep/30 bg-transparent px-8 py-3.5 text-xs font-medium text-olive-deep transition-all duration-200 hover:border-olive-deep hover:bg-olive-deep/5"
               >
                 <Phone aria-hidden="true" className="size-3.5" />
                 โทร {site.phone}
@@ -240,10 +240,10 @@ export function MesotherapyServicePage({
                 href={site.mapsUrl}
                 target="_blank"
                 rel="noopener"
-                className="inline-flex items-center justify-center gap-2 bg-sage-pale/50 px-8 py-3.5 text-[0.66rem] uppercase tracking-[0.18em] text-olive-deep transition-opacity duration-200 hover:opacity-80"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-olive-deep/15 bg-cream px-8 py-3.5 text-xs font-medium text-olive-deep transition-all duration-200 hover:border-olive-deep/30 hover:bg-cream/80"
               >
                 <MapPin aria-hidden="true" className="size-3.5" />
-                ดูแผนที่คลินิก
+                นำทางไปยัง {site.name}
               </a>
             </div>
           </Reveal>

@@ -4,7 +4,6 @@ import { site } from '@/lib/site';
 import { serviceCategories } from '@/lib/services';
 import { breadcrumbSchema } from '@/lib/schema';
 import { siteSocialImage } from '@/lib/metadata-images';
-import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/reveal';
 import { PageHero } from '@/components/page-hero';
 import { BookingForm } from '@/components/booking-form';
@@ -56,83 +55,102 @@ export default function ContactPage() {
         lead={`${site.name} ยินดีให้คำปรึกษาและดูแลทุกหัตถการ — นัดหมายหรือสอบถามได้ทุกวัน`}
       />
 
-      <section className="mx-auto grid max-w-6xl gap-12 px-6 py-20 md:grid-cols-2">
-        <Reveal>
-          <ul className="space-y-6 text-ink/75">
-            <li className="flex items-start gap-3">
-              <MapPin className="mt-0.5 size-5 shrink-0 text-forest" />
-              <a href={site.mapsUrl} target="_blank" rel="noopener" className="hover:text-forest">
-                {site.addressFull}
+      <section className="bg-[var(--store-surface)] pt-8 pb-20">
+        <div className="mx-auto grid max-w-7xl gap-10 px-6 lg:grid-cols-2 lg:gap-14">
+          <Reveal className="flex flex-col gap-6">
+          {/* Card 1: Address */}
+          <div className="group relative flex flex-col gap-4 overflow-hidden rounded-[1.75rem] border border-black/5 bg-[var(--store-card)] p-8 shadow-xl shadow-black/5 transition-transform duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/10">
+            <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-olive/10 text-olive-deep">
+              <MapPin strokeWidth={1.5} className="size-6" />
+            </div>
+            <div>
+              <h3 className="font-serif text-xl text-olive-deep">ที่ตั้งคลินิก</h3>
+              <p className="mt-2 text-sm leading-[1.8] text-ink/75">{site.addressFull}</p>
+              <a href={site.mapsUrl} target="_blank" rel="noopener" className="mt-4 inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.1em] text-olive-deep hover:text-forest">
+                ดูบน Google Maps <Navigation className="size-3" />
               </a>
-            </li>
-            <li className="flex items-center gap-3">
-              <Phone className="size-5 shrink-0 text-forest" />
-              <a href={site.phoneUrl} className="hover:text-forest">
-                โทร {site.phone}
-              </a>
-            </li>
-            <li className="flex items-start gap-3">
-              <Clock className="mt-0.5 size-5 shrink-0 text-forest" />
-              <span>
-                {site.hoursDisplay.weekdays}
-                <br />
-                {site.hoursDisplay.sunday}
-              </span>
-            </li>
-          </ul>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Button
-              render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
-              className="rounded-full bg-line text-white hover:bg-line/90"
+            </div>
+          </div>
+
+          {/* Card 2: Contact Info */}
+          <div className="grid gap-6 sm:grid-cols-2">
+            <div className="group relative flex flex-col gap-4 overflow-hidden rounded-[1.75rem] border border-black/5 bg-[var(--store-card)] p-8 shadow-xl shadow-black/5 transition-transform duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/10">
+              <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-olive/10 text-olive-deep">
+                <Phone strokeWidth={1.5} className="size-6" />
+              </div>
+              <div>
+                <h3 className="font-serif text-xl text-olive-deep">โทรศัพท์</h3>
+                <a href={site.phoneUrl} className="mt-2 block text-sm leading-[1.8] text-ink/75 hover:text-forest">{site.phone}</a>
+              </div>
+            </div>
+
+            <div className="group relative flex flex-col gap-4 overflow-hidden rounded-[1.75rem] border border-black/5 bg-[var(--store-card)] p-8 shadow-xl shadow-black/5 transition-transform duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/10">
+              <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-olive/10 text-olive-deep">
+                <Clock strokeWidth={1.5} className="size-6" />
+              </div>
+              <div>
+                <h3 className="font-serif text-xl text-olive-deep">เวลาทำการ</h3>
+                <p className="mt-2 text-sm leading-[1.8] text-ink/75">
+                  {site.hoursDisplay.weekdays}
+                  <br />
+                  {site.hoursDisplay.sunday}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Social Buttons */}
+          <div className="mt-2 flex flex-wrap gap-4">
+            <a
+              href={site.lineUrl}
+              target="_blank"
+              rel="noopener"
+              className="flex items-center gap-2.5 rounded-full bg-[#06C755] px-6 py-3 text-xs font-medium tracking-[0.1em] text-white shadow-lg shadow-[#06C755]/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-[#06C755]/30 active:scale-95"
             >
               <LineIcon className="size-4" />
-              LINE
-            </Button>
-            <Button
-              render={<a href={site.instagram} target="_blank" rel="noopener" />}
-              variant="outline"
-              className="rounded-full border-forest text-forest hover:bg-forest/10"
+              ติดต่อผ่าน LINE
+            </a>
+            <a
+              href={site.instagram}
+              target="_blank"
+              rel="noopener"
+              className="flex items-center gap-2.5 rounded-full border border-ink/10 bg-white px-6 py-3 text-xs font-medium tracking-[0.1em] text-ink shadow-lg shadow-black/5 transition-all duration-300 hover:-translate-y-0.5 hover:border-[#E1306C] hover:text-[#E1306C] hover:shadow-xl active:scale-95"
             >
-              <InstagramIcon className="text-instagram size-4" />
+              <InstagramIcon className="size-4" />
               Instagram
-            </Button>
-            <Button
-              render={<a href={site.mapsUrl} target="_blank" rel="noopener" />}
-              variant="outline"
-              className="rounded-full border-forest text-forest hover:bg-forest/10"
-            >
-              <Navigation className="size-4" />
-              เปิด Google Maps
-            </Button>
+            </a>
           </div>
         </Reveal>
-        <Reveal delay={80} className="overflow-hidden rounded-2xl border border-olive/15">
-          <iframe
-            src={site.mapsEmbedUrl}
-            width="100%"
-            height="380"
-            style={{ border: 0 }}
-            loading="lazy"
-            referrerPolicy="strict-origin-when-cross-origin"
-            allowFullScreen
-            title={`แผนที่ ${site.name}`}
-          />
-        </Reveal>
-      </section>
 
-      <section id="booking" className="border-t border-olive/10 bg-cream/40 py-20 scroll-mt-24">
-        <div className="mx-auto max-w-2xl px-6">
-          <Reveal>
-            <p className="text-center text-[0.7rem] font-medium uppercase tracking-[0.16em] text-forest">
+        {/* Booking Form in the grid */}
+        <div id="booking" className="flex flex-col scroll-mt-24">
+          <Reveal delay={80} className="flex-1 overflow-hidden rounded-[1.75rem] border border-black/5 bg-[var(--store-card)] p-8 shadow-2xl shadow-black/5 md:p-10">
+            <p className="text-[0.7rem] font-medium uppercase tracking-[0.16em] text-forest">
               Book an Appointment
             </p>
-            <h2 className="mt-3 text-center font-serif text-3xl text-olive-deep">นัดหมาย / ปรึกษาแพทย์</h2>
-            <p className="mx-auto mt-2 max-w-md text-center text-sm text-ink/60">
+            <h2 className="mt-2 font-serif text-3xl text-[var(--store-ink)]">นัดหมาย / ปรึกษาแพทย์</h2>
+            <p className="mb-8 mt-2 text-sm leading-[1.8] text-[var(--store-muted)]">
               กรอกแบบฟอร์มสั้น ๆ ทีมงานจะติดต่อกลับเพื่อยืนยันนัดหมาย หรือทักผ่าน LINE ได้ทันที
             </p>
-          </Reveal>
-          <Reveal delay={80} className="mt-8">
             <BookingForm interests={serviceCategories.map((category) => category.title)} />
+          </Reveal>
+        </div>
+        </div>
+      </section>
+
+      {/* Map Section */}
+      <section className="bg-[var(--store-surface)] py-12 pb-24">
+        <div className="mx-auto max-w-7xl px-6">
+          <Reveal className="relative h-[450px] w-full overflow-hidden rounded-[1.75rem] shadow-2xl shadow-black/5">
+            <iframe
+              src={site.mapsEmbedUrl}
+              className="absolute inset-0 size-full"
+              style={{ border: 0 }}
+              loading="lazy"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+              title={`แผนที่ ${site.name}`}
+            />
           </Reveal>
         </div>
       </section>

@@ -104,7 +104,7 @@ export default async function AboutPage() {
             </div>
 
             <div className="relative">
-              <div className="relative aspect-[4/5] w-full overflow-hidden border border-olive/10 bg-olive-deep/[0.06]">
+              <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[1.75rem] bg-[var(--store-card)] shadow-2xl shadow-black/5">
                 {heroSrc ? (
                   <Image
                     src={heroSrc}
@@ -119,12 +119,6 @@ export default async function AboutPage() {
                 ) : (
                   <ImagePlaceholder />
                 )}
-              </div>
-              {/* The reference overlaps a dark quote block onto the image's lower-left. */}
-              <div className="absolute -bottom-6 -left-6 hidden max-w-[15rem] bg-olive-deep p-6 text-sand md:block">
-                <p lang="en" className="font-serif text-lg italic leading-snug">
-                  “{site.taglineTh}”
-                </p>
               </div>
             </div>
           </div>
@@ -171,16 +165,14 @@ export default async function AboutPage() {
           <div className="flex flex-col gap-14 md:flex-row md:gap-20">
             <div className="w-full md:w-5/12">
               <Reveal>
-                <div className="border border-olive/10 p-2">
-                  <div className="relative aspect-[3/4] w-full overflow-hidden bg-olive-deep/[0.06]">
-                    <Image
-                      src={doctorSrc}
-                      alt={`${doctor.nameTh} ${doctor.role} ของ ${site.name}`}
-                      fill
-                      sizes="(min-width: 768px) 40vw, 90vw"
-                      className="object-cover"
-                    />
-                  </div>
+                <div className="relative aspect-[3/4] w-full overflow-hidden rounded-[1.75rem] bg-[var(--store-card)] shadow-2xl shadow-black/5">
+                  <Image
+                    src={doctorSrc}
+                    alt={`${doctor.nameTh} ${doctor.role} ของ ${site.name}`}
+                    fill
+                    sizes="(min-width: 768px) 40vw, 90vw"
+                    className="object-cover"
+                  />
                 </div>
                 <div className="mt-6 space-y-2">
                   <p className="text-[0.66rem] uppercase tracking-[0.2em] text-olive-deep">
@@ -267,20 +259,18 @@ export default async function AboutPage() {
           <div className="flex flex-col gap-14 md:flex-row-reverse md:gap-20">
             <div className="w-full md:w-5/12">
               <Reveal>
-                <div className="border border-olive/10 p-2">
-                  <div className="relative aspect-[3/4] w-full overflow-hidden bg-olive-deep/[0.06]">
-                    {eeshaSrc ? (
-                      <Image
-                        src={eeshaSrc}
-                        alt={`${doctorEesha.name} ${doctorEesha.role} ของ ${site.name}`}
-                        fill
-                        sizes="(min-width: 768px) 40vw, 90vw"
-                        className="object-cover"
-                      />
-                    ) : (
-                      <ImagePlaceholder />
-                    )}
-                  </div>
+                <div className="relative aspect-[3/4] w-full overflow-hidden rounded-[1.75rem] bg-[var(--store-card)] shadow-2xl shadow-black/5">
+                  {eeshaSrc ? (
+                    <Image
+                      src={eeshaSrc}
+                      alt={`${doctorEesha.name} ${doctorEesha.role} ของ ${site.name}`}
+                      fill
+                      sizes="(min-width: 768px) 40vw, 90vw"
+                      className="object-cover"
+                    />
+                  ) : (
+                    <ImagePlaceholder />
+                  )}
                 </div>
                 <div className="mt-6 space-y-2">
                   <p className="text-[0.66rem] uppercase tracking-[0.2em] text-olive-deep">
@@ -470,9 +460,9 @@ export default async function AboutPage() {
                 href={site.lineUrl}
                 target="_blank"
                 rel="noopener"
-                className="group flex items-center justify-between bg-olive-deep p-6 text-sand transition-opacity duration-200 hover:opacity-90"
+                className="group flex items-center justify-between rounded-full bg-[#06C755] px-8 py-4 text-white transition-all duration-200 hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.98]"
               >
-                <span className="flex items-center gap-2.5 text-[0.68rem] uppercase tracking-[0.24em]">
+                <span className="flex items-center gap-2.5 text-xs font-medium tracking-[0.1em]">
                   <LineIcon className="size-4" />
                   จองคิวผ่าน LINE
                 </span>
@@ -483,9 +473,9 @@ export default async function AboutPage() {
               </a>
               <Link
                 href="/services"
-                className="group flex items-center justify-between border border-olive-deep p-6 text-olive-deep transition-colors duration-200 hover:bg-olive-deep hover:text-sand"
+                className="group flex items-center justify-between rounded-full border border-olive-deep/30 bg-transparent px-8 py-4 text-olive-deep transition-all duration-200 hover:border-olive-deep hover:bg-olive-deep/5 active:scale-[0.98]"
               >
-                <span className="text-[0.68rem] uppercase tracking-[0.24em]">ดูบริการทั้งหมด</span>
+                <span className="text-xs font-medium tracking-[0.1em]">ดูบริการทั้งหมด</span>
                 <ArrowRight
                   aria-hidden="true"
                   className="size-4 transition-transform duration-200 group-hover:translate-x-1"
