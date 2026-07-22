@@ -187,6 +187,40 @@ export function serviceCategoryListSchema(categories: ServiceCategory[]) {
   };
 }
 
+// BlogPosting for a single /blog/[slug] article. Dates are ISO strings; image is a delivered
+// Cloudinary URL when the post has a cover. `author` falls back to the clinic entity when the post
+// names no writer, and `publisher` always refs the MedicalBusiness @id rather than repeating it.
+export function blogPostingSchema(post: {
+  title: string;
+  excerpt?: string;
+  slug: string;
+  author?: string;
+  datePublished?: string;
+  dateModified?: string;
+  imagePublicId?: string;
+}) {
+  const url = `${site.url}/blog/${post.slug}`;
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    '@id': `${url}#article`,
+    headline: post.title,
+    ...(post.excerpt && { description: post.excerpt }),
+    ...(post.imagePublicId && {
+      image: cld(post.imagePublicId, { width: 1200, height: 630, crop: 'fill' }),
+    }),
+    ...(post.datePublished && { datePublished: post.datePublished }),
+    ...(post.dateModified && { dateModified: post.dateModified }),
+    author: post.author
+      ? { '@type': 'Person', name: post.author }
+      : { '@id': `${site.url}/#business` },
+    publisher: { '@id': `${site.url}/#business` },
+    mainEntityOfPage: url,
+    url,
+    inLanguage: 'th-TH',
+  };
+}
+
 export function breadcrumbSchema(items: { name: string; path: string }[]) {
   return {
     '@context': 'https://schema.org',

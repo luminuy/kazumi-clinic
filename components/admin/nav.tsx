@@ -3,12 +3,16 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ImageIcon, Package } from 'lucide-react';
+import { CalendarCheck, FileText, ImageIcon, Package, Star, Tag } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const items = [
   { href: '/admin', label: 'รูปภาพ', icon: ImageIcon },
   { href: '/admin/products', label: 'สินค้า', icon: Package },
+  { href: '/admin/promotions', label: 'โปรโมชั่น', icon: Tag },
+  { href: '/admin/reviews', label: 'รีวิว', icon: Star },
+  { href: '/admin/blog', label: 'บทความ', icon: FileText },
+  { href: '/admin/leads', label: 'นัดหมาย', icon: CalendarCheck },
 ] as const;
 
 /** Header section switcher with an active-page pill. */
