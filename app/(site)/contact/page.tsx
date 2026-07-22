@@ -1,11 +1,13 @@
 import type { Metadata } from 'next';
 import { MapPin, Phone, Clock, Navigation } from 'lucide-react';
 import { site } from '@/lib/site';
+import { serviceCategories } from '@/lib/services';
 import { breadcrumbSchema } from '@/lib/schema';
 import { siteSocialImage } from '@/lib/metadata-images';
 import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/reveal';
 import { PageHero } from '@/components/page-hero';
+import { BookingForm } from '@/components/booking-form';
 import { LineIcon, InstagramIcon } from '@/components/brand-icons';
 
 const pageTitle = 'ติดต่อเรา';
@@ -116,6 +118,23 @@ export default function ContactPage() {
             title={`แผนที่ ${site.name}`}
           />
         </Reveal>
+      </section>
+
+      <section id="booking" className="border-t border-olive/10 bg-cream/40 py-20 scroll-mt-24">
+        <div className="mx-auto max-w-2xl px-6">
+          <Reveal>
+            <p className="text-center text-[0.7rem] font-medium uppercase tracking-[0.16em] text-olive">
+              Book an Appointment
+            </p>
+            <h2 className="mt-3 text-center font-serif text-3xl text-olive-deep">นัดหมาย / ปรึกษาแพทย์</h2>
+            <p className="mx-auto mt-2 max-w-md text-center text-sm text-ink/60">
+              กรอกแบบฟอร์มสั้น ๆ ทีมงานจะติดต่อกลับเพื่อยืนยันนัดหมาย หรือทักผ่าน LINE ได้ทันที
+            </p>
+          </Reveal>
+          <Reveal delay={80} className="mt-8">
+            <BookingForm interests={serviceCategories.map((category) => category.title)} />
+          </Reveal>
+        </div>
       </section>
     </>
   );

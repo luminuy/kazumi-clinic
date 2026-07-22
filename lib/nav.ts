@@ -9,6 +9,7 @@ export const navItems: NavItem[] = [
   { href: '/services', label: 'บริการ' },
   { href: '/about', label: 'เกี่ยวกับ Kazumi' },
   { href: '/reviews', label: 'ผลลัพธ์และรีวิว' },
+  { href: '/blog', label: 'บทความ' },
   { href: '/promotions', label: 'โปรโมชั่น' },
   { href: '/contact', label: 'ติดต่อเรา' },
 ];
