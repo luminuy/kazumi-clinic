@@ -21,8 +21,9 @@ const schema = z.object({
   interest: z.string().trim().max(120).nullish(),
   preferredTime: z.string().trim().max(120).nullish(),
   message: z.string().trim().max(1000).nullish(),
-  // Honeypot: a hidden field real users never fill. Any value = bot; we 200 to not tip it off.
-  website: z.string().max(0).optional().or(z.literal('')),
+  // Honeypot: a hidden field real users never fill. Accept any string so validation passes, then
+  // the handler silently drops a filled one with a 200 — never a 400, which would tip off a bot.
+  website: z.string().max(200).optional(),
 });
 
 /** Fire-and-forget notification to an optional webhook (LINE Notify is retired; use any webhook). */
