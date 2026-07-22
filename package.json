@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "health": "bash scripts/healthcheck.sh",
     "cf:build": "opennextjs-cloudflare build",
     "cf:preview": "opennextjs-cloudflare preview",
     "cf:tagcache": "wrangler d1 execute kazumi-clinic-tag-cache --remote -y --file migrations/0007_tag_cache_revalidations.sql",
@@ -40,6 +42,7 @@
     "postcss": "^8.4.49",
     "tailwindcss": "^4.3.2",
     "typescript": "^5.6.3",
+    "vitest": "^4.1.10",
     "wrangler": "^4.86.0"
   }
 }
