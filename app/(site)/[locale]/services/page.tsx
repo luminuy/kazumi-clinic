@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowUpRight, ChevronDown } from 'lucide-react';
@@ -18,14 +19,16 @@ import { PromotionCarousel } from '@/components/promotion-carousel';
 import { LineIcon } from '@/components/brand-icons';
 import { PhysicianPanel } from '@/components/physician-panel';
 
-const pageTitle = 'บริการ / หัตถการ';
-const pageDescription = `บริการและหัตถการทั้งหมดของ ${site.name} — ฟิลเลอร์ โบท็อกซ์ สกินบูสเตอร์ คอลลาเจนบูสเตอร์ และ IV Drip วิตามิน ดูแลโดยแพทย์`;
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'ServicesPage' });
+  const pageTitle = t('metaTitle');
+  const pageDescription = t('metaDescription', { siteName: site.name });
 
-export async function generateMetadata(): Promise<Metadata> {
   // This is the same slot rendered as the page hero, so an admin replacement updates both.
   const socialImage = await siteSocialImage(
     'hero-iv-drip-2',
-    `${site.name} บริการและหัตถการ`,
+    `${site.name} ${pageTitle}`,
   );
 
   return {
@@ -57,10 +60,12 @@ function TreatmentCard({
   category,
   index,
   image,
+  exploreText,
 }: {
   category: ServiceCategory;
   index: number;
   image?: string;
+  exploreText: string;
 }) {
   // The clinic lists the same product at several volumes (Neura Deep 1 CC / 3 CC), so dedupe
   // by name — this is a category index, not a price list.
@@ -113,7 +118,7 @@ function TreatmentCard({
             </p>
 
             <span className="mt-auto inline-flex items-center gap-2 pt-6 text-[0.72rem] tracking-wide text-forest transition-[gap] duration-200 ease-out group-hover:gap-3 group-hover:text-mint">
-              Explore Details <ArrowUpRight className="size-3" />
+              {exploreText} <ArrowUpRight className="size-3" />
             </span>
           </div>
         </Link>
@@ -124,10 +129,15 @@ function TreatmentCard({
 
 export const revalidate = 3600;
 
-export default async function ServicesPage() {
+export default async function ServicesPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations('ServicesPage');
+  const tHome = await getTranslations('HomePage');
+  
   const breadcrumb = breadcrumbSchema([
-    { name: 'หน้าหลัก', path: '/' },
-    { name: 'บริการ / หัตถการ', path: '/services' },
+    { name: tHome('Navigation.home'), path: '/' },
+    { name: t('breadcrumb'), path: '/services' },
   ]);
 
   const overrides = await getImageOverrides();
@@ -168,22 +178,20 @@ export default async function ServicesPage() {
 
             <div className="mt-10 flex items-center gap-3 text-[0.68rem] uppercase tracking-[0.24em] text-[var(--store-muted)]">
               <span className="h-px w-8 bg-[var(--store-control)]" />
-              Clinical Services
+              {t('hero.subtitle')}
             </div>
 
             <h1 className="mt-5">
               <span className="block font-serif text-5xl leading-[1.05] text-[var(--store-ink)] md:text-6xl">
-                Treatment Atlas
+                {t('hero.title')}
               </span>
               <span className="mt-4 block text-base leading-[1.7] text-[var(--store-muted)]">
-                บริการและหัตถการทั้งหมดของ {site.nameTh}
+                {t('hero.desc1', { siteName: site.name })}
               </span>
             </h1>
 
             <p className="mt-6 max-w-md text-sm leading-[1.9] text-[var(--store-muted)]">
-              ความงามที่พอดีเริ่มจากการประเมินโดยแพทย์
-              ทุกหัตถการด้านล่างออกแบบตามโครงหน้าและสภาพผิวของแต่ละบุคคล
-              เพื่อผลลัพธ์ที่เป็นธรรมชาติในแบบของคุณ
+              {t('hero.desc2')}
             </p>
 
             <div className="mt-9 flex flex-wrap gap-3">
@@ -194,13 +202,13 @@ export default async function ServicesPage() {
                 className="inline-flex items-center justify-center gap-2.5 rounded-full bg-[#06C755] px-7 py-3.5 text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.98]"
               >
                 <LineIcon className="size-4" />
-                ปรึกษาแพทย์ผ่าน LINE
+                {t('hero.consultLine')}
               </a>
               <a
                 href="#treatment-atlas"
                 className="inline-flex items-center justify-center gap-2 rounded-full border border-black/20 bg-transparent px-7 py-3.5 text-xs font-medium text-[var(--store-ink)] transition-all duration-200 hover:border-black/30 hover:bg-black/5 active:scale-[0.98]"
               >
-                ดูหัตถการทั้งหมด
+                {t('hero.viewAll')}
               </a>
             </div>
           </Reveal>
@@ -213,7 +221,7 @@ export default async function ServicesPage() {
               <div className="relative aspect-[0.72] w-full overflow-hidden rounded-[1.75rem] bg-[var(--store-card)] shadow-2xl shadow-black/5 md:aspect-[0.618]">
                 <Image
                   src={pick('hero-iv-drip-2', cloudAssets.heroIvDrip2)}
-                  alt="ผู้หญิงในแสงธรรมชาติ สื่อถึงการดูแลความงามอย่างเป็นส่วนตัว"
+                  alt={t('hero.imageAlt')}
                   fill
                   priority
                   fetchPriority="high"
@@ -235,16 +243,15 @@ export default async function ServicesPage() {
           <div className="mb-16 flex flex-col justify-between gap-6 md:flex-row md:items-baseline">
             <Reveal>
               <span className="mb-2 block text-[0.68rem] uppercase tracking-[0.24em] text-[var(--store-muted)]">
-                {serviceCategories.length} Treatments
+                {t('atlas.subtitle', { count: serviceCategories.length })}
               </span>
               <h2 className="font-serif text-4xl leading-tight text-[var(--store-ink)] md:text-5xl">
-                หัตถการทั้งหมด
+                {t('atlas.title')}
               </h2>
             </Reveal>
             <Reveal delay={60}>
               <p className="max-w-xs text-xs leading-[1.9] text-[var(--store-muted)]">
-                นิยามความสวยที่เป็นปัจเจก
-                ผ่านการดูแลอย่างพิถีพิถันและเครื่องมือแพทย์ที่ได้มาตรฐาน
+                {t('atlas.desc')}
               </p>
             </Reveal>
           </div>
@@ -259,6 +266,7 @@ export default async function ServicesPage() {
                   category={category}
                   index={index}
                   image={image || undefined}
+                  exploreText={t('atlas.explore')}
                 />
               );
             })}
@@ -266,8 +274,7 @@ export default async function ServicesPage() {
 
           <Reveal className="mt-16 border-t border-black/10 pt-8">
             <p className="text-[0.68rem] leading-[1.9] text-[var(--store-muted)]">
-              ราคาและรายละเอียดของแต่ละโปรแกรมอยู่ในหน้าหัตถการนั้น ๆ
-              การเลือกโปรแกรมและปริมาณที่เหมาะสมขึ้นอยู่กับการประเมินของแพทย์เป็นรายบุคคล
+              {t('atlas.note')}
             </p>
           </Reveal>
         </div>
@@ -279,13 +286,11 @@ export default async function ServicesPage() {
           <div>
             <div className="flex items-center gap-3 text-[0.68rem] uppercase tracking-[0.24em] text-[var(--store-muted)]">
               <span className="h-px w-8 bg-[var(--store-control)]" />
-              Aesthetic Discipline
+              {t('assessment.subtitle')}
             </div>
-            <h2 className="mt-5 font-serif text-4xl text-[var(--store-ink)] md:text-5xl">Doctor-led Assessment</h2>
+            <h2 className="mt-5 font-serif text-4xl text-[var(--store-ink)] md:text-5xl">{t('assessment.title')}</h2>
             <p className="mt-4 max-w-2xl text-sm leading-[1.8] text-[var(--store-muted)]">
-              ที่ {site.name} หัตถการทุกขั้นตอนดูแลโดยแพทย์ผู้มีใบประกอบวิชาชีพเวชกรรม
-              เริ่มจากการประเมินโครงสร้างใบหน้าและสภาพผิวอย่างละเอียด
-              เพื่อแนะนำแนวทางที่เหมาะกับแต่ละบุคคล
+              {t('assessment.desc', { siteName: site.name })}
             </p>
           </div>
         </Reveal>
@@ -329,12 +334,12 @@ export default async function ServicesPage() {
           <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
             <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
               <h2 className="text-[1.35rem] font-semibold tracking-[-0.025em] md:text-[1.55rem]">
-                โปรแกรมแนะนำ
+                {t('promotions.title')}
               </h2>
             </div>
           </div>
           <p className="mt-2 max-w-md text-[0.85rem] leading-[1.8] text-[var(--store-muted)]">
-            ภาพโปรแกรมที่คลินิกจัดทำไว้ กรุณาสอบถามราคาและช่วงเวลาที่ใช้ได้กับทีม {site.name} ก่อนจองทุกครั้ง
+            {t('promotions.desc', { siteName: site.name })}
           </p>
         </Reveal>
 

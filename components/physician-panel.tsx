@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowUpRight, Sparkles } from 'lucide-react';
 import { Reveal } from '@/components/reveal';
+import { useTranslations } from 'next-intl';
 
 export type PhysicianPanelProps = {
   label: string;
@@ -30,6 +31,7 @@ export function PhysicianPanel({
   imageAlt,
   delay = 0,
 }: PhysicianPanelProps) {
+  const t = useTranslations('PhysicianPanel');
   return (
     <Reveal delay={delay} className="h-full">
       <article className="apple-doctor-card group flex h-full flex-col overflow-hidden rounded-[1.75rem] bg-[var(--store-card)] text-[var(--store-ink)]">
@@ -82,11 +84,11 @@ export function PhysicianPanel({
 
           <dl className="mx-auto mt-4 flex flex-wrap justify-center gap-x-6 gap-y-1.5 text-[0.7rem] text-[var(--store-muted)] sm:mt-5 sm:gap-x-8 sm:gap-y-2 sm:text-[0.72rem]">
             <div className="flex items-center gap-1.5">
-              <dt className="uppercase tracking-[0.16em] text-[var(--store-muted)]/70">ใบประกอบวิชาชีพ</dt>
-              <dd className="text-[var(--store-ink)]">เลขที่ {licenseNo}</dd>
+              <dt className="uppercase tracking-[0.16em] text-[var(--store-muted)]/70">{t('license')}</dt>
+              <dd className="text-[var(--store-ink)]">{licenseNo}</dd>
             </div>
             <div className="flex items-center gap-1.5">
-              <dt className="uppercase tracking-[0.16em] text-[var(--store-muted)]/70">ภาษา</dt>
+              <dt className="uppercase tracking-[0.16em] text-[var(--store-muted)]/70">{t('languages')}</dt>
               <dd className="text-[var(--store-ink)]">{languages.join(' · ')}</dd>
             </div>
           </dl>
@@ -96,7 +98,7 @@ export function PhysicianPanel({
               href="/about"
               className="inline-flex items-center gap-1.5 text-[0.9rem] text-forest transition-colors duration-200 hover:text-mint"
             >
-              ดูประวัติฉบับเต็ม <ArrowUpRight className="size-4" />
+              {t('viewProfile')} <ArrowUpRight className="size-4" />
             </Link>
           </div>
         </div>

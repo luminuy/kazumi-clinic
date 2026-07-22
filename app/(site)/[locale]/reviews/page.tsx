@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Image from 'next/image';
 import { ExternalLink, Star } from 'lucide-react';
 import { site } from '@/lib/site';
@@ -10,11 +11,13 @@ import { Reveal } from '@/components/reveal';
 import { PageHero } from '@/components/page-hero';
 import { LineIcon } from '@/components/brand-icons';
 
-const pageTitle = 'รีวิว / ผลลัพธ์ก่อน-หลัง';
-const pageDescription = `รีวิวและผลลัพธ์ก่อน-หลังทำหัตถการที่ ${site.name} ย่านสุขุมวิท กรุงเทพฯ`;
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'ReviewsPage' });
+  const pageTitle = t('metaTitle');
+  const pageDescription = t('metaDescription', { siteName: site.name });
 
-export async function generateMetadata(): Promise<Metadata> {
-  const socialImage = await siteSocialImage('hero-iv-drip-1', `${site.name} รีวิวและผลลัพธ์`);
+  const socialImage = await siteSocialImage('hero-iv-drip-1', `${site.name} ${pageTitle}`);
 
   return {
     title: pageTitle,
@@ -45,7 +48,7 @@ export const revalidate = 3600;
 // (enforced in getPublishedReviews). No Review/AggregateRating JSON-LD is emitted — star ratings
 // are shown visually but not asserted as structured data until an audited, verifiable source exists.
 
-function BeforeAfterFigure({ review }: { review: PublicReview }) {
+function BeforeAfterFigure({ review, beforeText, afterText }: { review: PublicReview; beforeText: string; afterText: string }) {
   const both = review.beforeImagePublicId && review.afterImagePublicId;
   if (!review.beforeImagePublicId && !review.afterImagePublicId) return null;
 
@@ -62,7 +65,7 @@ function BeforeAfterFigure({ review }: { review: PublicReview }) {
             loading="lazy"
           />
           <figcaption className="absolute left-2 top-2 rounded-full bg-ink/60 px-2 py-0.5 text-[0.62rem] text-white">
-            ก่อน
+            {beforeText}
           </figcaption>
         </figure>
       )}
@@ -77,7 +80,7 @@ function BeforeAfterFigure({ review }: { review: PublicReview }) {
             loading="lazy"
           />
           <figcaption className="absolute left-2 top-2 rounded-full bg-forest/80 px-2 py-0.5 text-[0.62rem] text-white">
-            หลัง
+            {afterText}
           </figcaption>
         </figure>
       )}
@@ -85,12 +88,17 @@ function BeforeAfterFigure({ review }: { review: PublicReview }) {
   );
 }
 
-export default async function ReviewsPage() {
+export default async function ReviewsPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations('ReviewsPage');
+  const tHome = await getTranslations('HomePage');
+  
   const reviews = await getPublishedReviews();
 
   const breadcrumb = breadcrumbSchema([
-    { name: 'หน้าหลัก', path: '/' },
-    { name: 'รีวิว / ผลลัพธ์ก่อน-หลัง', path: '/reviews' },
+    { name: tHome('Navigation.home'), path: '/' },
+    { name: t('breadcrumb'), path: '/reviews' },
   ]);
 
   return (
@@ -102,9 +110,9 @@ export default async function ReviewsPage() {
       />
 
       <PageHero
-        eyebrow="Reviews / Before & After"
-        title="รีวิว / ผลลัพธ์ก่อน-หลัง"
-        lead={`ผลลัพธ์จากการทำหัตถการที่ ${site.name} — ดูรีวิวจากลูกค้าจริงและผลลัพธ์ก่อน-หลังทำ`}
+        eyebrow={t('hero.eyebrow')}
+        title={t('hero.title')}
+        lead={t('hero.lead', { siteName: site.name })}
       />
 
       <section className="mx-auto max-w-6xl px-6 py-20">
@@ -114,7 +122,7 @@ export default async function ReviewsPage() {
               {reviews.map((review, i) => (
                 <Reveal key={review.id} delay={i * 50}>
                   <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-olive/15 bg-cream">
-                    <BeforeAfterFigure review={review} />
+                    <BeforeAfterFigure review={review} beforeText={t('before')} afterText={t('after')} />
                     <div className="flex flex-1 flex-col p-5">
                       <div className="flex items-center justify-between gap-2">
                         <p className="font-serif text-lg text-olive-deep">{review.name}</p>
@@ -138,7 +146,7 @@ export default async function ReviewsPage() {
               ))}
             </div>
             <p className="mt-6 text-xs text-ink/40">
-              *ผลลัพธ์ขึ้นอยู่กับสภาพผิวและปัญหาเฉพาะบุคคล · เผยแพร่โดยได้รับความยินยอมจากลูกค้า
+              {t('disclaimer')}
             </p>
           </>
         ) : (
@@ -148,12 +156,11 @@ export default async function ReviewsPage() {
                 <Star key={i} className="size-5" />
               ))}
             </div>
-            <p className="mt-4 font-serif text-xl text-olive-deep">กำลังรวบรวมรีวิวจากลูกค้า</p>
+            <p className="mt-4 font-serif text-xl text-olive-deep">{t('empty.title')}</p>
             <p className="mx-auto mt-2 max-w-md text-sm text-ink/60">
-              รีวิวและภาพผลลัพธ์ก่อน-หลังจากลูกค้าจริงกำลังจะมาเร็ว ๆ นี้ ระหว่างนี้สามารถดูรีวิวได้ที่
-              Google และ Instagram ของเรา หรือสอบถามผลลัพธ์เฉพาะบุคคลผ่าน LINE
+              {t('empty.desc')}
             </p>
-            <p className="mt-4 text-xs text-ink/40">*ผลลัพธ์ขึ้นอยู่กับสภาพผิวและปัญหาเฉพาะบุคคล</p>
+            <p className="mt-4 text-xs text-ink/40">{t('empty.disclaimer')}</p>
           </Reveal>
         )}
 
@@ -165,7 +172,7 @@ export default async function ReviewsPage() {
             className="rounded-full border-forest px-8 text-forest hover:bg-forest/10"
           >
             <ExternalLink className="size-4" />
-            ดูรีวิวจริงบน Google Maps
+            {t('viewGoogle')}
           </Button>
           <Button
             render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
@@ -173,7 +180,7 @@ export default async function ReviewsPage() {
             className="rounded-full bg-line px-8 text-white hover:bg-line/90"
           >
             <LineIcon className="size-4" />
-            สอบถามผลลัพธ์ผ่าน LINE
+            {t('inquireLine')}
           </Button>
         </div>
       </section>

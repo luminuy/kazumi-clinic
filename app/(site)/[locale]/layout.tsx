@@ -11,7 +11,24 @@ import { getImage } from '@/lib/site-images-store';
  *
  * A route group adds no path segment, so every URL is exactly what it was.
  */
-export default async function SiteLayout({ children }: { children: React.ReactNode }) {
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages, setRequestLocale } from 'next-intl/server';
+import { routing } from '@/i18n/routing';
+import { notFound } from 'next/navigation';
+
+export default async function SiteLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  if (!(routing.locales as readonly string[]).includes(locale)) {
+    notFound();
+  }
+  
+  setRequestLocale(locale);
   // One cached D1 read resolves all three slots. Keeping these in the public layout makes the
   // admin-controlled logo and business schema consistent on every public route.
   const [brandMark, brandLogo, heroImage] = await Promise.all([
@@ -24,8 +41,10 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
     logoPublicId: brandLogo,
   });
 
+  const messages = await getMessages();
+
   return (
-    <>
+    <NextIntlClientProvider messages={messages}>
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
@@ -40,6 +59,6 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <main>{children}</main>
       <Footer logoMark={brandMark} />
       <MobileContactBar />
-    </>
+    </NextIntlClientProvider>
   );
 }

@@ -1,10 +1,13 @@
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { site } from '@/lib/site';
 import { navItems } from '@/lib/nav';
 import { FacebookIcon, InstagramIcon, LineIcon } from '@/components/brand-icons';
+import { useTranslations } from 'next-intl';
 
 export default function Footer({ logoMark }: { logoMark: string }) {
+  const tNav = useTranslations('Navigation');
+  const tFooter = useTranslations('Footer');
   return (
     <footer className="border-t border-olive/10 bg-[#f5f5f7] text-olive-deep">
       <div className="mx-auto max-w-7xl px-5 py-12 sm:px-10 md:px-14 md:py-20 lg:px-20">
@@ -60,13 +63,20 @@ export default function Footer({ logoMark }: { logoMark: string }) {
           <nav>
             <p className="text-xs text-olive-deep/55">Navigation</p>
             <ul className="mt-5 space-y-3 text-xs">
-              {navItems.map((item) => (
-                <li key={item.href}>
-                  <Link href={item.href} className="transition-colors hover:text-forest">
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
+              {navItems.map((item) => {
+                const translationKey = item.href === '/services' ? 'services' : 
+                                      item.href === '/reviews' ? 'reviews' :
+                                      item.href === '/promotions' ? 'promotions' :
+                                      item.href === '/about' ? 'about' :
+                                      item.href === '/blog' ? 'blog' : 'contact';
+                return (
+                  <li key={item.href}>
+                    <Link href={item.href} className="transition-colors hover:text-forest">
+                      {tNav(translationKey)}
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           </nav>
         </div>
@@ -75,7 +85,7 @@ export default function Footer({ logoMark }: { logoMark: string }) {
           <p>
             © {new Date().getFullYear()} {site.name}. All Rights Reserved.
           </p>
-          <p>ใบอนุญาตสถานพยาบาลเลขที่ {site.license}</p>
+          <p>{tFooter('license', { license: site.license })}</p>
         </div>
       </div>
     </footer>

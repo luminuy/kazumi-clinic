@@ -1,0 +1,279 @@
+{
+  "Navigation": {
+    "home": "Home",
+    "services": "Services",
+    "promotions": "Promotions",
+    "reviews": "Reviews",
+    "about": "About Us",
+    "blog": "Blog",
+    "contact": "Contact",
+    "bookLine": "Book via LINE"
+  },
+  "Footer": {
+    "location": "Location",
+    "operatingHours": "Operating Hours",
+    "contact": "Contact",
+    "social": "Follow Us",
+    "license": "Clinic License No. {license}"
+  },
+  "HomePage": {
+    "metaTitle": "Sukhumvit Beauty Clinic, Bangkok | Kazumi Clinic",
+    "metaDescription": "Kazumi Clinic, a beauty clinic in Sukhumvit, Bangkok. Providing Fillers, Botox, IV Drip, Skin Booster, and Collagen Booster with personalized assessment and care plans by our doctors.",
+    "faq": {
+      "q1": "What services does {siteName} provide?",
+      "a1": "{siteName} provides {categories}. All procedures are assessed by a physician beforehand.",
+      "q2": "What are the clinic's operating hours?",
+      "a2": "{weekdays} and {sunday}",
+      "q3": "Where is the clinic located?",
+      "a3": "{siteName} is located at {addressFull}. Clinic License No. {license}",
+      "q4": "Who performs the procedures?",
+      "a4": "Procedures are performed by licensed medical doctors — {doctors}",
+      "q5": "How can I book an appointment?",
+      "a5": "Book an appointment via LINE Official Account or call {phone}"
+    },
+    "hero": {
+      "subtitle": "Kazumi Clinic · Aesthetic Medicine, Sukhumvit",
+      "description": "Beauty that begins with understanding. Our doctors assess and design personalized care for you in a calm and private environment.",
+      "bookLine": "Book via LINE",
+      "viewAllServices": "View All Services"
+    },
+    "trust": {
+      "doctor": "Performed by Doctors",
+      "doctorSub": "Assessed before every procedure",
+      "license": "Clinic License",
+      "location": "Heart of Sukhumvit",
+      "locationSub": "Bangkok",
+      "openDaily": "Open Daily"
+    },
+    "services": {
+      "title": "Our Services",
+      "viewAll": "View All Services",
+      "description": "Fillers, Botox, IV Drip, Skin Boosters, Collagen Boosters, and more — assessed and cared for by doctors at every step.",
+      "note": "*Starting price per session and subject to change. Please confirm current prices and conditions with the clinic before receiving services."
+    },
+    "team": {
+      "title": "Our Medical Team",
+      "description": "Learn about the educational background, scope of care, and professional licenses of our clinic's physicians.",
+      "viewAll": "View All Doctors"
+    },
+    "promotions": {
+      "title": "Latest Promotions",
+      "subtitle": "Browse the programs carefully selected by our clinic.",
+      "viewAll": "View All Promotions"
+    },
+    "visit": {
+      "title": "Visit Us",
+      "openMaps": "Open in Google Maps",
+      "description": "A beauty clinic in the heart of Sukhumvit. A calm and private space for meticulous consultation and care.",
+      "location": "Location",
+      "hours": "Operating Hours",
+      "contact": "Contact",
+      "line": "LINE Official"
+    },
+    "reviews": {
+      "title": "Patient Reviews",
+      "viewAll": "View All Reviews",
+      "description": "Read real reviews and see before-after results from our patients on Google and Instagram, or consult with our medical team via LINE for personalized results.",
+      "disclaimer": "*Results may vary depending on individual skin condition and concerns",
+      "google": "View on Google",
+      "faq": "Frequently Asked Questions"
+    }
+  },
+  "AboutPage": {
+    "metaTitle": "About Us / Doctors",
+    "metaDescription": "Get to know {siteName}, a beauty clinic in Sukhumvit, Bangkok, and {doctorName} {doctorRole}. Clinic License No. {license}",
+    "breadcrumb": "About Us",
+    "hero": {
+      "subtitle": "About Us / Our Doctors",
+      "title": "About {siteName}"
+    },
+    "philosophy": {
+      "sectionLabel": "Our Philosophy",
+      "title1": "Meticulousness",
+      "desc1": "{siteName} embraces Japanese minimalist beauty philosophy, focusing on subtle enhancement. Our doctors assess and plan your care in a calm and private environment.",
+      "title2": "Medical Standards",
+      "desc2": "Providing Fillers, Botox, IV Drip, Skin Boosters, and Collagen Boosters, prioritizing safety and natural results."
+    },
+    "director": {
+      "sectionLabel": "Clinic Director",
+      "license": "Medical License No. {license}",
+      "languages": "Consultation available in {languages}",
+      "academic": "Academic Excellence",
+      "experience": "Experience",
+      "specializations": "Specializations",
+      "note": "Care plans and results vary depending on the doctor's assessment and individual conditions."
+    },
+    "physician": {
+      "sectionLabel": "Clinic Physician",
+      "license": "Medical License No. {license}",
+      "languages": "Consultation available in {languages}",
+      "education": "Education & Credentials",
+      "experience": "Experience",
+      "training": "Selected Training",
+      "research": "Professional & Research",
+      "clinical": "Clinical Focus",
+      "technologies": "Technologies & Modalities",
+      "note": "Care plans and results vary depending on the doctor's assessment and individual conditions."
+    },
+    "location": {
+      "bangkok": "{street} · {district} · Bangkok",
+      "title": "Location",
+      "viewMap": "View Map",
+      "license": "Clinic License"
+    },
+    "consultation": {
+      "title": "Book a Consultation",
+      "description": "Every procedure starts with a detailed facial assessment and individual goal planning by a doctor.",
+      "bookLine": "Book via LINE",
+      "viewServices": "View All Services"
+    }
+  },
+  "ServicesPage": {
+    "metaTitle": "Services / Treatments",
+    "metaDescription": "All services and treatments at {siteName} — Fillers, Botox, Skin Boosters, Collagen Boosters, and IV Drip, supervised by doctors.",
+    "breadcrumb": "Services / Treatments",
+    "hero": {
+      "subtitle": "Clinical Services",
+      "title": "Treatment Atlas",
+      "desc1": "All services and treatments at {siteName}",
+      "desc2": "Appropriate beauty starts with a doctor's assessment. Every procedure below is designed according to individual facial structure and skin condition for natural results.",
+      "consultLine": "Consult via LINE",
+      "viewAll": "View All Treatments",
+      "imageAlt": "Woman in natural light representing personalized beauty care"
+    },
+    "atlas": {
+      "subtitle": "{count} Treatments",
+      "title": "All Treatments",
+      "desc": "Defining individual beauty through meticulous care and standard medical equipment.",
+      "explore": "Explore Details",
+      "note": "Prices and details for each program are on their respective pages. The appropriate program and amount depend on individual doctor assessment."
+    },
+    "assessment": {
+      "subtitle": "Aesthetic Discipline",
+      "title": "Doctor-led Assessment",
+      "desc": "At {siteName}, all procedures are supervised by licensed medical doctors, starting with a detailed assessment of facial structure and skin condition to recommend the best approach for each individual."
+    },
+    "promotions": {
+      "title": "Curated Programs",
+      "desc": "These are curated programs by the clinic. Please confirm prices and validity periods with the {siteName} team before booking."
+    }
+  },
+  "PromotionsPage": {
+    "metaTitle": "Promotions / Packages",
+    "metaDescription": "Special promotions and packages at {siteName} — Fillers, Botox, Skin Boosters, and IV Drip",
+    "breadcrumb": "Promotions / Packages",
+    "hero": {
+      "eyebrow": "Promotions & Pricing",
+      "title": "Promotions / Packages",
+      "lead": "Monthly special promotions and packages at {siteName}. Book an appointment or inquire for details via LINE."
+    },
+    "empty": {
+      "title": "No promotions available at this time",
+      "desc": "Follow our LINE Official Account and Instagram for updates on new promotions and packages."
+    },
+    "inquireLine": "Inquire via LINE"
+  },
+  "ReviewsPage": {
+    "metaTitle": "Reviews / Before & After",
+    "metaDescription": "Reviews and before-after results of procedures at {siteName} in Sukhumvit, Bangkok.",
+    "breadcrumb": "Reviews / Before & After",
+    "hero": {
+      "eyebrow": "Reviews / Before & After",
+      "title": "Reviews / Before & After",
+      "lead": "Results from procedures at {siteName} — view reviews from real clients and before-after photos."
+    },
+    "before": "Before",
+    "after": "After",
+    "disclaimer": "*Results depend on individual skin condition and specific issues. Published with client consent.",
+    "empty": {
+      "title": "Collecting reviews from clients",
+      "desc": "Reviews and before-after photos from real clients are coming soon. In the meantime, you can view reviews on our Google Maps and Instagram, or inquire about individual results via LINE.",
+      "disclaimer": "*Results depend on individual skin condition and specific issues."
+    },
+    "viewGoogle": "View Reviews on Google Maps",
+    "inquireLine": "Inquire Results via LINE"
+  },
+  "ContactPage": {
+    "metaTitle": "Contact Us",
+    "metaDescription": "Address, phone number, and operating hours of {siteName} in Sukhumvit, Bangkok.",
+    "breadcrumb": "Contact Us",
+    "hero": {
+      "eyebrow": "Contact Us",
+      "title": "Contact Us",
+      "lead": "{siteName} is ready to consult and take care of all your procedures — book an appointment or inquire any day."
+    },
+    "location": {
+      "title": "Clinic Location",
+      "viewMap": "View on Google Maps"
+    },
+    "contact": {
+      "phone": "Phone"
+    },
+    "hours": {
+      "title": "Operating Hours"
+    },
+    "social": {
+      "line": "Contact via LINE",
+      "instagram": "Instagram"
+    },
+    "booking": {
+      "eyebrow": "Book an Appointment",
+      "title": "Appointment / Consultation",
+      "desc": "Fill out a short form and our team will get back to you to confirm your appointment, or you can chat with us on LINE."
+    },
+    "mapTitle": "{siteName} Map"
+  },
+  "BlogPage": {
+    "metaTitle": "Blog / Knowledge Hub",
+    "metaDescription": "Articles and knowledge about skincare, fillers, botox, and post-procedure care by {siteName}.",
+    "breadcrumb": "Blog / Knowledge Hub",
+    "hero": {
+      "eyebrow": "Blog / Knowledge Hub",
+      "title": "Blog / Knowledge Hub",
+      "lead": "Skincare knowledge and post-procedure care tips from the medical team at {siteName}."
+    },
+    "readMore": "Read more →",
+    "empty": {
+      "title": "Preparing articles",
+      "desc": "Articles and knowledge about skincare and procedures are coming soon."
+    }
+  },
+  "BookingForm": {
+    "error": {
+      "name": "Please enter your name",
+      "phone": "Please enter a valid phone number",
+      "submit": "Failed to send",
+      "submitStatus": "Failed to send ({status})"
+    },
+    "success": {
+      "title": "Appointment request sent",
+      "desc": "Our team will contact you as soon as possible. Thank you for your interest in our services.",
+      "resubmit": "Send another request"
+    },
+    "form": {
+      "nameLabel": "Name *",
+      "namePlaceholder": "Your Name",
+      "phoneLabel": "Phone *",
+      "phonePlaceholder": "08X-XXX-XXXX",
+      "interestLabel": "Interested Service",
+      "interestPlaceholder": "— Select Service —",
+      "interestOther": "Other / Consult Doctor",
+      "timeLabel": "Preferred Time",
+      "timePlaceholder": "e.g. This Saturday afternoon",
+      "messageLabel": "Additional Details",
+      "messagePlaceholder": "Inquiries or specific needs",
+      "submit": "Send Appointment Request",
+      "disclaimer": "* Your information is only used for appointment purposes. We will contact you via the provided number."
+    }
+  },
+  "PhysicianPanel": {
+    "license": "License No.",
+    "languages": "Languages",
+    "viewProfile": "View full profile"
+  },
+  "BlogPostPage": {
+    "notFound": "Article not found",
+    "breadcrumb": "Articles",
+    "allArticles": "All articles"
+  }
+}
