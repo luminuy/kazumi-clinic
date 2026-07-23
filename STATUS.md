@@ -26,6 +26,18 @@
 
 > ก่อนเริ่มงานที่กินหลายไฟล์ ให้จดที่นี่: **อะไร · เครื่องมือไหน (Claude / Antigravity) · branch ไหน** — กันชนกันและกัน "งานหาย" (ดู CLAUDE.md §0.5 · dual-agent)
 
+### 📨 ส่งไม้ต่อ → Antigravity (2026-07-23 เช้า · จาก Claude Code)
+
+**3 อย่างที่เปลี่ยนวันนี้และกระทบวิธีทำงานโดยตรง — อ่านก่อนแตะโค้ด:**
+
+1. **push ตรงเข้า `main` ไม่ได้แล้ว** GitHub ตีกลับด้วย `GH013` ทุกกรณี แม้ `--no-verify` · เจอ error นี้ = ทำผิดวิธี ไม่ใช่ของพัง → `git switch -c <branch>` → PR → รอ `verify` เขียว → merge · **commit บน main ก็ไม่ได้** (pre-commit hook บล็อก)
+2. **repo เป็น public แล้ว** — ห้ามใส่ความลับลงไฟล์เด็ดขาด ใช้ `wrangler secret put` · ห้าม `process.env.X || 'fallback'` สำหรับความลับ
+3. **git identity ของ repo นี้** ตั้ง local override เป็น `luminuy` แล้ว (เดิม global เครื่องเป็น "Little Smile Flower" ทำให้ commit ขึ้นชื่อผิดมา 100+ ตัว) — ไม่ต้องแก้อะไรเพิ่ม
+
+**ที่ปิดไปแล้ววันนี้:** CI แดงบน main (lint `no-explicit-any` ใน `lib/session.ts`) · `SESSION_SECRET` ที่ไม่เคยตั้งจน production เซ็น session ด้วยสตริงในกิต (ตั้ง secret + deploy + เทสต์ล็อกไว้แล้ว) · guardrail ย้ายไปอยู่ที่ commit-time + server-side
+
+**งานถัดไปอยู่ใน TODO ข้างล่าง** — ตัวที่พร้อมทำสุดคือเชื่อม payment gateway (`lib/members/payments.ts`)
+
 ---
 
 ## 📋 ต่อไป / TODO
