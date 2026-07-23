@@ -1,3 +1,4 @@
+import { jsonLdHtml } from '@/lib/json-ld';
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Image from 'next/image';
@@ -162,13 +163,13 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(serviceCategoryListSchema(serviceCategories)),
+          __html: jsonLdHtml(serviceCategoryListSchema(serviceCategories)),
         }}
       />
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(breadcrumb) }}
       />
 
       {/* ── Hero ─────────────────────────────────────────────── */}

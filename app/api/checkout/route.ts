@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import { createOrder } from '@/lib/members/orders';
+import { rateLimit, clientIp } from '@/lib/rate-limit';
 
 // Creates an order from the current cart. Zod-validated; the cart itself is read server-side (never
 // trusted from the client), so the body carries only contact details + the chosen fulfillment.
@@ -24,6 +25,11 @@ const schema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  // Order-spam guard: 15 checkouts per IP per 5 minutes.
+  if (!(await rateLimit('checkout', clientIp(request), { limit: 15, windowSec: 300 }))) {
+    return NextResponse.json({ error: 'ทำรายการบ่อยเกินไป กรุณาลองใหม่ภายหลัง' }, { status: 429 });
+  }
+
   const raw = await request.text();
   if (raw.length > MAX_BODY) {
     return NextResponse.json({ error: 'ข้อมูลยาวเกินไป' }, { status: 413 });

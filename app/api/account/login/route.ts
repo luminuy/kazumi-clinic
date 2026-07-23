@@ -4,6 +4,7 @@ import { findMemberByEmail, toPublicMember } from '@/lib/members/store';
 import { verifyPassword } from '@/lib/members/password';
 import { createSession } from '@/lib/members/session';
 import { mergeGuestCartIntoMember } from '@/lib/members/cart';
+import { rateLimit, clientIp } from '@/lib/rate-limit';
 
 // PUBLIC endpoint — verifies an email/password pair and starts a session. A wrong email and a wrong
 // password return the SAME 401 message so the response can't be used to enumerate accounts.
@@ -17,6 +18,11 @@ const schema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  // Brute-force / credential-stuffing guard: 10 attempts per IP per 5 minutes.
+  if (!(await rateLimit('login', clientIp(request), { limit: 10, windowSec: 300 }))) {
+    return NextResponse.json({ error: 'พยายามเข้าสู่ระบบบ่อยเกินไป กรุณาลองใหม่ใน 5 นาที' }, { status: 429 });
+  }
+
   const raw = await request.text();
   if (raw.length > MAX_BODY) {
     return NextResponse.json({ error: 'ข้อมูลยาวเกินไป' }, { status: 413 });

@@ -1,3 +1,4 @@
+import { jsonLdHtml } from '@/lib/json-ld';
 import Header from '@/components/Header';
 import { getCartCount } from '@/lib/members/cart';
 import { getCurrentMemberRow } from '@/lib/members/session';
@@ -54,12 +55,12 @@ export default async function SiteLayout({
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(businessSchema) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(businessSchema) }}
       />
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(websiteSchema) }}
       />
       <Header logoMark={brandMark} cartCount={cartCount} isLoggedIn={!!member} />
       <main>{children}</main>

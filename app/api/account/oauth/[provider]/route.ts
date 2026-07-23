@@ -5,6 +5,7 @@ import {
   buildAuthUrl,
   redirectUriFor,
 } from '@/lib/members/oauth';
+import { rateLimit, clientIp } from '@/lib/rate-limit';
 
 // Starts an OAuth login: builds the provider's authorization URL, stashes a CSRF `state` + `nonce`
 // (and the post-login `next` path) in a short-lived HttpOnly cookie, then redirects to the provider.
@@ -24,6 +25,11 @@ export async function GET(
   const { provider } = await params;
   const origin = new URL(request.url).origin;
   const loginUrl = `${origin}/account/login`;
+
+  // Abuse guard on the redirect-initiation endpoint: 30 starts per IP per 5 minutes.
+  if (!(await rateLimit('oauth', clientIp(request), { limit: 30, windowSec: 300 }))) {
+    return NextResponse.redirect(`${loginUrl}?error=rate_limited`);
+  }
 
   if (!isOAuthProvider(provider)) {
     return NextResponse.redirect(`${loginUrl}?error=oauth_unknown`);
