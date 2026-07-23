@@ -17,7 +17,8 @@ const schema = z.object({
   id: z.string().min(1).max(80),
   category: z.enum(categorySlugs),
   file: z
-    .instanceof(File)
+    .any()
+    .refine((f) => f && typeof (f as any).size === 'number' && typeof (f as any).name === 'string', 'กรุณาอัปโหลดไฟล์')
     .refine((f) => f.size > 0, 'ไฟล์ว่าง')
     .refine((f) => f.size <= MAX_BYTES, 'ไฟล์ใหญ่เกิน 10MB')
     .refine((f) => ALLOWED.includes(f.type), 'รองรับเฉพาะ JPG / PNG / WebP / AVIF'),
