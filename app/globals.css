@@ -67,6 +67,11 @@
   --store-card: #fff;
   --store-control: #d2d2d7;
   --store-control-ink: #424245;
+
+  /* Clinical / Knowledge Hub additions */
+  --clinical-blue: #0066cc;
+  --surface-container-low: #f3f3f5;
+  --secondary-fixed: #c4e7ff;
 }
 
 .dark {
@@ -133,6 +138,16 @@
   --color-forest: var(--forest);
   --color-mint: var(--mint);
   --color-mint-glow: var(--mint-glow);
+
+  /* Clinical / Knowledge Hub aliases */
+  --color-clinical-blue: var(--clinical-blue);
+  --color-charcoal: var(--foreground);
+  --color-surface: var(--store-surface);
+  --color-pure-white: #ffffff;
+  --color-slate-gray: var(--store-muted);
+  --color-outline-variant: var(--border);
+  --color-surface-container-low: var(--surface-container-low);
+  --color-secondary-fixed: var(--secondary-fixed);
 }
 
 @layer base {
@@ -144,6 +159,21 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
+  }
+}
+
+/* ── Utilities ─────────────────────────────────────────────── */
+@utility bento-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@utility bento-tall {
+  @media (min-width: 640px) {
+    grid-row: span 2;
   }
 }
 
