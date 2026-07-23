@@ -16,6 +16,10 @@ const config = [
       'node_modules/**',
       'next-env.d.ts',
       'public/**',
+      // One-off Node maintenance/seed utilities, run by hand with `node scripts/x.js`, not part of
+      // the shipped app. They're CommonJS (`require`) and some embed long content with characters
+      // the flat-config parser rejects — linting them only ever red-flagged CI on non-app code.
+      'scripts/**',
     ],
   },
   ...coreWebVitals,

@@ -8,7 +8,10 @@
     "blog": "Blog",
     "contact": "Contact",
     "bookLine": "Book via LINE",
-    "allServices": "All Services"
+    "allServices": "All Services",
+    "search": "Search",
+    "cart": "Cart",
+    "account": "Account"
   },
   "Footer": {
     "location": "Location",
@@ -276,5 +279,166 @@
     "notFound": "Article not found",
     "breadcrumb": "Articles",
     "allArticles": "All articles"
+  },
+  "Account": {
+    "login": {
+      "title": "Sign in",
+      "lead": "Sign in to your Kazumi membership to manage your bookings and cart."
+    },
+    "register": {
+      "title": "Create account",
+      "lead": "Create a free Kazumi membership to book services and track their status."
+    },
+    "dashboard": {
+      "title": "My account",
+      "eyebrow": "Kazumi Member",
+      "greeting": "Hello {name}",
+      "member": "there",
+      "profile": "Account details",
+      "orders": "Bookings & cart",
+      "ordersDesc": "View your cart and service bookings."
+    },
+    "field": {
+      "name": "Name",
+      "namePlaceholder": "Full name",
+      "email": "Email",
+      "password": "Password",
+      "passwordHint": "At least 8 characters"
+    },
+    "submit": {
+      "login": "Sign in",
+      "register": "Sign up"
+    },
+    "switch": {
+      "haveAccount": "Already have an account?",
+      "noAccount": "No account yet?"
+    },
+    "logout": "Sign out",
+    "error": {
+      "email": "Please enter your email",
+      "password": "Invalid password",
+      "generic": "Something went wrong (status {status})",
+      "submit": "Request failed"
+    },
+    "oauth": {
+      "google": "Continue with Google",
+      "line": "Continue with LINE",
+      "or": "or",
+      "errors": {
+        "oauth_not_configured": "This sign-in method isn't set up yet. Please use email/password for now.",
+        "oauth_state": "Your session expired. Please try signing in again.",
+        "oauth_failed": "Sign-in failed. Please try again.",
+        "oauth_unknown": "Invalid sign-in method"
+      }
+    }
+  },
+  "Cart": {
+    "title": "My cart",
+    "eyebrow": "Shopping cart",
+    "add": "Add to cart",
+    "added": "Added",
+    "addError": "Try again",
+    "decrease": "Decrease",
+    "increase": "Increase",
+    "remove": "Remove",
+    "empty": {
+      "title": "Your cart is empty",
+      "desc": "Pick a service with a listed price and tap “Add to cart” to start a booking.",
+      "cta": "View all services"
+    },
+    "summary": {
+      "title": "Summary",
+      "subtotal": "Subtotal ({count} items)",
+      "checkout": "Checkout / Book",
+      "checkoutSoon": "Ordering & payment is coming very soon.",
+      "bookLine": "Book via LINE now",
+      "priceNote": "Prices shown may change; please confirm current prices and conditions with the clinic before your visit. Results vary by individual and depend on a doctor's assessment."
+    }
+  },
+  "Checkout": {
+    "title": "Confirm booking",
+    "eyebrow": "Checkout / Confirm",
+    "contact": {
+      "title": "Your details",
+      "name": "Full name",
+      "phone": "Phone",
+      "email": "Email",
+      "emailOptional": "Email (optional)",
+      "time": "Preferred date/time",
+      "timePlaceholder": "e.g. this Saturday afternoon",
+      "note": "Note to the clinic"
+    },
+    "fulfillment": {
+      "title": "Booking type",
+      "booking": "Book now, pay at clinic",
+      "bookingHint": "Send a booking request; pay nothing now. The team confirms your slot.",
+      "deposit": "Deposit {percent}%",
+      "depositHint": "Pay a deposit to secure your slot; the balance is paid at the clinic.",
+      "full": "Pay in full",
+      "fullHint": "Pay the full amount in advance."
+    },
+    "payment": {
+      "title": "Payment method",
+      "pay_at_clinic": "Pay at clinic",
+      "gateway": "Pay online (card/PromptPay)",
+      "gatewayNote": "Online payment is being connected — once you confirm, the team will send a payment link or contact you."
+    },
+    "summary": {
+      "title": "Summary",
+      "subtotal": "Subtotal",
+      "dueNow": "Due now",
+      "note": "Prices shown may change; this is a booking request the clinic will confirm. Results vary by individual and depend on a doctor's assessment."
+    },
+    "submit": "Confirm booking",
+    "error": {
+      "name": "Please enter your name",
+      "phone": "Please enter a valid phone number",
+      "submit": "Request failed"
+    }
+  },
+  "Orders": {
+    "list": {
+      "title": "Booking history",
+      "eyebrow": "Kazumi Member",
+      "emptyTitle": "No bookings yet",
+      "emptyCta": "View all services",
+      "items": "{count} items"
+    },
+    "detail": {
+      "title": "Booking details",
+      "thanksTitle": "Booking request received",
+      "awaitingTitle": "Awaiting payment",
+      "orderId": "Order number",
+      "status": "Status",
+      "subtotal": "Subtotal",
+      "dueNow": "Due now",
+      "contactLine": "Contact via LINE",
+      "myOrders": "Booking history",
+      "moreServices": "More services"
+    },
+    "next": {
+      "booking": "We've received your booking request. Our team will contact you to confirm the date and time.",
+      "payAtClinic": "We've received your booking request. Please pay at the clinic on the day of your visit; our team will confirm your slot.",
+      "gateway": "We've received your order. Online payment is being connected — our team will send a payment link or contact you shortly."
+    },
+    "status": {
+      "pending": "Pending",
+      "awaiting_payment": "Awaiting payment",
+      "paid": "Paid",
+      "confirmed": "Confirmed",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    }
+  },
+  "Search": {
+    "title": "Search services",
+    "eyebrow": "Search",
+    "placeholder": "Search services — filler, botox, IV drip…",
+    "resultCount": "{count} results",
+    "browseHint": "Type to search, or browse the categories below.",
+    "noResults": "No matches. Try a different keyword.",
+    "type": {
+      "category": "Category"
+    }
   }
 }
