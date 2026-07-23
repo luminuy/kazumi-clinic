@@ -178,36 +178,32 @@ export function PromotionEditor({
       imagePublicId: draft.imagePublicId,
     };
 
-    setBusyId(editing ?? 'new');
-    try {
-      const res = await fetch('/api/admin/promotions', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-      const result = await res.json();
-      if (!res.ok) throw new Error(result.error || 'บันทึกไม่สำเร็จ');
-
-      // If there's an image file uploaded in the draft, upload it now
-      if (draft.imageFile) {
-        const form = new FormData();
-        form.append('id', result.id);
-        form.append('file', draft.imageFile);
-        const imgRes = await fetch('/api/admin/promotions/image', {
+    await mutate(
+      editing ?? 'new',
+      async () => {
+        const res = await fetch('/api/admin/promotions', {
           method: 'POST',
-          body: form,
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(body),
         });
-        const imgResult = await imgRes.json();
-        if (!imgRes.ok) throw new Error(imgResult.error || 'อัปโหลดรูปไม่สำเร็จ');
-      }
+        if (!res.ok) return res;
 
-      await mutate();
-      close();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
-    } finally {
-      setBusyId(null);
-    }
+        if (draft.imageFile) {
+          const result = await res.clone().json();
+          const form = new FormData();
+          form.append('id', result.id);
+          form.append('file', draft.imageFile);
+          const imgRes = await fetch('/api/admin/promotions/image', {
+            method: 'POST',
+            body: form,
+          });
+          if (!imgRes.ok) return imgRes;
+        }
+
+        return res;
+      },
+      () => close(),
+    );
   }
 
   async function remove(promo: AdminPromotion) {
