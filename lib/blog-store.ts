@@ -20,6 +20,8 @@ export type PostRow = {
   published_at: number | null;
   updated_at: number;
   updated_by: string;
+  /** A serviceCategories slug (lib/services.ts) or null — drives the /blog category filter. */
+  category: string | null;
 };
 
 /** Everything the admin form can set on a post. `id` identifies an existing row. */
@@ -31,6 +33,7 @@ export type PostInput = {
   body: string;
   author?: string | null;
   published: boolean;
+  category?: string | null;
 };
 
 async function db() {
@@ -109,8 +112,8 @@ export async function upsertPost(input: PostInput, updatedBy: string) {
   await binding
     .prepare(
       `INSERT INTO posts
-         (id, slug, title, excerpt, body, author, published, published_at, updated_at, updated_by)
-       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)
+         (id, slug, title, excerpt, body, author, published, published_at, updated_at, updated_by, category)
+       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)
        ON CONFLICT(id) DO UPDATE SET
          slug = ?2, title = ?3, excerpt = ?4, body = ?5, author = ?6, published = ?7,
          -- Keep the original publish date once set; only stamp it on the first publish.
@@ -119,7 +122,7 @@ export async function upsertPost(input: PostInput, updatedBy: string) {
            WHEN ?7 = 1 THEN ?9
            ELSE NULL
          END,
-         updated_at = ?9, updated_by = ?10`,
+         updated_at = ?9, updated_by = ?10, category = ?11`,
     )
     .bind(
       input.id,
@@ -132,6 +135,7 @@ export async function upsertPost(input: PostInput, updatedBy: string) {
       publishedAt,
       now,
       updatedBy,
+      input.category ?? null,
     )
     .run();
 }

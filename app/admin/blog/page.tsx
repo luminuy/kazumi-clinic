@@ -1,6 +1,11 @@
 import type { Metadata } from 'next';
+import { serviceCategories } from '@/lib/services';
 import { getAllPosts } from '@/lib/blog-store';
-import { BlogEditor, type AdminPost } from '@/components/admin/blog-editor';
+import {
+  BlogEditor,
+  type AdminPost,
+  type CategoryOption,
+} from '@/components/admin/blog-editor';
 import { PageHeading } from '@/components/admin/ui';
 
 export const metadata: Metadata = { title: 'บทความ' };
@@ -20,6 +25,12 @@ export default async function AdminBlogPage() {
     coverImagePublicId: row.cover_image_public_id,
     published: row.published === 1,
     publishedAt: row.published_at,
+    category: row.category,
+  }));
+
+  const categories: CategoryOption[] = serviceCategories.map((category) => ({
+    slug: category.slug,
+    title: category.title,
   }));
 
   const live = posts.filter((post) => post.published).length;
@@ -37,7 +48,7 @@ export default async function AdminBlogPage() {
         }
       />
 
-      <BlogEditor posts={posts} />
+      <BlogEditor posts={posts} categories={categories} />
     </>
   );
 }

@@ -2,6 +2,9 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { upsertPost, deletePost, slugTaken, type PostInput } from '@/lib/blog-store';
+import { serviceCategories } from '@/lib/services';
+
+const categorySlugs = serviceCategories.map((c) => c.slug) as [string, ...string[]];
 
 function adminEmail(request: NextRequest) {
   return request.headers.get('x-admin-email');
@@ -31,6 +34,8 @@ const upsertSchema = z.object({
   body: z.string().trim().min(1, 'ต้องมีเนื้อหาบทความ').max(50_000),
   author: z.string().trim().max(80).nullish(),
   published: z.boolean(),
+  // A serviceCategories slug for the /blog filter, or null/absent for uncategorised.
+  category: z.enum(categorySlugs).nullish(),
 });
 
 const deleteSchema = z.object({ id: z.string().min(1).max(80) });
@@ -62,13 +67,17 @@ export async function POST(request: NextRequest) {
     body: data.body,
     author: data.author ?? null,
     published: data.published,
+    category: data.category ?? null,
   };
 
   try {
     await upsertPost(input, email);
-    // Listing, the post itself, and the sitemap all reflect the change.
+    // Listing, the post itself, and the sitemap all reflect the change — both locales
+    // (Thai at the bare path, English under /en; localePrefix 'as-needed').
     revalidatePath('/blog');
+    revalidatePath('/en/blog');
     revalidatePath(`/blog/${slug}`);
+    revalidatePath(`/en/blog/${slug}`);
     revalidatePath('/sitemap.xml');
     return NextResponse.json({ ok: true, id, slug });
   } catch (error) {

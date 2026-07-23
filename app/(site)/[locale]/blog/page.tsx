@@ -9,6 +9,8 @@ import { site } from '@/lib/site';
 import { breadcrumbSchema } from '@/lib/schema';
 import { siteSocialImage } from '@/lib/metadata-images';
 import { getPublishedPosts } from '@/lib/blog-store';
+import { serviceCategories } from '@/lib/services';
+import { BlogFilterGrid, type BlogGridPost, type BlogTab } from '@/components/blog-filter-grid';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -61,6 +63,22 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
 
   const featuredPost = posts[0];
   const remainingPosts = posts.slice(1);
+
+  // The filterable grid below the hero. Tabs are the service categories actually present among
+  // these posts, in catalogue order — so every tab yields at least one card.
+  const gridPosts: BlogGridPost[] = remainingPosts.map((post) => ({
+    id: post.id,
+    slug: post.slug,
+    title: post.title,
+    excerpt: post.excerpt,
+    coverImagePublicId: post.cover_image_public_id,
+    publishedAt: post.published_at,
+    category: post.category,
+  }));
+  const present = new Set(gridPosts.map((post) => post.category).filter(Boolean));
+  const tabs: BlogTab[] = serviceCategories
+    .filter((category) => present.has(category.slug))
+    .map((category) => ({ slug: category.slug, title: category.title }));
 
   return (
     <>
@@ -120,60 +138,21 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
         </section>
       )}
 
-      {/* Bento Article Grid */}
+      {/* Category filter + bento article grid */}
       <section className="px-6 md:px-12">
-        {remainingPosts.length > 0 ? (
-          <div className="bento-grid">
-            {remainingPosts.map((post, i) => {
-              // Create dynamic bento layout classes based on index to recreate the Apple-style varied heights
-              const isTall = i % 5 === 1; // e.g., 2nd card is tall
-              const isWide = i % 5 === 3; // e.g., 4th card is wide
-
-              return (
-                <Link
-                  key={post.id}
-                  href={`/blog/${post.slug}`}
-                  className={`bg-pure-white rounded-xl overflow-hidden shadow-sm border border-outline-variant/10 flex flex-col group transition-transform hover:-translate-y-1 ${isTall ? 'bento-tall' : ''} ${isWide ? 'col-span-1 sm:col-span-2' : ''}`}
-                >
-                  <div className={`relative w-full overflow-hidden ${isTall ? 'h-64 sm:h-full sm:min-h-[20rem]' : 'h-48'}`}>
-                    {post.cover_image_public_id ? (
-                      <Image
-                        src={post.cover_image_public_id}
-                        alt={post.title}
-                        fill
-                        sizes={isWide ? "(max-width: 640px) 100vw, 90vw" : "(max-width: 640px) 100vw, 50vw"}
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="absolute inset-0 bg-surface-container-low grid place-items-center">
-                        <FileText className="size-8 text-outline-variant" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-5 flex-grow flex flex-col justify-center">
-                    <span className="text-xs font-medium text-slate-gray mb-1.5 block">
-                      {formatThaiDate(post.published_at, locale) || 'Article'}
-                    </span>
-                    <h3 className={`text-base font-bold text-charcoal line-clamp-2 ${isTall ? 'mb-2 text-lg' : ''}`}>
-                      {post.title}
-                    </h3>
-                    {isTall && post.excerpt && (
-                      <p className="text-sm text-slate-gray line-clamp-3 leading-relaxed mt-2">{post.excerpt}</p>
-                    )}
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        ) : !featuredPost ? (
+        {posts.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-outline-variant/30 bg-pure-white p-14 text-center">
             <FileText className="mx-auto size-8 text-slate-gray opacity-50" />
             <p className="mt-4 font-semibold text-lg text-charcoal">{t('empty.title')}</p>
-            <p className="mx-auto mt-2 max-w-md text-sm text-slate-gray">
-              {t('empty.desc')}
-            </p>
+            <p className="mx-auto mt-2 max-w-md text-sm text-slate-gray">{t('empty.desc')}</p>
           </div>
+        ) : gridPosts.length > 0 ? (
+          <BlogFilterGrid
+            posts={gridPosts}
+            tabs={tabs}
+            locale={locale}
+            emptyText="ไม่มีบทความในหมวดนี้ — ลองเลือกหมวดอื่น"
+          />
         ) : null}
       </section>
 

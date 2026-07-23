@@ -28,7 +28,11 @@ export type AdminPost = {
   coverImagePublicId: string | null;
   published: boolean;
   publishedAt: number | null;
+  category: string | null;
 };
+
+/** Options for the category select — the site's service categories. */
+export type CategoryOption = { slug: string; title: string };
 
 type Draft = {
   title: string;
@@ -37,6 +41,7 @@ type Draft = {
   body: string;
   author: string;
   published: boolean;
+  category: string;
 };
 
 const emptyDraft: Draft = {
@@ -46,6 +51,7 @@ const emptyDraft: Draft = {
   body: '',
   author: '',
   published: false,
+  category: '',
 };
 
 function draftFrom(post: AdminPost): Draft {
@@ -56,6 +62,7 @@ function draftFrom(post: AdminPost): Draft {
     body: post.body,
     author: post.author,
     published: post.published,
+    category: post.category ?? '',
   };
 }
 
@@ -79,7 +86,13 @@ function formatThaiDate(ms: number | null) {
   return new Date(ms).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
-export function BlogEditor({ posts }: { posts: AdminPost[] }) {
+export function BlogEditor({
+  posts,
+  categories,
+}: {
+  posts: AdminPost[];
+  categories: CategoryOption[];
+}) {
   const router = useRouter();
   const [editing, setEditing] = useState<string | null>(null);
   const [draft, setDraft] = useState<Draft>(emptyDraft);
@@ -132,6 +145,7 @@ export function BlogEditor({ posts }: { posts: AdminPost[] }) {
       body: draft.body,
       author: draft.author.trim() || null,
       published: draft.published,
+      category: draft.category || null,
     };
 
     await mutate(
@@ -187,7 +201,15 @@ export function BlogEditor({ posts }: { posts: AdminPost[] }) {
       )}
 
       {editing === 'new' && (
-        <PostForm draft={draft} setDraft={setDraft} onSave={save} onCancel={close} busy={busy} heading="บทความใหม่" />
+        <PostForm
+          draft={draft}
+          setDraft={setDraft}
+          onSave={save}
+          onCancel={close}
+          busy={busy}
+          heading="บทความใหม่"
+          categories={categories}
+        />
       )}
 
       <ul className="mt-6 space-y-3">
@@ -201,6 +223,7 @@ export function BlogEditor({ posts }: { posts: AdminPost[] }) {
                 onCancel={close}
                 busy={busy}
                 heading={`แก้ไข: ${post.title}`}
+                categories={categories}
               />
             ) : (
               <PostRow
@@ -356,6 +379,7 @@ function PostForm({
   onCancel,
   busy,
   heading,
+  categories,
 }: {
   draft: Draft;
   setDraft: (draft: Draft) => void;
@@ -363,6 +387,7 @@ function PostForm({
   onCancel: () => void;
   busy: boolean;
   heading: string;
+  categories: CategoryOption[];
 }) {
   const set = (patch: Partial<Draft>) => setDraft({ ...draft, ...patch });
 
@@ -402,6 +427,20 @@ function PostForm({
             />
           </Field>
         </div>
+        <Field label="หมวดหมู่" hint="ใช้เป็นตัวกรองในหน้า /blog · เว้นว่างได้">
+          <select
+            className={inputClass}
+            value={draft.category}
+            onChange={(e) => set({ category: e.target.value })}
+          >
+            <option value="">ไม่ระบุหมวด</option>
+            {categories.map((category) => (
+              <option key={category.slug} value={category.slug}>
+                {category.title}
+              </option>
+            ))}
+          </select>
+        </Field>
         <Field label="คำโปรย" hint="สรุปสั้น ๆ · แสดงในหน้ารายการและ SEO">
           <textarea
             className={cn(inputClass, 'min-h-16 resize-y')}
