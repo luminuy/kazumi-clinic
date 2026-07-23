@@ -288,7 +288,7 @@ function BeforeAfter({
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-1 flex-col gap-1.5">
       <span className="text-[0.62rem] font-medium uppercase tracking-wide text-ink/40">{label}</span>
       <button
         type="button"
