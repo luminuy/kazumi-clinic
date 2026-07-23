@@ -120,17 +120,6 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
         </section>
       )}
 
-      {/* Category Filters (Static for now) */}
-      <section className="px-6 md:px-12 mb-8 overflow-x-auto no-scrollbar">
-        <div className="flex gap-2 whitespace-nowrap pb-2">
-          <button className="px-5 py-2.5 rounded-full bg-clinical-blue text-pure-white text-sm font-medium transition-transform active:scale-95">ทั้งหมด</button>
-          <button className="px-5 py-2.5 rounded-full bg-pure-white border border-outline-variant text-charcoal text-sm font-medium transition-all hover:bg-surface-container-low active:scale-95">Botox</button>
-          <button className="px-5 py-2.5 rounded-full bg-pure-white border border-outline-variant text-charcoal text-sm font-medium transition-all hover:bg-surface-container-low active:scale-95">Filler</button>
-          <button className="px-5 py-2.5 rounded-full bg-pure-white border border-outline-variant text-charcoal text-sm font-medium transition-all hover:bg-surface-container-low active:scale-95">Skin Booster</button>
-          <button className="px-5 py-2.5 rounded-full bg-pure-white border border-outline-variant text-charcoal text-sm font-medium transition-all hover:bg-surface-container-low active:scale-95">IV Drip</button>
-        </div>
-      </section>
-
       {/* Bento Article Grid */}
       <section className="px-6 md:px-12">
         {remainingPosts.length > 0 ? (
