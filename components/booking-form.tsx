@@ -8,7 +8,7 @@ import { useTranslations } from 'next-intl';
 type State = { kind: 'idle' | 'sending' | 'sent' } | { kind: 'error'; message: string };
 
 const fieldClass =
-  'w-full rounded-xl border border-olive/20 bg-cream px-4 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-ink/35 focus:border-olive/50';
+  'w-full rounded-2xl border-none bg-background px-5 py-4 text-[0.95rem] text-foreground ring-1 ring-border/50 outline-none transition-all placeholder:text-muted-foreground/60 focus:ring-2 focus:ring-foreground';
 
 export function BookingForm({ interests }: { interests: string[] }) {
   const t = useTranslations('BookingForm');
@@ -87,8 +87,8 @@ export function BookingForm({ interests }: { interests: string[] }) {
   }
 
   return (
-    <form onSubmit={submit} className="space-y-4" noValidate>
-      <div className="grid gap-4 sm:grid-cols-2">
+    <form onSubmit={submit} className="space-y-6" noValidate>
+      <div className="grid gap-6 sm:grid-cols-2">
         <label className="block">
           <span className="text-xs font-medium text-ink/65">{t('form.nameLabel')}</span>
           <input
@@ -114,7 +114,7 @@ export function BookingForm({ interests }: { interests: string[] }) {
         </label>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-6 sm:grid-cols-2">
         <label className="block">
           <span className="text-xs font-medium text-ink/65">{t('form.interestLabel')}</span>
           <select
@@ -171,16 +171,18 @@ export function BookingForm({ interests }: { interests: string[] }) {
         </p>
       )}
 
-      <Button
-        type="submit"
-        disabled={sending}
-        size="lg"
-        className="w-full rounded-full bg-forest text-white hover:bg-forest/90 sm:w-auto"
-      >
-        {sending ? <Loader2 className="size-4 animate-spin" /> : null}
-        {t('form.submit')}
-      </Button>
-      <p className="text-xs text-ink/45">
+      <div className="pt-2">
+        <Button
+          type="submit"
+          disabled={sending}
+          size="lg"
+          className="w-full rounded-full bg-foreground px-8 py-6 text-base font-medium text-background hover:scale-[0.98] hover:bg-foreground/90 transition-all sm:w-auto"
+        >
+          {sending ? <Loader2 className="size-5 animate-spin mr-2" /> : null}
+          {t('form.submit')}
+        </Button>
+      </div>
+      <p className="text-xs text-muted-foreground/80">
         {t('form.disclaimer')}
       </p>
     </form>

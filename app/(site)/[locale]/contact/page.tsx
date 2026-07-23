@@ -58,19 +58,19 @@ function HubCard({
   external?: boolean;
 }) {
   return (
-    <div className="group flex h-full flex-col gap-6 rounded-3xl border border-border bg-card p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_30px_60px_rgba(0,0,0,0.06)] md:p-10">
-      <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-sand text-forest">
+    <div className="group flex h-full flex-col gap-6 rounded-3xl border border-border bg-card p-10 transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl md:p-12">
+      <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-foreground/5 text-foreground">
         {icon}
       </span>
-      <div className="space-y-1.5">
+      <div className="space-y-2">
         <p className="text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-foreground/45">{label}</p>
-        <p className="text-2xl font-semibold tracking-tight text-foreground">{value}</p>
+        <p className="text-3xl font-semibold tracking-tight text-foreground">{value}</p>
       </div>
       <p className="text-[0.95rem] leading-[1.6] text-foreground/60">{desc}</p>
       <a
         href={href}
         {...(external ? { target: '_blank', rel: 'noopener' } : {})}
-        className="mt-auto inline-flex items-center gap-1.5 text-[0.9rem] font-medium text-forest transition-all group-hover:gap-2.5"
+        className="mt-auto inline-flex items-center gap-1.5 text-[0.95rem] font-medium text-foreground transition-all group-hover:gap-2.5"
       >
         {cta}
         <ArrowRight className="size-4" />
@@ -114,7 +114,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
       />
 
       {/* ── Cinematic hero ─────────────────────────────────────── */}
-      <section className="relative flex min-h-[60vh] items-end overflow-hidden bg-foreground">
+      <section className="relative flex min-h-[80vh] items-end overflow-hidden bg-foreground">
         {heroImage && (
           <Image
             src={heroImage}
@@ -127,14 +127,10 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
             className="object-cover"
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-foreground via-foreground/55 to-foreground/10" />
-        <div className="relative z-10 mx-auto w-full max-w-[1200px] px-[20px] pb-20 pt-44 text-white md:px-8">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+        <div className="relative z-10 mx-auto w-full max-w-[1200px] px-[20px] pb-24 pt-44 text-white md:px-8">
           <Reveal>
-            <p className="flex items-center gap-3 text-[0.72rem] font-medium uppercase tracking-[0.24em] text-white/70">
-              <span className="h-px w-8 bg-white/50" />
-              {t('hero.eyebrow')}
-            </p>
-            <h1 className="mt-5 max-w-3xl text-4xl font-bold leading-[1.05] tracking-tight md:text-6xl">
+            <h1 className="max-w-3xl text-5xl font-bold leading-[1.1] tracking-tight md:text-7xl">
               {t('hero.title')}
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-[1.55] text-white/80">
@@ -183,12 +179,12 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
 
         {/* Flagship address — dark tonal block, the anchor of the hub. */}
         <Reveal>
-          <div className="mt-6 flex flex-col items-start justify-between gap-8 rounded-3xl bg-foreground p-10 text-white md:flex-row md:items-center md:p-12">
+          <div className="mt-8 flex flex-col items-start justify-between gap-8 rounded-3xl bg-foreground p-12 text-white md:flex-row md:items-center">
             <div className="space-y-4">
               <p className="text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-white/50">
                 {t('address.eyebrow')}
               </p>
-              <h2 className="max-w-xl text-xl font-semibold leading-[1.5] tracking-tight md:text-2xl">
+              <h2 className="max-w-xl text-2xl font-semibold leading-[1.5] tracking-tight md:text-3xl">
                 {site.addressFull}
               </h2>
             </div>
@@ -206,16 +202,13 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
       </section>
 
       {/* ── Inquiry form ───────────────────────────────────────── */}
-      <section className="bg-sand py-24">
+      <section className="bg-sand py-32">
         <div className="mx-auto grid max-w-[1200px] items-start gap-16 px-[20px] md:px-8 lg:grid-cols-2 lg:gap-24">
           <Reveal>
-            <p className="text-[0.75rem] font-bold uppercase tracking-[0.15em] text-forest">
-              {t('form.eyebrow')}
-            </p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
+            <h2 className="text-4xl font-bold tracking-tight text-foreground md:text-5xl">
               {t('form.title')}
             </h2>
-            <p className="mt-6 max-w-md text-[1.05rem] leading-[1.6] text-foreground/60">
+            <p className="mt-8 max-w-md text-lg leading-[1.6] text-foreground/60">
               {t('form.desc')}
             </p>
 
@@ -237,7 +230,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
           </Reveal>
 
           <div id="booking" className="scroll-mt-32">
-            <Reveal delay={80} className="rounded-3xl bg-card p-8 shadow-[0_20px_40px_rgba(0,0,0,0.04)] md:p-10">
+            <Reveal delay={80}>
               <BookingForm interests={serviceCategories.map((category) => category.title)} />
             </Reveal>
           </div>
@@ -245,19 +238,16 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
       </section>
 
       {/* ── Visit us — hours + map ─────────────────────────────── */}
-      <section className="py-24">
+      <section className="py-32">
         <div className="mx-auto grid max-w-[1200px] items-center gap-12 px-[20px] md:grid-cols-12 md:px-8">
-          <Reveal className="space-y-10 md:col-span-5">
+          <Reveal className="space-y-12 md:col-span-5">
             <div>
-              <p className="text-[0.72rem] font-medium uppercase tracking-[0.24em] text-forest">
-                {t('visit.eyebrow')}
-              </p>
-              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
+              <h2 className="text-4xl font-bold tracking-tight text-foreground md:text-5xl">
                 {t('visit.title')}
               </h2>
             </div>
 
-            <div className="space-y-1">
+            <div className="space-y-2">
               {hoursRows.map((row) => (
                 <div
                   key={row.label}
@@ -283,7 +273,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
           </Reveal>
 
           <Reveal delay={80} className="md:col-span-7">
-            <div className="relative h-[420px] overflow-hidden rounded-3xl shadow-[0_20px_40px_rgba(0,0,0,0.06)] md:h-[500px]">
+            <div className="relative h-[500px] overflow-hidden rounded-3xl shadow-2xl">
               <iframe
                 src={site.mapsEmbedUrl}
                 className="absolute inset-0 size-full"
@@ -293,6 +283,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
                 allowFullScreen
                 title={t('mapTitle', { siteName: site.name })}
               />
+              <div className="pointer-events-none absolute inset-0 bg-foreground/[0.03]" />
             </div>
           </Reveal>
         </div>
