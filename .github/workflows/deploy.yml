@@ -1,0 +1,50 @@
+name: Deploy
+
+# Continuous deployment to Cloudflare Workers. Runs ONLY after the CI workflow
+# concludes successfully on main, so lint/typecheck/test/build always gate a deploy
+# (the automated version of the manual "wait for CI SUCCESS before deploy" rule in
+# CLAUDE.md §0). Deploys the exact commit that passed CI, not whatever HEAD is now.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+
+# Never deploy two commits at once, and never cancel a deploy already in flight —
+# killing `wrangler deploy` or a `d1 execute` mid-run can leave prod half-updated.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    # Only when CI actually passed. A failed/cancelled CI run still fires workflow_run.
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # The commit CI verified — workflow_run's own SHA is main's tip, which may
+          # have moved on. Deploy what was actually green.
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.1.2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # opennextjs build -> tag-cache migration -> member migration -> wrangler deploy.
+      # wrangler authenticates via the two env vars below; no account_id in wrangler.jsonc.
+      # Ubuntu runs workerd fine, so the OPEN_NEXT_DEPLOY trick in cf:deploy (added for the
+      # old-macOS dev box) is a harmless no-op here.
+      - name: Deploy to Cloudflare Workers
+        run: pnpm cf:deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
