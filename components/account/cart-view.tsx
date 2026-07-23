@@ -48,17 +48,17 @@ export function CartView({ initialCart, lineUrl }: { initialCart: CartSummary; l
 
   if (cart.items.length === 0) {
     return (
-      <div className="rounded-[1.5rem] border border-black/5 bg-[var(--store-card)] p-12 text-center shadow-lg shadow-black/5">
-        <span className="mx-auto grid size-14 place-items-center rounded-full bg-[var(--store-control)] text-[var(--store-ink)]">
-          <ShoppingBag strokeWidth={1.5} className="size-7" />
+      <div className="rounded-[2rem] bg-[var(--store-card)] p-16 text-center shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+        <span className="mx-auto grid size-20 place-items-center rounded-full bg-black/[0.03] text-[var(--store-ink)]">
+          <ShoppingBag strokeWidth={1.25} className="size-8" />
         </span>
-        <p className="mt-5 font-serif text-xl text-[var(--store-ink)]">{t('empty.title')}</p>
-        <p className="mx-auto mt-2 max-w-sm text-sm leading-[1.7] text-[var(--store-muted)]">
+        <p className="mt-8 font-serif text-2xl text-[var(--store-ink)]">{t('empty.title')}</p>
+        <p className="mx-auto mt-3 max-w-sm text-sm leading-[1.7] text-[var(--store-muted)]">
           {t('empty.desc')}
         </p>
         <Link
           href="/services"
-          className="mt-6 inline-flex items-center gap-2 rounded-full bg-forest px-6 py-3 text-xs font-medium text-white transition-colors hover:bg-mint"
+          className="mt-8 inline-flex items-center gap-2 rounded-full bg-forest px-8 py-4 text-[0.8rem] font-medium text-white transition-all hover:scale-[1.02] hover:bg-mint"
         >
           {t('empty.cta')}
         </Link>
@@ -68,11 +68,11 @@ export function CartView({ initialCart, lineUrl }: { initialCart: CartSummary; l
 
   return (
     <div className="grid gap-8 lg:grid-cols-[1fr_20rem] lg:items-start">
-      <ul className="divide-y divide-black/[0.08] rounded-[1.5rem] border border-black/5 bg-[var(--store-card)] px-6 shadow-lg shadow-black/5">
+      <ul className="divide-y divide-black/[0.04] rounded-[2rem] bg-[var(--store-card)] px-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
         {cart.items.map((item) => {
           const isBusy = busy === item.productId;
           return (
-            <li key={item.productId} className="flex items-center gap-4 py-5">
+            <li key={item.productId} className="flex items-center gap-4 py-6">
               <div className="min-w-0 flex-1">
                 <p className="truncate font-serif text-lg text-[var(--store-ink)]">{item.title}</p>
                 <p className="mt-0.5 text-xs text-[var(--store-muted)]">
@@ -122,9 +122,9 @@ export function CartView({ initialCart, lineUrl }: { initialCart: CartSummary; l
         })}
       </ul>
 
-      <aside className="rounded-[1.5rem] border border-black/5 bg-[var(--store-card)] p-6 shadow-lg shadow-black/5 lg:sticky lg:top-24">
+      <aside className="rounded-[2rem] bg-[var(--store-card)] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] lg:sticky lg:top-24">
         <h2 className="font-serif text-xl text-[var(--store-ink)]">{t('summary.title')}</h2>
-        <div className="mt-4 flex items-center justify-between text-sm">
+        <div className="mt-5 flex items-center justify-between text-sm">
           <span className="text-[var(--store-muted)]">
             {t('summary.subtotal', { count: cart.count })}
           </span>
@@ -135,7 +135,7 @@ export function CartView({ initialCart, lineUrl }: { initialCart: CartSummary; l
 
         <Link
           href="/cart/checkout"
-          className="mt-6 flex w-full items-center justify-center rounded-full bg-forest py-3.5 text-xs font-medium text-white transition-colors hover:bg-mint"
+          className="mt-8 flex w-full items-center justify-center rounded-full bg-forest py-4 text-[0.8rem] font-medium text-white transition-all hover:scale-[1.02] hover:bg-mint"
         >
           {t('summary.checkout')}
         </Link>
@@ -143,7 +143,7 @@ export function CartView({ initialCart, lineUrl }: { initialCart: CartSummary; l
           href={lineUrl}
           target="_blank"
           rel="noopener"
-          className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border border-black/15 py-3 text-xs font-medium text-[var(--store-ink)] transition-colors hover:bg-black/5"
+          className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border border-black/10 py-4 text-[0.8rem] font-medium text-[var(--store-ink)] transition-colors hover:bg-black/[0.03]"
         >
           {t('summary.bookLine')}
         </a>

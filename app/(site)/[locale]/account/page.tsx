@@ -26,29 +26,29 @@ export default async function AccountPage({ params }: { params: Promise<{ locale
   const me = member!;
 
   return (
-    <section className="bg-[var(--store-surface)] py-16">
+    <section className="bg-[var(--store-surface)] py-20">
       <div className="mx-auto w-full max-w-3xl px-6">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-[0.7rem] font-medium uppercase tracking-[0.16em] text-forest">
               {t('dashboard.eyebrow')}
             </p>
-            <h1 className="mt-1 font-serif text-3xl text-[var(--store-ink)]">
+            <h1 className="mt-2 font-serif text-4xl tracking-tight text-[var(--store-ink)]">
               {t('dashboard.greeting', { name: me.name || me.email || t('dashboard.member') })}
             </h1>
           </div>
           <LogoutButton />
         </div>
 
-        <div className="mt-8 grid gap-4 sm:grid-cols-2">
-          <div className="rounded-[1.25rem] border border-black/5 bg-[var(--store-card)] p-6 shadow-lg shadow-black/5">
-            <div className="flex size-11 items-center justify-center rounded-full bg-[var(--store-control)] text-[var(--store-ink)]">
-              <UserIcon strokeWidth={1.5} className="size-5" />
+        <div className="mt-12 grid gap-6 sm:grid-cols-2">
+          <div className="rounded-[2rem] bg-[var(--store-card)] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+            <div className="flex size-12 items-center justify-center rounded-full bg-black/[0.03] text-[var(--store-ink)]">
+              <UserIcon strokeWidth={1.25} className="size-5" />
             </div>
-            <h2 className="mt-4 font-serif text-xl text-[var(--store-ink)]">
+            <h2 className="mt-5 font-serif text-xl text-[var(--store-ink)]">
               {t('dashboard.profile')}
             </h2>
-            <dl className="mt-3 space-y-1 text-sm text-[var(--store-muted)]">
+            <dl className="mt-4 space-y-2 text-sm text-[var(--store-muted)]">
               <div className="flex justify-between gap-4">
                 <dt>{t('field.email')}</dt>
                 <dd className="text-[var(--store-ink)]">{me.email ?? '—'}</dd>
@@ -62,15 +62,15 @@ export default async function AccountPage({ params }: { params: Promise<{ locale
 
           <Link
             href="/account/orders"
-            className="group rounded-[1.25rem] border border-black/5 bg-[var(--store-card)] p-6 shadow-lg shadow-black/5 transition-transform hover:-translate-y-0.5"
+            className="group rounded-[2rem] bg-[var(--store-card)] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all hover:-translate-y-1 hover:shadow-[0_12px_40px_rgb(0,0,0,0.06)]"
           >
-            <div className="flex size-11 items-center justify-center rounded-full bg-[var(--store-control)] text-[var(--store-ink)]">
-              <ShoppingBag strokeWidth={1.5} className="size-5" />
+            <div className="flex size-12 items-center justify-center rounded-full bg-black/[0.03] text-[var(--store-ink)]">
+              <ShoppingBag strokeWidth={1.25} className="size-5" />
             </div>
-            <h2 className="mt-4 font-serif text-xl text-[var(--store-ink)]">
+            <h2 className="mt-5 font-serif text-xl text-[var(--store-ink)]">
               {t('dashboard.orders')}
             </h2>
-            <p className="mt-2 text-sm leading-[1.7] text-[var(--store-muted)]">
+            <p className="mt-3 text-sm leading-[1.7] text-[var(--store-muted)]">
               {t('dashboard.ordersDesc')}
             </p>
           </Link>
