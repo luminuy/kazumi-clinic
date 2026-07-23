@@ -1,3 +1,4 @@
+import { jsonLdHtml } from '@/lib/json-ld';
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Sparkles } from 'lucide-react';
@@ -83,7 +84,7 @@ export default async function PromotionsPage({ params }: { params: Promise<{ loc
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(breadcrumb) }}
       />
 
       <PageHero

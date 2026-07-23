@@ -6,7 +6,9 @@
  * Verification recomputes with the stored parameters and compares in constant time.
  */
 
-const ITERATIONS = 100_000;
+// OWASP 2023 baseline for PBKDF2-HMAC-SHA256. Stored per-hash (see format below), so raising this
+// only affects new/updated hashes — existing ones keep verifying with their recorded iteration count.
+const ITERATIONS = 600_000;
 const KEY_LEN = 32; // bytes
 const SALT_LEN = 16; // bytes
 

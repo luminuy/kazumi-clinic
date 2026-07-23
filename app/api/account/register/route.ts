@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { createMember, toPublicMember } from '@/lib/members/store';
 import { createSession } from '@/lib/members/session';
 import { mergeGuestCartIntoMember } from '@/lib/members/cart';
+import { rateLimit, clientIp } from '@/lib/rate-limit';
 
 // PUBLIC endpoint — creates an email/password member account and starts a session. Validation
 // mirrors app/api/leads: strict Zod, a body-size guard, and generic error text that never reveals
@@ -17,6 +18,11 @@ const schema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  // Signup-spam guard: 5 new accounts per IP per 15 minutes.
+  if (!(await rateLimit('register', clientIp(request), { limit: 5, windowSec: 900 }))) {
+    return NextResponse.json({ error: 'สมัครบ่อยเกินไป กรุณาลองใหม่ภายหลัง' }, { status: 429 });
+  }
+
   const raw = await request.text();
   if (raw.length > MAX_BODY) {
     return NextResponse.json({ error: 'ข้อมูลยาวเกินไป' }, { status: 413 });

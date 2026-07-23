@@ -1,3 +1,4 @@
+import { jsonLdHtml } from '@/lib/json-ld';
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Image from 'next/image';
@@ -71,17 +72,17 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(breadcrumb) }}
       />
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(doctorSchema(doctor, doctorSrc)) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(doctorSchema(doctor, doctorSrc)) }}
       />
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(doctorSchema(doctorEesha, eeshaSrc)) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(doctorSchema(doctorEesha, eeshaSrc)) }}
       />
 
       {/* ── Hero ─────────────────────────────────────────────── */}

@@ -1,3 +1,4 @@
+import { jsonLdHtml } from '@/lib/json-ld';
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Link from 'next/link';
@@ -66,7 +67,7 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(breadcrumb) }}
       />
       
       {/* Cinematic Header */}

@@ -1,3 +1,4 @@
+import { jsonLdHtml } from '@/lib/json-ld';
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Link from 'next/link';
@@ -86,12 +87,12 @@ export default async function BlogPostPage({ params }: Params) {
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(article) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(article) }}
       />
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(breadcrumb) }}
       />
 
       <article className="mx-auto max-w-3xl px-6 py-16 sm:py-20">

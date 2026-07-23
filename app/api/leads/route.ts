@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import { createLead } from '@/lib/leads-store';
+import { rateLimit, clientIp } from '@/lib/rate-limit';
 
 // PUBLIC endpoint — the one unauthenticated write in the app (middleware only gates /api/admin/*).
 // Defence in depth: a strict Zod schema, a honeypot field, and a body-size guard. No secret is
@@ -42,6 +43,11 @@ async function notify(payload: Record<string, unknown>) {
 }
 
 export async function POST(request: NextRequest) {
+  // Lead-spam guard: 6 submissions per IP per 10 minutes (on top of the honeypot below).
+  if (!(await rateLimit('leads', clientIp(request), { limit: 6, windowSec: 600 }))) {
+    return NextResponse.json({ error: 'ส่งข้อมูลบ่อยเกินไป กรุณาลองใหม่ภายหลัง' }, { status: 429 });
+  }
+
   const raw = await request.text();
   if (raw.length > MAX_BODY) {
     return NextResponse.json({ error: 'ข้อมูลยาวเกินไป' }, { status: 413 });
