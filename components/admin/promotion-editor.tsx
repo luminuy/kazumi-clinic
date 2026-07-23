@@ -45,6 +45,7 @@ type Draft = {
   validUntil: string;
   categorySlug: string;
   imagePublicId: string | null;
+  imageFile?: File | null;
 };
 
 const emptyDraft: Draft = {
@@ -177,16 +178,36 @@ export function PromotionEditor({
       imagePublicId: draft.imagePublicId,
     };
 
-    await mutate(
-      editing ?? 'new',
-      () =>
-        fetch('/api/admin/promotions', {
+    setBusyId(editing ?? 'new');
+    try {
+      const res = await fetch('/api/admin/promotions', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || 'บันทึกไม่สำเร็จ');
+
+      // If there's an image file uploaded in the draft, upload it now
+      if (draft.imageFile) {
+        const form = new FormData();
+        form.append('id', result.id);
+        form.append('file', draft.imageFile);
+        const imgRes = await fetch('/api/admin/promotions/image', {
           method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify(body),
-        }),
-      () => close(),
-    );
+          body: form,
+        });
+        const imgResult = await imgRes.json();
+        if (!imgRes.ok) throw new Error(imgResult.error || 'อัปโหลดรูปไม่สำเร็จ');
+      }
+
+      await mutate();
+      close();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setBusyId(null);
+    }
   }
 
   async function remove(promo: AdminPromotion) {
@@ -560,6 +581,19 @@ function PromotionForm({
             onChange={(e) => set({ note: e.target.value })}
             placeholder="เช่น ซื้อ 1 แถม 1"
           />
+        </Field>
+        <Field label="รูปภาพโปรโมชั่น" hint="JPG/PNG/WebP/AVIF · ไม่บังคับ">
+          <div className="flex items-center gap-2">
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/avif"
+              className={cn(inputClass, 'p-1 text-sm file:mr-2 file:cursor-pointer file:rounded-md file:border-0 file:bg-forest/10 file:px-3 file:py-1 file:text-xs file:font-medium file:text-forest')}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) set({ imageFile: file });
+              }}
+            />
+          </div>
         </Field>
       </div>
 
