@@ -58,19 +58,19 @@ function HubCard({
   external?: boolean;
 }) {
   return (
-    <div className="group flex h-full flex-col gap-6 rounded-3xl border border-clinical-border/60 bg-white p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_30px_60px_rgba(0,0,0,0.06)] md:p-10">
-      <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-clinical-primary/10 text-clinical-primary">
+    <div className="group flex h-full flex-col gap-6 rounded-3xl border border-border bg-card p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_30px_60px_rgba(0,0,0,0.06)] md:p-10">
+      <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-sand text-forest">
         {icon}
       </span>
       <div className="space-y-1.5">
-        <p className="text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-clinical-charcoal/45">{label}</p>
-        <p className="text-2xl font-semibold tracking-tight text-clinical-charcoal">{value}</p>
+        <p className="text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-foreground/45">{label}</p>
+        <p className="text-2xl font-semibold tracking-tight text-foreground">{value}</p>
       </div>
-      <p className="text-[0.95rem] leading-[1.6] text-clinical-charcoal/60">{desc}</p>
+      <p className="text-[0.95rem] leading-[1.6] text-foreground/60">{desc}</p>
       <a
         href={href}
         {...(external ? { target: '_blank', rel: 'noopener' } : {})}
-        className="mt-auto inline-flex items-center gap-1.5 text-[0.9rem] font-medium text-clinical-primary transition-all group-hover:gap-2.5"
+        className="mt-auto inline-flex items-center gap-1.5 text-[0.9rem] font-medium text-forest transition-all group-hover:gap-2.5"
       >
         {cta}
         <ArrowRight className="size-4" />
@@ -114,7 +114,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
       />
 
       {/* ── Cinematic hero ─────────────────────────────────────── */}
-      <section className="relative flex min-h-[68vh] items-end overflow-hidden bg-clinical-charcoal">
+      <section className="relative flex min-h-[60vh] items-end overflow-hidden bg-foreground">
         {heroImage && (
           <Image
             src={heroImage}
@@ -127,7 +127,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
             className="object-cover"
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-clinical-charcoal via-clinical-charcoal/55 to-clinical-charcoal/10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-foreground via-foreground/55 to-foreground/10" />
         <div className="relative z-10 mx-auto w-full max-w-[1200px] px-[20px] pb-20 pt-44 text-white md:px-8">
           <Reveal>
             <p className="flex items-center gap-3 text-[0.72rem] font-medium uppercase tracking-[0.24em] text-white/70">
@@ -183,7 +183,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
 
         {/* Flagship address — dark tonal block, the anchor of the hub. */}
         <Reveal>
-          <div className="mt-6 flex flex-col items-start justify-between gap-8 rounded-3xl bg-clinical-charcoal p-10 text-white md:flex-row md:items-center md:p-12">
+          <div className="mt-6 flex flex-col items-start justify-between gap-8 rounded-3xl bg-foreground p-10 text-white md:flex-row md:items-center md:p-12">
             <div className="space-y-4">
               <p className="text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-white/50">
                 {t('address.eyebrow')}
@@ -196,7 +196,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
               href={site.mapsUrl}
               target="_blank"
               rel="noopener"
-              className="inline-flex shrink-0 items-center gap-2 rounded-full bg-white px-8 py-4 text-sm font-semibold text-clinical-charcoal transition-all hover:-translate-y-0.5 hover:shadow-lg active:scale-95"
+              className="inline-flex shrink-0 items-center gap-2 rounded-full bg-background px-8 py-4 text-sm font-semibold text-foreground transition-all hover:-translate-y-0.5 hover:shadow-lg active:scale-95"
             >
               <Navigation className="size-4" />
               {t('address.cta')}
@@ -206,38 +206,38 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
       </section>
 
       {/* ── Inquiry form ───────────────────────────────────────── */}
-      <section className="bg-clinical-surface py-24">
+      <section className="bg-sand py-24">
         <div className="mx-auto grid max-w-[1200px] items-start gap-16 px-[20px] md:px-8 lg:grid-cols-2 lg:gap-24">
           <Reveal>
-            <p className="text-[0.75rem] font-bold uppercase tracking-[0.15em] text-clinical-primary">
+            <p className="text-[0.75rem] font-bold uppercase tracking-[0.15em] text-forest">
               {t('form.eyebrow')}
             </p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-clinical-charcoal md:text-4xl">
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
               {t('form.title')}
             </h2>
-            <p className="mt-6 max-w-md text-[1.05rem] leading-[1.6] text-clinical-charcoal/60">
+            <p className="mt-6 max-w-md text-[1.05rem] leading-[1.6] text-foreground/60">
               {t('form.desc')}
             </p>
 
             <div className="mt-12 space-y-8">
               {trust.map((item) => (
                 <div key={item.title} className="flex items-start gap-4">
-                  <span className="mt-0.5 text-clinical-primary">{item.icon}</span>
+                  <span className="mt-0.5 text-forest">{item.icon}</span>
                   <div>
-                    <h3 className="font-semibold text-clinical-charcoal">{item.title}</h3>
-                    <p className="mt-1 text-[0.95rem] leading-[1.55] text-clinical-charcoal/55">{item.desc}</p>
+                    <h3 className="font-semibold text-foreground">{item.title}</h3>
+                    <p className="mt-1 text-[0.95rem] leading-[1.55] text-foreground/55">{item.desc}</p>
                   </div>
                 </div>
               ))}
             </div>
 
-            <p className="mt-12 text-[0.8rem] text-clinical-charcoal/45">
+            <p className="mt-12 text-[0.8rem] text-foreground/45">
               {t('license', { license: site.license })}
             </p>
           </Reveal>
 
           <div id="booking" className="scroll-mt-32">
-            <Reveal delay={80} className="rounded-3xl bg-white p-8 shadow-[0_20px_40px_rgba(0,0,0,0.04)] md:p-10">
+            <Reveal delay={80} className="rounded-3xl bg-card p-8 shadow-[0_20px_40px_rgba(0,0,0,0.04)] md:p-10">
               <BookingForm interests={serviceCategories.map((category) => category.title)} />
             </Reveal>
           </div>
@@ -249,10 +249,10 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
         <div className="mx-auto grid max-w-[1200px] items-center gap-12 px-[20px] md:grid-cols-12 md:px-8">
           <Reveal className="space-y-10 md:col-span-5">
             <div>
-              <p className="text-[0.72rem] font-medium uppercase tracking-[0.24em] text-clinical-primary">
+              <p className="text-[0.72rem] font-medium uppercase tracking-[0.24em] text-forest">
                 {t('visit.eyebrow')}
               </p>
-              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-clinical-charcoal md:text-4xl">
+              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
                 {t('visit.title')}
               </h2>
             </div>
@@ -261,10 +261,10 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
               {hoursRows.map((row) => (
                 <div
                   key={row.label}
-                  className="flex items-center justify-between border-b border-clinical-border/60 py-4"
+                  className="flex items-center justify-between border-b border-border py-4"
                 >
-                  <span className="font-medium text-clinical-charcoal">{row.label}</span>
-                  <span className={row.accent ? 'font-semibold text-clinical-primary' : 'text-clinical-charcoal/55'}>
+                  <span className="font-medium text-foreground">{row.label}</span>
+                  <span className={row.accent ? 'font-semibold text-forest' : 'text-foreground/55'}>
                     {row.value}
                   </span>
                 </div>
@@ -275,7 +275,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
               href={site.mapsUrl}
               target="_blank"
               rel="noopener"
-              className="inline-flex items-center gap-2.5 rounded-full bg-clinical-charcoal px-8 py-4 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:shadow-lg active:scale-95"
+              className="inline-flex items-center gap-2.5 rounded-full bg-foreground px-8 py-4 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:shadow-lg active:scale-95"
             >
               <MapIcon className="size-4" />
               {t('visit.cta')}
