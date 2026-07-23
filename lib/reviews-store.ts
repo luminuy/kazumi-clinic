@@ -42,7 +42,6 @@ export type PublicReview = {
   afterImagePublicId: string | null;
 };
 
-/** Everything the admin form can set on a review. `id` identifies an existing row. */
 export type ReviewInput = {
   id: string;
   name: string;
@@ -53,6 +52,8 @@ export type ReviewInput = {
   consent: boolean;
   published: boolean;
   sortOrder: number;
+  beforeImagePublicId?: string | null;
+  afterImagePublicId?: string | null;
 };
 
 async function db() {
@@ -121,11 +122,13 @@ export async function upsertReview(input: ReviewInput, updatedBy: string) {
     .prepare(
       `INSERT INTO reviews
          (id, name, rating, quote, procedure, category_slug, consent, published,
-          sort_order, updated_at, updated_by)
-       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)
+          sort_order, updated_at, updated_by, before_image_public_id, after_image_public_id)
+       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13)
        ON CONFLICT(id) DO UPDATE SET
          name = ?2, rating = ?3, quote = ?4, procedure = ?5, category_slug = ?6,
-         consent = ?7, published = ?8, updated_at = ?10, updated_by = ?11`,
+         consent = ?7, published = ?8, updated_at = ?10, updated_by = ?11,
+         before_image_public_id = CASE WHEN ?14 THEN ?12 ELSE before_image_public_id END,
+         after_image_public_id = CASE WHEN ?15 THEN ?13 ELSE after_image_public_id END`,
     )
     .bind(
       input.id,
@@ -139,6 +142,10 @@ export async function upsertReview(input: ReviewInput, updatedBy: string) {
       input.sortOrder,
       Date.now(),
       updatedBy,
+      input.beforeImagePublicId ?? null,
+      input.afterImagePublicId ?? null,
+      input.beforeImagePublicId !== undefined ? 1 : 0,
+      input.afterImagePublicId !== undefined ? 1 : 0,
     )
     .run();
 }
