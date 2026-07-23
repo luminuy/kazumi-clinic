@@ -4,7 +4,7 @@
 > **"ล่าสุด" = `origin/main` เสมอ** (ดู CLAUDE.md §0.5) — ไฟล์นี้แค่สรุปให้อ่านเร็ว ถ้าขัดกับ git ให้เชื่อ git
 > อัปเดตไฟล์นี้เป็นส่วนหนึ่งของ workflow: หลัง **deploy** และตอน **เริ่ม/จบงานสำคัญ** (ดู CLAUDE.md §0)
 
-**อัปเดตล่าสุด:** 2026-07-23 · โดย: Claude Code
+**อัปเดตล่าสุด:** 2026-07-23 · โดย: Antigravity
 
 ---
 
@@ -12,7 +12,7 @@
 
 | | |
 |---|---|
-| **workers.dev** | Version `6701a3ed` — deploy 2026-07-23 · ตรงกับ main `7e743ad` (redesign หน้า /contact เป็น Apple clinical style: hero cinematic + การ์ด LINE/โทร/IG + ฟอร์ม + แผนที่) |
+| **workers.dev** | Version `b9ffb34c` — deploy 2026-07-23 · ตรงกับ main `d515af8` (redesign review image upload flow) |
 | **โดเมนจริง** (kazumiclinic.com) | ❌ ยังไม่ขึ้น — `SITE_ENV=preview`, robots `Disallow: /` (ตั้งใจ ห้ามลบจนกว่าโดเมนจะขึ้น) |
 | **URL ตรวจ** | https://kazumi-clinic.bankjack10452.workers.dev |
 
