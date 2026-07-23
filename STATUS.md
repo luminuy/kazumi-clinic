@@ -12,7 +12,7 @@
 
 | | |
 |---|---|
-| **workers.dev** | Version `658002ed` — deploy 2026-07-23 · ตรงกับ main `7045232` (ระบบสมาชิก + ตะกร้า + checkout + ค้นหา) |
+| **workers.dev** | Version `5b8a9542` — deploy 2026-07-23 · ตรงกับ main `2b7bed9` (ระบบสมาชิก + ตะกร้า + checkout + ค้นหา + fix SESSION_SECRET) |
 | **โดเมนจริง** (kazumiclinic.com) | ❌ ยังไม่ขึ้น — `SITE_ENV=preview`, robots `Disallow: /` (ตั้งใจ ห้ามลบจนกว่าโดเมนจะขึ้น) |
 | **URL ตรวจ** | https://kazumi-clinic.bankjack10452.workers.dev |
 
@@ -40,7 +40,8 @@
 ## ⚠️ ปมค้าง / รู้ไว้
 
 - **เปลี่ยนรูปใน /admin แล้วต้องขึ้นเว็บ**: ต้องมีตาราง `revalidations` ใน D1 (fix แล้ว 2026-07-22, `migrations/0007`, ผูกใน `cf:deploy`) — ถ้าหน้าไม่อัปเดตอีก เช็คตารางนี้ก่อน (CLAUDE.md §0.5)
-- **สองเครื่องมือแก้ร่วมกัน** (Claude ใน worktree · Antigravity ในโฟลเดอร์หลัก): งานที่ไม่ push = มองไม่เห็นตอน deploy — commit+push ทุกครั้งที่หยุด · ⚠️ `main` **ยังบังคับ branch protection ไม่ได้** (private repo ต้อง GitHub Pro/public) — พึ่งวินัย "ผ่าน PR + CI เสมอ" + CI บน push:main จับของพัง (detection)
+- **สองเครื่องมือแก้ร่วมกัน** (Claude ใน worktree · Antigravity ในโฟลเดอร์หลัก): งานที่ไม่ push = มองไม่เห็นตอน deploy — commit+push ทุกครั้งที่หยุด · ✅ `main` **บังคับด้วย ruleset แล้ว** (repo เป็น public ตั้งแต่ 2026-07-23) — push ตรงเข้า main โดน GitHub ตีกลับทุกกรณี แม้ `--no-verify` ต้องผ่าน PR + `verify` เขียวเท่านั้น
+- **repo เป็น public แล้ว** (2026-07-23) — โค้ดและประวัติทั้งหมดเปิดสาธารณะ · ห้าม commit ความลับลงไฟล์เด็ดขาด ใช้ `wrangler secret put` เท่านั้น · ความลับที่หลุดไปแล้วถือว่าหลุดถาวร ต้อง rotate ไม่ใช่ลบ commit
 - **deploy เป็น manual**: `pnpm cf:deploy` แล้วยิงเว็บจริง 2 ครั้งเช็ค `x-nextjs-cache` (ISR เสิร์ฟของเก่ารอบแรก) · เช็คสุขภาพเว็บได้ด้วย `pnpm health`
 
 ## 🧰 เครื่องมือ (มีตั้งแต่ 2026-07-22)
@@ -48,5 +49,6 @@
 - **CI** ([.github/workflows/ci.yml](.github/workflows/ci.yml)) — lint + typecheck + test + build บนทุก PR (รันบน GitHub runner)
 - **Test** — `pnpm test` (vitest) · invariant tests ใน `tests/` (no-trailing-slash, service catalog)
 - **Health** — `pnpm health` เช็คทุกหน้า 200 · uptime workflow ยิงทุก 6 ชม. ([.github/workflows/uptime.yml](.github/workflows/uptime.yml)) fail แล้ว GitHub เมลเตือน
-- **Pre-push hook** ([.githooks/pre-push](.githooks/pre-push)) — กัน `git push` ตรงเข้า main (เปิดใช้ตอน `pnpm install` หรือ `pnpm setup:hooks`) · soft guardrail แทน branch protection ที่เปิดไม่ได้ · bypass: `--no-verify`
+- **Branch protection** — ruleset `protect-main` ([rules](https://github.com/luminuy/kazumi-clinic/rules)) `bypass_actors: []` → ต้องผ่าน PR + check `verify` เขียว, ห้าม force-push, ห้ามลบ branch · owner ก็ข้ามไม่ได้ (ทดสอบแล้วโดน `GH013`)
+- **Git hooks** ([.githooks/](.githooks/)) — `pre-commit` กัน commit บน main · `pre-push` กัน push เข้า main + รัน lint/typecheck ให้ถ้ามีโค้ดเปลี่ยน (เปิดใช้ตอน `pnpm install` หรือ `pnpm setup:hooks`) · ให้ feedback เร็วก่อนถึง GitHub, bypass ได้ด้วย `--no-verify` แต่ ruleset จะดักอยู่ดี
 - **ต้องเปิด R2** (ยังใช้ KV แทน) และ **ขึ้นโดเมนจริง** = งานที่ต้องกดใน Cloudflare dashboard เอง
