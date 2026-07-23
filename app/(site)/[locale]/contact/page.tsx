@@ -48,6 +48,7 @@ function HubCard({
   cta,
   href,
   external,
+  iconClassName,
 }: {
   icon: React.ReactNode;
   label: string;
@@ -56,10 +57,11 @@ function HubCard({
   cta: string;
   href: string;
   external?: boolean;
+  iconClassName?: string;
 }) {
   return (
-    <div className="group flex h-full flex-col gap-6 rounded-3xl border border-border bg-card p-10 transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl md:p-12">
-      <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-foreground/5 text-foreground">
+    <div className="group flex h-full flex-col items-center text-center gap-6 rounded-3xl border border-border bg-card p-10 transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl md:p-12">
+      <span className={`flex size-12 shrink-0 items-center justify-center rounded-full ${iconClassName || 'bg-foreground/5 text-foreground'}`}>
         {icon}
       </span>
       <div className="space-y-2">
@@ -162,6 +164,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
               cta={t('hub.line.cta')}
               href={site.lineUrl}
               external
+              iconClassName="bg-[#00B900]/10 text-[#00B900]"
             />
           </Reveal>
           <Reveal delay={160}>
@@ -173,6 +176,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
               cta={t('hub.instagram.cta')}
               href={site.instagram}
               external
+              iconClassName="bg-[#E1306C]/10 text-[#E1306C]"
             />
           </Reveal>
         </div>
