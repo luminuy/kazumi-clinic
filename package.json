@@ -15,7 +15,8 @@
     "cf:build": "opennextjs-cloudflare build",
     "cf:preview": "opennextjs-cloudflare preview",
     "cf:tagcache": "wrangler d1 execute kazumi-clinic-tag-cache --remote -y --file migrations/0007_tag_cache_revalidations.sql",
-    "cf:deploy": "opennextjs-cloudflare build && pnpm cf:tagcache && OPEN_NEXT_DEPLOY=true wrangler deploy"
+    "cf:migrate:members": "wrangler d1 execute kazumi-clinic-tag-cache --remote -y --file migrations/0009_member_system.sql",
+    "cf:deploy": "opennextjs-cloudflare build && pnpm cf:tagcache && pnpm cf:migrate:members && OPEN_NEXT_DEPLOY=true wrangler deploy"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",

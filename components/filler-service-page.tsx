@@ -9,6 +9,7 @@ import { Reveal } from '@/components/reveal';
 import { SectionLabel } from '@/components/page-hero';
 import { LineIcon } from '@/components/brand-icons';
 import { PhysicianPanel } from '@/components/physician-panel';
+import { AddToCartButton } from '@/components/account/add-to-cart-button';
 
 export function FillerServicePage({
   service,
@@ -164,16 +165,21 @@ export function FillerServicePage({
                       </p>
                     </div>
 
-                    <a
-                      href={site.lineUrl}
-                      target="_blank"
-                      rel="noopener"
-                      aria-label={`จอง ${item.name}${item.detail ? ` ${item.detail}` : ''} ผ่าน LINE`}
-                      className="mt-auto inline-flex items-center justify-center gap-2 rounded-full bg-[#06C755] px-5 py-3 text-center text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] active:scale-[0.98]"
-                    >
-                      <LineIcon className="size-3.5" />
-                      Book Session
-                    </a>
+                    <div className="mt-auto flex flex-col gap-2">
+                      {item.id && item.priceFrom !== undefined && (
+                        <AddToCartButton productId={item.id} className="w-full" />
+                      )}
+                      <a
+                        href={site.lineUrl}
+                        target="_blank"
+                        rel="noopener"
+                        aria-label={`จอง ${item.name}${item.detail ? ` ${item.detail}` : ''} ผ่าน LINE`}
+                        className="inline-flex items-center justify-center gap-2 rounded-full bg-[#06C755] px-5 py-3 text-center text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] active:scale-[0.98]"
+                      >
+                        <LineIcon className="size-3.5" />
+                        Book Session
+                      </a>
+                    </div>
                   </article>
                 </Reveal>
               );
