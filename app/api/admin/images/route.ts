@@ -42,7 +42,9 @@ const REVALIDATION_TARGETS: Record<SiteImageKey, readonly RevalidationTarget[]> 
   // categoryImageKey, so every category slot has to revalidate those two alongside its own page.
   'hero-botox': [{ path: '/' }, { path: '/botox' }, { path: '/services' }],
   'hero-iv-drip-1': [{ path: '/' }, { path: '/iv-drip' }, { path: '/reviews' }],
-  'hero-iv-drip-2': [{ path: '/' }, { path: '/services' }],
+  // Also the OG/Twitter image for /blog (siteSocialImage('hero-iv-drip-2')) — revalidate it too so
+  // an edit refreshes the blog share card, not only the /services hero it renders inline.
+  'hero-iv-drip-2': [{ path: '/' }, { path: '/services' }, { path: '/blog' }],
   'hero-iv-drip-3': [],
   'hero-skin-booster': [
     { path: '/' },
@@ -82,6 +84,12 @@ const REVALIDATION_TARGETS: Record<SiteImageKey, readonly RevalidationTarget[]> 
 function revalidateImage(key: SiteImageKey) {
   for (const target of REVALIDATION_TARGETS[key]) {
     revalidatePath(target.path, target.type);
+    // The site is bilingual with localePrefix 'as-needed' (i18n/routing.ts): Thai (default) lives
+    // at the bare path, English at the same path under /en. The targets above are the Thai paths;
+    // without this the English page keeps the old image until the hourly ISR revalidate. Mirror
+    // every target onto its /en twin so an /admin edit refreshes BOTH languages immediately.
+    const enPath = target.path === '/' ? '/en' : `/en${target.path}`;
+    revalidatePath(enPath, target.type);
   }
 }
 

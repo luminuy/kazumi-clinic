@@ -74,9 +74,9 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
       <section className="px-6 md:px-12 pt-40 pb-8">
         <div className="space-y-2">
           <span className="text-sm font-medium tracking-widest text-clinical-blue uppercase opacity-80">Knowledge Hub</span>
-          <h1 className="text-4xl md:text-5xl font-bold text-charcoal tracking-tight leading-tight">บทความ /<br />สาระความรู้</h1>
+          <h1 className="text-4xl md:text-5xl font-bold text-charcoal tracking-tight leading-tight">บทความ / สาระความรู้</h1>
           <p className="text-base text-slate-gray mt-4 max-w-xl leading-relaxed">
-            สาระความรู้เรื่องผิวพรรณและการดูแลตัวเองหลังทำหัตถการ จากทีมแพทย์ของ Kazumi Clinic
+            สาระความรู้เรื่องผิวพรรณและการดูแลตัวเองหลังทำหัตถการ จากทีมแพทย์ของ&nbsp;<span className="whitespace-nowrap">Kazumi Clinic</span>
           </p>
         </div>
       </section>
