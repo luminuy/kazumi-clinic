@@ -28,6 +28,8 @@ const upsertSchema = z
     consent: z.boolean(),
     published: z.boolean(),
     sortOrder: z.number().int().min(0).max(9999).optional(),
+    beforeImagePublicId: z.string().nullable().optional(),
+    afterImagePublicId: z.string().nullable().optional(),
   })
   // A review can't go live without consent — the compliance gate lives at the write boundary too,
   // not only in the read path, so a bad client can't publish a non-consented review.
@@ -63,6 +65,8 @@ export async function POST(request: NextRequest) {
     consent: data.consent,
     published: data.published,
     sortOrder: data.sortOrder ?? (data.id ? 0 : await nextSortOrder()),
+    beforeImagePublicId: data.beforeImagePublicId,
+    afterImagePublicId: data.afterImagePublicId,
   };
 
   try {

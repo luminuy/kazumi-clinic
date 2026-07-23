@@ -37,6 +37,7 @@ export type AdminReview = {
 export type CategoryOption = { slug: string; title: string };
 
 type Draft = {
+  id: string;
   name: string;
   rating: string;
   quote: string;
@@ -44,9 +45,12 @@ type Draft = {
   categorySlug: string;
   consent: boolean;
   published: boolean;
+  beforeImagePublicId: string | null;
+  afterImagePublicId: string | null;
 };
 
 const emptyDraft: Draft = {
+  id: '',
   name: '',
   rating: '',
   quote: '',
@@ -54,10 +58,13 @@ const emptyDraft: Draft = {
   categorySlug: '',
   consent: false,
   published: false,
+  beforeImagePublicId: null,
+  afterImagePublicId: null,
 };
 
 function draftFrom(review: AdminReview): Draft {
   return {
+    id: review.id,
     name: review.name,
     rating: review.rating === null ? '' : String(review.rating),
     quote: review.quote,
@@ -65,6 +72,8 @@ function draftFrom(review: AdminReview): Draft {
     categorySlug: review.categorySlug,
     consent: review.consent,
     published: review.published,
+    beforeImagePublicId: review.beforeImagePublicId,
+    afterImagePublicId: review.afterImagePublicId,
   };
 }
 
@@ -99,7 +108,7 @@ export function ReviewEditor({
 
   function openAdd() {
     setError(null);
-    setDraft(emptyDraft);
+    setDraft({ ...emptyDraft, id: `draft-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}` });
     setEditing('new');
   }
 
@@ -148,6 +157,8 @@ export function ReviewEditor({
       categorySlug: draft.categorySlug || null,
       consent: draft.consent,
       published: draft.published,
+      beforeImagePublicId: draft.beforeImagePublicId,
+      afterImagePublicId: draft.afterImagePublicId,
     };
 
     await mutate(
@@ -187,14 +198,21 @@ export function ReviewEditor({
     );
   }
 
-  async function uploadImage(review: AdminReview, which: 'before' | 'after', file: File) {
+  async function uploadImage(id: string, which: 'before' | 'after', file: File): Promise<string | undefined> {
     const form = new FormData();
-    form.append('id', review.id);
+    form.append('id', id);
     form.append('which', which);
     form.append('file', file);
-    await mutate('img-' + which + '-' + review.id, () =>
-      fetch('/api/admin/reviews/image', { method: 'POST', body: form }),
-    );
+    let publicId: string | undefined;
+    await mutate('img-' + which + '-' + id, async () => {
+      const res = await fetch('/api/admin/reviews/image', { method: 'POST', body: form });
+      if (res.ok) {
+        const data = await res.json();
+        publicId = data.publicId;
+      }
+      return res;
+    });
+    return publicId;
   }
 
   return (
@@ -228,7 +246,17 @@ export function ReviewEditor({
           setDraft={setDraft}
           onSave={save}
           onCancel={close}
+          onUploadImage={async (which, file) => {
+            const publicId = await uploadImage(draft.id, which, file);
+            if (publicId) {
+              setDraft((d) => ({
+                ...d,
+                ...(which === 'before' ? { beforeImagePublicId: publicId } : { afterImagePublicId: publicId }),
+              }));
+            }
+          }}
           busy={busy}
+          busyId={busyId}
           heading="รีวิวใหม่"
           categories={categories}
         />
@@ -243,7 +271,17 @@ export function ReviewEditor({
                 setDraft={setDraft}
                 onSave={save}
                 onCancel={close}
+                onUploadImage={async (which, file) => {
+                  const publicId = await uploadImage(draft.id, which, file);
+                  if (publicId) {
+                    setDraft((d) => ({
+                      ...d,
+                      ...(which === 'before' ? { beforeImagePublicId: publicId } : { afterImagePublicId: publicId }),
+                    }));
+                  }
+                }}
                 busy={busy}
+                busyId={busyId}
                 heading={`แก้ไข: ${review.name}`}
                 categories={categories}
               />
@@ -258,7 +296,6 @@ export function ReviewEditor({
                 onDelete={() => remove(review)}
                 onMoveUp={() => move(index, -1)}
                 onMoveDown={() => move(index, 1)}
-                onUpload={(which, file) => uploadImage(review, which, file)}
               />
             )}
           </li>
@@ -284,17 +321,23 @@ function BeforeAfter({
   publicId: string | null;
   busy: boolean;
   loading: boolean;
-  onUpload: (file: File) => void;
+  onUpload?: (file: File) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const isUploadable = !!onUpload;
   return (
     <div className="flex flex-1 flex-col gap-1.5">
       <span className="text-[0.62rem] font-medium uppercase tracking-wide text-ink/40">{label}</span>
       <button
         type="button"
-        disabled={busy}
-        onClick={() => inputRef.current?.click()}
-        className="relative aspect-[3/4] w-full overflow-hidden rounded-xl bg-sand ring-1 ring-black/[0.06] transition-opacity hover:opacity-90 disabled:opacity-60"
+        disabled={busy || !isUploadable}
+        onClick={() => {
+          if (isUploadable) inputRef.current?.click();
+        }}
+        className={cn(
+          'relative aspect-[3/4] w-full overflow-hidden rounded-xl bg-sand ring-1 ring-black/[0.06]',
+          isUploadable && 'transition-opacity hover:opacity-90 disabled:opacity-60',
+        )}
       >
         {publicId ? (
           <Image
@@ -309,7 +352,7 @@ function BeforeAfter({
         ) : (
           <span className="absolute inset-0 grid place-items-center gap-1 text-center">
             <ImageOff className="size-4 text-ink/25" aria-hidden="true" />
-            <span className="text-[0.58rem] text-ink/35">แตะเพื่ออัปรูป</span>
+            <span className="text-[0.58rem] text-ink/35">{isUploadable ? 'แตะเพื่ออัปรูป' : 'ไม่มีรูป'}</span>
           </span>
         )}
         {loading && (
@@ -317,23 +360,27 @@ function BeforeAfter({
             <Loader2 className="size-4 animate-spin text-forest" />
           </span>
         )}
-        <span className="absolute inset-x-0 bottom-0 flex items-center justify-center gap-1 bg-ink/60 py-1 text-[0.58rem] text-white">
-          <Upload className="size-3" />
-          {publicId ? 'เปลี่ยน' : 'อัปรูป'}
-        </span>
+        {isUploadable && (
+          <span className="absolute inset-x-0 bottom-0 flex items-center justify-center gap-1 bg-ink/60 py-1 text-[0.58rem] text-white">
+            <Upload className="size-3" />
+            {publicId ? 'เปลี่ยน' : 'อัปรูป'}
+          </span>
+        )}
       </button>
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/jpeg,image/png,image/webp,image/avif"
-        className="sr-only"
-        aria-label={`อัปรูป${label}`}
-        onChange={(event) => {
-          const file = event.target.files?.[0];
-          if (file) onUpload(file);
-          event.target.value = '';
-        }}
-      />
+      {isUploadable && (
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/avif"
+          className="sr-only"
+          aria-label={`อัปรูป${label}`}
+          onChange={(event) => {
+            const file = event.target.files?.[0];
+            if (file) onUpload(file);
+            event.target.value = '';
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -359,7 +406,6 @@ function ReviewRow({
   onDelete: () => void;
   onMoveUp: () => void;
   onMoveDown: () => void;
-  onUpload: (which: 'before' | 'after', file: File) => void;
 }) {
   const live = review.published && review.consent;
 
@@ -369,16 +415,14 @@ function ReviewRow({
         <BeforeAfter
           label="ก่อน"
           publicId={review.beforeImagePublicId}
-          busy={busy}
-          loading={busyId === 'img-before-' + review.id}
-          onUpload={(file) => onUpload('before', file)}
+          busy={false}
+          loading={false}
         />
         <BeforeAfter
           label="หลัง"
           publicId={review.afterImagePublicId}
-          busy={busy}
-          loading={busyId === 'img-after-' + review.id}
-          onUpload={(file) => onUpload('after', file)}
+          busy={false}
+          loading={false}
         />
       </div>
 
@@ -486,7 +530,9 @@ function ReviewForm({
   setDraft,
   onSave,
   onCancel,
+  onUploadImage,
   busy,
+  busyId,
   heading,
   categories,
 }: {
@@ -494,7 +540,9 @@ function ReviewForm({
   setDraft: (draft: Draft) => void;
   onSave: () => void;
   onCancel: () => void;
+  onUploadImage: (which: 'before' | 'after', file: File) => void;
   busy: boolean;
+  busyId: string | null;
   heading: string;
   categories: CategoryOption[];
 }) {
@@ -515,60 +563,79 @@ function ReviewForm({
         </button>
       </div>
 
-      <div className="mt-4 grid gap-4 sm:grid-cols-2">
-        <Field label="ชื่อผู้รีวิว" hint="เช่น คุณ A">
-          <input
-            className={inputClass}
-            value={draft.name}
-            onChange={(e) => set({ name: e.target.value })}
-            placeholder="เช่น คุณเอ"
+      <div className="mt-4 flex flex-col gap-6 sm:flex-row">
+        <div className="flex shrink-0 gap-2 sm:w-64">
+          <BeforeAfter
+            label="ก่อน"
+            publicId={draft.beforeImagePublicId}
+            busy={busy}
+            loading={busyId === 'img-before-' + draft.id}
+            onUpload={(file) => onUploadImage('before', file)}
           />
-        </Field>
-        <Field label="คะแนน" hint="ไม่บังคับ">
-          <select
-            className={inputClass}
-            value={draft.rating}
-            onChange={(e) => set({ rating: e.target.value })}
-          >
-            <option value="">— ไม่ระบุ —</option>
-            {[5, 4, 3, 2, 1].map((n) => (
-              <option key={n} value={n}>
-                {n} ดาว
-              </option>
-            ))}
-          </select>
-        </Field>
-        <Field label="หัตถการ" hint="ไม่บังคับ">
-          <input
-            className={inputClass}
-            value={draft.procedure}
-            onChange={(e) => set({ procedure: e.target.value })}
-            placeholder="เช่น ฟิลเลอร์ใต้ตา"
+          <BeforeAfter
+            label="หลัง"
+            publicId={draft.afterImagePublicId}
+            busy={busy}
+            loading={busyId === 'img-after-' + draft.id}
+            onUpload={(file) => onUploadImage('after', file)}
           />
-        </Field>
-        <Field label="หมวดบริการ" hint="ไม่บังคับ">
-          <select
-            className={inputClass}
-            value={draft.categorySlug}
-            onChange={(e) => set({ categorySlug: e.target.value })}
-          >
-            <option value="">— ไม่ระบุ —</option>
-            {categories.map((category) => (
-              <option key={category.slug} value={category.slug}>
-                {category.title}
-              </option>
-            ))}
-          </select>
-        </Field>
-        <div className="sm:col-span-2">
-          <Field label="ข้อความรีวิว" hint="ไม่บังคับ">
-            <textarea
-              className={cn(inputClass, 'min-h-24 resize-y')}
-              value={draft.quote}
-              onChange={(e) => set({ quote: e.target.value })}
-              placeholder="คำรีวิวจากลูกค้า"
+        </div>
+
+        <div className="grid flex-1 content-start gap-4 sm:grid-cols-2">
+          <Field label="ชื่อผู้รีวิว" hint="เช่น คุณ A">
+            <input
+              className={inputClass}
+              value={draft.name}
+              onChange={(e) => set({ name: e.target.value })}
+              placeholder="เช่น คุณเอ"
             />
           </Field>
+          <Field label="คะแนน" hint="ไม่บังคับ">
+            <select
+              className={inputClass}
+              value={draft.rating}
+              onChange={(e) => set({ rating: e.target.value })}
+            >
+              <option value="">— ไม่ระบุ —</option>
+              {[5, 4, 3, 2, 1].map((n) => (
+                <option key={n} value={n}>
+                  {n} ดาว
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label="หัตถการ" hint="ไม่บังคับ">
+            <input
+              className={inputClass}
+              value={draft.procedure}
+              onChange={(e) => set({ procedure: e.target.value })}
+              placeholder="เช่น ฟิลเลอร์ใต้ตา"
+            />
+          </Field>
+          <Field label="หมวดบริการ" hint="ไม่บังคับ">
+            <select
+              className={inputClass}
+              value={draft.categorySlug}
+              onChange={(e) => set({ categorySlug: e.target.value })}
+            >
+              <option value="">— ไม่ระบุ —</option>
+              {categories.map((category) => (
+                <option key={category.slug} value={category.slug}>
+                  {category.title}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <div className="sm:col-span-2">
+            <Field label="ข้อความรีวิว" hint="ไม่บังคับ">
+              <textarea
+                className={cn(inputClass, 'min-h-24 resize-y')}
+                value={draft.quote}
+                onChange={(e) => set({ quote: e.target.value })}
+                placeholder="คำรีวิวจากลูกค้า"
+              />
+            </Field>
+          </div>
         </div>
       </div>
 
@@ -613,9 +680,6 @@ function ReviewForm({
           ยกเลิก
         </button>
       </div>
-      <p className="mt-3 text-[0.7rem] text-ink/40">
-        อัปโหลดภาพก่อน-หลังได้ที่การ์ดรีวิวหลังบันทึกแล้ว
-      </p>
     </div>
   );
 }
