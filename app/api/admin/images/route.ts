@@ -18,8 +18,7 @@ const ALLOWED = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
 const uploadSchema = z.object({
   key: z.enum(siteImageKeys as [SiteImageKey, ...SiteImageKey[]]),
   file: z
-    .any()
-    .refine((f) => f && typeof (f as any).size === 'number' && typeof (f as any).name === 'string', 'กรุณาอัปโหลดไฟล์')
+    .custom<File>((f) => f && typeof (f as File).size === 'number' && typeof (f as File).name === 'string', 'กรุณาอัปโหลดไฟล์')
     .refine((f) => f.size > 0, 'ไฟล์ว่าง')
     .refine((f) => f.size <= MAX_BYTES, 'ไฟล์ใหญ่เกิน 10MB')
     .refine((f) => ALLOWED.includes(f.type), 'รองรับเฉพาะ JPG / PNG / WebP / AVIF'),
