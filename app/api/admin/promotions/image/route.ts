@@ -37,7 +37,10 @@ export async function POST(request: NextRequest) {
   try {
     const upload = await uploadToCloudinary(file, `promo-${id}-${Date.now()}`);
     await setPromotionImage(id, upload.publicId, email);
+    // Thai (default) lives at /promotions, English at /en/promotions (localePrefix 'as-needed').
+    // Revalidate both so the new poster shows immediately regardless of language.
     revalidatePath('/promotions');
+    revalidatePath('/en/promotions');
     return NextResponse.json({ ok: true, ...upload });
   } catch (error) {
     return NextResponse.json(

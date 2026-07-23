@@ -107,7 +107,13 @@ function requireDb(binding: D1Database | null): asserts binding is D1Database {
   if (!binding) throw new Error('D1 binding NEXT_TAG_CACHE_D1 is not available');
 }
 
-/** Insert a promotion, or replace every field of an existing one. The row is self-contained. */
+/**
+ * Insert a promotion, or update the editable fields of an existing one. The UPDATE branch
+ * deliberately does NOT touch `image_public_id`: the image is owned by `setPromotionImage` (the
+ * upload button) alone. Clobbering it here meant a plain field edit — which carries whatever
+ * `imagePublicId` the client draft happened to hold, often stale or null — silently wiped an
+ * already-uploaded poster. `upsertProduct` and `upsertReview` guard their images the same way.
+ */
 export async function upsertPromotion(input: PromotionInput, updatedBy: string) {
   const binding = await db();
   requireDb(binding);
@@ -119,7 +125,7 @@ export async function upsertPromotion(input: PromotionInput, updatedBy: string) 
        VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)
        ON CONFLICT(id) DO UPDATE SET
          name = ?2, detail = ?3, price = ?4, original_price = ?5, note = ?6, valid_until = ?7,
-         category_slug = ?8, updated_at = ?10, updated_by = ?11, image_public_id = ?12`,
+         category_slug = ?8, updated_at = ?10, updated_by = ?11`,
     )
     .bind(
       input.id,

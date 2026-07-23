@@ -82,6 +82,7 @@ export async function POST(request: NextRequest) {
   try {
     await upsertPromotion(input, email);
     revalidatePath('/promotions');
+    revalidatePath('/en/promotions');
     return NextResponse.json({ ok: true, id });
   } catch (error) {
     return NextResponse.json(
@@ -101,6 +102,7 @@ export async function DELETE(request: NextRequest) {
   try {
     await deletePromotion(parsed.data.id);
     revalidatePath('/promotions');
+    revalidatePath('/en/promotions');
     return NextResponse.json({ ok: true });
   } catch (error) {
     return NextResponse.json(
@@ -120,6 +122,7 @@ export async function PATCH(request: NextRequest) {
   try {
     await reorderPromotions(parsed.data.orderedIds, email);
     revalidatePath('/promotions');
+    revalidatePath('/en/promotions');
     return NextResponse.json({ ok: true });
   } catch (error) {
     return NextResponse.json(
