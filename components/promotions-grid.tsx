@@ -76,7 +76,7 @@ export function PromotionsGrid({ promos, tabs }: { promos: PromoCard[]; tabs: Pr
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {visible.map((p, i) => (
           <Reveal key={p.key} delay={i * 40}>
-            <Card className="h-full overflow-hidden rounded-2xl border-olive/15 ring-0 transition-[transform,box-shadow] duration-200 hover:shadow-[0_10px_34px_rgba(38,40,31,0.08)] motion-safe:hover:-translate-y-1 flex flex-col">
+            <Card className="h-full overflow-hidden rounded-2xl border border-olive/20 bg-white shadow-sm ring-0 transition-[transform,box-shadow] duration-200 hover:shadow-[0_10px_34px_rgba(38,40,31,0.08)] motion-safe:hover:-translate-y-1 flex flex-col">
               {p.imagePublicId && (
                 <div className="w-full bg-sand">
                   <Image
