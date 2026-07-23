@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/sheet';
 import { useTranslations } from 'next-intl';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { HeaderActions } from '@/components/header-actions';
 
 export default function Header({
   logoMark,
@@ -28,7 +29,7 @@ export default function Header({
   const serviceGroups = resolvedServiceNavGroups();
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
+    <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/70 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <Link
           href="/"
@@ -119,43 +120,7 @@ export default function Header({
 
         <div className="flex items-center gap-1">
           <LanguageSwitcher />
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-foreground/80 hover:text-primary"
-            aria-label={t('search')}
-            render={<Link href="/search" />}
-          >
-            <Search className="size-4" />
-          </Button>
-          <span className="relative inline-flex">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-foreground/80 hover:text-primary"
-              aria-label={t('cart')}
-              render={<Link href="/cart" />}
-            >
-              <ShoppingBag className="size-4" />
-            </Button>
-            {cartCount > 0 && (
-              <span
-                aria-hidden="true"
-                className="pointer-events-none absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-forest px-1 text-[0.6rem] font-medium leading-none text-white"
-              >
-                {cartCount > 99 ? '99+' : cartCount}
-              </span>
-            )}
-          </span>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-foreground/80 hover:text-primary"
-            aria-label={t('account')}
-            render={<Link href="/account" />}
-          >
-            <User className="size-4" />
-          </Button>
+          <HeaderActions cartCount={cartCount} />
 
           <Sheet>
             <SheetTrigger
