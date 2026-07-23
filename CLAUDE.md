@@ -30,6 +30,8 @@ Stack: Next.js App Router (React 19) + TypeScript + Tailwind CSS v4 + shadcn/ui 
   - [.githooks/pre-push](.githooks/pre-push) — บล็อก `git push` ตรงเข้า main **และ** รัน `pnpm lint` + `pnpm typecheck` ให้ก่อนถ้ามีไฟล์โค้ดเปลี่ยน (push ที่มีแต่เอกสารข้ามไป ไม่เสียเวลา)
 
   ทั้งคู่ bypass ได้ด้วย `--no-verify` และทำงานเฉพาะเครื่องที่ติดตั้ง hook + เครื่องมือที่เรียก `git` จริง (tool ที่ฝัง git library ของตัวเองจะไม่ยิง hook) — **ไม่ใช่ prevention ที่แท้จริง วินัยยังต้องมาก่อน**
+
+  ⚠️ **`core.hooksPath = .githooks` เป็น path สัมพัทธ์ → git resolve จาก root ของ worktree หลักเสมอ** · แปลว่า worktree ใต้ `.claude/worktrees/*` ก็รัน hook **เวอร์ชันที่ checkout อยู่ในโฟลเดอร์หลัก** ไม่ใช่ของตัวเอง (ตรวจด้วย `git rev-parse --git-path hooks`) — แก้ hook ใน branch แล้วมันจะยังไม่มีผลจนกว่าจะ merge เข้า main **และ** โฟลเดอร์หลัก `git merge --ff-only origin/main` แล้ว
 - ปกติใช้ `gh pr merge <num> --squash --auto --delete-branch` — `--auto` จะ merge ให้เองเมื่อ CI ผ่าน (ไม่ต้องนั่งเฝ้า) · ก่อนหน้านี้ (2026-07-22) เคยตอบ `no checks reported` เพราะยังไม่มี CI — ตอนนี้ไม่ใช่แล้ว
 - ถ้า CI FAIL → หยุด, แจ้ง user, แก้ก่อน (ห้าม merge งานที่ CI แดงเด็ดขาด — ไม่มี branch protection คอยกันให้ ต้องมีวินัยเอง)
 - ก่อน `gh pr merge` ทุกครั้ง: เช็ค `gh pr view --json headRefOid` ให้ตรงกับ local HEAD ก่อน (sleep 2-3 วิ แล้วเช็คซ้ำถ้าไม่ตรง) — auto-merge ที่ยิงทันทีหลัง push อาจ squash แค่ commit เก่า
