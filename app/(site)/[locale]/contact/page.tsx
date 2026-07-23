@@ -131,7 +131,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-        <div className="relative z-10 mx-auto w-full max-w-[1200px] px-[20px] pb-24 pt-44 text-white md:px-8">
+        <div className="relative z-10 mx-auto w-full max-w-[1200px] px-[20px] pb-24 pt-16 text-white md:px-8 md:pt-24">
           <Reveal>
             <h1 className="max-w-3xl text-5xl font-bold leading-[1.1] tracking-tight md:text-7xl">
               {t('hero.title')}

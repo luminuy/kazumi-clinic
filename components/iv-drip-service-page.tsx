@@ -100,7 +100,7 @@ export function IvDripServicePage({
   return (
     <div className="overflow-x-hidden bg-[var(--background)]">
       {/* ── Hero ─────────────────────────────────────────────── */}
-      <section className="px-6 pb-24 pt-24 sm:px-10 md:px-14 md:pt-28 lg:px-20">
+      <section className="px-6 pb-24 pt-16 sm:px-10 md:px-14 md:pt-24 lg:px-20">
         <div className="mx-auto max-w-6xl">
           <div className="mt-12 flex flex-col items-start gap-12 md:flex-row md:gap-10">
             <div className="w-full md:w-5/12">

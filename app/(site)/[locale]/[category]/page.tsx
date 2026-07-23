@@ -282,7 +282,7 @@ export default async function ServiceCategoryPage({ params }: Props) {
     ) : (
       <div className="bg-[var(--background)]">
         {/* ── Hero ─────────────────────────────────────────────── */}
-        <section className="px-6 pb-20 pt-28 sm:px-10 md:px-14 lg:px-20">
+        <section className="px-6 pb-20 pt-16 sm:px-10 md:px-14 md:pt-24 lg:px-20">
           {/* Centred, not end-aligned: a 1:1.618 portrait is much taller than the text column,
               so bottom-aligning the text opened a dead gap above it. */}
           <div className="mx-auto grid max-w-6xl items-center gap-12 md:grid-cols-12 md:gap-10">

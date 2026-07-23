@@ -35,7 +35,7 @@ export function CollagenBoosterServicePage({
   return (
     <div className="bg-[var(--background)]">
       {/* ── Hero: asymmetric image + intro, with a tactile "Ma" overlap ──────── */}
-      <section className="px-6 pb-28 pt-24 sm:px-10 md:px-14 md:pt-28 lg:px-20">
+      <section className="px-6 pb-28 pt-16 sm:px-10 md:px-14 md:pt-24 lg:px-20">
         <div className="mx-auto max-w-6xl">
           <div className="mt-12 grid items-center gap-x-10 gap-y-16 md:grid-cols-12">
             {/* Image column — with the overlapping philosophy card. */}
