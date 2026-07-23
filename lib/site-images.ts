@@ -45,7 +45,8 @@ export type SiteImageKey =
   | 'promo-oxelle-skin-booster'
   | 'promo-radiant-bright'
   | 'promo-signature-flawless'
-  | 'promo-velvet-glow';
+  | 'promo-velvet-glow'
+  | 'hero-contact';
 
 export type SiteImageSpec = {
   key: SiteImageKey;
@@ -312,6 +313,13 @@ export const siteImages: SiteImageSpec[] = [
     defaultPublicId: cloudAssets.promoVelvetGlow,
     ratioHint: 'แนวตั้ง 4:5 (โปสเตอร์)',
   },
+  {
+    key: 'hero-contact',
+    label: 'รูปหัวหน้าติดต่อเรา',
+    where: '/contact — รูปใหญ่ในส่วนหัว',
+    defaultPublicId: cloudAssets.heroIvDrip2,
+    ratioHint: 'แนวนอน 21:9 — รูปพื้นหลัง hero เห็นเฉพาะครึ่งล่าง',
+  },
 ];
 
 /**
@@ -392,6 +400,17 @@ export const siteImageGroups: SiteImageGroup[] = [
         id: 'about',
         title: 'ทีมแพทย์และเกี่ยวกับเรา',
         keys: ['doctor-pratch', 'doctor-eesha', 'about-hero', 'about-interior', 'og-about'],
+      },
+    ],
+  },
+  {
+    id: 'contact',
+    title: 'ติดต่อเรา',
+    sections: [
+      {
+        id: 'contact',
+        title: 'ติดต่อเรา',
+        keys: ['hero-contact'],
       },
     ],
   },
