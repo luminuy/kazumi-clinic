@@ -14,39 +14,10 @@ export function LoginModal({
   onOpenChange: (open: boolean) => void;
 }) {
   const handleOAuthLogin = (provider: 'google' | 'line') => {
-    const width = 500;
-    const height = 600;
-    const left = window.screenX + (window.outerWidth - width) / 2;
-    const top = window.screenY + (window.outerHeight - height) / 2;
-
-    const popup = window.open(
-      `/api/account/oauth/${provider}`,
-      'oauth_popup',
-      `width=${width},height=${height},left=${left},top=${top}`
-    );
-
-    const messageListener = (event: MessageEvent) => {
-      if (event.origin !== window.location.origin) return;
-      if (event.data?.type === 'oauth_success') {
-        onOpenChange(false);
-        // Reload to update header state or session
-        window.location.reload();
-      }
-      if (event.data?.type === 'oauth_error') {
-        console.error('OAuth login failed');
-        alert('เกิดข้อผิดพลาดในการเข้าสู่ระบบ กรุณาลองใหม่อีกครั้ง');
-      }
-    };
-
-    window.addEventListener('message', messageListener);
-
-    // Cleanup listener when popup closes
-    const timer = setInterval(() => {
-      if (popup?.closed) {
-        clearInterval(timer);
-        window.removeEventListener('message', messageListener);
-      }
-    }, 500);
+    // Navigate via full-page redirect. The callback route will return the user
+    // back to the page they were on.
+    const nextUrl = window.location.pathname + window.location.search;
+    window.location.assign(`/api/account/oauth/${provider}?next=${encodeURIComponent(nextUrl)}`);
   };
 
   return (
