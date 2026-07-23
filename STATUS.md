@@ -4,7 +4,7 @@
 > **"ล่าสุด" = `origin/main` เสมอ** (ดู CLAUDE.md §0.5) — ไฟล์นี้แค่สรุปให้อ่านเร็ว ถ้าขัดกับ git ให้เชื่อ git
 > อัปเดตไฟล์นี้เป็นส่วนหนึ่งของ workflow: หลัง **deploy** และตอน **เริ่ม/จบงานสำคัญ** (ดู CLAUDE.md §0)
 
-**อัปเดตล่าสุด:** 2026-07-23 17:50 · โดย: Antigravity
+**อัปเดตล่าสุด:** 2026-07-23 17:56 · โดย: Claude Code
 
 ---
 
@@ -12,11 +12,13 @@
 
 | | |
 |---|---|
-| **workers.dev** | Version `b0b4309f` — deploy 2026-07-23 17:50 · ตรงกับ main `fa6307b` (feat: redesign blog index page with Apple-clinical style, PR #180) |
+| **workers.dev** | Version `9cc295f1` — deploy 2026-07-23 17:55 (ผ่าน CD อัตโนมัติ) · ตรงกับ main `93da871` (feat review image upload form, PR #168) |
 | **โดเมนจริง** (kazumiclinic.com) | ❌ ยังไม่ขึ้น — `SITE_ENV=preview`, robots `Disallow: /` (ตั้งใจ ห้ามลบจนกว่าโดเมนจะขึ้น) |
 | **URL ตรวจ** | https://kazumi-clinic.bankjack10452.workers.dev |
 
 > วิธีเช็คว่าเว็บจริง = main หรือยัง: `git rev-parse origin/main` เทียบกับ commit ในตารางบน · deploy ใหม่ = อัปเดต Version + commit ที่นี่
+
+> ⚡ **CD เปิดแล้ว 2026-07-23** ([.github/workflows/deploy.yml](.github/workflows/deploy.yml)): CI ผ่านบน main → `pnpm cf:deploy` รันเอง ไม่ต้อง deploy มือ · **merge เข้า main = ขึ้นเว็บจริงอัตโนมัติ** → security review ต้องทำ **ก่อน merge** (ดู CLAUDE.md §0) · ตาราง Deployed นี้ agent ที่ merge ควรอัปเดตหลัง CD เสร็จ (ยืนยัน Version ID จาก run ของ Deploy workflow)
 
 ---
 
