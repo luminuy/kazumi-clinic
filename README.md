@@ -8,29 +8,29 @@
 
 ## สถานะปัจจุบัน
 
-| รายการ | ค่า |
-| --- | --- |
-| URL ที่ใช้งาน | `https://kazumi-clinic.bankjack10452.workers.dev` |
-| Production Worker | `kazumi-clinic` |
-| CI/CD | มี CI/CD สมบูรณ์ผ่าน GitHub Actions — `lint`, `typecheck`, `test`, `build` ทุก PR |
-| Deploy | อัตโนมัติเมื่อ merge เข้า `main` ผ่าน `pnpm cf:deploy` ใน workflow (รองรับ deploy ด้วยมือเมื่อจำเป็น) |
-| Search indexing | ปิดด้วย `SITE_ENV=preview` จนกว่าจะมีโดเมนจริง |
+| รายการ                   | ค่า                                                                                                             |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------- |
+| URL ที่ใช้งาน            | `https://kazumi-clinic.bankjack10452.workers.dev`                                                               |
+| Production Worker        | `kazumi-clinic`                                                                                                 |
+| CI/CD                    | มี CI/CD สมบูรณ์ผ่าน GitHub Actions — `lint`, `typecheck`, `test`, `build` ทุก PR                               |
+| Deploy                   | อัตโนมัติเมื่อ merge เข้า `main` ผ่าน `pnpm cf:deploy` ใน workflow (รองรับ deploy ด้วยมือเมื่อจำเป็น)           |
+| Search indexing          | ปิดด้วย `SITE_ENV=preview` จนกว่าจะมีโดเมนจริง                                                                  |
 | โดเมน canonical ปัจจุบัน | `site.url` ยังเป็น `https://kazumiclinic.com`; ดูข้อควรระวังใน [docs/infrastructure.md](docs/infrastructure.md) |
 
 ## Tech stack
 
-| ชั้น | เทคโนโลยี |
-| --- | --- |
-| Framework | Next.js 15.5 App Router + React 19.2 |
-| ภาษา | TypeScript 5.6 |
-| Styling | Tailwind CSS v4 ผ่าน `@theme` ใน `app/globals.css` — ไม่มี `tailwind.config.ts` |
-| UI | shadcn/ui บน Base UI (`@base-ui/react`) — ใช้ prop `render`, ไม่ใช่ Radix `asChild` |
-| Validation | Zod ก่อน Route Handler แตะ DB |
-| Runtime | Cloudflare Workers + OpenNext, Node.js runtime compatibility |
-| ISR | KV incremental cache + D1 tag cache + Durable Object queue |
-| รูปภาพ | Cloudinary; image override เก็บในตาราง D1 `site_images` |
-| สินค้า | คลินิกจัดการเองที่ `/admin/products`; override เก็บในตาราง D1 `service_products` |
-| โปรโมชั่น | คลินิกจัดการเองที่ `/admin/promotions` รวมรูปภาพ; เก็บในตาราง D1 `promotions` |
+| ชั้น       | เทคโนโลยี                                                                           |
+| ---------- | ----------------------------------------------------------------------------------- |
+| Framework  | Next.js 15.5 App Router + React 19.2                                                |
+| ภาษา       | TypeScript 5.6                                                                      |
+| Styling    | Tailwind CSS v4 ผ่าน `@theme` ใน `app/globals.css` — ไม่มี `tailwind.config.ts`     |
+| UI         | shadcn/ui บน Base UI (`@base-ui/react`) — ใช้ prop `render`, ไม่ใช่ Radix `asChild` |
+| Validation | Zod ก่อน Route Handler แตะ DB                                                       |
+| Runtime    | Cloudflare Workers + OpenNext, Node.js runtime compatibility                        |
+| ISR        | KV incremental cache + D1 tag cache + Durable Object queue                          |
+| รูปภาพ     | Cloudinary; image override เก็บในตาราง D1 `site_images`                             |
+| สินค้า     | คลินิกเพิ่ม/แก้/ลบ/อัปรูปเองที่ `/admin/products`; override เก็บในตาราง D1 `service_products` (ส่วนต่างบน `lib/services.ts`) |
+| โปรโมชั่น  | คลินิกจัดการเองที่ `/admin/promotions` รวมรูปภาพ; เก็บหลักในตาราง D1 `promotions` (ไม่มีระบบส่วนต่าง) |
 
 Backend ใช้ Next.js Route Handlers (`app/api/*/route.ts`) ภายใน Worker เดียวกับหน้าเว็บ ไม่มี backend service แยก
 
@@ -98,7 +98,7 @@ pnpm install
 pnpm dev          # Next dev; ไม่มี D1/KV binding จึงเห็นเฉพาะรูป default
 pnpm lint         # ESLint 9 ผ่าน flat config ของ repo
 pnpm typecheck    # verification บังคับ
-pnpm test         # รัน vitest 
+pnpm test         # รัน vitest
 pnpm build        # verification บังคับ; ต้อง generate ครบ 9 category routes
 pnpm cf:build     # สร้าง OpenNext bundle
 pnpm cf:deploy    # build + deploy Worker จริง
@@ -108,9 +108,10 @@ pnpm cf:deploy    # build + deploy Worker จริง
 
 ## Deploy
 
-Cloudflare resources ถูกสร้างและใส่ ID จริงไว้แล้ว ห้ามรันคำสั่งสร้าง KV/D1 ซ้ำ 
+Cloudflare resources ถูกสร้างและใส่ ID จริงไว้แล้ว ห้ามรันคำสั่งสร้าง KV/D1 ซ้ำ
 
 โปรเจกต์มีการตั้งค่า **CI/CD อัตโนมัติ** หากคุณแก้ไขโค้ด:
+
 1. สร้าง Branch ใหม่ (`git switch -c <branch>`)
 2. Push และเปิด Pull Request (ห้าม push เข้า `main` ตรงๆ)
 3. เมื่อ CI ผ่าน (`lint`, `typecheck`, `test`, `build`) และทำการ Merge
