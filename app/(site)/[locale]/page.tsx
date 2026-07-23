@@ -172,20 +172,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             </div>
           </div>
 
-          <div
-            aria-hidden="true"
-            className="hero-enter hero-enter--image hidden flex-col items-center justify-center gap-5 text-center md:flex"
-          >
-            <FlowerMark className="size-24 text-white/25 lg:size-32" />
-            <div>
-              <p lang="en" className="font-serif text-xl italic leading-snug text-white/25 lg:text-2xl">
-                Where thoughtful care becomes natural beauty.
-              </p>
-              <p lang="ja" className="mt-2 font-serif text-base text-white/20 lg:text-lg">
-                純粋さは永遠の美へ
-              </p>
-            </div>
-          </div>
+
         </div>
       </section>
 
