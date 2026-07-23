@@ -429,5 +429,16 @@
       "completed": "Completed",
       "cancelled": "Cancelled"
     }
+  },
+  "Search": {
+    "title": "Search services",
+    "eyebrow": "Search",
+    "placeholder": "Search services — filler, botox, IV drip…",
+    "resultCount": "{count} results",
+    "browseHint": "Type to search, or browse the categories below.",
+    "noResults": "No matches. Try a different keyword.",
+    "type": {
+      "category": "Category"
+    }
   }
 }
