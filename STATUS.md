@@ -4,7 +4,7 @@
 > **"ล่าสุด" = `origin/main` เสมอ** (ดู CLAUDE.md §0.5) — ไฟล์นี้แค่สรุปให้อ่านเร็ว ถ้าขัดกับ git ให้เชื่อ git
 > อัปเดตไฟล์นี้เป็นส่วนหนึ่งของ workflow: หลัง **deploy** และตอน **เริ่ม/จบงานสำคัญ** (ดู CLAUDE.md §0)
 
-**อัปเดตล่าสุด:** 2026-07-23 · โดย: Antigravity
+**อัปเดตล่าสุด:** 2026-07-23 17:50 · โดย: Antigravity
 
 ---
 
@@ -12,7 +12,7 @@
 
 | | |
 |---|---|
-| **workers.dev** | Version `e5e6376` — deploy 2026-07-23 · ตรงกับ main `e5e6376` (redesign Contact Page using Stitch Apple UI patterns) |
+| **workers.dev** | Version `b0b4309f` — deploy 2026-07-23 17:50 · ตรงกับ main `fa6307b` (feat: redesign blog index page with Apple-clinical style, PR #180) |
 | **โดเมนจริง** (kazumiclinic.com) | ❌ ยังไม่ขึ้น — `SITE_ENV=preview`, robots `Disallow: /` (ตั้งใจ ห้ามลบจนกว่าโดเมนจะขึ้น) |
 | **URL ตรวจ** | https://kazumi-clinic.bankjack10452.workers.dev |
 
@@ -55,7 +55,7 @@
 - **เปลี่ยนรูปใน /admin แล้วต้องขึ้นเว็บ**: ต้องมีตาราง `revalidations` ใน D1 (fix แล้ว 2026-07-22, `migrations/0007`, ผูกใน `cf:deploy`) — ถ้าหน้าไม่อัปเดตอีก เช็คตารางนี้ก่อน (CLAUDE.md §0.5)
 - **สองเครื่องมือแก้ร่วมกัน** (Claude ใน worktree · Antigravity ในโฟลเดอร์หลัก): งานที่ไม่ push = มองไม่เห็นตอน deploy — commit+push ทุกครั้งที่หยุด · ✅ `main` **บังคับด้วย ruleset แล้ว** (repo เป็น public ตั้งแต่ 2026-07-23) — push ตรงเข้า main โดน GitHub ตีกลับทุกกรณี แม้ `--no-verify` ต้องผ่าน PR + `verify` เขียวเท่านั้น
 - **repo เป็น public แล้ว** (2026-07-23) — โค้ดและประวัติทั้งหมดเปิดสาธารณะ · ห้าม commit ความลับลงไฟล์เด็ดขาด ใช้ `wrangler secret put` เท่านั้น · ความลับที่หลุดไปแล้วถือว่าหลุดถาวร ต้อง rotate ไม่ใช่ลบ commit
-- **deploy เป็น manual**: `pnpm cf:deploy` แล้วยิงเว็บจริง 2 ครั้งเช็ค `x-nextjs-cache` (ISR เสิร์ฟของเก่ารอบแรก) · เช็คสุขภาพเว็บได้ด้วย `pnpm health`
+- **deploy มี CI/CD แล้ว**: `.github/workflows/deploy.yml` จะรัน `pnpm cf:deploy` อัตโนมัติเมื่อ merge เข้า `main` (ต้องตั้ง `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` เป็น GitHub Repository Secrets ก่อน) · ถ้ายังไม่ตั้ง secret สามารถ deploy manual ได้ด้วย `pnpm cf:deploy` แล้วยิงเว็บจริง 2 ครั้งเช็ค `x-nextjs-cache` (ISR เสิร์ฟของเก่ารอบแรก) · เช็คสุขภาพเว็บได้ด้วย `pnpm health`
 
 ## 🧰 เครื่องมือ (มีตั้งแต่ 2026-07-22)
 
