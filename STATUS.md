@@ -12,7 +12,7 @@
 
 | | |
 |---|---|
-| **workers.dev** | Version `b9ffb34c` — deploy 2026-07-23 · ตรงกับ main `d515af8` (redesign review image upload flow) |
+| **workers.dev** | Version `99034adb` — deploy 2026-07-23 · ตรงกับ main `87519a4` (fix contact page inert tokens) |
 | **โดเมนจริง** (kazumiclinic.com) | ❌ ยังไม่ขึ้น — `SITE_ENV=preview`, robots `Disallow: /` (ตั้งใจ ห้ามลบจนกว่าโดเมนจะขึ้น) |
 | **URL ตรวจ** | https://kazumi-clinic.bankjack10452.workers.dev |
 
