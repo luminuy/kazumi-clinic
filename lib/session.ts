@@ -12,7 +12,7 @@ export type UserSessionPayload = {
 };
 
 export async function encrypt(payload: UserSessionPayload) {
-  return await new SignJWT(payload as any)
+  return await new SignJWT({ ...payload })
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
     .setExpirationTime('30d')
@@ -25,7 +25,7 @@ export async function decrypt(input: string): Promise<UserSessionPayload | null>
       algorithms: ['HS256'],
     });
     return payload as unknown as UserSessionPayload;
-  } catch (error) {
+  } catch {
     return null;
   }
 }

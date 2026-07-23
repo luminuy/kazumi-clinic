@@ -1,6 +1,6 @@
 import { Link } from '@/i18n/routing';
 import Image from 'next/image';
-import { Menu, ChevronDown, ArrowRight, Search, ShoppingBag, User } from 'lucide-react';
+import { Menu, ChevronDown, ArrowRight } from 'lucide-react';
 import { site } from '@/lib/site';
 import { navItems, resolvedServiceNavGroups } from '@/lib/nav';
 import { Button } from '@/components/ui/button';
