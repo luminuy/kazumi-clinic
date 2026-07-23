@@ -21,9 +21,11 @@ import { HeaderActions } from '@/components/header-actions';
 export default function Header({
   logoMark,
   cartCount = 0,
+  isLoggedIn = false,
 }: {
   logoMark: string;
   cartCount?: number;
+  isLoggedIn?: boolean;
 }) {
   const t = useTranslations('Navigation');
   const serviceGroups = resolvedServiceNavGroups();
@@ -120,7 +122,7 @@ export default function Header({
 
         <div className="flex items-center gap-1">
           <LanguageSwitcher />
-          <HeaderActions cartCount={cartCount} />
+          <HeaderActions cartCount={cartCount} isLoggedIn={isLoggedIn} />
 
           <Sheet>
             <SheetTrigger
