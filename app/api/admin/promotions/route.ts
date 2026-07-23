@@ -40,7 +40,7 @@ const upsertSchema = z
     validUntil: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'วันหมดอายุไม่ถูกต้อง'),
     categorySlug: z.enum(categorySlugs).nullish(),
     sortOrder: z.number().int().min(0).max(9999).optional(),
-    imagePublicId: z.string().optional(),
+    imagePublicId: z.string().nullish(),
   })
   // A struck-through original price only makes sense when it's above the promo price.
   .refine((data) => data.originalPrice == null || (data.price != null && data.originalPrice > data.price), {
