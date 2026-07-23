@@ -78,24 +78,25 @@ export function PromotionsGrid({ promos, tabs }: { promos: PromoCard[]; tabs: Pr
           <Reveal key={p.key} delay={i * 40}>
             <Card className="h-full overflow-hidden rounded-2xl border-olive/15 ring-0 transition-[transform,box-shadow] duration-200 hover:shadow-[0_10px_34px_rgba(38,40,31,0.08)] motion-safe:hover:-translate-y-1 flex flex-col">
               {p.imagePublicId && (
-                <div className="relative aspect-[4/5] w-full bg-sand">
+                <div className="w-full bg-sand">
                   <Image
                     src={p.imagePublicId}
                     alt={p.name}
-                    fill
+                    width={800}
+                    height={1000}
                     sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                    className="object-cover"
+                    className="w-full h-auto object-contain"
                   />
                 </div>
               )}
-              {p.price !== null && (
-                <CardContent className={cn("flex-1", p.imagePublicId && "pt-6")}>
-                  <p className="font-serif text-lg text-olive-deep">{p.name}</p>
-                  {p.detail && (
-                    <Badge variant="outline" className="mt-2 border-olive/30 text-ink/60">
-                      {p.detail}
-                    </Badge>
-                  )}
+              <CardContent className={cn("flex-1", p.imagePublicId ? "pt-6" : "pt-6")}>
+                <p className="font-serif text-lg text-olive-deep">{p.name}</p>
+                {p.detail && (
+                  <Badge variant="outline" className="mt-2 border-olive/30 text-ink/60">
+                    {p.detail}
+                  </Badge>
+                )}
+                {p.price !== null ? (
                   <p className="mt-4 text-xl font-medium text-forest">
                     {p.price.toLocaleString('th-TH')} บาท
                     {p.originalPrice && (
@@ -104,10 +105,12 @@ export function PromotionsGrid({ promos, tabs }: { promos: PromoCard[]; tabs: Pr
                       </span>
                     )}
                   </p>
-                  {p.note && <p className="mt-1 text-xs text-olive-light">{p.note}</p>}
-                  <p className="mt-2 text-xs text-ink/50">ใช้ได้ถึง {formatValidUntil(p.validUntil)}</p>
-                </CardContent>
-              )}
+                ) : (
+                  <p className="mt-4 text-sm font-medium text-forest">สอบถามราคาเพิ่มเติม</p>
+                )}
+                {p.note && <p className="mt-1 text-xs text-olive-light">{p.note}</p>}
+                <p className="mt-2 text-xs text-ink/50">ใช้ได้ถึง {formatValidUntil(p.validUntil)}</p>
+              </CardContent>
             </Card>
           </Reveal>
         ))}
