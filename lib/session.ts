@@ -1,8 +1,27 @@
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 
-const secretKey = process.env.SESSION_SECRET || 'default-secret-key-for-development-please-change';
-const key = new TextEncoder().encode(secretKey);
+// The signing key for member session cookies. A hardcoded fallback used to stand in when
+// SESSION_SECRET was missing, which meant production silently signed sessions with a string
+// committed to git — anyone able to read the repo could mint a session for any member. Production
+// now refuses to sign at all rather than sign with a known key.
+//
+// Resolved per call, not at module load: a throw at import time would take down `next build` and CI,
+// where SESSION_SECRET legitimately does not exist.
+const DEV_FALLBACK_SECRET = 'insecure-dev-only-secret-never-used-in-production';
+
+function sessionKey() {
+  const secret = process.env.SESSION_SECRET?.trim();
+  if (secret) return new TextEncoder().encode(secret);
+
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(
+      'SESSION_SECRET is not set. Refusing to sign or verify session tokens with a known key — ' +
+        'set it with `npx wrangler secret put SESSION_SECRET` and redeploy.',
+    );
+  }
+  return new TextEncoder().encode(DEV_FALLBACK_SECRET);
+}
 
 export type UserSessionPayload = {
   userId: string;
@@ -16,10 +35,12 @@ export async function encrypt(payload: UserSessionPayload) {
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
     .setExpirationTime('30d')
-    .sign(key);
+    .sign(sessionKey());
 }
 
 export async function decrypt(input: string): Promise<UserSessionPayload | null> {
+  const key = sessionKey(); // outside the try: a missing SESSION_SECRET is a config fault, not a
+  // bad cookie, and must not be swallowed into a silent "logged out"
   try {
     const { payload } = await jwtVerify(input, key, {
       algorithms: ['HS256'],
