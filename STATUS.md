@@ -12,7 +12,7 @@
 
 | | |
 |---|---|
-| **workers.dev** | Version `5b8a9542` — deploy 2026-07-23 · ตรงกับ main `2b7bed9` (ระบบสมาชิก + ตะกร้า + checkout + ค้นหา + fix SESSION_SECRET) |
+| **workers.dev** | Version `d6b17204` — deploy 2026-07-23 · ตรงกับ main `1deba49` (fix 500 หน้าหมวดบริการทั้ง 9: เพิ่ม locale param + setRequestLocale ที่ `[locale]/[category]`) |
 | **โดเมนจริง** (kazumiclinic.com) | ❌ ยังไม่ขึ้น — `SITE_ENV=preview`, robots `Disallow: /` (ตั้งใจ ห้ามลบจนกว่าโดเมนจะขึ้น) |
 | **URL ตรวจ** | https://kazumi-clinic.bankjack10452.workers.dev |
 
