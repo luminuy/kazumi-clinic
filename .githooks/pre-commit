@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Guardrail 1 of 2: block committing while HEAD is main.
+#
+# The pre-push hook alone was not enough (2026-07-23): five commits were made straight onto main
+# in the main folder, so by the time push ran, main was already dirty and the only way forward was
+# to bypass the hook. Blocking at commit time stops it at the source instead.
+#
+# Bypassable with `git commit --no-verify`; only active where core.hooksPath is set (`pnpm install`
+# or `pnpm setup:hooks`), and only for tools that shell out to real git.
+protected="main"
+branch=$(git symbolic-ref --short -q HEAD) || exit 0  # detached HEAD (rebase, bisect) — let it be
+
+if [ "$branch" = "$protected" ]; then
+  echo "" >&2
+  echo "  ✋ ห้าม commit บน '$protected' โดยตรง — งานทุกอย่างต้องผ่าน branch + PR (CLAUDE.md §0)" >&2
+  echo "" >&2
+  echo "     ย้ายงานที่ stage ไว้ไป branch ใหม่โดยไม่เสียอะไร:" >&2
+  echo "       git switch -c my-change" >&2
+  echo "       git commit ..." >&2
+  echo "" >&2
+  echo "     ถ้าจำเป็นจริง ๆ: git commit --no-verify" >&2
+  echo "" >&2
+  exit 1
+fi
+exit 0
