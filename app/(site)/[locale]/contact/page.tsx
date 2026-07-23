@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const pageTitle = t('metaTitle');
   const pageDescription = t('metaDescription', { siteName: site.name });
 
-  const socialImage = await siteSocialImage('hero-iv-drip-2', `${site.name} ${pageTitle}`);
+  const socialImage = await siteSocialImage('hero-contact', `${site.name} ${pageTitle}`);
 
   return {
     title: pageTitle,
@@ -85,7 +85,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
   const t = await getTranslations('ContactPage');
   const tHome = await getTranslations('HomePage');
 
-  const heroImage = await getImage('hero-iv-drip-2');
+  const heroImage = await getImage('hero-contact');
 
   const breadcrumb = breadcrumbSchema([
     { name: tHome('Navigation.home'), path: '/' },

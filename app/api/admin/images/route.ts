@@ -42,7 +42,7 @@ const REVALIDATION_TARGETS: Record<SiteImageKey, readonly RevalidationTarget[]> 
   // categoryImageKey, so every category slot has to revalidate those two alongside its own page.
   'hero-botox': [{ path: '/' }, { path: '/botox' }, { path: '/services' }],
   'hero-iv-drip-1': [{ path: '/' }, { path: '/iv-drip' }, { path: '/reviews' }],
-  'hero-iv-drip-2': [{ path: '/' }, { path: '/services' }, { path: '/contact' }],
+  'hero-iv-drip-2': [{ path: '/' }, { path: '/services' }],
   'hero-iv-drip-3': [],
   'hero-skin-booster': [
     { path: '/' },
@@ -76,6 +76,7 @@ const REVALIDATION_TARGETS: Record<SiteImageKey, readonly RevalidationTarget[]> 
   'promo-radiant-bright': [{ path: '/' }, { path: '/promotions' }, { path: '/services' }],
   'promo-signature-flawless': [{ path: '/' }, { path: '/promotions' }, { path: '/services' }],
   'promo-velvet-glow': [{ path: '/' }, { path: '/promotions' }, { path: '/services' }],
+  'hero-contact': [{ path: '/contact' }],
 };
 
 function revalidateImage(key: SiteImageKey) {
