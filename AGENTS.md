@@ -17,6 +17,7 @@
 - สำรวจก่อนแก้ วางแผน แล้ว verify ด้วย `pnpm lint` + `pnpm typecheck` + `pnpm build` + อ่าน diff
 - Stage เฉพาะไฟล์งาน, commit, push, เปิด PR และ merge ตาม [CLAUDE.md](CLAUDE.md) §0
 - **CRITICAL DEPLOY RULE**: ห้ามรัน `pnpm cf:deploy` จาก local branch ที่ยังไม่ถูก merge โดยเด็ดขาด ขั้นตอนที่ถูกต้องคือ: 1. Push เข้า branch 2. เปิด PR 3. รอ CI ผ่านแล้ว Merge 4. กลับมาที่ main แล้วรัน `git pull --rebase` เสมอ เพื่อรับโค้ดที่ merge แล้ว 5. ค่อยสั่ง `pnpm cf:deploy` เพื่อป้องกันโค้ดเก่าทับโค้ดใหม่บนหน้าเว็บจริง (เคยเกิดปัญหาปุ่มกลับเป็นสีขาวมาแล้ว)
+- **CRITICAL MERGE CONFLICT RULE**: ห้ามใช้ `git stash` แล้วตามด้วย `git pull --rebase` และ `git stash pop` แบบอัตโนมัติรวดเดียวเด็ดขาด! หากมีงานที่แก้ค้างไว้ ต้อง `git commit` ให้เรียบร้อยก่อนดึงโค้ดเสมอ หากมี Merge Conflict ต้องตรวจเช็คไฟล์และแก้ให้เสร็จสิ้นก่อน เพราะการปล่อยผ่านจะทำให้ไฟล์โดนย้อนกลับไปเป็นเวอร์ชันเก่า (เคยเกิดปัญหา Apple Header หายกลับไปเป็นปุ่มสีเขียวมาแล้ว)
 - Repo ไม่มี CI/CD; merge ไม่ deploy งาน public site/Worker ต้องรัน `pnpm cf:deploy` หลัง merge เสร็จ และตรวจ `Current Version ID` + HTTP จริง งาน docs-only ไม่ต้อง deploy
 - Backend ใช้ Next.js Route Handlers และต้อง Zod-validate ก่อนแตะ DB
 - ห้าม `export const runtime = 'edge'`; OpenNext ใช้ Node.js compatibility บน Worker
