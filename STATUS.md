@@ -4,7 +4,7 @@
 > **"ล่าสุด" = `origin/main` เสมอ** (ดู CLAUDE.md §0.5) — ไฟล์นี้แค่สรุปให้อ่านเร็ว ถ้าขัดกับ git ให้เชื่อ git
 > อัปเดตไฟล์นี้เป็นส่วนหนึ่งของ workflow: หลัง **deploy** และตอน **เริ่ม/จบงานสำคัญ** (ดู CLAUDE.md §0)
 
-**อัปเดตล่าสุด:** 2026-07-22 · โดย: Claude Code
+**อัปเดตล่าสุด:** 2026-07-23 · โดย: Claude Code
 
 ---
 
@@ -12,7 +12,7 @@
 
 | | |
 |---|---|
-| **workers.dev** | Version `050f0578` — deploy 2026-07-22 · ตรงกับ main `f7c37f3` (design tokens ใหม่ + fix รูป /admin) |
+| **workers.dev** | Version `658002ed` — deploy 2026-07-23 · ตรงกับ main `7045232` (ระบบสมาชิก + ตะกร้า + checkout + ค้นหา) |
 | **โดเมนจริง** (kazumiclinic.com) | ❌ ยังไม่ขึ้น — `SITE_ENV=preview`, robots `Disallow: /` (ตั้งใจ ห้ามลบจนกว่าโดเมนจะขึ้น) |
 | **URL ตรวจ** | https://kazumi-clinic.bankjack10452.workers.dev |
 
@@ -30,6 +30,8 @@
 
 ## 📋 ต่อไป / TODO
 
+- [ ] **ระบบสมาชิก — เปิด Google/LINE Login**: ตั้ง secret `GOOGLE_CLIENT_ID/SECRET`, `LINE_CHANNEL_ID/SECRET` ด้วย `wrangler secret put` + เพิ่ม redirect URI ใน console (ดู [docs/member-system.md](docs/member-system.md)) — ปุ่มขึ้นแล้วแต่ยังกดไม่ผ่านจนกว่าจะตั้งคีย์
+- [ ] **ระบบสมาชิก — เชื่อม payment gateway**: แก้ `lib/members/payments.ts` (`initiatePayment`) — ตอนนี้ checkout รองรับจองก่อนจ่ายที่คลินิกได้เต็ม, ชำระออนไลน์เป็น placeholder
 - [ ] **เจ้าของทดสอบ**: เปลี่ยนรูปสักช่องใน /admin → รีเฟรชหน้านั้น ควรอัปเดตใน ~ไม่กี่วินาที (ยืนยัน on-demand revalidation หลังแก้ tag cache 2026-07-22)
 - [ ] จดโดเมนจริง + ลบ `SITE_ENV=preview` + แก้ robots ตอนโดเมนพร้อม (ดู docs/infrastructure.md)
 
