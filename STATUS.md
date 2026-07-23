@@ -12,7 +12,7 @@
 
 | | |
 |---|---|
-| **workers.dev** | Version `e5e6376` — deploy 2026-07-23 · ตรงกับ main `e5e6376` (redesign Contact Page using Stitch Apple UI patterns) |
+| **workers.dev** | Version `38b224f4` — deploy 2026-07-23 · ตรงกับ main `e5e6376` (redesign Contact Page using Stitch Apple UI patterns) |
 | **โดเมนจริง** (kazumiclinic.com) | ❌ ยังไม่ขึ้น — `SITE_ENV=preview`, robots `Disallow: /` (ตั้งใจ ห้ามลบจนกว่าโดเมนจะขึ้น) |
 | **URL ตรวจ** | https://kazumi-clinic.bankjack10452.workers.dev |
 
