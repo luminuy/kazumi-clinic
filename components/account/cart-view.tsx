@@ -48,17 +48,17 @@ export function CartView({ initialCart, lineUrl }: { initialCart: CartSummary; l
 
   if (cart.items.length === 0) {
     return (
-      <div className="rounded-[2rem] bg-[var(--store-card)] p-16 text-center shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-        <span className="mx-auto grid size-20 place-items-center rounded-full bg-black/[0.03] text-[var(--store-ink)]">
-          <ShoppingBag strokeWidth={1.25} className="size-8" />
+      <div className="rounded-[2rem] bg-white p-16 text-center shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+        <span className="mx-auto grid size-24 place-items-center rounded-full bg-black/[0.02] text-black/20">
+          <ShoppingBag strokeWidth={1} className="size-10" />
         </span>
-        <p className="mt-8 font-serif text-2xl text-[var(--store-ink)]">{t('empty.title')}</p>
-        <p className="mx-auto mt-3 max-w-sm text-sm leading-[1.7] text-[var(--store-muted)]">
+        <p className="mt-8 font-serif text-3xl tracking-tight text-[var(--store-ink)]">{t('empty.title')}</p>
+        <p className="mx-auto mt-3 max-w-sm text-[0.9rem] leading-[1.6] text-[var(--store-muted)]">
           {t('empty.desc')}
         </p>
         <Link
           href="/services"
-          className="mt-8 inline-flex items-center gap-2 rounded-full bg-forest px-8 py-4 text-[0.8rem] font-medium text-white transition-all hover:scale-[1.02] hover:bg-mint"
+          className="mt-8 inline-flex items-center gap-2 rounded-full bg-forest px-8 py-3.5 text-sm font-medium text-white transition-all hover:scale-[1.02] hover:bg-mint hover:shadow-sm active:scale-[0.98]"
         >
           {t('empty.cta')}
         </Link>
@@ -68,74 +68,79 @@ export function CartView({ initialCart, lineUrl }: { initialCart: CartSummary; l
 
   return (
     <div className="grid gap-8 lg:grid-cols-[1fr_20rem] lg:items-start">
-      <ul className="divide-y divide-black/[0.04] rounded-[2rem] bg-[var(--store-card)] px-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+      <ul className="divide-y divide-black/[0.04] rounded-[2rem] bg-white px-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
         {cart.items.map((item) => {
           const isBusy = busy === item.productId;
           return (
-            <li key={item.productId} className="flex items-center gap-4 py-6">
-              <div className="min-w-0 flex-1">
+            <li key={item.productId} className="flex flex-wrap items-center gap-4 py-6 sm:flex-nowrap">
+              <div className="min-w-0 flex-1 basis-full sm:basis-auto">
                 <p className="truncate font-serif text-lg text-[var(--store-ink)]">{item.title}</p>
                 <p className="mt-0.5 text-xs text-[var(--store-muted)]">
                   {formatSatang(item.unitPriceSatang)}
                 </p>
               </div>
 
-              <div className="flex items-center gap-1 rounded-full border border-black/10 p-1">
-                <button
-                  type="button"
-                  aria-label={t('decrease')}
-                  disabled={isBusy}
-                  onClick={() => mutate('PATCH', item.productId, item.quantity - 1)}
-                  className="grid size-7 place-items-center rounded-full text-[var(--store-ink)] transition-colors hover:bg-[var(--store-control)] disabled:opacity-50"
-                >
-                  <Minus className="size-3.5" />
-                </button>
-                <span className="w-7 text-center text-sm tabular-nums text-[var(--store-ink)]">
-                  {isBusy ? <Loader2 className="mx-auto size-3.5 animate-spin" /> : item.quantity}
-                </span>
-                <button
-                  type="button"
-                  aria-label={t('increase')}
-                  disabled={isBusy}
-                  onClick={() => mutate('PATCH', item.productId, item.quantity + 1)}
-                  className="grid size-7 place-items-center rounded-full text-[var(--store-ink)] transition-colors hover:bg-[var(--store-control)] disabled:opacity-50"
-                >
-                  <Plus className="size-3.5" />
-                </button>
-              </div>
+              <div className="flex flex-1 items-center justify-between gap-4 sm:flex-none sm:justify-end">
+                <div className="flex h-9 items-center gap-1 rounded-full border border-black/5 bg-black/[0.02] px-1">
+                  <button
+                    type="button"
+                    aria-label={t('decrease')}
+                    disabled={isBusy}
+                    onClick={() => mutate('PATCH', item.productId, item.quantity - 1)}
+                    className="grid h-7 w-7 place-items-center rounded-full text-[var(--store-ink)] transition-all hover:bg-white hover:shadow-sm disabled:opacity-50"
+                  >
+                    <Minus className="size-3.5" />
+                  </button>
+                  <span className="w-8 text-center text-sm tabular-nums text-[var(--store-ink)]">
+                    {isBusy ? <Loader2 className="mx-auto size-3.5 animate-spin" /> : item.quantity}
+                  </span>
+                  <button
+                    type="button"
+                    aria-label={t('increase')}
+                    disabled={isBusy}
+                    onClick={() => mutate('PATCH', item.productId, item.quantity + 1)}
+                    className="grid h-7 w-7 place-items-center rounded-full text-[var(--store-ink)] transition-all hover:bg-white hover:shadow-sm disabled:opacity-50"
+                  >
+                    <Plus className="size-3.5" />
+                  </button>
+                </div>
 
-              <div className="w-24 shrink-0 text-right font-serif text-lg text-[var(--store-ink)]">
-                {formatSatang(item.lineTotalSatang)}
-              </div>
+                <div className="flex items-center gap-4">
+                  <div className="shrink-0 text-right font-serif text-lg text-[var(--store-ink)] sm:w-24">
+                    {formatSatang(item.lineTotalSatang)}
+                  </div>
 
-              <button
-                type="button"
-                aria-label={t('remove')}
-                disabled={isBusy}
-                onClick={() => mutate('DELETE', item.productId)}
-                className="grid size-8 shrink-0 place-items-center rounded-full text-[var(--store-muted)] transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
-              >
-                <Trash2 className="size-4" />
-              </button>
+                  <button
+                    type="button"
+                    aria-label={t('remove')}
+                    disabled={isBusy}
+                    onClick={() => mutate('DELETE', item.productId)}
+                    className="grid size-8 shrink-0 place-items-center rounded-full text-[var(--store-muted)] transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+                  >
+                    <Trash2 className="size-4" />
+                  </button>
+                </div>
+              </div>
             </li>
           );
         })}
       </ul>
 
-      <aside className="rounded-[2rem] bg-[var(--store-card)] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] lg:sticky lg:top-24">
-        <h2 className="font-serif text-xl text-[var(--store-ink)]">{t('summary.title')}</h2>
-        <div className="mt-5 flex items-center justify-between text-sm">
+      <aside className="rounded-[2rem] border border-black/[0.03] bg-white p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] lg:sticky lg:top-24">
+        <h2 className="font-serif text-2xl tracking-tight text-[var(--store-ink)]">{t('summary.title')}</h2>
+        
+        <div className="mt-8 flex items-center justify-between text-[0.9rem]">
           <span className="text-[var(--store-muted)]">
             {t('summary.subtotal', { count: cart.count })}
           </span>
-          <span className="font-serif text-lg text-[var(--store-ink)]">
+          <span className="font-serif text-2xl text-[var(--store-ink)]">
             {formatSatang(cart.subtotalSatang)}
           </span>
         </div>
 
         <Link
           href="/cart/checkout"
-          className="mt-8 flex w-full items-center justify-center rounded-full bg-forest py-4 text-[0.8rem] font-medium text-white transition-all hover:scale-[1.02] hover:bg-mint"
+          className="mt-8 flex w-full items-center justify-center rounded-full bg-forest py-4 text-[0.9rem] font-medium text-white transition-all hover:scale-[1.02] hover:bg-mint hover:shadow-sm active:scale-[0.98]"
         >
           {t('summary.checkout')}
         </Link>
@@ -143,7 +148,7 @@ export function CartView({ initialCart, lineUrl }: { initialCart: CartSummary; l
           href={lineUrl}
           target="_blank"
           rel="noopener"
-          className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border border-black/10 py-4 text-[0.8rem] font-medium text-[var(--store-ink)] transition-colors hover:bg-black/[0.03]"
+          className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border border-black/5 bg-black/[0.02] py-4 text-[0.9rem] font-medium text-[var(--store-ink)] transition-all hover:scale-[1.02] hover:bg-black/[0.04] active:scale-[0.98]"
         >
           {t('summary.bookLine')}
         </a>

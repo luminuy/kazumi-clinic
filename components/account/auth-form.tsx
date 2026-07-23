@@ -35,7 +35,7 @@ function GoogleIcon({ className }: { className?: string }) {
 }
 
 const fieldClass =
-  'w-full rounded-xl border border-olive/20 bg-cream px-4 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-ink/35 focus:border-olive/50';
+  'w-full rounded-xl border border-black/5 bg-black/[0.04] px-4 py-3 text-sm text-[var(--store-ink)] outline-none transition-all placeholder:text-[var(--store-ink)]/40 focus:border-transparent focus:bg-white focus:ring-2 focus:ring-forest/50 focus:shadow-[0_4px_12px_rgb(0,0,0,0.05)]';
 
 /**
  * Email/password sign-in + sign-up in one form. On success it does a full-page navigation (not a
@@ -111,27 +111,27 @@ export function AuthForm({
     <form onSubmit={submit} className="space-y-4" noValidate>
       {/* Social sign-in. The buttons always render so the clinic can see them; if a provider's
           keys aren't set yet, the start route bounces back here with an explanatory message. */}
-      <div className="grid gap-2.5">
+      <div className="grid gap-3">
         <a
           href={oauthHref('line')}
-          className="flex items-center justify-center gap-2.5 rounded-full bg-[#06C755] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#05b34c]"
+          className="flex items-center justify-center gap-2.5 rounded-full bg-[#06C755] px-5 py-3 text-sm font-medium text-white transition-all hover:scale-[1.02] hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.98]"
         >
           <LineIcon className="size-4" />
           {t('oauth.line')}
         </a>
         <a
           href={oauthHref('google')}
-          className="flex items-center justify-center gap-2.5 rounded-full border border-olive/20 bg-white px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-cream"
+          className="flex items-center justify-center gap-2.5 rounded-full border border-black/5 bg-white px-5 py-3 text-sm font-medium text-[var(--store-ink)] transition-all hover:scale-[1.02] hover:bg-black/[0.02] hover:shadow-sm active:scale-[0.98]"
         >
           <GoogleIcon className="size-4" />
           {t('oauth.google')}
         </a>
       </div>
 
-      <div className="flex items-center gap-3 py-1">
-        <span className="h-px flex-1 bg-olive/15" />
-        <span className="text-[0.7rem] uppercase tracking-[0.14em] text-ink/40">{t('oauth.or')}</span>
-        <span className="h-px flex-1 bg-olive/15" />
+      <div className="flex items-center gap-3 py-2">
+        <span className="h-px flex-1 bg-black/5" />
+        <span className="text-[0.7rem] uppercase tracking-[0.14em] text-[var(--store-ink)]/40">{t('oauth.or')}</span>
+        <span className="h-px flex-1 bg-black/5" />
       </div>
 
       {mode === 'register' && (
@@ -193,7 +193,7 @@ export function AuthForm({
       <Button
         type="submit"
         disabled={sending}
-        className="w-full bg-forest text-white hover:bg-mint"
+        className="h-auto w-full rounded-full bg-forest py-3 text-white transition-all hover:scale-[1.02] hover:bg-mint hover:shadow-sm active:scale-[0.98]"
       >
         {sending && <Loader2 className="size-4 animate-spin" />}
         {mode === 'register' ? t('submit.register') : t('submit.login')}
