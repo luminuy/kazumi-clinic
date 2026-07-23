@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { MapPin, Phone, Clock, Navigation } from 'lucide-react';
+import { Phone, ArrowRight, Navigation, ShieldCheck, Lock, Map as MapIcon } from 'lucide-react';
 import { site } from '@/lib/site';
 import { serviceCategories } from '@/lib/services';
 import { breadcrumbSchema } from '@/lib/schema';
 import { siteSocialImage } from '@/lib/metadata-images';
+import { getImage } from '@/lib/site-images-store';
 import { Reveal } from '@/components/reveal';
-import { PageHero } from '@/components/page-hero';
 import { BookingForm } from '@/components/booking-form';
 import { LineIcon, InstagramIcon } from '@/components/brand-icons';
 
@@ -38,16 +39,71 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   };
 }
 
+/** One channel card in the contact hub — icon, label, value, blurb, and an arrow CTA. */
+function HubCard({
+  icon,
+  label,
+  value,
+  desc,
+  cta,
+  href,
+  external,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  desc: string;
+  cta: string;
+  href: string;
+  external?: boolean;
+}) {
+  return (
+    <div className="group flex h-full flex-col gap-6 rounded-3xl border border-clinical-border/60 bg-white p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_30px_60px_rgba(0,0,0,0.06)] md:p-10">
+      <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-clinical-primary/10 text-clinical-primary">
+        {icon}
+      </span>
+      <div className="space-y-1.5">
+        <p className="text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-clinical-charcoal/45">{label}</p>
+        <p className="text-2xl font-semibold tracking-tight text-clinical-charcoal">{value}</p>
+      </div>
+      <p className="text-[0.95rem] leading-[1.6] text-clinical-charcoal/60">{desc}</p>
+      <a
+        href={href}
+        {...(external ? { target: '_blank', rel: 'noopener' } : {})}
+        className="mt-auto inline-flex items-center gap-1.5 text-[0.9rem] font-medium text-clinical-primary transition-all group-hover:gap-2.5"
+      >
+        {cta}
+        <ArrowRight className="size-4" />
+      </a>
+    </div>
+  );
+}
+
 export default async function ContactPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations('ContactPage');
   const tHome = await getTranslations('HomePage');
-  
+
+  const heroImage = await getImage('hero-iv-drip-2');
+
   const breadcrumb = breadcrumbSchema([
     { name: tHome('Navigation.home'), path: '/' },
     { name: t('breadcrumb'), path: '/contact' },
   ]);
+
+  // Hours come straight from the single source (lib/site.ts) — only the row labels are translated.
+  const weekday = site.hours[0];
+  const sunday = site.hours[6];
+  const hoursRows = [
+    { label: t('hoursRows.weekdays'), value: `${weekday.open} – ${weekday.close}` },
+    { label: t('hoursRows.sunday'), value: `${sunday.open} – ${sunday.close}`, accent: true },
+  ];
+
+  const trust = [
+    { icon: <ShieldCheck className="size-5" strokeWidth={1.5} />, title: t('trust.certified.title'), desc: t('trust.certified.desc') },
+    { icon: <Lock className="size-5" strokeWidth={1.5} />, title: t('trust.privacy.title'), desc: t('trust.privacy.desc') },
+  ];
 
   return (
     <>
@@ -57,108 +113,187 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }}
       />
 
-      <PageHero
-        eyebrow={t('hero.eyebrow')}
-        title={t('hero.title')}
-        lead={t('hero.lead', { siteName: site.name })}
-      />
-
-      <section className="bg-[var(--store-surface)] pt-8 pb-20">
-        <div className="mx-auto grid max-w-7xl gap-10 px-6 lg:grid-cols-2 lg:gap-14">
-          <Reveal className="flex flex-col gap-6">
-          {/* Card 1: Address */}
-          <div className="group relative flex flex-col gap-4 overflow-hidden rounded-[1.75rem] border border-black/5 bg-[var(--store-card)] p-8 shadow-xl shadow-black/5 transition-transform duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/10">
-            <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[var(--store-control)] text-[var(--store-ink)]">
-              <MapPin strokeWidth={1.5} className="size-6" />
-            </div>
-            <div>
-              <h3 className="font-serif text-xl text-[var(--store-ink)]">{t('location.title')}</h3>
-              <p className="mt-2 text-sm leading-[1.8] text-[var(--store-muted)]">{site.addressFull}</p>
-              <a href={site.mapsUrl} target="_blank" rel="noopener" className="mt-4 inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.1em] text-[var(--store-ink)] hover:opacity-60">
-                {t('location.viewMap')} <Navigation className="size-3" />
-              </a>
-            </div>
-          </div>
-
-          {/* Card 2: Contact Info */}
-          <div className="grid gap-6 sm:grid-cols-2">
-            <div className="group relative flex flex-col gap-4 overflow-hidden rounded-[1.75rem] border border-black/5 bg-[var(--store-card)] p-8 shadow-xl shadow-black/5 transition-transform duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/10">
-              <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[var(--store-control)] text-[var(--store-ink)]">
-                <Phone strokeWidth={1.5} className="size-6" />
-              </div>
-              <div>
-                <h3 className="font-serif text-xl text-[var(--store-ink)]">{t('contact.phone')}</h3>
-                <a href={site.phoneUrl} className="mt-2 block text-sm leading-[1.8] text-[var(--store-muted)] hover:opacity-60">{site.phone}</a>
-              </div>
-            </div>
-
-            <div className="group relative flex flex-col gap-4 overflow-hidden rounded-[1.75rem] border border-black/5 bg-[var(--store-card)] p-8 shadow-xl shadow-black/5 transition-transform duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/10">
-              <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[var(--store-control)] text-[var(--store-ink)]">
-                <Clock strokeWidth={1.5} className="size-6" />
-              </div>
-              <div>
-                <h3 className="font-serif text-xl text-[var(--store-ink)]">{t('hours.title')}</h3>
-                <p className="mt-2 text-sm leading-[1.8] text-[var(--store-muted)]">
-                  {site.hoursDisplay.weekdays}
-                  <br />
-                  {site.hoursDisplay.sunday}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Social Buttons */}
-          <div className="mt-2 flex flex-wrap gap-4">
-            <a
-              href={site.lineUrl}
-              target="_blank"
-              rel="noopener"
-              className="flex items-center gap-2.5 rounded-full bg-[#06C755] px-6 py-3 text-xs font-medium tracking-[0.1em] text-white shadow-lg shadow-[#06C755]/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-[#06C755]/30 active:scale-95"
-            >
-              <LineIcon className="size-4" />
-              {t('social.line')}
-            </a>
-            <a
-              href={site.instagram}
-              target="_blank"
-              rel="noopener"
-              className="flex items-center gap-2.5 rounded-full border border-black/10 bg-white px-6 py-3 text-xs font-medium tracking-[0.1em] text-[var(--store-ink)] shadow-lg shadow-black/5 transition-all duration-300 hover:-translate-y-0.5 hover:border-[#E1306C] hover:text-[#E1306C] hover:shadow-xl active:scale-95"
-            >
-              <InstagramIcon className="size-4" />
-              {t('social.instagram')}
-            </a>
-          </div>
-        </Reveal>
-
-        {/* Booking Form in the grid */}
-        <div id="booking" className="flex flex-col scroll-mt-24">
-          <Reveal delay={80} className="flex-1 overflow-hidden rounded-[1.75rem] border border-black/5 bg-[var(--store-card)] p-8 shadow-2xl shadow-black/5 md:p-10">
-            <p className="text-[0.7rem] font-medium uppercase tracking-[0.16em] text-forest">
-              {t('booking.eyebrow')}
+      {/* ── Cinematic hero ─────────────────────────────────────── */}
+      <section className="relative flex min-h-[68vh] items-end overflow-hidden bg-clinical-charcoal">
+        {heroImage && (
+          <Image
+            src={heroImage}
+            alt=""
+            aria-hidden="true"
+            fill
+            priority
+            fetchPriority="high"
+            sizes="100vw"
+            className="object-cover"
+          />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-clinical-charcoal via-clinical-charcoal/55 to-clinical-charcoal/10" />
+        <div className="relative z-10 mx-auto w-full max-w-[1200px] px-[20px] pb-20 pt-44 text-white md:px-8">
+          <Reveal>
+            <p className="flex items-center gap-3 text-[0.72rem] font-medium uppercase tracking-[0.24em] text-white/70">
+              <span className="h-px w-8 bg-white/50" />
+              {t('hero.eyebrow')}
             </p>
-            <h2 className="mt-2 font-serif text-3xl text-[var(--store-ink)]">{t('booking.title')}</h2>
-            <p className="mb-8 mt-2 text-sm leading-[1.8] text-[var(--store-muted)]">
-              {t('booking.desc')}
+            <h1 className="mt-5 max-w-3xl text-4xl font-bold leading-[1.05] tracking-tight md:text-6xl">
+              {t('hero.title')}
+            </h1>
+            <p className="mt-6 max-w-xl text-lg leading-[1.55] text-white/80">
+              {t('hero.lead', { siteName: site.name })}
             </p>
-            <BookingForm interests={serviceCategories.map((category) => category.title)} />
           </Reveal>
-        </div>
         </div>
       </section>
 
-      {/* Map Section */}
-      <section className="bg-[var(--store-surface)] py-12 pb-24">
-        <div className="mx-auto max-w-7xl px-6">
-          <Reveal className="relative h-[450px] w-full overflow-hidden rounded-[1.75rem] shadow-2xl shadow-black/5">
-            <iframe
-              src={site.mapsEmbedUrl}
-              className="absolute inset-0 size-full"
-              style={{ border: 0 }}
-              loading="lazy"
-              referrerPolicy="strict-origin-when-cross-origin"
-              allowFullScreen
-              title={t('mapTitle', { siteName: site.name })}
+      {/* ── Contact hub ────────────────────────────────────────── */}
+      <section className="mx-auto max-w-[1200px] px-[20px] py-24 md:px-8">
+        <div className="grid gap-6 md:grid-cols-3">
+          <Reveal>
+            <HubCard
+              icon={<Phone className="size-5" strokeWidth={1.5} />}
+              label={t('hub.phone.label')}
+              value={site.phone}
+              desc={t('hub.phone.desc')}
+              cta={t('hub.phone.cta')}
+              href={site.phoneUrl}
             />
+          </Reveal>
+          <Reveal delay={80}>
+            <HubCard
+              icon={<LineIcon className="size-5" />}
+              label={t('hub.line.label')}
+              value={t('hub.line.value')}
+              desc={t('hub.line.desc')}
+              cta={t('hub.line.cta')}
+              href={site.lineUrl}
+              external
+            />
+          </Reveal>
+          <Reveal delay={160}>
+            <HubCard
+              icon={<InstagramIcon className="size-5" />}
+              label={t('hub.instagram.label')}
+              value={site.instagramHandle}
+              desc={t('hub.instagram.desc')}
+              cta={t('hub.instagram.cta')}
+              href={site.instagram}
+              external
+            />
+          </Reveal>
+        </div>
+
+        {/* Flagship address — dark tonal block, the anchor of the hub. */}
+        <Reveal>
+          <div className="mt-6 flex flex-col items-start justify-between gap-8 rounded-3xl bg-clinical-charcoal p-10 text-white md:flex-row md:items-center md:p-12">
+            <div className="space-y-4">
+              <p className="text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-white/50">
+                {t('address.eyebrow')}
+              </p>
+              <h2 className="max-w-xl text-xl font-semibold leading-[1.5] tracking-tight md:text-2xl">
+                {site.addressFull}
+              </h2>
+            </div>
+            <a
+              href={site.mapsUrl}
+              target="_blank"
+              rel="noopener"
+              className="inline-flex shrink-0 items-center gap-2 rounded-full bg-white px-8 py-4 text-sm font-semibold text-clinical-charcoal transition-all hover:-translate-y-0.5 hover:shadow-lg active:scale-95"
+            >
+              <Navigation className="size-4" />
+              {t('address.cta')}
+            </a>
+          </div>
+        </Reveal>
+      </section>
+
+      {/* ── Inquiry form ───────────────────────────────────────── */}
+      <section className="bg-clinical-surface py-24">
+        <div className="mx-auto grid max-w-[1200px] items-start gap-16 px-[20px] md:px-8 lg:grid-cols-2 lg:gap-24">
+          <Reveal>
+            <p className="text-[0.75rem] font-bold uppercase tracking-[0.15em] text-clinical-primary">
+              {t('form.eyebrow')}
+            </p>
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-clinical-charcoal md:text-4xl">
+              {t('form.title')}
+            </h2>
+            <p className="mt-6 max-w-md text-[1.05rem] leading-[1.6] text-clinical-charcoal/60">
+              {t('form.desc')}
+            </p>
+
+            <div className="mt-12 space-y-8">
+              {trust.map((item) => (
+                <div key={item.title} className="flex items-start gap-4">
+                  <span className="mt-0.5 text-clinical-primary">{item.icon}</span>
+                  <div>
+                    <h3 className="font-semibold text-clinical-charcoal">{item.title}</h3>
+                    <p className="mt-1 text-[0.95rem] leading-[1.55] text-clinical-charcoal/55">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <p className="mt-12 text-[0.8rem] text-clinical-charcoal/45">
+              {t('license', { license: site.license })}
+            </p>
+          </Reveal>
+
+          <div id="booking" className="scroll-mt-32">
+            <Reveal delay={80} className="rounded-3xl bg-white p-8 shadow-[0_20px_40px_rgba(0,0,0,0.04)] md:p-10">
+              <BookingForm interests={serviceCategories.map((category) => category.title)} />
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Visit us — hours + map ─────────────────────────────── */}
+      <section className="py-24">
+        <div className="mx-auto grid max-w-[1200px] items-center gap-12 px-[20px] md:grid-cols-12 md:px-8">
+          <Reveal className="space-y-10 md:col-span-5">
+            <div>
+              <p className="text-[0.72rem] font-medium uppercase tracking-[0.24em] text-clinical-primary">
+                {t('visit.eyebrow')}
+              </p>
+              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-clinical-charcoal md:text-4xl">
+                {t('visit.title')}
+              </h2>
+            </div>
+
+            <div className="space-y-1">
+              {hoursRows.map((row) => (
+                <div
+                  key={row.label}
+                  className="flex items-center justify-between border-b border-clinical-border/60 py-4"
+                >
+                  <span className="font-medium text-clinical-charcoal">{row.label}</span>
+                  <span className={row.accent ? 'font-semibold text-clinical-primary' : 'text-clinical-charcoal/55'}>
+                    {row.value}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <a
+              href={site.mapsUrl}
+              target="_blank"
+              rel="noopener"
+              className="inline-flex items-center gap-2.5 rounded-full bg-clinical-charcoal px-8 py-4 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:shadow-lg active:scale-95"
+            >
+              <MapIcon className="size-4" />
+              {t('visit.cta')}
+            </a>
+          </Reveal>
+
+          <Reveal delay={80} className="md:col-span-7">
+            <div className="relative h-[420px] overflow-hidden rounded-3xl shadow-[0_20px_40px_rgba(0,0,0,0.06)] md:h-[500px]">
+              <iframe
+                src={site.mapsEmbedUrl}
+                className="absolute inset-0 size-full"
+                style={{ border: 0 }}
+                loading="lazy"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+                title={t('mapTitle', { siteName: site.name })}
+              />
+            </div>
           </Reveal>
         </div>
       </section>

@@ -199,32 +199,60 @@
   },
   "ContactPage": {
     "metaTitle": "Contact Us",
-    "metaDescription": "Address, phone number, and operating hours of {siteName} in Sukhumvit, Bangkok.",
+    "metaDescription": "Address, phone, LINE, and operating hours of {siteName} in Sukhumvit, Bangkok.",
     "breadcrumb": "Contact Us",
     "hero": {
       "eyebrow": "Contact Us",
-      "title": "Contact Us",
-      "lead": "{siteName} is ready to consult and take care of all your procedures — book an appointment or inquire any day."
+      "title": "Connect with Kazumi",
+      "lead": "{siteName} is here to consult and care for every procedure — book an appointment or reach us any day."
     },
-    "location": {
-      "title": "Clinic Location",
-      "viewMap": "View on Google Maps"
+    "hub": {
+      "phone": {
+        "label": "Call Center",
+        "desc": "Available daily for appointments and inquiries.",
+        "cta": "Call now"
+      },
+      "line": {
+        "label": "LINE Official",
+        "value": "Kazumi Clinic",
+        "desc": "Chat with our consultants directly, fast replies.",
+        "cta": "Add on LINE"
+      },
+      "instagram": {
+        "label": "Instagram",
+        "desc": "Follow our latest results and technologies.",
+        "cta": "Follow us"
+      }
     },
-    "contact": {
-      "phone": "Phone"
+    "address": {
+      "eyebrow": "Our Location",
+      "cta": "Get Directions"
     },
-    "hours": {
-      "title": "Operating Hours"
-    },
-    "social": {
-      "line": "Contact via LINE",
-      "instagram": "Instagram"
-    },
-    "booking": {
-      "eyebrow": "Book an Appointment",
+    "form": {
+      "eyebrow": "Appointment / Consultation",
       "title": "Appointment / Consultation",
-      "desc": "Fill out a short form and our team will get back to you to confirm your appointment, or you can chat with us on LINE."
+      "desc": "Our specialists are ready to give you personalized care. Fill out the short form and we'll get back to you to confirm."
     },
+    "trust": {
+      "certified": {
+        "title": "Licensed Doctors",
+        "desc": "Assessed and cared for by aesthetic physicians."
+      },
+      "privacy": {
+        "title": "Confidential Privacy",
+        "desc": "Your information is kept safe and secure."
+      }
+    },
+    "visit": {
+      "eyebrow": "Visit Us",
+      "title": "Operating Hours",
+      "cta": "Open in Google Maps"
+    },
+    "hoursRows": {
+      "weekdays": "Monday – Saturday",
+      "sunday": "Sunday"
+    },
+    "license": "Healthcare license no. {license}",
     "mapTitle": "{siteName} Map"
   },
   "BlogPage": {
