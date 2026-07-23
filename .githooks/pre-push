@@ -1,10 +1,16 @@
 #!/usr/bin/env bash
-# Soft guardrail: block pushing straight to main — changes go through a branch + PR + green CI
-# (CLAUDE.md §0). This is the free stand-in for branch protection, which needs GitHub Pro or a
-# public repo. It is bypassable (git push --no-verify) and only works where the hook is installed
-# (activate with `pnpm install`, which sets core.hooksPath, or run `pnpm setup:hooks`).
+# Guardrail 2 of 2: (a) block pushing straight to main, (b) run the cheap half of CI locally so a
+# red build never reaches GitHub.
+#
+# This is the free stand-in for branch protection, which still answers 403 "Upgrade to GitHub Pro or
+# make this repository public" (re-checked 2026-07-23). It is bypassable (git push --no-verify) and
+# only works where the hook is installed (`pnpm install`, which sets core.hooksPath, or
+# `pnpm setup:hooks`) and for tools that shell out to real git.
 protected="main"
-while read -r _local_ref _local_sha remote_ref _remote_sha; do
+zero="0000000000000000000000000000000000000000"
+push_sha=""
+
+while read -r _local_ref local_sha remote_ref _remote_sha; do
   if [ "$remote_ref" = "refs/heads/$protected" ]; then
     echo "" >&2
     echo "  ✋ ห้าม push ตรงเข้า '$protected' — เปิด branch + PR แทน (CLAUDE.md §0)" >&2
@@ -13,5 +19,37 @@ while read -r _local_ref _local_sha remote_ref _remote_sha; do
     echo "" >&2
     exit 1
   fi
+  [ "$local_sha" != "$zero" ] && push_sha="$local_sha"   # ข้ามกรณีลบ branch
 done
+
+[ -z "$push_sha" ] && exit 0
+
+# จ่ายค่า gate เฉพาะตอนโค้ดเปลี่ยนจริง — push ที่มีแต่เอกสารยังเร็วเหมือนเดิม
+base=$(git merge-base origin/"$protected" "$push_sha" 2>/dev/null) || exit 0
+changed=$(git diff --name-only "$base" "$push_sha" -- '*.ts' '*.tsx' '*.js' '*.jsx' '*.mjs' '*.cjs')
+[ -z "$changed" ] && exit 0
+
+echo "  🔎 ตรวจก่อน push (lint + typecheck) — ข้ามได้ด้วย git push --no-verify" >&2
+
+if ! pnpm lint >/tmp/kazumi-prepush-lint.log 2>&1; then
+  echo "" >&2
+  echo "  ✋ pnpm lint ไม่ผ่าน — push ขึ้นไป CI จะแดง" >&2
+  echo "" >&2
+  grep -E 'error|warning' /tmp/kazumi-prepush-lint.log | head -20 >&2
+  echo "" >&2
+  echo "     log เต็ม: /tmp/kazumi-prepush-lint.log" >&2
+  echo "" >&2
+  exit 1
+fi
+
+if ! pnpm typecheck >/tmp/kazumi-prepush-tsc.log 2>&1; then
+  echo "" >&2
+  echo "  ✋ pnpm typecheck ไม่ผ่าน — push ขึ้นไป CI จะแดง" >&2
+  echo "" >&2
+  tail -20 /tmp/kazumi-prepush-tsc.log >&2
+  echo "" >&2
+  exit 1
+fi
+
+echo "  ✓ lint + typecheck ผ่าน" >&2
 exit 0
