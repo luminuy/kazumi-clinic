@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { setRequestLocale } from 'next-intl/server';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowUpRight, ShieldCheck, Stethoscope } from 'lucide-react';
 import { site } from '@/lib/site';
+import { routing } from '@/i18n/routing';
 import {
   serviceCategories,
   getServiceBySlug,
@@ -28,7 +30,7 @@ import { AcneCareServicePage } from '@/components/acne-care-service-page';
 import { SkinBoosterServicePage } from '@/components/skin-booster-service-page';
 import { CollagenBoosterServicePage } from '@/components/collagen-booster-service-page';
 
-type Props = { params: Promise<{ category: string }> };
+type Props = { params: Promise<{ locale: string; category: string }> };
 
 /**
  * Splits a category's items into their `collection` sub-headings, preserving the order they're
@@ -51,7 +53,9 @@ function groupItems(items: ServiceItem[]) {
 export const revalidate = 3600;
 
 export function generateStaticParams() {
-  return serviceCategories.map((c) => ({ category: c.slug }));
+  return routing.locales.flatMap((locale) =>
+    serviceCategories.map((c) => ({ locale, category: c.slug })),
+  );
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -186,7 +190,8 @@ function BookingCta({ service, hasPrice }: { service: ServiceCategory; hasPrice:
 }
 
 export default async function ServiceCategoryPage({ params }: Props) {
-  const { category } = await params;
+  const { locale, category } = await params;
+  setRequestLocale(locale);
   const base = getServiceBySlug(category);
   if (!base) notFound();
 
