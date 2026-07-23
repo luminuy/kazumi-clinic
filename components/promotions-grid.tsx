@@ -4,17 +4,19 @@ import { useMemo, useState } from 'react';
 import { Reveal } from '@/components/reveal';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 export type PromoCard = {
   key: string;
   name: string;
   detail: string | null;
-  price: number;
+  price: number | null;
   originalPrice: number | null;
   note: string | null;
   validUntil: string;
   categorySlug: string | null;
+  imagePublicId?: string | null;
 };
 
 /** Category filter tabs — derived from the categories actually present in the active promos. */
@@ -74,25 +76,38 @@ export function PromotionsGrid({ promos, tabs }: { promos: PromoCard[]; tabs: Pr
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {visible.map((p, i) => (
           <Reveal key={p.key} delay={i * 40}>
-            <Card className="h-full rounded-2xl border-olive/15 ring-0 transition-[transform,box-shadow] duration-200 hover:shadow-[0_10px_34px_rgba(38,40,31,0.08)] motion-safe:hover:-translate-y-1">
-              <CardContent>
-                <p className="font-serif text-lg text-olive-deep">{p.name}</p>
-                {p.detail && (
-                  <Badge variant="outline" className="mt-2 border-olive/30 text-ink/60">
-                    {p.detail}
-                  </Badge>
-                )}
-                <p className="mt-4 text-xl font-medium text-forest">
-                  {p.price.toLocaleString('th-TH')} บาท
-                  {p.originalPrice && (
-                    <span className="ml-2 text-sm font-normal text-ink/40 line-through">
-                      {p.originalPrice.toLocaleString('th-TH')}
-                    </span>
+            <Card className="h-full overflow-hidden rounded-2xl border-olive/15 ring-0 transition-[transform,box-shadow] duration-200 hover:shadow-[0_10px_34px_rgba(38,40,31,0.08)] motion-safe:hover:-translate-y-1 flex flex-col">
+              {p.imagePublicId && (
+                <div className="relative aspect-[4/5] w-full bg-sand">
+                  <Image
+                    src={p.imagePublicId}
+                    alt={p.name}
+                    fill
+                    sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                    className="object-cover"
+                  />
+                </div>
+              )}
+              {p.price !== null && (
+                <CardContent className={cn("flex-1", p.imagePublicId && "pt-6")}>
+                  <p className="font-serif text-lg text-olive-deep">{p.name}</p>
+                  {p.detail && (
+                    <Badge variant="outline" className="mt-2 border-olive/30 text-ink/60">
+                      {p.detail}
+                    </Badge>
                   )}
-                </p>
-                {p.note && <p className="mt-1 text-xs text-olive-light">{p.note}</p>}
-                <p className="mt-2 text-xs text-ink/50">ใช้ได้ถึง {formatValidUntil(p.validUntil)}</p>
-              </CardContent>
+                  <p className="mt-4 text-xl font-medium text-forest">
+                    {p.price.toLocaleString('th-TH')} บาท
+                    {p.originalPrice && (
+                      <span className="ml-2 text-sm font-normal text-ink/40 line-through">
+                        {p.originalPrice.toLocaleString('th-TH')}
+                      </span>
+                    )}
+                  </p>
+                  {p.note && <p className="mt-1 text-xs text-olive-light">{p.note}</p>}
+                  <p className="mt-2 text-xs text-ink/50">ใช้ได้ถึง {formatValidUntil(p.validUntil)}</p>
+                </CardContent>
+              )}
             </Card>
           </Reveal>
         ))}

@@ -11,12 +11,13 @@ import { cloudAssets } from './cloud';
 export type Promotion = {
   name: string;
   detail?: string;
-  price: number;
+  price?: number;
   originalPrice?: number;
   note?: string;
   /** ISO date (inclusive). Promo is hidden once today is past this. */
   validUntil: string;
   categorySlug?: string;
+  imagePublicId?: string;
 };
 
 export type PromotionPoster = {

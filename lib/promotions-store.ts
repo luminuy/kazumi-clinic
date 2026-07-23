@@ -20,7 +20,7 @@ export type PromotionRow = {
   id: string;
   name: string;
   detail: string | null;
-  price: number;
+  price: number | null;
   original_price: number | null;
   note: string | null;
   valid_until: string;
@@ -28,6 +28,7 @@ export type PromotionRow = {
   sort_order: number;
   updated_at: number;
   updated_by: string;
+  image_public_id: string | null;
 };
 
 /** Everything the admin form can set on a promotion. `id` identifies an existing row. */
@@ -35,12 +36,13 @@ export type PromotionInput = {
   id: string;
   name: string;
   detail?: string | null;
-  price: number;
+  price?: number | null;
   originalPrice?: number | null;
   note?: string | null;
   validUntil: string;
   categorySlug?: string | null;
   sortOrder: number;
+  imagePublicId?: string | null;
 };
 
 async function db() {
@@ -73,11 +75,12 @@ function rowToPromotion(row: PromotionRow): Promotion {
   return {
     name: row.name,
     detail: row.detail ?? undefined,
-    price: row.price,
+    price: row.price ?? undefined,
     originalPrice: row.original_price ?? undefined,
     note: row.note ?? undefined,
     validUntil: row.valid_until,
     categorySlug: row.category_slug ?? undefined,
+    imagePublicId: row.image_public_id ?? undefined,
   };
 }
 
@@ -112,17 +115,17 @@ export async function upsertPromotion(input: PromotionInput, updatedBy: string) 
     .prepare(
       `INSERT INTO promotions
          (id, name, detail, price, original_price, note, valid_until, category_slug,
-          sort_order, updated_at, updated_by)
-       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)
+          sort_order, updated_at, updated_by, image_public_id)
+       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)
        ON CONFLICT(id) DO UPDATE SET
          name = ?2, detail = ?3, price = ?4, original_price = ?5, note = ?6, valid_until = ?7,
-         category_slug = ?8, updated_at = ?10, updated_by = ?11`,
+         category_slug = ?8, updated_at = ?10, updated_by = ?11, image_public_id = ?12`,
     )
     .bind(
       input.id,
       input.name,
       input.detail ?? null,
-      input.price,
+      input.price ?? null,
       input.originalPrice ?? null,
       input.note ?? null,
       input.validUntil,
@@ -130,6 +133,7 @@ export async function upsertPromotion(input: PromotionInput, updatedBy: string) 
       input.sortOrder,
       Date.now(),
       updatedBy,
+      input.imagePublicId ?? null,
     )
     .run();
 }
@@ -139,6 +143,16 @@ export async function deletePromotion(id: string) {
   const binding = await db();
   requireDb(binding);
   await binding.prepare('DELETE FROM promotions WHERE id = ?1').bind(id).run();
+}
+
+/** Updates just the image_public_id for an existing promotion. */
+export async function setPromotionImage(id: string, imagePublicId: string, updatedBy: string) {
+  const binding = await db();
+  requireDb(binding);
+  await binding
+    .prepare('UPDATE promotions SET image_public_id = ?1, updated_at = ?2, updated_by = ?3 WHERE id = ?4')
+    .bind(imagePublicId, Date.now(), updatedBy, id)
+    .run();
 }
 
 /** Persist a new order. Every id is expected to already have a row; unknown ids are ignored. */

@@ -33,16 +33,17 @@ const upsertSchema = z
     id: z.string().min(1).max(80).optional(),
     name: z.string().trim().min(1, 'ต้องมีชื่อโปรโมชั่น').max(120),
     detail: z.string().trim().max(120).nullish(),
-    price: z.number().int().positive('ราคาต้องเป็นจำนวนเต็มบวก').max(100_000_000),
+    price: z.number().int().positive('ราคาต้องเป็นจำนวนเต็มบวก').max(100_000_000).nullish(),
     originalPrice: z.number().int().positive().max(100_000_000).nullish(),
     note: z.string().trim().max(160).nullish(),
     // A calendar date the promo is valid through. YYYY-MM-DD so string compare == date compare.
     validUntil: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'วันหมดอายุไม่ถูกต้อง'),
     categorySlug: z.enum(categorySlugs).nullish(),
     sortOrder: z.number().int().min(0).max(9999).optional(),
+    imagePublicId: z.string().optional(),
   })
   // A struck-through original price only makes sense when it's above the promo price.
-  .refine((data) => data.originalPrice == null || data.originalPrice > data.price, {
+  .refine((data) => data.originalPrice == null || (data.price != null && data.originalPrice > data.price), {
     message: 'ราคาเดิมต้องมากกว่าราคาโปรโมชั่น',
     path: ['originalPrice'],
   });
@@ -68,11 +69,12 @@ export async function POST(request: NextRequest) {
     id,
     name: data.name,
     detail: data.detail ?? null,
-    price: data.price,
+    price: data.price ?? null,
     originalPrice: data.originalPrice ?? null,
     note: data.note ?? null,
     validUntil: data.validUntil,
     categorySlug: data.categorySlug ?? null,
+    imagePublicId: data.imagePublicId ?? null,
     // Only used on a fresh INSERT (upsert keeps an existing row's order): a new promo lands last.
     sortOrder: data.sortOrder ?? (data.id ? 0 : await nextSortOrder()),
   };
