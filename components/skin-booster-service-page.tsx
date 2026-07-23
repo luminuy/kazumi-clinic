@@ -93,7 +93,7 @@ export function SkinBoosterServicePage({
   return (
     <div className="bg-[var(--background)]">
       {/* ── Hero: title, editorial image, then licence + intro ───────────────── */}
-      <section className="px-6 pb-24 pt-24 sm:px-10 md:px-14 md:pt-28 lg:px-20">
+      <section className="px-6 pb-24 pt-16 sm:px-10 md:px-14 md:pt-24 lg:px-20">
         <div className="mx-auto max-w-5xl">
           <h1 className="mt-12 font-serif text-4xl leading-none text-[var(--store-ink)] md:text-6xl">
             {service.title}

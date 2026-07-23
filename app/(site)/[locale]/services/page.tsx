@@ -173,7 +173,7 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
       />
 
       {/* ── Hero ─────────────────────────────────────────────── */}
-      <section className="px-6 pb-20 pt-28 sm:px-10 md:px-14 lg:px-20">
+      <section className="px-6 pb-20 pt-16 sm:px-10 md:px-14 md:pt-24 lg:px-20">
         <div className="mx-auto grid max-w-6xl items-center gap-12 md:grid-cols-12 md:gap-10">
           <Reveal className="md:col-span-6">
 

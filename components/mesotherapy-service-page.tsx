@@ -78,7 +78,7 @@ export function MesotherapyServicePage({
   return (
     <div className="overflow-x-hidden bg-[var(--background)]">
       {/* ── Hero: the reference overlaps the copy block onto the image ─────────── */}
-      <section className="px-6 pb-24 pt-24 sm:px-10 md:px-14 md:pt-28 lg:px-20">
+      <section className="px-6 pb-24 pt-16 sm:px-10 md:px-14 md:pt-24 lg:px-20">
         <div className="mx-auto max-w-6xl">
           <div className="mt-12 md:grid md:grid-cols-12 md:items-end">
             <div className="relative z-10 md:col-span-7">

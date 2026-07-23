@@ -27,7 +27,7 @@ export function FillerServicePage({
 }) {
   return (
     <div className="overflow-hidden bg-[var(--background)]">
-      <section className="px-6 pb-20 pt-24 md:px-10 md:pb-24 md:pt-28">
+      <section className="px-6 pb-20 pt-16 md:px-10 md:pb-24 md:pt-24">
         <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-12 lg:gap-14">
           <div className="lg:col-span-7">
             <p className="section-eyebrow">Medical Aesthetic Excellence</p>

@@ -86,7 +86,7 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
       />
 
       {/* ── Hero ─────────────────────────────────────────────── */}
-      <section className="px-6 pb-24 pt-24 sm:px-10 md:px-14 md:pt-28 lg:px-20">
+      <section className="px-6 pb-24 pt-16 sm:px-10 md:px-14 md:pt-24 lg:px-20">
         <div className="mx-auto max-w-6xl">
           <div className="mt-12 grid items-center gap-12 md:grid-cols-2 md:gap-16">
             <div>

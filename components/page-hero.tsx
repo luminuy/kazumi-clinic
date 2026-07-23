@@ -24,7 +24,7 @@ export function PageHero({
 
   return (
     <section
-      className={`relative overflow-hidden px-6 pb-16 pt-28 ${
+      className={`relative overflow-hidden px-6 pb-16 pt-16 md:pt-24 ${
         onImage ? 'bg-olive-deep text-sand' : 'bg-[var(--store-surface)] text-olive-deep'
       }`}
     >
