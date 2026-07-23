@@ -1,0 +1,67 @@
+name: DB Backup
+
+# Off-Cloudflare disaster recovery for the D1 database. D1's built-in Time Travel covers
+# "someone fumbled a query" (30-day point-in-time restore) but NOT "the Cloudflare account is lost
+# or the database is deleted" — for that you need a copy living somewhere else. This exports the
+# whole DB daily and keeps it as a GitHub artifact.
+#
+# The dump holds member PII (emails, order contact details), and this repo is PUBLIC — artifacts on
+# public repos are downloadable — so the dump is symmetrically encrypted (AES-256) BEFORE upload.
+# Only someone with BACKUP_PASSPHRASE can read it.
+#
+# RESTORE: download the artifact, then
+#   gpg --batch --decrypt --passphrase "$BACKUP_PASSPHRASE" -o restore.sql kazumi-d1-backup.sql.gpg
+#   pnpm exec wrangler d1 execute kazumi-clinic-tag-cache --remote --file restore.sql
+# (restore into a fresh/empty DB, or a scratch DB first to inspect).
+
+on:
+  schedule:
+    - cron: '0 19 * * *' # 02:00 Asia/Bangkok (UTC+7), daily
+  workflow_dispatch: {}
+
+concurrency:
+  group: db-backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.1.2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Export D1 to SQL
+        run: pnpm exec wrangler d1 export kazumi-clinic-tag-cache --remote --output kazumi-d1-backup.sql
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Encrypt the dump (public repo — never store PII in the clear)
+        env:
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          if [ -z "$BACKUP_PASSPHRASE" ]; then
+            echo "::error::BACKUP_PASSPHRASE secret is not set — refusing to upload an unencrypted PII dump."
+            exit 1
+          fi
+          gpg --batch --yes --symmetric --cipher-algo AES256 \
+            --passphrase "$BACKUP_PASSPHRASE" \
+            --output kazumi-d1-backup.sql.gpg kazumi-d1-backup.sql
+          rm -f kazumi-d1-backup.sql
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kazumi-d1-backup-${{ github.run_id }}
+          path: kazumi-d1-backup.sql.gpg
+          retention-days: 30
+          if-no-files-found: error
