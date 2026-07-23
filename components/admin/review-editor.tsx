@@ -395,7 +395,6 @@ function ReviewRow({
   onDelete,
   onMoveUp,
   onMoveDown,
-  onUpload,
 }: {
   review: AdminReview;
   first: boolean;
