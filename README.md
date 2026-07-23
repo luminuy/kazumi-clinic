@@ -12,8 +12,8 @@
 | --- | --- |
 | URL ที่ใช้งาน | `https://kazumi-clinic.bankjack10452.workers.dev` |
 | Production Worker | `kazumi-clinic` |
-| CI/CD | ไม่มี — `gh pr checks` ตอบ `no checks reported` เป็นปกติ |
-| Deploy | `pnpm cf:deploy` ด้วยมือ; merge เข้า `main` ไม่ deploy อัตโนมัติ |
+| CI/CD | มี CI/CD สมบูรณ์ผ่าน GitHub Actions — `lint`, `typecheck`, `test`, `build` ทุก PR |
+| Deploy | อัตโนมัติเมื่อ merge เข้า `main` ผ่าน `pnpm cf:deploy` ใน workflow (รองรับ deploy ด้วยมือเมื่อจำเป็น) |
 | Search indexing | ปิดด้วย `SITE_ENV=preview` จนกว่าจะมีโดเมนจริง |
 | โดเมน canonical ปัจจุบัน | `site.url` ยังเป็น `https://kazumiclinic.com`; ดูข้อควรระวังใน [docs/infrastructure.md](docs/infrastructure.md) |
 
@@ -29,7 +29,8 @@
 | Runtime | Cloudflare Workers + OpenNext, Node.js runtime compatibility |
 | ISR | KV incremental cache + D1 tag cache + Durable Object queue |
 | รูปภาพ | Cloudinary; image override เก็บในตาราง D1 `site_images` |
-| สินค้า | คลินิกเพิ่ม/แก้/ลบ/อัปรูปเองที่ `/admin/products`; override เก็บในตาราง D1 `service_products` (ส่วนต่างบน `lib/services.ts`) |
+| สินค้า | คลินิกจัดการเองที่ `/admin/products`; override เก็บในตาราง D1 `service_products` |
+| โปรโมชั่น | คลินิกจัดการเองที่ `/admin/promotions` รวมรูปภาพ; เก็บในตาราง D1 `promotions` |
 
 Backend ใช้ Next.js Route Handlers (`app/api/*/route.ts`) ภายใน Worker เดียวกับหน้าเว็บ ไม่มี backend service แยก
 
@@ -97,6 +98,7 @@ pnpm install
 pnpm dev          # Next dev; ไม่มี D1/KV binding จึงเห็นเฉพาะรูป default
 pnpm lint         # ESLint 9 ผ่าน flat config ของ repo
 pnpm typecheck    # verification บังคับ
+pnpm test         # รัน vitest 
 pnpm build        # verification บังคับ; ต้อง generate ครบ 9 category routes
 pnpm cf:build     # สร้าง OpenNext bundle
 pnpm cf:deploy    # build + deploy Worker จริง
@@ -106,12 +108,18 @@ pnpm cf:deploy    # build + deploy Worker จริง
 
 ## Deploy
 
-Cloudflare resources ถูกสร้างและใส่ ID จริงไว้แล้ว ห้ามรันคำสั่งสร้าง KV/D1 ซ้ำ ขั้นตอน deploy คือ:
+Cloudflare resources ถูกสร้างและใส่ ID จริงไว้แล้ว ห้ามรันคำสั่งสร้าง KV/D1 ซ้ำ 
+
+โปรเจกต์มีการตั้งค่า **CI/CD อัตโนมัติ** หากคุณแก้ไขโค้ด:
+1. สร้าง Branch ใหม่ (`git switch -c <branch>`)
+2. Push และเปิด Pull Request (ห้าม push เข้า `main` ตรงๆ)
+3. เมื่อ CI ผ่าน (`lint`, `typecheck`, `test`, `build`) และทำการ Merge
+4. GitHub Actions จะทำการ Deploy โค้ดใหม่ขึ้นหน้าเว็บจริงให้โดยอัตโนมัติ
+
+หากต้องการ deploy ด้วยมือ:
 
 ```bash
-pnpm lint
-pnpm typecheck
-pnpm build
+pnpm lint && pnpm typecheck && pnpm test && pnpm build
 pnpm cf:deploy
 ```
 
