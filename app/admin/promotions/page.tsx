@@ -24,6 +24,7 @@ export default async function AdminPromotionsPage() {
     note: row.note ?? '',
     validUntil: row.valid_until,
     categorySlug: row.category_slug ?? '',
+    imagePublicId: row.image_public_id,
   }));
 
   const categories: CategoryOption[] = serviceCategories.map((category) => ({

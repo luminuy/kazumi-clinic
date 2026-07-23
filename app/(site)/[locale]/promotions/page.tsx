@@ -61,11 +61,12 @@ export default async function PromotionsPage({ params }: { params: Promise<{ loc
     key: `${p.name}-${p.detail ?? ''}-${i}`,
     name: p.name,
     detail: p.detail ?? null,
-    price: p.price,
+    price: p.price ?? null,
     originalPrice: p.originalPrice ?? null,
     note: p.note ?? null,
     validUntil: p.validUntil,
     categorySlug: p.categorySlug ?? null,
+    imagePublicId: p.imagePublicId ?? null,
   }));
 
   // Filter tabs = the categories actually present among the active promos, in catalogue order.

@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import {
   Check,
   ChevronDown,
@@ -13,6 +14,8 @@ import {
   Trash2,
   TriangleAlert,
   X,
+  Upload,
+  ImageOff,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { btn, card, inputClass, SectionHeading } from './ui';
@@ -21,12 +24,13 @@ export type AdminPromotion = {
   id: string;
   name: string;
   detail: string;
-  price: number;
+  price: number | null;
   originalPrice: number | null;
   note: string;
   /** Inclusive ISO date (YYYY-MM-DD) the promo is valid through. */
   validUntil: string;
   categorySlug: string;
+  imagePublicId: string | null;
 };
 
 /** Category options for the dropdown — passed from the server so the list stays in one place. */
@@ -40,6 +44,7 @@ type Draft = {
   note: string;
   validUntil: string;
   categorySlug: string;
+  imagePublicId: string | null;
 };
 
 const emptyDraft: Draft = {
@@ -50,6 +55,7 @@ const emptyDraft: Draft = {
   note: '',
   validUntil: '',
   categorySlug: '',
+  imagePublicId: null,
 };
 
 function draftFrom(promo: AdminPromotion): Draft {
@@ -61,6 +67,7 @@ function draftFrom(promo: AdminPromotion): Draft {
     note: promo.note,
     validUntil: promo.validUntil,
     categorySlug: promo.categorySlug,
+    imagePublicId: promo.imagePublicId,
   };
 }
 
@@ -144,12 +151,15 @@ export function PromotionEditor({
     const name = draft.name.trim();
     if (!name) return setError('ต้องมีชื่อโปรโมชั่น');
 
-    const price = Number(draft.price.trim());
-    if (!Number.isInteger(price) || price <= 0) return setError('ราคาต้องเป็นจำนวนเต็มบวก');
+    const priceRaw = draft.price.trim();
+    const price = priceRaw === '' ? null : Number(priceRaw);
+    if (price !== null && (!Number.isInteger(price) || price <= 0)) {
+      return setError('ราคาต้องเป็นจำนวนเต็มบวก');
+    }
 
     const originalRaw = draft.originalPrice.trim();
     const originalPrice = originalRaw === '' ? null : Number(originalRaw);
-    if (originalPrice !== null && (!Number.isInteger(originalPrice) || originalPrice <= price)) {
+    if (originalPrice !== null && (price === null || originalPrice <= price)) {
       return setError('ราคาเดิมต้องเป็นจำนวนเต็มและมากกว่าราคาโปรโมชั่น');
     }
 
@@ -164,6 +174,7 @@ export function PromotionEditor({
       note: draft.note.trim() || null,
       validUntil: draft.validUntil,
       categorySlug: draft.categorySlug || null,
+      imagePublicId: draft.imagePublicId,
     };
 
     await mutate(
@@ -200,6 +211,15 @@ export function PromotionEditor({
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ orderedIds }),
       }),
+    );
+  }
+
+  async function uploadImage(promo: AdminPromotion, file: File) {
+    const form = new FormData();
+    form.append('id', promo.id);
+    form.append('file', file);
+    await mutate('img-' + promo.id, () =>
+      fetch('/api/admin/promotions/image', { method: 'POST', body: form }),
     );
   }
 
@@ -259,6 +279,7 @@ export function PromotionEditor({
                 onDelete={() => remove(promo)}
                 onMoveUp={() => move(index, -1)}
                 onMoveDown={() => move(index, 1)}
+                onUpload={(file) => uploadImage(promo, file)}
               />
             )}
           </li>
@@ -284,6 +305,7 @@ function PromotionRow({
   onDelete,
   onMoveUp,
   onMoveDown,
+  onUpload,
 }: {
   promo: AdminPromotion;
   expired: boolean;
@@ -295,13 +317,39 @@ function PromotionRow({
   onDelete: () => void;
   onMoveUp: () => void;
   onMoveDown: () => void;
+  onUpload: (file: File) => void;
 }) {
-  const rowBusy = busyId === 'del-' + promo.id;
+  const inputRef = useRef<HTMLInputElement>(null);
+  const rowBusy = busyId === 'del-' + promo.id || busyId === 'img-' + promo.id;
 
   return (
-    <div className={cn(card, 'flex flex-col gap-3 p-4', expired && 'opacity-70')}>
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
+    <div className={cn(card, 'flex gap-4 p-4', expired && 'opacity-70')}>
+      <div className="relative size-20 shrink-0 overflow-hidden rounded-xl bg-sand ring-1 ring-black/[0.05]">
+        {promo.imagePublicId ? (
+          <Image
+            key={promo.imagePublicId}
+            src={promo.imagePublicId}
+            alt=""
+            aria-hidden="true"
+            fill
+            sizes="80px"
+            className={cn('object-cover', rowBusy && 'opacity-40')}
+          />
+        ) : (
+          <span className="absolute inset-0 grid place-items-center">
+            <ImageOff className="size-5 text-ink/25" aria-hidden="true" />
+          </span>
+        )}
+        {rowBusy && (
+          <span className="absolute inset-0 grid place-items-center bg-cream/30">
+            <Loader2 className="size-5 animate-spin text-forest" />
+          </span>
+        )}
+      </div>
+
+      <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <h4 className="truncate font-serif text-lg leading-tight text-ink">{promo.name}</h4>
             {promo.detail && (
@@ -311,8 +359,14 @@ function PromotionRow({
             )}
           </div>
           <p className="mt-1 text-sm font-medium text-ink">
-            {promo.price.toLocaleString('th-TH')}{' '}
-            <span className="text-xs font-normal text-ink/45">บาท</span>
+            {promo.price !== null ? (
+              <>
+                {promo.price.toLocaleString('th-TH')}{' '}
+                <span className="text-xs font-normal text-ink/45">บาท</span>
+              </>
+            ) : (
+              <span className="text-xs font-normal text-ink/45">ไม่ระบุราคา</span>
+            )}
             {promo.originalPrice !== null && (
               <span className="ml-2 text-xs font-normal text-ink/40 line-through">
                 {promo.originalPrice.toLocaleString('th-TH')}
@@ -332,7 +386,28 @@ function PromotionRow({
         </span>
       </div>
 
-      <div className="flex flex-wrap items-center gap-1.5 border-t border-black/[0.05] pt-3">
+      <div className="mt-auto flex flex-wrap items-center gap-1.5 pt-3 border-t border-black/[0.05]">
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/avif"
+          className="sr-only"
+          aria-label={`อัปรูปสำหรับ ${promo.name}`}
+          onChange={(event) => {
+            const file = event.target.files?.[0];
+            if (file) onUpload(file);
+            event.target.value = '';
+          }}
+        />
+        <button
+          type="button"
+          disabled={busy}
+          onClick={() => inputRef.current?.click()}
+          className={btn.secondary}
+        >
+          <Upload className="size-3.5" />
+          {promo.imagePublicId ? 'เปลี่ยนรูป' : 'อัปรูป'}
+        </button>
         <button type="button" disabled={busy} onClick={onEdit} className={btn.secondary}>
           <Pencil className="size-3.5" />
           แก้ไข
@@ -361,6 +436,7 @@ function PromotionRow({
             <ChevronDown className="size-4" />
           </button>
         </span>
+      </div>
       </div>
     </div>
   );
@@ -451,7 +527,7 @@ function PromotionForm({
             ))}
           </select>
         </Field>
-        <Field label="ราคาโปรโมชั่น (บาท)">
+        <Field label="ราคาโปรโมชั่น (บาท)" hint="เว้นว่าง = ไม่ระบุราคา">
           <input
             className={inputClass}
             inputMode="numeric"
