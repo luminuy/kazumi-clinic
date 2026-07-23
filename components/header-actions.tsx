@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { LoginModal } from '@/components/auth/login-modal';
 import { SearchModal } from '@/components/search-modal';
 
-export function HeaderActions({ cartCount = 0 }: { cartCount?: number }) {
+export function HeaderActions({ cartCount = 0, isLoggedIn = false }: { cartCount?: number; isLoggedIn?: boolean }) {
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [searchModalOpen, setSearchModalOpen] = useState(false);
 
@@ -46,7 +46,10 @@ export function HeaderActions({ cartCount = 0 }: { cartCount?: number }) {
           variant="ghost" 
           size="icon" 
           className="rounded-full text-foreground/80 hover:text-primary"
-          onClick={() => setLoginModalOpen(true)}
+          {...(isLoggedIn 
+            ? { render: <Link href="/account" /> } 
+            : { onClick: () => setLoginModalOpen(true) }
+          )}
         >
           <User className="size-5" />
           <span className="sr-only">Account</span>

@@ -1,5 +1,6 @@
 import Header from '@/components/Header';
 import { getCartCount } from '@/lib/members/cart';
+import { getCurrentMemberRow } from '@/lib/members/session';
 import Footer from '@/components/Footer';
 import { MobileContactBar } from '@/components/mobile-contact-bar';
 import { clinicSchema, websiteSchema } from '@/lib/schema';
@@ -46,6 +47,7 @@ export default async function SiteLayout({
   // Cart badge count — read per request (cookie-scoped). Safe under local dev: getCartCount
   // returns 0 when D1 is unavailable.
   const cartCount = await getCartCount();
+  const member = await getCurrentMemberRow();
 
   return (
     <NextIntlClientProvider messages={messages}>
@@ -59,7 +61,7 @@ export default async function SiteLayout({
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
       />
-      <Header logoMark={brandMark} cartCount={cartCount} />
+      <Header logoMark={brandMark} cartCount={cartCount} isLoggedIn={!!member} />
       <main>{children}</main>
       <Footer logoMark={brandMark} />
       <MobileContactBar />
