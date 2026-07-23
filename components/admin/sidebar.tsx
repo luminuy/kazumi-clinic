@@ -8,6 +8,7 @@ import {
   ExternalLink,
   FileText,
   ImageIcon,
+  LayoutDashboard,
   LogOut,
   Menu,
   Package,
@@ -21,15 +22,25 @@ import { cld } from '@/lib/cloud';
 import { cn } from '@/lib/utils';
 
 type NavItem = { href: string; label: string; icon: LucideIcon; hint: string };
+type NavGroup = { label?: string; items: NavItem[] };
 
-// Ordered by how often the clinic touches each area, most-used first.
-const NAV: NavItem[] = [
-  { href: '/admin', label: 'รูปภาพ', icon: ImageIcon, hint: 'รูปทั้งไซต์' },
-  { href: '/admin/products', label: 'สินค้า', icon: Package, hint: 'บริการ + ราคา' },
-  { href: '/admin/promotions', label: 'โปรโมชั่น', icon: Tag, hint: 'โปรฯ / แพ็กเกจ' },
-  { href: '/admin/reviews', label: 'รีวิว', icon: Star, hint: 'รีวิว + ก่อน-หลัง' },
-  { href: '/admin/blog', label: 'บทความ', icon: FileText, hint: 'บทความ / ความรู้' },
-  { href: '/admin/leads', label: 'นัดหมาย', icon: CalendarCheck, hint: 'คำขอนัดหมาย' },
+// Grouped so the clinic reads the panel as "where do I go?" not "which of six links?".
+const NAV: NavGroup[] = [
+  { items: [{ href: '/admin', label: 'ภาพรวม', icon: LayoutDashboard, hint: 'สรุปทั้งหมด' }] },
+  {
+    label: 'เนื้อหาเว็บไซต์',
+    items: [
+      { href: '/admin/images', label: 'รูปภาพ', icon: ImageIcon, hint: 'รูปทั้งไซต์' },
+      { href: '/admin/products', label: 'สินค้า', icon: Package, hint: 'บริการ + ราคา' },
+      { href: '/admin/promotions', label: 'โปรโมชั่น', icon: Tag, hint: 'โปรฯ / แพ็กเกจ' },
+      { href: '/admin/reviews', label: 'รีวิว', icon: Star, hint: 'รีวิว + ก่อน-หลัง' },
+      { href: '/admin/blog', label: 'บทความ', icon: FileText, hint: 'บทความ / ความรู้' },
+    ],
+  },
+  {
+    label: 'ลูกค้า',
+    items: [{ href: '/admin/leads', label: 'นัดหมาย', icon: CalendarCheck, hint: 'คำขอนัดหมาย' }],
+  },
 ];
 
 function Brand({ onNavigate }: { onNavigate?: () => void }) {
@@ -52,54 +63,83 @@ function Brand({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
-function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
+function NavLinks({ onNavigate, newLeads }: { onNavigate?: () => void; newLeads: number }) {
   const pathname = usePathname();
   return (
-    <nav className="flex flex-col gap-1" aria-label="เมนูผู้ดูแล">
-      {NAV.map(({ href, label, icon: Icon, hint }) => {
-        // Exact match: /admin is a prefix of every other route, so startsWith would light them all.
-        const active = pathname === href;
-        return (
-          <Link
-            key={href}
-            href={href}
-            onClick={onNavigate}
-            aria-current={active ? 'page' : undefined}
-            className={cn(
-              'group flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors',
-              active ? 'bg-ink text-white' : 'text-ink/65 hover:bg-black/[0.05] hover:text-ink',
-            )}
-          >
-            <Icon
-              className={cn('size-[1.15rem] shrink-0', active ? 'text-white' : 'text-ink/45')}
-              strokeWidth={1.6}
-            />
-            <span className="flex min-w-0 flex-col">
-              <span className="text-sm font-medium leading-tight">{label}</span>
-              <span
+    <nav className="flex flex-col gap-5" aria-label="เมนูผู้ดูแล">
+      {NAV.map((group, i) => (
+        <div key={group.label ?? `group-${i}`} className="flex flex-col gap-1">
+          {group.label && (
+            <p className="px-3 pb-1 text-[0.62rem] font-medium uppercase tracking-[0.14em] text-ink/35">
+              {group.label}
+            </p>
+          )}
+          {group.items.map(({ href, label, icon: Icon, hint }) => {
+            // Exact match: /admin is a prefix of every other route, so startsWith would light them all.
+            const active = pathname === href;
+            const badge = href === '/admin/leads' && newLeads > 0 ? newLeads : null;
+            return (
+              <Link
+                key={href}
+                href={href}
+                onClick={onNavigate}
+                aria-current={active ? 'page' : undefined}
                 className={cn(
-                  'text-[0.68rem] leading-tight',
-                  active ? 'text-white/60' : 'text-ink/40',
+                  'group flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors',
+                  active ? 'bg-ink text-white' : 'text-ink/65 hover:bg-black/[0.05] hover:text-ink',
                 )}
               >
-                {hint}
-              </span>
-            </span>
-          </Link>
-        );
-      })}
+                <Icon
+                  className={cn('size-[1.15rem] shrink-0', active ? 'text-white' : 'text-ink/45')}
+                  strokeWidth={1.6}
+                />
+                <span className="flex min-w-0 flex-col">
+                  <span className="text-sm font-medium leading-tight">{label}</span>
+                  <span
+                    className={cn(
+                      'text-[0.68rem] leading-tight',
+                      active ? 'text-white/60' : 'text-ink/40',
+                    )}
+                  >
+                    {hint}
+                  </span>
+                </span>
+                {badge != null && (
+                  <span
+                    className={cn(
+                      'ml-auto grid min-w-5 shrink-0 place-items-center rounded-full px-1.5 py-0.5 text-[0.62rem] font-semibold tabular-nums',
+                      active ? 'bg-white/20 text-white' : 'bg-forest text-white',
+                    )}
+                    aria-label={`${badge} รายการใหม่`}
+                  >
+                    {badge}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </div>
+      ))}
     </nav>
   );
 }
 
-function SidebarBody({ email, onNavigate }: { email: string | null; onNavigate?: () => void }) {
+function SidebarBody({
+  email,
+  newLeads,
+  onNavigate,
+}: {
+  email: string | null;
+  newLeads: number;
+  onNavigate?: () => void;
+}) {
   return (
     <div className="flex h-full flex-col">
       <div className="px-5 py-5">
         <Brand onNavigate={onNavigate} />
       </div>
       <div className="flex-1 overflow-y-auto px-3 py-2">
-        <NavLinks onNavigate={onNavigate} />
+        <NavLinks onNavigate={onNavigate} newLeads={newLeads} />
       </div>
       <div className="border-t border-black/[0.06] px-3 py-3">
         <a
@@ -132,7 +172,7 @@ function SidebarBody({ email, onNavigate }: { email: string | null; onNavigate?:
   );
 }
 
-export function AdminSidebar({ email }: { email: string | null }) {
+export function AdminSidebar({ email, newLeads = 0 }: { email: string | null; newLeads?: number }) {
   const [open, setOpen] = useState(false);
 
   // The drawer closes itself from every in-drawer link (onNavigate) and the backdrop/Escape, so
@@ -195,7 +235,7 @@ export function AdminSidebar({ email }: { email: string | null }) {
         >
           <X className="size-4" />
         </button>
-        <SidebarBody email={email} onNavigate={() => setOpen(false)} />
+        <SidebarBody email={email} newLeads={newLeads} onNavigate={() => setOpen(false)} />
       </aside>
     </>
   );

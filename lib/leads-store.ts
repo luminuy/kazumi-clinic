@@ -94,6 +94,20 @@ export async function getAllLeads(): Promise<LeadRow[]> {
   }
 }
 
+/** How many leads are still in the `new` state — the sidebar/dashboard "needs attention" badge. */
+export async function countNewLeads(): Promise<number> {
+  const binding = await db();
+  if (!binding) return 0;
+  try {
+    const row = await binding
+      .prepare("SELECT COUNT(*) AS n FROM leads WHERE status = 'new'")
+      .first<{ n: number }>();
+    return row?.n ?? 0;
+  } catch {
+    return 0;
+  }
+}
+
 /** Move a lead along its pipeline. */
 export async function setLeadStatus(id: string, status: LeadStatus, handledBy: string) {
   const binding = await db();
