@@ -4,7 +4,7 @@
 > **"ล่าสุด" = `origin/main` เสมอ** (ดู CLAUDE.md §0.5) — ไฟล์นี้แค่สรุปให้อ่านเร็ว ถ้าขัดกับ git ให้เชื่อ git
 > อัปเดตไฟล์นี้เป็นส่วนหนึ่งของ workflow: หลัง **deploy** และตอน **เริ่ม/จบงานสำคัญ** (ดู CLAUDE.md §0)
 
-**อัปเดตล่าสุด:** 2026-07-24 23:20 · โดย: Claude Code
+**อัปเดตล่าสุด:** 2026-07-25 00:00 · โดย: Claude Code
 
 ---
 
@@ -12,7 +12,7 @@
 
 | | |
 |---|---|
-| **workers.dev** | Version `ad3cdcd2` — deploy 2026-07-24 16:20 UTC (ผ่าน CD อัตโนมัติ) · ตรงกับ main `91f7c7e` (PR [#229](https://github.com/luminuy/kazumi-clinic/pull/229) — แก้ `<legend>` หลุดกรอบการ์ด checkout + รูปโปรโมชั่นไม่ชนขอบมนการ์ด) |
+| **workers.dev** | Version `c47e9c52` — deploy 2026-07-24 16:39 UTC (ผ่าน CD อัตโนมัติ) · ตรงกับ main `ba4a8a5` (PR [#231](https://github.com/luminuy/kazumi-clinic/pull/231) — 🔒 patch ความปลอดภัยด่วน: `next` 16.2.10 → 16.2.11 แก้ CVE middleware-bypass GHSA-6gpp-xcg3-4w24 + SSRF/DoS 3 ตัว) |
 | **โดเมนจริง** (kazumiclinic.com) | ❌ ยังไม่ขึ้น — `SITE_ENV=preview`, robots `Disallow: /` (ตั้งใจ ห้ามลบจนกว่าโดเมนจะขึ้น) |
 | **URL ตรวจ** | https://kazumi-clinic.bankjack10452.workers.dev |
 
@@ -24,9 +24,17 @@
 
 ## 🔨 กำลังทำ (in progress)
 
-- **กำลังเริ่ม**: audit ทั้งเว็บแบบกว้าง (SEO + code review + performance + security + ลด dead code/over-engineering) ตามที่เจ้าของสั่ง (2026-07-24 23:20) — ยังไม่มี PR, จะรายงานผล audit ก่อนแล้วค่อยขอ confirm ก่อนแก้จริง (เนื้อหาทางการแพทย์ต้องผ่านเจ้าของตาม CLAUDE.md §0.2)
+- **รอ direction ต่อจาก audit**: audit ทั้งเว็บ (SEO + code review + performance + security + dead code) เสร็จแล้ว 2026-07-24 23:50 — รายงานเต็ม 33 findings ส่งให้เจ้าของแล้ว (ไม่ commit เข้า repo เพราะเป็น one-off report) แก้ไปแล้วเฉพาะ critical ตัวเดียวที่เป็นช่องโหว่จริง (PR #231) ส่วนที่เหลือ (โดยเฉพาะ `cookies()` ใน shared layout ที่ทำให้ทั้งเว็บหลุดจาก ISR/KV cache — งานรีแฟกเตอร์สถาปัตยกรรม, และ password-reset flow ที่ยังไม่มี — ทั้งคู่ต้องคุยแผนก่อนลงมือ) รอเจ้าของสั่งว่าจะเริ่มจากตรงไหนต่อ — **สรุปย่อ findings หลักไว้ที่นี่กันหาย:**
+  - 🔴 `cookies()` ใน `app/(site)/[locale]/layout.tsx` (อ่าน cart/session) ทำทั้ง subtree เป็น dynamic แม้แต่ละหน้าตั้ง `revalidate=3600` ไว้ — ทุก request ยิง D1 สดทุกครั้ง ไม่ได้ใช้ KV cache เลย
+  - 🟠 SEO: title หน้าแรกซ้ำชื่อแบรนด์ 2 รอบ, `<html lang="th">` ค่าตายตัวผิดบนหน้า `/en`, `/th`+`/en` แชร์ canonical เดียวกันไม่มี hreflang (คาดว่า `/en` ไม่ได้ index เลย)
+  - 🟠 Security: admin write/upload endpoints ไม่มี rate limit, error message ดิบหลุดไปหา client ~27 จุด, ไม่มี password-reset flow ทั้งที่มี schema `member_tokens` รองรับแล้ว
+  - 🟡🟢 อีก 19 ข้อ (dead code 4 จุด, ปุ่ม LINE ซ้ำ 8 ไฟล์, test coverage ขาดสำหรับ logic เรื่องเงิน/auth ฯลฯ) — ดูรายละเอียดเต็มในรายงานที่ส่งให้เจ้าของ (ไม่ได้เก็บไว้ใน repo)
 
 > ก่อนเริ่มงานที่กินหลายไฟล์ ให้จดที่นี่: **อะไร · เครื่องมือไหน (Claude / Antigravity) · branch ไหน** — กันชนกันและกัน "งานหาย" (ดู CLAUDE.md §0.5 · dual-agent)
+
+### ✅ ปิดวันนี้ (2026-07-24 ดึก) — patch ความปลอดภัยด่วน: next 16.2.10 มี CVE middleware-bypass
+
+**[#231](https://github.com/luminuy/kazumi-clinic/pull/231)** เจอระหว่าง audit ทั้งเว็บ (ดู "กำลังทำ" ด้านบน) — `pnpm audit --prod` ยืนยันจริงว่า `next@16.2.10` มี 4 high-severity advisory ที่แก้ใน `16.2.11` โดยเฉพาะ **GHSA-6gpp-xcg3-4w24** (middleware/proxy bypass) ซึ่งอันตรายเป็นพิเศษกับเว็บนี้เพราะ auth ของ `/admin` ทั้งหมดพึ่ง `middleware.ts` จุดเดียว (route handler เชื่อ header `x-admin-email` โดยไม่เช็คซ้ำ) — bypass สำเร็จ = เขียน/ลบข้อมูลคลินิกได้โดยไม่ล็อกอิน แก้ด้วยการ bump เวอร์ชันอย่างเดียว ไม่ต้องแก้โค้ด lint/typecheck/test/build ผ่านครบ
 
 ### ✅ ปิดวันนี้ (2026-07-24 ค่ำ) — แก้ `<legend>` หลุดกรอบการ์ด checkout + รูปโปรโมชั่นไม่ชนขอบมนการ์ด
 
