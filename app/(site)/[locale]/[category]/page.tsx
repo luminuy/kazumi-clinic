@@ -238,10 +238,11 @@ export default async function ServiceCategoryPage({ params }: Props) {
   // other category renders the shared editorial template below. All three are the same visual
   // language, so they read as one site rather than compete.
   //
-  // Thread lift is deliberately not gated on `heroImage` the way filler is: it has no photo yet,
-  // and gating would drop it back to the generic template — its own page handles the empty slot.
+  // Filler and thread lift handle an empty hero slot in their own components with ServiceIcon, so
+  // neither is gated on `heroImage`; a gate would silently replace their bespoke layout with the
+  // generic template when a category image is unavailable.
   const pageContent =
-    service.slug === 'filler' && heroImage ? (
+    service.slug === 'filler' ? (
       <FillerServicePage service={service} heroImage={heroImage} itemImages={itemImages} doctorImage={doctorImage} eeshaImage={eeshaImage} />
     ) : service.slug === 'thread-lift' ? (
       <ThreadLiftServicePage
