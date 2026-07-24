@@ -80,3 +80,28 @@ export const site = {
 export function isPreviewDeploy() {
   return process.env.SITE_ENV === 'preview';
 }
+
+const LOCALES = ['th', 'en'] as const;
+const DEFAULT_LOCALE = 'th';
+
+/**
+ * Builds `alternates.canonical` + `alternates.languages` for a locale-aware page — single place
+ * that knows the `localePrefix: 'as-needed'` URL shape (default locale `th` has no prefix, `en`
+ * is prefixed with `/en`). Every `generateMetadata` under `app/(site)/[locale]/*` must go through
+ * this instead of hand-building `${site.url}${path}`, which silently ignores which locale is
+ * actually being rendered and made every page's canonical/hreflang identical across `/th` and
+ * `/en` (found in the 2026-07-24 SEO audit — Google had no way to tell the two language versions
+ * apart, so `/en` almost certainly wasn't getting indexed).
+ *
+ * `path` is the locale-independent part of the URL: `''` for the homepage, `'/about'` otherwise
+ * (leading slash, no trailing slash — matches the no-trailing-slash convention in CLAUDE.md §1).
+ */
+export function localizedAlternates(locale: string, path: string = '') {
+  const urlFor = (loc: string) =>
+    loc === DEFAULT_LOCALE ? `${site.url}${path || '/'}` : `${site.url}/${loc}${path}`;
+
+  const languages: Record<string, string> = { 'x-default': urlFor(DEFAULT_LOCALE) };
+  for (const loc of LOCALES) languages[loc] = urlFor(loc);
+
+  return { canonical: urlFor(locale), languages };
+}

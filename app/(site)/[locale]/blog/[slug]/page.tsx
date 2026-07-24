@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
-import { site } from '@/lib/site';
+import { site, localizedAlternates } from '@/lib/site';
 import { blogPostingSchema, breadcrumbSchema } from '@/lib/schema';
 import { socialImage, siteSocialImage } from '@/lib/metadata-images';
 import { getPublishedPostBySlug } from '@/lib/blog-store';
@@ -28,14 +28,16 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     ? socialImage(post.cover_image_public_id, post.title)
     : await siteSocialImage('hero-iv-drip-2', post.title);
 
+  const alternates = localizedAlternates(locale, `/blog/${slug}`);
+
   return {
     title: post.title,
     description,
-    alternates: { canonical: `${site.url}/blog/${slug}` },
+    alternates,
     openGraph: {
       title: `${post.title} — ${site.name}`,
       description,
-      url: `${site.url}/blog/${slug}`,
+      url: alternates.canonical,
       type: 'article',
       ...(post.published_at && { publishedTime: new Date(post.published_at).toISOString() }),
       ...(image && { images: [image] }),

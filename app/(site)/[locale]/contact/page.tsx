@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Phone, ArrowRight, Navigation, ShieldCheck, Lock, Map as MapIcon } from 'lucide-react';
-import { site } from '@/lib/site';
+import { site, localizedAlternates } from '@/lib/site';
 import { serviceCategories } from '@/lib/services';
 import { breadcrumbSchema } from '@/lib/schema';
 import { siteSocialImage } from '@/lib/metadata-images';
@@ -19,15 +19,16 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const pageDescription = t('metaDescription', { siteName: site.name });
 
   const socialImage = await siteSocialImage('hero-contact', `${site.name} ${pageTitle}`);
+  const alternates = localizedAlternates(locale, '/contact');
 
   return {
     title: pageTitle,
     description: pageDescription,
-    alternates: { canonical: `${site.url}/contact` },
+    alternates,
     openGraph: {
       title: `${pageTitle} — ${site.name}`,
       description: pageDescription,
-      url: `${site.url}/contact`,
+      url: alternates.canonical,
       type: 'website',
       ...(socialImage && { images: [socialImage] }),
     },

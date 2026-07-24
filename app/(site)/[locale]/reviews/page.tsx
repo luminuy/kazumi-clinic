@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Image from 'next/image';
 import { ExternalLink, Star } from 'lucide-react';
-import { site } from '@/lib/site';
+import { site, localizedAlternates } from '@/lib/site';
 import { breadcrumbSchema } from '@/lib/schema';
 import { siteSocialImage } from '@/lib/metadata-images';
 import { getPublishedReviews, type PublicReview } from '@/lib/reviews-store';
@@ -21,15 +21,16 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const pageDescription = t('metaDescription', { siteName: site.name });
 
   const socialImage = await siteSocialImage('hero-iv-drip-1', `${site.name} ${pageTitle}`);
+  const alternates = localizedAlternates(locale, '/reviews');
 
   return {
     title: pageTitle,
     description: pageDescription,
-    alternates: { canonical: `${site.url}/reviews` },
+    alternates,
     openGraph: {
       title: `${pageTitle} — ${site.name}`,
       description: pageDescription,
-      url: `${site.url}/reviews`,
+      url: alternates.canonical,
       type: 'website',
       ...(socialImage && { images: [socialImage] }),
     },

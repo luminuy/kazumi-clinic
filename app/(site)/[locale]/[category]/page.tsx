@@ -5,7 +5,7 @@ import { setRequestLocale } from 'next-intl/server';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowUpRight, ShieldCheck, Stethoscope } from 'lucide-react';
-import { site } from '@/lib/site';
+import { site, localizedAlternates } from '@/lib/site';
 import { routing } from '@/i18n/routing';
 import {
   serviceCategories,
@@ -61,7 +61,7 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { category } = await params;
+  const { category, locale } = await params;
   const service = getServiceBySlug(category);
   if (!service) return {};
 
@@ -70,15 +70,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const socialPreview = publicId
     ? socialImage(publicId, `${service.title} — ${site.name}`)
     : undefined;
+  const alternates = localizedAlternates(locale, `/${service.slug}`);
 
   return {
     title: service.title,
     description: service.description,
-    alternates: { canonical: `${site.url}/${service.slug}` },
+    alternates,
     openGraph: {
       title: service.title,
       description: service.description,
-      url: `${site.url}/${service.slug}`,
+      url: alternates.canonical,
       type: 'website',
       ...(socialPreview && { images: [socialPreview] }),
     },

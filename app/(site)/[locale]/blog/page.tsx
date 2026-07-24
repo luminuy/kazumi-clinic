@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { FileText, ArrowRight } from 'lucide-react';
 import { LineIcon, InstagramIcon } from '@/components/brand-icons';
-import { site } from '@/lib/site';
+import { site, localizedAlternates } from '@/lib/site';
 import { breadcrumbSchema } from '@/lib/schema';
 import { siteSocialImage } from '@/lib/metadata-images';
 import { getPublishedPosts } from '@/lib/blog-store';
@@ -19,15 +19,16 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const pageDescription = t('metaDescription', { siteName: site.name });
 
   const socialImage = await siteSocialImage('hero-iv-drip-2', `${site.name} ${pageTitle}`);
+  const alternates = localizedAlternates(locale, '/blog');
 
   return {
     title: pageTitle,
     description: pageDescription,
-    alternates: { canonical: `${site.url}/blog` },
+    alternates,
     openGraph: {
       title: `${pageTitle} — ${site.name}`,
       description: pageDescription,
-      url: `${site.url}/blog`,
+      url: alternates.canonical,
       type: 'website',
       ...(socialImage && { images: [socialImage] }),
     },
