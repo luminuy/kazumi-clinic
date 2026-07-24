@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import { addItem, setItemQty, removeItem } from '@/lib/members/cart';
+import { rateLimit, clientIp } from '@/lib/rate-limit';
 
 // Cart mutations for the current visitor. POST adds (or increments), PATCH sets an absolute
 // quantity, DELETE removes a line. Each returns the updated cart so the client can re-render
@@ -35,6 +36,10 @@ function isErr(v: unknown): v is { __error: NextResponse } {
 }
 
 export async function POST(request: NextRequest) {
+  if (!(await rateLimit('cart-items', clientIp(request), { limit: 60, windowSec: 300 }))) {
+    return NextResponse.json({ error: 'ทำรายการในตะกร้าบ่อยเกินไป กรุณาลองใหม่ภายหลัง' }, { status: 429 });
+  }
+
   const body = await readBody(request);
   if (isErr(body)) return body.__error;
   const parsed = addSchema.safeParse(body);
@@ -56,6 +61,10 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
+  if (!(await rateLimit('cart-items', clientIp(request), { limit: 60, windowSec: 300 }))) {
+    return NextResponse.json({ error: 'ทำรายการในตะกร้าบ่อยเกินไป กรุณาลองใหม่ภายหลัง' }, { status: 429 });
+  }
+
   const body = await readBody(request);
   if (isErr(body)) return body.__error;
   const parsed = setSchema.safeParse(body);
@@ -74,6 +83,10 @@ export async function PATCH(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
+  if (!(await rateLimit('cart-items', clientIp(request), { limit: 60, windowSec: 300 }))) {
+    return NextResponse.json({ error: 'ทำรายการในตะกร้าบ่อยเกินไป กรุณาลองใหม่ภายหลัง' }, { status: 429 });
+  }
+
   const body = await readBody(request);
   if (isErr(body)) return body.__error;
   const parsed = removeSchema.safeParse(body);
