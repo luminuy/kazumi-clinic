@@ -109,35 +109,46 @@ export async function upsertPost(input: PostInput, updatedBy: string) {
   requireDb(binding);
   const now = Date.now();
   const publishedAt = input.published ? now : null;
-  await binding
-    .prepare(
-      `INSERT INTO posts
-         (id, slug, title, excerpt, body, author, published, published_at, updated_at, updated_by, category)
-       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)
-       ON CONFLICT(id) DO UPDATE SET
-         slug = ?2, title = ?3, excerpt = ?4, body = ?5, author = ?6, published = ?7,
-         -- Keep the original publish date once set; only stamp it on the first publish.
-         published_at = CASE
-           WHEN ?7 = 1 AND posts.published_at IS NOT NULL THEN posts.published_at
-           WHEN ?7 = 1 THEN ?9
-           ELSE NULL
-         END,
-         updated_at = ?9, updated_by = ?10, category = ?11`,
-    )
-    .bind(
-      input.id,
-      input.slug,
-      input.title,
-      input.excerpt ?? null,
-      input.body,
-      input.author ?? null,
-      input.published ? 1 : 0,
-      publishedAt,
-      now,
-      updatedBy,
-      input.category ?? null,
-    )
-    .run();
+  try {
+    await binding
+      .prepare(
+        `INSERT INTO posts
+           (id, slug, title, excerpt, body, author, published, published_at, updated_at, updated_by, category)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)
+         ON CONFLICT(id) DO UPDATE SET
+           slug = ?2, title = ?3, excerpt = ?4, body = ?5, author = ?6, published = ?7,
+           -- Keep the original publish date once set; only stamp it on the first publish.
+           published_at = CASE
+             WHEN ?7 = 1 AND posts.published_at IS NOT NULL THEN posts.published_at
+             WHEN ?7 = 1 THEN ?9
+             ELSE NULL
+           END,
+           updated_at = ?9, updated_by = ?10, category = ?11`,
+      )
+      .bind(
+        input.id,
+        input.slug,
+        input.title,
+        input.excerpt ?? null,
+        input.body,
+        input.author ?? null,
+        input.published ? 1 : 0,
+        publishedAt,
+        now,
+        updatedBy,
+        input.category ?? null,
+      )
+      .run();
+  } catch (error) {
+    // `ON CONFLICT(id)` only covers the id collision — a concurrent save picking the same new
+    // slug for a *different* id can still race past the slugTaken() pre-check in the API route
+    // and hit the separate UNIQUE constraint on posts.slug. Map that to the same typed error the
+    // pre-check would have thrown, so the route doesn't need to know which guard actually caught it.
+    if (error instanceof Error && /UNIQUE constraint failed.*posts\.slug/.test(error.message)) {
+      throw new Error('SLUG_TAKEN');
+    }
+    throw error;
+  }
 }
 
 /** Sets a post's cover photo, leaving every other field untouched. */

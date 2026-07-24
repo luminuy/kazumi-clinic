@@ -77,13 +77,23 @@ export async function createMember(input: CreateMemberInput): Promise<MemberRow>
   const id = newId('mbr');
   const now = Date.now();
   const passwordHash = await hashPassword(input.password);
-  await db
-    .prepare(
-      `INSERT INTO members (id, email, email_verified, name, password_hash, created_at, updated_at)
-       VALUES (?, ?, 0, ?, ?, ?, ?)`,
-    )
-    .bind(id, email, input.name?.trim() || null, passwordHash, now, now)
-    .run();
+  try {
+    await db
+      .prepare(
+        `INSERT INTO members (id, email, email_verified, name, password_hash, created_at, updated_at)
+         VALUES (?, ?, 0, ?, ?, ?, ?)`,
+      )
+      .bind(id, email, input.name?.trim() || null, passwordHash, now, now)
+      .run();
+  } catch (error) {
+    // A concurrent registration for the same email can race past the pre-check above — the
+    // UNIQUE constraint on members.email is the real guard; map its failure to the same
+    // EMAIL_TAKEN the pre-check throws so the route doesn't need to know which one caught it.
+    if (error instanceof Error && /UNIQUE constraint failed.*members\.email/.test(error.message)) {
+      throw new Error('EMAIL_TAKEN');
+    }
+    throw error;
+  }
 
   return {
     id,

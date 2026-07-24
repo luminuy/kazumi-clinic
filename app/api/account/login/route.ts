@@ -55,8 +55,9 @@ export async function POST(request: NextRequest) {
     await mergeGuestCartIntoMember(member.id);
     return NextResponse.json({ ok: true, member: toPublicMember(member) });
   } catch (error) {
+    console.error(error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'เข้าสู่ระบบไม่สำเร็จ' },
+      { error: 'เข้าสู่ระบบไม่สำเร็จ' },
       { status: 502 },
     );
   }

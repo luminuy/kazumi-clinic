@@ -95,8 +95,9 @@ export async function POST(request: NextRequest) {
     revalidateCategory(data.category);
     return NextResponse.json({ ok: true, id });
   } catch (error) {
+    console.error(error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'บันทึกไม่สำเร็จ' },
+      { error: 'บันทึกไม่สำเร็จ' },
       { status: 502 },
     );
   }
@@ -114,8 +115,9 @@ export async function DELETE(request: NextRequest) {
     revalidateCategory(parsed.data.category);
     return NextResponse.json({ ok: true });
   } catch (error) {
+    console.error(error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'ลบไม่สำเร็จ' },
+      { error: 'ลบไม่สำเร็จ' },
       { status: 502 },
     );
   }
@@ -133,8 +135,9 @@ export async function PUT(request: NextRequest) {
     revalidateCategory(parsed.data.category);
     return NextResponse.json({ ok: true });
   } catch (error) {
+    console.error(error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'กู้คืนไม่สำเร็จ' },
+      { error: 'กู้คืนไม่สำเร็จ' },
       { status: 502 },
     );
   }
@@ -152,8 +155,9 @@ export async function PATCH(request: NextRequest) {
     revalidateCategory(parsed.data.category);
     return NextResponse.json({ ok: true });
   } catch (error) {
+    console.error(error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'จัดลำดับไม่สำเร็จ' },
+      { error: 'จัดลำดับไม่สำเร็จ' },
       { status: 502 },
     );
   }

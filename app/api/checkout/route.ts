@@ -63,8 +63,9 @@ export async function POST(request: NextRequest) {
     if (error instanceof Error && error.message === 'CART_EMPTY') {
       return NextResponse.json({ error: 'ตะกร้าว่าง' }, { status: 400 });
     }
+    console.error(error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'สั่งจองไม่สำเร็จ' },
+      { error: 'สั่งจองไม่สำเร็จ' },
       { status: 502 },
     );
   }
