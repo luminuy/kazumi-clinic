@@ -4,7 +4,7 @@
 > **"ล่าสุด" = `origin/main` เสมอ** (ดู CLAUDE.md §0.5) — ไฟล์นี้แค่สรุปให้อ่านเร็ว ถ้าขัดกับ git ให้เชื่อ git
 > อัปเดตไฟล์นี้เป็นส่วนหนึ่งของ workflow: หลัง **deploy** และตอน **เริ่ม/จบงานสำคัญ** (ดู CLAUDE.md §0)
 
-**อัปเดตล่าสุด:** 2026-07-23 17:56 · โดย: Claude Code
+**อัปเดตล่าสุด:** 2026-07-24 13:25 · โดย: Claude Code
 
 ---
 
@@ -12,7 +12,7 @@
 
 | | |
 |---|---|
-| **workers.dev** | Version `55e9baa2` — deploy 2026-07-23 22:15 (ผ่าน CD อัตโนมัติ) · ตรงกับ main `9b99888` (security: headers + rate limiting + JSON-LD escaping + PBKDF2 600k, PR #185) |
+| **workers.dev** | Version `06bdedc5` — deploy 2026-07-24 06:21 UTC (ผ่าน CD อัตโนมัติ) · ตรงกับ main `3c08f1a` (สินค้าจาก /admin ขึ้นครบ 9 หมวด + ตัด Cloudinary default ที่ 404 ทิ้ง, PR #211) |
 | **โดเมนจริง** (kazumiclinic.com) | ❌ ยังไม่ขึ้น — `SITE_ENV=preview`, robots `Disallow: /` (ตั้งใจ ห้ามลบจนกว่าโดเมนจะขึ้น) |
 | **URL ตรวจ** | https://kazumi-clinic.bankjack10452.workers.dev |
 
@@ -24,7 +24,7 @@
 
 ## 🔨 กำลังทำ (in progress)
 
-- แก้ image fallback และ product catalogue ใน worktree `sai-hai-noi-f51494` เสร็จแล้ว — ยังไม่ commit ตามคำสั่งเจ้าของ · `pnpm lint`, `pnpm typecheck`, `pnpm build` ผ่าน 2026-07-24 · รอ review/commit โดยผู้รับงาน
+- (ว่าง — PR #211 merge + deploy แล้ว)
 
 > ก่อนเริ่มงานที่กินหลายไฟล์ ให้จดที่นี่: **อะไร · เครื่องมือไหน (Claude / Antigravity) · branch ไหน** — กันชนกันและกัน "งานหาย" (ดู CLAUDE.md §0.5 · dual-agent)
 
@@ -47,6 +47,7 @@
 - [x] **ระบบสมาชิก — เปิด Google/LINE Login**: ตั้ง secret `GOOGLE_CLIENT_ID/SECRET`, `LINE_CHANNEL_ID/SECRET` ด้วย `wrangler secret put` + เพิ่ม redirect URI ใน console (ดู [docs/member-system.md](docs/member-system.md)) — ปุ่มขึ้นแล้วแต่ยังกดไม่ผ่านจนกว่าจะตั้งคีย์
 - [ ] **ระบบสมาชิก — เชื่อม payment gateway**: แก้ `lib/members/payments.ts` (`initiatePayment`) — ตอนนี้ checkout รองรับจองก่อนจ่ายที่คลินิกได้เต็ม, ชำระออนไลน์เป็น placeholder
 - [ ] **เจ้าของทดสอบ**: เปลี่ยนรูปสักช่องใน /admin → รีเฟรชหน้านั้น ควรอัปเดตใน ~ไม่กี่วินาที (ยืนยัน on-demand revalidation หลังแก้ tag cache 2026-07-22)
+- [ ] **เจ้าของอัปรูปที่หายกลับเข้า /admin/images**: asset เดิมบน Cloudinary หายไปหลายใบ (404) — `hero-filler`, `hero-skin-booster`, `hero-iv-drip-1/2/3`, `doctor-pratch`, `og-about`, `brand-logo`, โปสเตอร์ Karisma/Velvet Glow · PR #211 ตัด default ที่ตายแล้วออก หน้าจึงแสดงกล่องไอคอนแทนรูปแตก **จนกว่าจะอัปใหม่** · การ์ดทุก slot พร้อมรับอัปที่ /admin/images แล้ว
 - [ ] จดโดเมนจริง + ลบ `SITE_ENV=preview` + แก้ robots ตอนโดเมนพร้อม (ดู docs/infrastructure.md)
 
 ---
