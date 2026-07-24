@@ -6,8 +6,8 @@ import { site } from '@/lib/site';
 import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
 import { LineIcon } from '@/components/brand-icons';
-import { AddToCartButton } from '@/components/account/add-to-cart-button';
 import { ProductThumbnail } from '@/components/product-thumbnail';
+import { ServiceItemActions } from '@/components/service-item-actions';
 
 /**
  * Our benefits are "English title — Thai description" (e.g. "Restoration — เติมเต็ม…"). The
@@ -124,9 +124,9 @@ export function CollagenBoosterServicePage({
                     บาท / {item.unit}
                   </span>
                 </p>
-                <AddToCartButton productId={item.id} className="mt-4 w-full sm:w-auto" />
               </div>
             )}
+            <ServiceItemActions item={item} className="mt-4" />
           </Reveal>
 
           {item.benefits && item.benefits.length > 0 && (

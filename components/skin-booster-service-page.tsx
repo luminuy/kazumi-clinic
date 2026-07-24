@@ -6,8 +6,8 @@ import { site } from '@/lib/site';
 import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
 import { LineIcon } from '@/components/brand-icons';
-import { AddToCartButton } from '@/components/account/add-to-cart-button';
 import { ProductThumbnail } from '@/components/product-thumbnail';
+import { ServiceItemActions } from '@/components/service-item-actions';
 
 /**
  * Our benefits are "Label — Thai description" (e.g. "Revitalizing — กระตุ้น…"). The reference
@@ -71,30 +71,7 @@ function TreatmentCard({ item, category }: { item: ServiceItem; category: string
               : 'สอบถามราคา'}
           </p>
         </div>
-        {item.id && item.priceFrom !== undefined ? (
-          <div className="flex flex-col items-stretch gap-2 sm:items-end">
-            <AddToCartButton productId={item.id} className="w-full sm:w-auto" />
-            <a
-              href={site.lineUrl}
-              target="_blank"
-              rel="noopener"
-              aria-label={`จองคิว ${item.name} ผ่าน LINE`}
-              className="rounded-full bg-[#06C755] px-5 py-2.5 text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] active:scale-[0.98]"
-            >
-              จองผ่าน LINE
-            </a>
-          </div>
-        ) : (
-          <a
-            href={site.lineUrl}
-            target="_blank"
-            rel="noopener"
-            aria-label={`จองคิว ${item.name} ผ่าน LINE`}
-            className="rounded-full bg-[#06C755] px-5 py-2.5 text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] active:scale-[0.98]"
-          >
-            จองผ่าน LINE
-          </a>
-        )}
+        <ServiceItemActions item={item} className="shrink-0" />
       </div>
     </article>
   );

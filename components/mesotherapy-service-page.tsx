@@ -1,12 +1,12 @@
 import Image from 'next/image';
-import { ArrowRight, MapPin, Phone, Sparkles } from 'lucide-react';
+import { MapPin, Phone, Sparkles } from 'lucide-react';
 import type { ServiceCategory, ServiceItem } from '@/lib/services';
 import { site } from '@/lib/site';
 import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
 import { LineIcon } from '@/components/brand-icons';
-import { AddToCartButton } from '@/components/account/add-to-cart-button';
 import { ProductThumbnail } from '@/components/product-thumbnail';
+import { ServiceItemActions } from '@/components/service-item-actions';
 
 /**
  * The reference gives every card a one-line description. Our data carries that in two shapes:
@@ -41,56 +41,21 @@ function TreatmentCard({ item, category }: { item: ServiceItem; category: string
         {description && <p className="mt-4 text-sm leading-[1.9] text-[var(--store-muted)]">{description}</p>}
       </div>
 
-      {item.id && item.priceFrom !== undefined ? (
-        <div className="mt-8">
-          <span className="font-serif text-2xl italic text-[var(--store-ink)]">
-            {item.priceFrom.toLocaleString('th-TH')}
-            <span className="ml-1.5 font-sans text-[0.62rem] not-italic tracking-wide text-[var(--store-muted)]">
-              บาท / {item.unit}
-            </span>
-          </span>
-          <div className="mt-4 flex flex-col gap-2">
-            <AddToCartButton productId={item.id} className="w-full" />
-            {/* The reference labels this "Details", but there is no per-item page to send anyone to.
-                It points at LINE — the same place the price says to ask — and says so. */}
-            <a
-              href={site.lineUrl}
-              target="_blank"
-              rel="noopener"
-              aria-label={`สอบถามรายละเอียด ${item.name} ผ่าน LINE`}
-              className="flex shrink-0 items-center gap-2 text-[0.66rem] uppercase tracking-[0.18em] text-[var(--store-ink)] transition-transform duration-200 group-hover:translate-x-1"
-            >
-              สอบถาม <ArrowRight aria-hidden="true" className="size-3.5" />
-            </a>
-          </div>
-        </div>
-      ) : (
-        <div className="mt-8 flex items-center justify-between gap-4">
-          <span className="font-serif text-2xl italic text-[var(--store-ink)]">
-            {item.priceFrom !== undefined ? (
-              <>
-                {item.priceFrom.toLocaleString('th-TH')}
-                <span className="ml-1.5 font-sans text-[0.62rem] not-italic tracking-wide text-[var(--store-muted)]">
-                  บาท / {item.unit}
-                </span>
-              </>
-            ) : (
-              'สอบถามราคา'
-            )}
-          </span>
-          {/* The reference labels this "Details", but there is no per-item page to send anyone to.
-              It points at LINE — the same place the price says to ask — and says so. */}
-          <a
-            href={site.lineUrl}
-            target="_blank"
-            rel="noopener"
-            aria-label={`สอบถามรายละเอียด ${item.name} ผ่าน LINE`}
-            className="flex shrink-0 items-center gap-2 text-[0.66rem] uppercase tracking-[0.18em] text-[var(--store-ink)] transition-transform duration-200 group-hover:translate-x-1"
-          >
-            สอบถาม <ArrowRight aria-hidden="true" className="size-3.5" />
-          </a>
-        </div>
-      )}
+      <div className="mt-8">
+        <span className="font-serif text-2xl italic text-[var(--store-ink)]">
+          {item.priceFrom !== undefined ? (
+            <>
+              {item.priceFrom.toLocaleString('th-TH')}
+              <span className="ml-1.5 font-sans text-[0.62rem] not-italic tracking-wide text-[var(--store-muted)]">
+                บาท / {item.unit}
+              </span>
+            </>
+          ) : (
+            'สอบถามราคา'
+          )}
+        </span>
+        <ServiceItemActions item={item} className="mt-4" />
+      </div>
     </article>
   );
 }

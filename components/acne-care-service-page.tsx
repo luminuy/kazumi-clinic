@@ -5,8 +5,8 @@ import { site } from '@/lib/site';
 import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
 import { LineIcon } from '@/components/brand-icons';
-import { AddToCartButton } from '@/components/account/add-to-cart-button';
 import { ProductThumbnail } from '@/components/product-thumbnail';
+import { ServiceItemActions } from '@/components/service-item-actions';
 
 function MenuRow({ item, category }: { item: ServiceItem; category: string }) {
   return (
@@ -20,22 +20,16 @@ function MenuRow({ item, category }: { item: ServiceItem; category: string }) {
         {item.detail && <p className="mt-1 text-sm leading-relaxed text-[var(--store-muted)]/60">{item.detail}</p>}
         </div>
       </div>
-      {item.id && item.priceFrom !== undefined ? (
-        <div className="flex shrink-0 flex-col items-end text-right">
-          <p className="text-[0.66rem] uppercase tracking-[0.12em] text-[var(--store-ink)]">
-            {item.priceFrom.toLocaleString('th-TH')} บาท / {item.unit}
-          </p>
-          <AddToCartButton productId={item.id} className="mt-2" />
-        </div>
-      ) : (
-        <p className="shrink-0 text-right text-[0.66rem] uppercase tracking-[0.12em] text-[var(--store-ink)]">
+      <div className="flex shrink-0 flex-col items-end text-right">
+        <p className="text-[0.66rem] uppercase tracking-[0.12em] text-[var(--store-ink)]">
           {/* The reference prints "สอบถามราคา"; lib/services.ts has no price for these programmes,
               so the two agree — no invented figure. */}
           {item.priceFrom !== undefined
             ? `${item.priceFrom.toLocaleString('th-TH')} บาท / ${item.unit}`
             : 'สอบถามราคา'}
         </p>
-      )}
+        <ServiceItemActions item={item} compact className="mt-2" />
+      </div>
     </div>
   );
 }
