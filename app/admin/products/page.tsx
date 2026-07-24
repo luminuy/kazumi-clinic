@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { serviceCategories, type ServiceItem } from '@/lib/services';
-import { getCategoryItems } from '@/lib/service-products-store';
+import { getCategoryItems, getHiddenDefaultProducts } from '@/lib/service-products-store';
 import { ProductCategoryEditor, type AdminProduct } from '@/components/admin/product-category-editor';
 import { PageHeading } from '@/components/admin/ui';
 import { SectionNav } from '@/components/admin/nav';
@@ -29,28 +29,33 @@ function isContentEdited(base: ServiceItem, live: ServiceItem): boolean {
   );
 }
 
+function toAdminProduct(item: ServiceItem, base?: ServiceItem): AdminProduct {
+  return {
+    id: item.id ?? '',
+    name: item.name,
+    detail: item.detail ?? '',
+    tagline: item.tagline ?? '',
+    benefits: item.benefits ?? [],
+    collection: item.collection ?? '',
+    priceFrom: item.priceFrom ?? null,
+    unit: item.unit,
+    imagePublicId: item.imagePublicId ?? null,
+    isDefault: Boolean(base),
+    isEdited: base ? isContentEdited(base, item) : false,
+  };
+}
+
 export default async function AdminProductsPage() {
   const categories = await Promise.all(
     serviceCategories.map(async (category) => {
       const baseById = new Map(category.items.map((item) => [item.id, item]));
-      const items = await getCategoryItems(category.slug);
-      const products: AdminProduct[] = items.map((item) => {
-        const base = baseById.get(item.id);
-        return {
-          id: item.id ?? '',
-          name: item.name,
-          detail: item.detail ?? '',
-          tagline: item.tagline ?? '',
-          benefits: item.benefits ?? [],
-          collection: item.collection ?? '',
-          priceFrom: item.priceFrom ?? null,
-          unit: item.unit,
-          imagePublicId: item.imagePublicId ?? null,
-          isDefault: Boolean(base),
-          isEdited: base ? isContentEdited(base, item) : false,
-        };
-      });
-      return { slug: category.slug, title: category.title, products };
+      const [items, hiddenItems] = await Promise.all([
+        getCategoryItems(category.slug),
+        getHiddenDefaultProducts(category.slug),
+      ]);
+      const products = items.map((item) => toAdminProduct(item, baseById.get(item.id)));
+      const hiddenProducts = hiddenItems.map((item) => toAdminProduct(item, baseById.get(item.id)));
+      return { slug: category.slug, title: category.title, products, hiddenProducts };
     }),
   );
 
@@ -85,6 +90,7 @@ export default async function AdminProductsPage() {
             slug={category.slug}
             title={category.title}
             products={category.products}
+            hiddenProducts={category.hiddenProducts}
           />
         ))}
       </div>
