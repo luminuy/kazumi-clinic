@@ -4,7 +4,7 @@
 > **"ล่าสุด" = `origin/main` เสมอ** (ดู CLAUDE.md §0.5) — ไฟล์นี้แค่สรุปให้อ่านเร็ว ถ้าขัดกับ git ให้เชื่อ git
 > อัปเดตไฟล์นี้เป็นส่วนหนึ่งของ workflow: หลัง **deploy** และตอน **เริ่ม/จบงานสำคัญ** (ดู CLAUDE.md §0)
 
-**อัปเดตล่าสุด:** 2026-07-24 15:52 · โดย: Claude Code (ร่วมกับ Codex CLI เป็นคนลงมือแก้โค้ด — ดู "ปมค้าง" ด้านล่าง)
+**อัปเดตล่าสุด:** 2026-07-24 22:20 · โดย: Claude Code (ร่วมกับ Codex CLI เป็นคนลงมือแก้โค้ด — ดู "ปมค้าง" ด้านล่าง)
 
 ---
 
@@ -12,7 +12,7 @@
 
 | | |
 |---|---|
-| **workers.dev** | Version `fd8886ca` — deploy 2026-07-24 08:51 UTC (ผ่าน CD อัตโนมัติ) · ตรงกับ main `5652ac5` (PR #220 signed Cloudinary upload — ล่าสุดของ 6 PR ที่ merge วันนี้: #215–#220) |
+| **workers.dev** | Version `70d98dde` — deploy 2026-07-24 15:18 UTC (ผ่าน CD อัตโนมัติ) · ตรงกับ main `adb1199` (PR #227 — ล่าสุดของ 13 PR ที่ merge วันนี้: #214–#227) |
 | **โดเมนจริง** (kazumiclinic.com) | ❌ ยังไม่ขึ้น — `SITE_ENV=preview`, robots `Disallow: /` (ตั้งใจ ห้ามลบจนกว่าโดเมนจะขึ้น) |
 | **URL ตรวจ** | https://kazumi-clinic.bankjack10452.workers.dev |
 
@@ -24,9 +24,23 @@
 
 ## 🔨 กำลังทำ (in progress)
 
-- (ว่าง — PR #215–#220 merge + deploy ครบแล้ว)
+- (ว่าง — PR #214–#227 merge + deploy ครบแล้ว)
 
 > ก่อนเริ่มงานที่กินหลายไฟล์ ให้จดที่นี่: **อะไร · เครื่องมือไหน (Claude / Antigravity) · branch ไหน** — กันชนกันและกัน "งานหาย" (ดู CLAUDE.md §0.5 · dual-agent)
+
+### ✅ ปิดวันนี้ (2026-07-24 เย็น) — หน้า Services ทั้ง 9 หมวดได้ระบบซื้อผ่านเว็บ + ดีไซน์ปุ่มเป็นชุดเดียวกัน
+
+ต่อจากงานช่วงบ่าย (ด้านล่าง) — เจ้าของสั่งให้ Claude วางแผน/ตรวจ, Codex CLI ลงมือแก้โค้ดทุก PR:
+
+7. **[#214](https://github.com/luminuy/kazumi-clinic/pull/214)** เพิ่มปุ่ม "ซ่อน/กู้คืนสินค้า" ใน `/admin/products` — สินค้าที่ซ่อนแล้วหายจากทั้งหน้าเว็บและหน้าแอดมิน (ไม่มีทางกู้คืนได้เลยนอกจากแก้ D1 ตรงๆ) ตอนนี้มี section "สินค้าที่ซ่อนอยู่" ให้กดกู้คืน
+8. **[#222](https://github.com/luminuy/kazumi-clinic/pull/222)** หน้า `/filler` เคยตกไปใช้เทมเพลตธรรมดาเงียบๆ เพราะเงื่อนไข `heroImage` บล็อกการ์ดสวยที่มีอยู่แล้วในโค้ด (รูป hero หายจาก Cloudinary) — แก้ให้ fallback เป็นไอคอนแทนเหมือนหน้า thread-lift ที่แก้ปัญหานี้ไปก่อนแล้ว
+9. **[#223](https://github.com/luminuy/kazumi-clinic/pull/223)** เพิ่มปุ่ม "เพิ่มลงตะกร้า" ให้ 5 หมวดที่ไม่เคยมีเลย (เมโสฯ, เลเซอร์, ดูแลสิว, สกินบูสเตอร์, คอลลาเจนบูสเตอร์) — ยังไม่ขึ้นจริงเพราะ 5 หมวดนี้ยังไม่มีสินค้าตั้งราคาไว้เลย (รอเจ้าของ/แพทย์ตั้งราคาก่อนตาม CLAUDE.md §0.2)
+10. **[#224](https://github.com/luminuy/kazumi-clinic/pull/224)** สร้าง `components/service-item-actions.tsx` เป็น component กลางให้ทั้ง 9 หมวดใช้ร่วมกัน (ก่อนหน้านี้แต่ละหน้าเขียนปุ่มเองแยกกัน ไม่เข้ากัน — บางหน้าใช้ label อังกฤษ "Book Session" บางหน้าไม่มีปุ่ม LINE เลย)
+11. **[#225](https://github.com/luminuy/kazumi-clinic/pull/225)** เพิ่มปุ่ม "ซื้อเลย" (buy-now: เพิ่มตะกร้า+พาไปหน้าเช็คเอาท์ทันที) + ปุ่มไอคอนตะกร้า/LINE ขนาดกะทัดรัด — ดีไซน์อ้างอิงจากการ์ดของ littlesmileflower (โปรเจกต์พี่น้อง) แต่ใช้สีแบรนด์ Kazumi (เขียว forest/mint) แทนสีดำ/เหลือง
+12. **[#226](https://github.com/luminuy/kazumi-clinic/pull/226)** ลบปุ่ม LINE ที่ซ้ำซ้อนบน 3 หน้า (โบท็อกซ์, ร้อยไหม, เมโสฯ) — เคยมีทั้งปุ่ม LINE ต่อชิ้น (จาก #225) และปุ่ม LINE รวมท้ายรายการสินค้าอีกอันแยกกัน ตรวจแล้วอีก 6 หมวดไม่มีปัญหานี้
+13. **[#227](https://github.com/luminuy/kazumi-clinic/pull/227)** ปรับสไตล์ปุ่มตะกร้า+LINE ให้เข้ากลุ่มเดียวกันแบบ "Apple style" — เอาแพทเทิร์นจากปุ่ม +/- ในหน้าตะกร้า (`cart-view.tsx`) มาใช้ซ้ำ แทนที่จะคิดสไตล์ใหม่ (เจ้าของฟีดแบ็กว่าของเดิมดูขัดกัน)
+
+**สิ่งที่ยังไม่ทำ**: ปุ่ม "ซื้อเลย"/หน้า purchase-action ใหม่ยังไม่มี automated test คุม (ต่างจาก hide/restore และ cart pricing ที่มีเทสต์แล้วจาก PR #219) — ถ้าจะแก้ไฟล์ `components/service-item-actions.tsx` หรือ `components/account/add-to-cart-button.tsx` ต่อควรพิจารณาเพิ่มเทสต์ด้วย
 
 ### ✅ ปิดวันนี้ (2026-07-24 บ่าย) — 6 จุดจาก code/site audit, Claude วางแผน + Codex CLI ลงมือ
 
@@ -57,7 +71,8 @@
 ## 📋 ต่อไป / TODO
 
 - [x] **ระบบสมาชิก — เปิด Google/LINE Login**: ตั้ง secret `GOOGLE_CLIENT_ID/SECRET`, `LINE_CHANNEL_ID/SECRET` ด้วย `wrangler secret put` + เพิ่ม redirect URI ใน console (ดู [docs/member-system.md](docs/member-system.md)) — ปุ่มขึ้นแล้วแต่ยังกดไม่ผ่านจนกว่าจะตั้งคีย์
-- [ ] **ระบบสมาชิก — เชื่อม payment gateway**: แก้ `lib/members/payments.ts` (`initiatePayment`) — ตอนนี้ checkout รองรับจองก่อนจ่ายที่คลินิกได้เต็ม, ชำระออนไลน์เป็น placeholder
+- [ ] **ระบบสมาชิก — เชื่อม payment gateway**: แก้ `lib/members/payments.ts` (`initiatePayment`) — ตอนนี้ checkout รองรับจองก่อนจ่ายที่คลินิกได้เต็ม, ชำระออนไลน์เป็น placeholder · ปุ่ม "ซื้อเลย" ใหม่ (PR #225) ก็พาไป `/cart/checkout` เดียวกันนี้ ยังไม่กระทบเพิ่มเพราะยังไม่มีสินค้าราคาจริงให้กดซื้อได้อยู่ดี (ดู #223)
+- [ ] **เพิ่มเทสต์คุมปุ่มซื้อเลย/purchase actions**: `components/service-item-actions.tsx` และ `components/account/add-to-cart-button.tsx` (PR #225, #227) ยังไม่มี automated test เหมือน hide/restore กับ cart pricing ที่มีแล้ว (PR #219)
 - [ ] **เจ้าของทดสอบ**: เปลี่ยนรูปสักช่องใน /admin → รีเฟรชหน้านั้น ควรอัปเดตใน ~ไม่กี่วินาที (ยืนยัน on-demand revalidation หลังแก้ tag cache 2026-07-22)
 - [ ] **เจ้าของอัปรูปที่หายกลับเข้า /admin/images**: asset เดิมบน Cloudinary หายไปหลายใบ (404) — `hero-filler`, `hero-skin-booster`, `hero-iv-drip-1/2/3`, `doctor-pratch`, `og-about`, `brand-logo`, โปสเตอร์ Karisma/Velvet Glow · PR #211 ตัด default ที่ตายแล้วออก หน้าจึงแสดงกล่องไอคอนแทนรูปแตก **จนกว่าจะอัปใหม่** · การ์ดทุก slot พร้อมรับอัปที่ /admin/images แล้ว
 - [ ] จดโดเมนจริง + ลบ `SITE_ENV=preview` + แก้ robots ตอนโดเมนพร้อม (ดู docs/infrastructure.md)
