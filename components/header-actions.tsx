@@ -6,8 +6,17 @@ import { Link } from '@/i18n/routing';
 import { Button } from '@/components/ui/button';
 import { LoginModal } from '@/components/auth/login-modal';
 import { SearchModal } from '@/components/search-modal';
+import type { OAuthProvider } from '@/lib/members/oauth';
 
-export function HeaderActions({ cartCount = 0, isLoggedIn = false }: { cartCount?: number; isLoggedIn?: boolean }) {
+export function HeaderActions({
+  cartCount = 0,
+  isLoggedIn = false,
+  oauthProviders = [],
+}: {
+  cartCount?: number;
+  isLoggedIn?: boolean;
+  oauthProviders?: OAuthProvider[];
+}) {
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [searchModalOpen, setSearchModalOpen] = useState(false);
 
@@ -56,7 +65,7 @@ export function HeaderActions({ cartCount = 0, isLoggedIn = false }: { cartCount
         </Button>
       </div>
       
-      <LoginModal open={loginModalOpen} onOpenChange={setLoginModalOpen} />
+      <LoginModal open={loginModalOpen} onOpenChange={setLoginModalOpen} providers={oauthProviders} />
       <SearchModal open={searchModalOpen} onOpenChange={setSearchModalOpen} />
     </>
   );

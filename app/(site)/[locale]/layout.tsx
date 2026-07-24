@@ -2,6 +2,7 @@ import { jsonLdHtml } from '@/lib/json-ld';
 import Header from '@/components/Header';
 import { getCartCount } from '@/lib/members/cart';
 import { getCurrentMemberRow } from '@/lib/members/session';
+import { configuredProviders } from '@/lib/members/oauth';
 import Footer from '@/components/Footer';
 import { MobileContactBar } from '@/components/mobile-contact-bar';
 import { clinicSchema, websiteSchema } from '@/lib/schema';
@@ -62,7 +63,12 @@ export default async function SiteLayout({
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: jsonLdHtml(websiteSchema) }}
       />
-      <Header logoMark={brandMark} cartCount={cartCount} isLoggedIn={!!member} />
+      <Header
+        logoMark={brandMark}
+        cartCount={cartCount}
+        isLoggedIn={!!member}
+        oauthProviders={configuredProviders()}
+      />
       <main>{children}</main>
       <Footer logoMark={brandMark} />
       <MobileContactBar />

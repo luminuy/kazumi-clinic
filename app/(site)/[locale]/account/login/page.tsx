@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { redirect } from '@/i18n/routing';
 import { getCurrentMember } from '@/lib/members/session';
+import { configuredProviders } from '@/lib/members/oauth';
 import { AuthForm } from '@/components/account/auth-form';
 
 export async function generateMetadata({
@@ -37,7 +38,7 @@ export default async function LoginPage({
           <p className="mb-8 mt-2 text-[0.9rem] leading-[1.6] text-[var(--store-muted)]">
             {t('login.lead')}
           </p>
-          <AuthForm mode="login" oauthError={error} />
+          <AuthForm mode="login" oauthError={error} providers={configuredProviders()} />
         </div>
       </div>
     </section>

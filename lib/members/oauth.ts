@@ -76,6 +76,14 @@ export function buildAuthUrl(
 export type OAuthProfile = {
   providerAccountId: string;
   email: string | null;
+  /**
+   * True only when the provider itself attests the email is verified (Google's userinfo
+   * `email_verified` claim). `upsertOAuthMember` uses this to decide whether it's safe to link
+   * this login into an existing member account by email match — an unverified email is not proof
+   * of ownership, so it must never be used to attach a new sign-in method to someone else's
+   * account. See the `lineProfile` note below for why LINE is always `false` here.
+   */
+  emailVerified: boolean;
   name: string | null;
   avatarUrl: string | null;
 };
@@ -125,6 +133,7 @@ async function googleProfile(opts: {
   return {
     providerAccountId: info.sub,
     email: info.email && info.email_verified ? info.email : null,
+    emailVerified: Boolean(info.email && info.email_verified),
     name: info.name ?? null,
     avatarUrl: info.picture ?? null,
   };
@@ -163,6 +172,13 @@ async function lineProfile(opts: {
   return {
     providerAccountId: String(payload.sub),
     email: typeof payload.email === 'string' ? payload.email : null,
+    // Unlike Google's userinfo, LINE's ID token carries no `email_verified` claim — the `email`
+    // scope returns whatever address LINE has on file, with no guarantee it was ever confirmed by
+    // the person signing in. Trusting it as verified would let anyone who knows a member's email
+    // register a LINE account claiming that address and get auto-linked into the member's
+    // existing account (upsertOAuthMember only merges by email when emailVerified is true) —
+    // always false here closes that off; a new LINE sign-in always gets its own member row.
+    emailVerified: false,
     name: typeof payload.name === 'string' ? payload.name : null,
     avatarUrl: typeof payload.picture === 'string' ? payload.picture : null,
   };
