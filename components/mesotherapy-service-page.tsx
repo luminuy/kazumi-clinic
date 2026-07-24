@@ -5,6 +5,7 @@ import { site } from '@/lib/site';
 import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
 import { LineIcon } from '@/components/brand-icons';
+import { ProductThumbnail } from '@/components/product-thumbnail';
 
 /**
  * The reference gives every card a one-line description. Our data carries that in two shapes:
@@ -20,18 +21,21 @@ function itemCopy(item: ServiceItem) {
     : { chip: undefined, description: item.detail };
 }
 
-function TreatmentCard({ item }: { item: ServiceItem }) {
+function TreatmentCard({ item, category }: { item: ServiceItem; category: string }) {
   const { chip, description } = itemCopy(item);
   return (
     <article className="group flex flex-col justify-between rounded-3xl border border-black/[0.08] bg-[var(--store-card)] p-6 pb-8 shadow-sm transition-colors duration-500 hover:bg-[var(--store-surface)]">
       <div>
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex items-start gap-4">
+          <ProductThumbnail item={item} category={category} className="size-16 rounded-xl" />
+          <div>
           <h3 className="font-serif text-2xl text-[var(--store-ink)]">{item.name}</h3>
           {chip && (
             <span className="rounded-full bg-black/5 px-3 py-1 text-[0.6rem] uppercase tracking-wide text-[var(--store-ink)]">
               {chip}
             </span>
           )}
+          </div>
         </div>
         {description && <p className="mt-4 text-sm leading-[1.9] text-[var(--store-muted)]">{description}</p>}
       </div>
@@ -157,7 +161,7 @@ export function MesotherapyServicePage({
           <div className="mt-12 grid gap-x-8 gap-y-8 md:grid-cols-2">
             {service.items.map((item, index) => (
               <Reveal key={item.id ?? `${item.name}-${index}`} delay={(index % 2) * 60}>
-                <TreatmentCard item={item} />
+                <TreatmentCard item={item} category={service.slug} />
               </Reveal>
             ))}
           </div>

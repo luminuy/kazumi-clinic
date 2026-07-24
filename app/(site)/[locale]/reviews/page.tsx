@@ -31,13 +31,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       description: pageDescription,
       url: `${site.url}/reviews`,
       type: 'website',
-      images: [socialImage],
+      ...(socialImage && { images: [socialImage] }),
     },
     twitter: {
-      card: 'summary_large_image',
+      card: socialImage ? 'summary_large_image' : 'summary',
       title: `${pageTitle} — ${site.name}`,
       description: pageDescription,
-      images: [socialImage.url],
+      ...(socialImage && { images: [socialImage.url] }),
     },
   };
 }

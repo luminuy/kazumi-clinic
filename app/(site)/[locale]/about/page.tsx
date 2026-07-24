@@ -29,13 +29,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       description: pageDescription,
       url: `${site.url}/about`,
       type: 'website',
-      images: [socialImage],
+      ...(socialImage && { images: [socialImage] }),
     },
     twitter: {
-      card: 'summary_large_image',
+      card: socialImage ? 'summary_large_image' : 'summary',
       title: `${pageTitle} — ${site.name}`,
       description: pageDescription,
-      images: [socialImage.url],
+      ...(socialImage && { images: [socialImage.url] }),
     },
   };
 }
@@ -56,7 +56,7 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
   const tHome = await getTranslations('HomePage');
 
   const overrides = await getImageOverrides();
-  const doctorSrc = overrides.get('doctor-pratch')?.public_id ?? doctor.image;
+  const doctorSrc = overrides.get('doctor-pratch')?.public_id;
   // Dr. Eesha has no shipped default photo — undefined until the clinic uploads one via /admin.
   const eeshaSrc = overrides.get('doctor-eesha')?.public_id;
   const heroSrc = overrides.get('about-hero')?.public_id;
@@ -172,13 +172,13 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
             <div className="w-full md:w-5/12">
               <Reveal>
                 <div className="relative aspect-[3/4] w-full overflow-hidden rounded-[1.75rem] bg-[var(--store-card)] shadow-2xl shadow-black/5">
-                  <Image
+                  {doctorSrc ? <Image
                     src={doctorSrc}
                     alt={`${doctor.nameTh} ${doctor.role} ของ ${site.name}`}
                     fill
                     sizes="(min-width: 768px) 40vw, 90vw"
                     className="object-cover"
-                  />
+                  /> : <ImagePlaceholder />}
                 </div>
                 <div className="mt-6 space-y-2">
                   <p className="text-[0.66rem] uppercase tracking-[0.2em] text-[var(--store-ink)]">

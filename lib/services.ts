@@ -2,7 +2,6 @@
 // Prices where present came from clinic promo posters — confirm the standard (non-promo) price
 // list with the clinic before treating them as permanent (see CLAUDE.md §0.2). Items without a
 // price (e.g. IV Drip programs) render as "สอบถามราคา" until the clinic publishes one.
-import { cloudAssets } from './cloud';
 
 export type ServiceItem = {
   /**
@@ -64,8 +63,6 @@ export const serviceCategories: ServiceCategory[] = [
     shortDescription: 'เติมเต็มร่องลึก ปรับรูปหน้าและริมฝีปากให้ดูเป็นธรรมชาติ ประเมินโดยแพทย์',
     description:
       'บริการฉีดฟิลเลอร์กรดไฮยาลูรอนิกจากแบรนด์คุณภาพ ดูแลร่องแก้ม ร่องน้ำหมาก ใต้ตา และริมฝีปาก แพทย์ของ Kazumi Clinic ประเมินโครงหน้าและออกแบบปริมาณให้เหมาะกับแต่ละบุคคลก่อนรับบริการ',
-    heroImage: cloudAssets.heroFiller,
-    heroAlt: 'ใบหน้าด้านข้างของผู้หญิง เห็นริมฝีปากและกรอบหน้าชัด ในแสงธรรมชาติโทนเขียว',
     items: [
       {
         id: 'filler-neura-deep-1cc',
@@ -174,8 +171,6 @@ export const serviceCategories: ServiceCategory[] = [
     shortDescription: 'เติมความชุ่มชื้นเชิงลึก ฟื้นผิวโทรมให้เนียนนุ่มดูมีน้ำมีนวล',
     description:
       'สกินบูสเตอร์เกรดพรีเมียม เติมความชุ่มชื้นและฟื้นฟูเซลล์ผิวจากภายใน กระตุ้นการสร้างคอลลาเจนใหม่ เหมาะกับผิวโทรม ผิวขาดน้ำ และรูขุมขนกว้าง ประเมินความเหมาะสมโดยแพทย์',
-    heroImage: cloudAssets.heroSkinBooster,
-    heroAlt: 'ใบหน้าผู้หญิงท่ามกลางเงาใบไม้และแสงแดดอ่อน',
     items: [
       {
         id: 'skin-booster-oxelle',
@@ -199,8 +194,6 @@ export const serviceCategories: ServiceCategory[] = [
     shortDescription: 'ดริปวิตามินทางหลอดเลือด ฟื้นฟูผิวจากภายในให้ดูกระจ่างใส',
     description:
       'โปรแกรม IV Drip วิตามินสูตรเฉพาะของ Kazumi Clinic ช่วยปรับโทนผิวให้ดูกระจ่างใส ลดเลือนเม็ดสี กระตุ้นคอลลาเจน และฟื้นฟูผิวที่อ่อนล้าจากแสงแดดและมลภาวะ ดูแลโดยแพทย์',
-    heroImage: cloudAssets.heroIvDrip1,
-    heroAlt: 'ใบหน้าผู้หญิงถ่ายตรงหน้าในแสงนุ่ม ผิวเรียบเนียนกระจ่างใส',
     // The seven programs and prices below replace the clinic's older IV menu (Signature
     // Flawless / Radiant Bright / Active & Refresh / Velvet Glow). Per the NavBar spec this
     // collection is "verified ครบ 100%" from Kazumi's own poster, and unlike the filler and

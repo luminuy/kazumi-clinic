@@ -6,6 +6,7 @@ import { site } from '@/lib/site';
 import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
 import { LineIcon } from '@/components/brand-icons';
+import { ProductThumbnail } from '@/components/product-thumbnail';
 
 /**
  * Our benefits are "Label — Thai description" (e.g. "Revitalizing — กระตุ้น…"). The reference
@@ -17,11 +18,13 @@ function splitBenefit(benefit: string) {
   return { label, description: rest.join(' — ') || undefined };
 }
 
-function TreatmentCard({ item }: { item: ServiceItem }) {
+function TreatmentCard({ item, category }: { item: ServiceItem; category: string }) {
   return (
     <article className="rounded-3xl border border-black/[0.08] bg-[var(--store-card)] p-8 shadow-sm md:p-10">
       <div className="flex items-start justify-between gap-4">
-        <div>
+        <div className="flex gap-4">
+          <ProductThumbnail item={item} category={category} className="size-16 rounded-xl" />
+          <div>
           <h3 className="font-serif text-2xl text-[var(--store-ink)] md:text-3xl">{item.name}</h3>
           {/* The reference labels this "Premium Bio-Stimulator"; we show the real detail
               ("Product from Italy") the item actually carries. */}
@@ -30,6 +33,7 @@ function TreatmentCard({ item }: { item: ServiceItem }) {
               {item.detail}
             </p>
           )}
+          </div>
         </div>
         <BadgeCheck aria-hidden="true" className="size-6 shrink-0 text-[#06C755]" />
       </div>
@@ -170,7 +174,7 @@ export function SkinBoosterServicePage({
           <div className="mt-12 space-y-8">
             {service.items.map((item, index) => (
               <Reveal key={item.id ?? `${item.name}-${index}`} delay={index * 60}>
-                <TreatmentCard item={item} />
+                <TreatmentCard item={item} category={service.slug} />
               </Reveal>
             ))}
           </div>

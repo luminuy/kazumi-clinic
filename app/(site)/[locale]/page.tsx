@@ -11,9 +11,9 @@ import { faqSchema, homePageSchema } from '@/lib/schema';
 import { cloudAssets, heroHomePortrait } from '@/lib/cloud';
 import { getImageOverrides } from '@/lib/site-images-store';
 import { getAllMergedCategories } from '@/lib/service-products-store';
-import { categoryImageKey, posterKeyByDefaultId } from '@/lib/site-images';
+import { categoryImageKey } from '@/lib/site-images';
 import { siteSocialImage } from '@/lib/metadata-images';
-import { promotionPosters } from '@/lib/promotions';
+import { resolvePromotionPosters } from '@/lib/promotions';
 import { Reveal } from '@/components/reveal';
 import { PromotionCardGrid } from '@/components/promotion-card-grid';
 import { ServiceCarousel } from '@/components/service-carousel';
@@ -39,13 +39,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       siteName: site.name,
       type: 'website',
       locale: locale === 'en' ? 'en_US' : 'th_TH',
-      images: [socialImage],
+      ...(socialImage && { images: [socialImage] }),
     },
     twitter: {
-      card: 'summary_large_image',
+      card: socialImage ? 'summary_large_image' : 'summary',
       title: homeTitle,
       description: homeDescription,
-      images: [socialImage.url],
+      ...(socialImage && { images: [socialImage.url] }),
     },
   };
 }
@@ -82,16 +82,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const pick = (key: string, fallback: string) => overrides.get(key)?.public_id ?? fallback;
 
   const heroSrc = overrides.has('hero-home') ? pick('hero-home', '') : heroHomePortrait;
-  const doctorSrc = pick('doctor-pratch', doctor.image);
+  const doctorSrc = overrides.get('doctor-pratch')?.public_id;
   const eeshaSrc = overrides.get('doctor-eesha')?.public_id;
   const visitPhoto = overrides.get('home-visit')?.public_id;
 
-  const posters = promotionPosters
-    .map((poster) => {
-      const key = posterKeyByDefaultId.get(poster.src);
-      const override = key ? overrides.get(key)?.public_id : undefined;
-      return override ? { ...poster, src: override } : poster;
-    });
+  const posters = resolvePromotionPosters((key) => overrides.get(key)?.public_id);
   const serviceHeroOverrides = Object.fromEntries(
     serviceCategories.flatMap((category) => {
       const key = categoryImageKey[category.slug];

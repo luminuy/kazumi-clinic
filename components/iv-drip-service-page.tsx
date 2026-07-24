@@ -7,6 +7,7 @@ import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
 import { LineIcon } from '@/components/brand-icons';
 import { AddToCartButton } from '@/components/account/add-to-cart-button';
+import { ProductThumbnail } from '@/components/product-thumbnail';
 
 /** Groups items by their `collection`, preserving declaration order. */
 function groupByCollection(items: ServiceItem[]) {
@@ -49,10 +50,11 @@ function EnquireLink({ item, dark = false }: { item: ServiceItem; dark?: boolean
   );
 }
 
-function VitaminCard({ item, index }: { item: ServiceItem; index: number }) {
+function VitaminCard({ item, index, category }: { item: ServiceItem; index: number; category: string }) {
   return (
     <article className="flex flex-col justify-between rounded-3xl border border-black/[0.08] bg-[var(--store-card)] p-8 shadow-sm transition-colors duration-500 hover:bg-[var(--store-surface)]">
       <div>
+        <ProductThumbnail item={item} category={category} className="mb-5 aspect-[4/3] w-full rounded-xl" />
         <div className="flex items-start justify-between gap-4">
           <span aria-hidden="true" className="text-[0.64rem] tracking-[0.18em] text-[var(--store-muted)]">
             {String(index).padStart(2, '0')}
@@ -179,6 +181,11 @@ export function IvDripServicePage({
                       <div className="mt-10 grid gap-10 md:grid-cols-2 md:gap-12">
                         {group.items.map((item) => (
                           <div key={item.name} className="border-l border-white/20 pl-6">
+                            <ProductThumbnail
+                              item={item}
+                              category={service.slug}
+                              className="mb-4 aspect-[4/3] w-full rounded-xl bg-white/10"
+                            />
                             <h4 className="font-serif text-2xl">{item.name}</h4>
                             {item.detail && (
                               <p className="mt-2 text-sm leading-[1.9] text-white/65">
@@ -222,6 +229,7 @@ export function IvDripServicePage({
                         <VitaminCard
                           key={item.name}
                           item={item}
+                          category={service.slug}
                           index={cardOffsets[groupIndex] + itemIndex + 1}
                         />
                       ))}

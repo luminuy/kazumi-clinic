@@ -38,13 +38,13 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       url: `${site.url}/blog/${slug}`,
       type: 'article',
       ...(post.published_at && { publishedTime: new Date(post.published_at).toISOString() }),
-      images: [image],
+      ...(image && { images: [image] }),
     },
     twitter: {
-      card: 'summary_large_image',
+      card: image ? 'summary_large_image' : 'summary',
       title: `${post.title} — ${site.name}`,
       description,
-      images: [image.url],
+      ...(image && { images: [image.url] }),
     },
   };
 }

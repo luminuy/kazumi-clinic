@@ -6,6 +6,7 @@ import { site } from '@/lib/site';
 import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
 import { LineIcon } from '@/components/brand-icons';
+import { ProductThumbnail } from '@/components/product-thumbnail';
 
 /**
  * "4 เส้น" → { count: '4', unit: 'เส้น' } so the count can be set large with its unit small
@@ -18,7 +19,7 @@ function splitQuantity(detail: string | undefined) {
   return match ? { count: match[1], unit: match[2] } : { count: detail, unit: '' };
 }
 
-function MenuRow({ item, last }: { item: ServiceItem; last: boolean }) {
+function MenuRow({ item, last, category }: { item: ServiceItem; last: boolean; category: string }) {
   const quantity = splitQuantity(item.detail);
   return (
     <div
@@ -26,7 +27,10 @@ function MenuRow({ item, last }: { item: ServiceItem; last: boolean }) {
         last ? 'border-b' : ''
       }`}
     >
-      <div>
+      <div className="flex items-center gap-4">
+        <ProductThumbnail item={item} category={category} className="size-16 rounded-xl" />
+        <div>
+        <p className="font-serif text-lg text-[var(--store-ink)]">{item.name}</p>
         <p lang="en" className="text-[0.62rem] uppercase tracking-[0.18em] text-[var(--store-muted)]">
           Quantity
         </p>
@@ -40,6 +44,7 @@ function MenuRow({ item, last }: { item: ServiceItem; last: boolean }) {
             )}
           </p>
         )}
+        </div>
       </div>
 
       <div className="text-right">
@@ -74,9 +79,9 @@ export function ThreadLiftServicePage({
   heroImage?: string;
   productImage?: string;
 }) {
-  // Every item in this category is the same product at a different thread count, so the menu
-  // takes its heading from the first one rather than repeating the name on all three rows.
-  const productName = service.items[0]?.name ?? service.title;
+  // The rows below are the source of truth for the catalogue; keep this heading category-level
+  // so adding a second product through /admin never makes one item look like the only option.
+  const productName = service.title;
 
   return (
     <div className="bg-[var(--background)]">
@@ -189,6 +194,7 @@ export function ThreadLiftServicePage({
                   key={item.id ?? `${item.name}-${item.detail ?? index}`}
                   item={item}
                   last={index === service.items.length - 1}
+                  category={service.slug}
                 />
               ))}
             </div>

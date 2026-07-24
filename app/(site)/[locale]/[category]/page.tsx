@@ -30,6 +30,7 @@ import { LaserHifuServicePage } from '@/components/laser-hifu-service-page';
 import { AcneCareServicePage } from '@/components/acne-care-service-page';
 import { SkinBoosterServicePage } from '@/components/skin-booster-service-page';
 import { CollagenBoosterServicePage } from '@/components/collagen-booster-service-page';
+import { ProductThumbnail } from '@/components/product-thumbnail';
 
 type Props = { params: Promise<{ locale: string; category: string }> };
 
@@ -105,21 +106,28 @@ function ItemSpec({ label, children }: { label: string; children: React.ReactNod
 
 function TreatmentItem({
   item,
+  category,
   headingLevel: Heading,
 }: {
   item: ServiceItem;
+  category: string;
   headingLevel: 'h3' | 'h4';
 }) {
   return (
     // Open, not boxed: the reference keeps this column as editorial type on the page rather than
     // a card. Multi-item categories get a hairline rule between items instead (see the list).
     <article>
-      <Heading className="font-serif text-2xl text-[var(--store-ink)]">{item.name}</Heading>
+      <div className="flex gap-4">
+        <ProductThumbnail item={item} category={category} className="size-20" />
+        <div>
+          <Heading className="font-serif text-2xl text-[var(--store-ink)]">{item.name}</Heading>
       {item.tagline && (
         <p lang="en" className="mt-1 font-serif text-sm italic text-[var(--store-muted)]">
           {item.tagline}
         </p>
       )}
+        </div>
+      </div>
 
       {item.benefits && (
         <ul className="mt-5 space-y-2.5">
@@ -205,8 +213,7 @@ export default async function ServiceCategoryPage({ params }: Props) {
   const slotKey = categoryImageKey[service.slug];
   const heroImage = (slotKey && overrides.get(slotKey)?.public_id) || service.heroImage;
 
-  const pick = (key: string, fallback: string) => overrides.get(key)?.public_id ?? fallback;
-  const doctorImage = pick('doctor-pratch', 'v1731671042/doctor-pratch_b4r3p1');
+  const doctorImage = overrides.get('doctor-pratch')?.public_id;
   const eeshaImage = overrides.get('doctor-eesha')?.public_id;
 
   // Only categories with a published price need the price caveat — the rest already say
@@ -402,7 +409,7 @@ export default async function ServiceCategoryPage({ params }: Props) {
                           <div className={i > 0 ? 'border-t border-black/10 pt-8' : undefined}>
                             {/* Items sit one level under their collection heading when they have
                                 one, so the outline stays contiguous either way. */}
-                            <TreatmentItem item={item} headingLevel={collection ? 'h4' : 'h3'} />
+                            <TreatmentItem item={item} category={service.slug} headingLevel={collection ? 'h4' : 'h3'} />
                           </div>
                         </Reveal>
                       ))}

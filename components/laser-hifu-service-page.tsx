@@ -6,14 +6,18 @@ import { site } from '@/lib/site';
 import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
 import { LineIcon } from '@/components/brand-icons';
+import { ProductThumbnail } from '@/components/product-thumbnail';
 
-function RecommendedSession({ item }: { item: ServiceItem }) {
+function RecommendedSession({ item, category }: { item: ServiceItem; category: string }) {
   return (
     <div className="rounded-3xl border border-black/[0.08] bg-[var(--store-surface)] p-8 shadow-sm md:p-10">
       <div className="flex items-start justify-between gap-6">
-        <div>
+        <div className="flex gap-4">
+          <ProductThumbnail item={item} category={category} className="size-16 rounded-xl" />
+          <div>
           <h3 className="font-serif text-2xl text-[var(--store-ink)] md:text-3xl">{item.name}</h3>
           {item.detail && <p className="mt-2 text-sm leading-[1.9] text-[var(--store-muted)]">{item.detail}</p>}
+          </div>
         </div>
         <div className="shrink-0 text-right">
           <p lang="en" className="text-[0.62rem] uppercase tracking-[0.18em] text-[var(--store-muted)]">
@@ -72,8 +76,6 @@ export function LaserHifuServicePage({
   editorialImage?: string;
   interiorImage?: string;
 }) {
-  const session = service.items[0];
-
   return (
     <div className="bg-[var(--background)]">
       {/* ── Hero: centred, over a full-bleed image when one exists ───────────── */}
@@ -156,11 +158,11 @@ export function LaserHifuServicePage({
               <span aria-hidden="true" className="mt-4 block h-px w-24 bg-black/10" />
             </div>
 
-            {session && (
-              <div className="mt-10">
-                <RecommendedSession item={session} />
-              </div>
-            )}
+            <div className="mt-10 space-y-5">
+              {service.items.map((item) => (
+                <RecommendedSession key={item.id ?? item.name} item={item} category={service.slug} />
+              ))}
+            </div>
 
             <p className="mt-6 text-[0.66rem] italic leading-[1.8] text-[var(--store-muted)]">
               *ทุกหัตถการไม่แนะนำสำหรับผู้มีอายุต่ำกว่า 18 ปี · ผลลัพธ์แตกต่างกันในแต่ละบุคคล

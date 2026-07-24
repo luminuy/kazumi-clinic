@@ -6,6 +6,7 @@ import { site } from '@/lib/site';
 import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
 import { LineIcon } from '@/components/brand-icons';
+import { ProductThumbnail } from '@/components/product-thumbnail';
 
 /**
  * Our benefits are "English title — Thai description" (e.g. "Restoration — เติมเต็ม…"). The
@@ -30,8 +31,6 @@ export function CollagenBoosterServicePage({
   heroImage?: string;
   editorialImage?: string;
 }) {
-  const item = service.items[0];
-
   return (
     <div className="bg-[var(--background)]">
       {/* ── Hero: asymmetric image + intro, with a tactile "Ma" overlap ──────── */}
@@ -101,10 +100,12 @@ export function CollagenBoosterServicePage({
         </div>
       </section>
 
-      {/* ── Product highlight: Karisma Rh Collagen + benefit grid ────────────── */}
-      <section className="bg-[var(--store-surface)] px-6 py-24 sm:px-10 md:px-14 md:py-28 lg:px-20">
-        <div className="mx-auto grid max-w-6xl gap-x-14 gap-y-12 md:grid-cols-3">
-          <Reveal className="md:col-span-1">
+      {/* ── Product highlights ─────────────────────────────────────────────── */}
+      {service.items.length > 0 && <section className="bg-[var(--store-surface)] px-6 py-24 sm:px-10 md:px-14 md:py-28 lg:px-20">
+        <div className="mx-auto max-w-6xl space-y-12">
+          {service.items.map((item, itemIndex) => <div key={item.id ?? item.name} className="grid gap-x-14 gap-y-12 border-t border-black/[0.08] pt-12 first:border-t-0 first:pt-0 md:grid-cols-3">
+          <Reveal className="md:col-span-1" delay={itemIndex * 40}>
+            <ProductThumbnail item={item} category={service.slug} className="mb-6 aspect-[4/3] w-full rounded-xl" />
             <h2 className="font-serif text-3xl text-[var(--store-ink)] md:text-4xl">{item.name}</h2>
             {/* The reference labels this "Rh Collagen"; the item's real detail is "Made in Italy". */}
             {item.detail && (
@@ -137,8 +138,9 @@ export function CollagenBoosterServicePage({
               })}
             </div>
           )}
+          </div>)}
         </div>
-      </section>
+      </section>}
 
       {/* ── Editorial quote + image ──────────────────────────── */}
       <section className="overflow-hidden bg-[var(--background)] px-6 py-24 sm:px-10 md:px-14 md:py-28 lg:px-20">

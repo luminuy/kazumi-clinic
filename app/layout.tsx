@@ -44,13 +44,13 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: site.name,
       type: 'website',
       locale: 'th_TH',
-      images: [socialImage],
+      ...(socialImage && { images: [socialImage] }),
     },
     twitter: {
-      card: 'summary_large_image',
+      card: socialImage ? 'summary_large_image' : 'summary',
       title: site.name,
       description: site.description,
-      images: [socialImage.url],
+      ...(socialImage && { images: [socialImage.url] }),
     },
   };
 }
