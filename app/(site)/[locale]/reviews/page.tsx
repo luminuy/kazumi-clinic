@@ -7,6 +7,8 @@ import { site } from '@/lib/site';
 import { breadcrumbSchema } from '@/lib/schema';
 import { siteSocialImage } from '@/lib/metadata-images';
 import { getPublishedReviews, type PublicReview } from '@/lib/reviews-store';
+import { getGoogleReviews } from '@/lib/google-reviews';
+import { GoogleReviews } from '@/components/google-reviews';
 import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/reveal';
 import { PageHero } from '@/components/page-hero';
@@ -95,7 +97,10 @@ export default async function ReviewsPage({ params }: { params: Promise<{ locale
   const t = await getTranslations('ReviewsPage');
   const tHome = await getTranslations('HomePage');
   
-  const reviews = await getPublishedReviews();
+  const [reviews, googleReviews] = await Promise.all([
+    getPublishedReviews(),
+    getGoogleReviews(locale),
+  ]);
 
   const breadcrumb = breadcrumbSchema([
     { name: tHome('Navigation.home'), path: '/' },
@@ -117,6 +122,8 @@ export default async function ReviewsPage({ params }: { params: Promise<{ locale
       />
 
       <section className="mx-auto max-w-6xl px-6 py-20">
+        {googleReviews && <GoogleReviews data={googleReviews} heading="รีวิวจาก Google" />}
+
         {reviews.length > 0 ? (
           <>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
