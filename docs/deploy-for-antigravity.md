@@ -137,15 +137,15 @@ curl -sI https://kazumi-clinic.bankjack10452.workers.dev/ | grep -iE "http/|x-ne
 
 ---
 
-## 5. Deploy เปลี่ยนแค่ Worker — ไม่แตะ D1/KV/binding
+## 5. Deploy เปลี่ยน Worker + migration ที่กำหนดไว้ — ไม่แตะ KV/binding
 
-`pnpm cf:deploy` push **โค้ด** อย่างเดียว · ถ้างานมี **D1 migration** ใหม่ ต้องรันแยก (เครื่องนี้รัน `--local` ไม่ได้ ใช้ `--remote` ผ่าน API):
+`pnpm cf:deploy` push **โค้ด** พร้อมรัน D1 migration ที่ผูกไว้ทุก deploy 3 ตัว: `migrations/0007_tag_cache_revalidations.sql`, `migrations/0009_member_system.sql`, `migrations/0010_rate_limits.sql` — ทั้งหมดเป็น `CREATE TABLE IF NOT EXISTS` จึงรันซ้ำปลอดภัย · migration อื่นที่ยังไม่อยู่ใน chain (รวม `0001`–`0006`, `0008_add_en_columns.sql`, `0011_promotions_image.sql`, `0012_posts_category.sql` ณ ตอนนี้) ต้องรันแยก (เครื่องนี้รัน `--local` ไม่ได้ ใช้ `--remote` ผ่าน API):
 
 ```bash
 npx wrangler d1 execute kazumi-clinic-tag-cache --remote --file migrations/000X_xxx.sql
 ```
 
-ทุก migration เป็น `CREATE TABLE IF NOT EXISTS` → รันซ้ำปลอดภัย · ถ้า feature ใหม่พึ่ง table ที่ยังไม่ได้ migrate → เว็บจะ error แม้ deploy โค้ดสำเร็จ
+ไม่ใช่ทุก migration ใน repo ที่รันซ้ำปลอดภัย: `0008`/`0011`/`0012` เป็น `ALTER TABLE` หรือ table-rebuild จึงต้องรันมือครั้งเดียวอย่างระวัง และห้ามเพิ่มเข้า automatic chain เด็ดขาด · ถ้า feature ใหม่พึ่ง table ที่ยังไม่ได้ migrate → เว็บจะ error แม้ deploy โค้ดสำเร็จ
 
 Binding (KV/D1/DO/Service), var (`SITE_ENV` ฯลฯ) อ่านจาก [wrangler.jsonc](../wrangler.jsonc) ตอน deploy — resource จริงสร้างไว้หมดแล้ว **ห้ามรันคำสั่งสร้าง resource ซ้ำ**
 
