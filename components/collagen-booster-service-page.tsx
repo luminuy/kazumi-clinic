@@ -6,6 +6,7 @@ import { site } from '@/lib/site';
 import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
 import { LineIcon } from '@/components/brand-icons';
+import { AddToCartButton } from '@/components/account/add-to-cart-button';
 import { ProductThumbnail } from '@/components/product-thumbnail';
 
 /**
@@ -115,6 +116,17 @@ export function CollagenBoosterServicePage({
             )}
             <span aria-hidden="true" className="mt-6 block h-px w-full bg-[var(--store-control)]" />
             <p className="mt-6 text-sm leading-[1.9] text-[var(--store-muted)]">{service.shortDescription}</p>
+            {item.id && item.priceFrom !== undefined && (
+              <div className="mt-6">
+                <p className="font-serif text-2xl text-[var(--store-ink)]">
+                  {item.priceFrom.toLocaleString('th-TH')}
+                  <span className="ml-1.5 font-sans text-[0.62rem] tracking-wide text-[var(--store-muted)]">
+                    บาท / {item.unit}
+                  </span>
+                </p>
+                <AddToCartButton productId={item.id} className="mt-4 w-full sm:w-auto" />
+              </div>
+            )}
           </Reveal>
 
           {item.benefits && item.benefits.length > 0 && (
