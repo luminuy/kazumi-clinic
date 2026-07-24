@@ -6,6 +6,7 @@ import { site } from '@/lib/site';
 import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
 import { LineIcon } from '@/components/brand-icons';
+import { AddToCartButton } from '@/components/account/add-to-cart-button';
 import { ProductThumbnail } from '@/components/product-thumbnail';
 
 function RecommendedSession({ item, category }: { item: ServiceItem; category: string }) {
@@ -51,15 +52,30 @@ function RecommendedSession({ item, category }: { item: ServiceItem; category: s
         </div>
       </div>
 
-      <a
-        href={site.lineUrl}
-        target="_blank"
-        rel="noopener"
-        className="mt-8 flex items-center justify-center gap-2.5 rounded-full bg-[#06C755] py-3.5 text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.99]"
-      >
-        <LineIcon className="size-4" />
-        จองคิว / สอบถามราคา ผ่าน LINE
-      </a>
+      {item.id && item.priceFrom !== undefined ? (
+        <div className="mt-8 flex flex-col gap-2">
+          <AddToCartButton productId={item.id} className="w-full" />
+          <a
+            href={site.lineUrl}
+            target="_blank"
+            rel="noopener"
+            className="flex items-center justify-center gap-2.5 rounded-full bg-[#06C755] py-3.5 text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.99]"
+          >
+            <LineIcon className="size-4" />
+            จองคิว / สอบถามราคา ผ่าน LINE
+          </a>
+        </div>
+      ) : (
+        <a
+          href={site.lineUrl}
+          target="_blank"
+          rel="noopener"
+          className="mt-8 flex items-center justify-center gap-2.5 rounded-full bg-[#06C755] py-3.5 text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.99]"
+        >
+          <LineIcon className="size-4" />
+          จองคิว / สอบถามราคา ผ่าน LINE
+        </a>
+      )}
     </div>
   );
 }
