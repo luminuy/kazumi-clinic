@@ -201,20 +201,9 @@ export function ThreadLiftServicePage({
               ))}
             </div>
 
-            <div className="mt-12 flex flex-col items-center justify-between gap-6 md:flex-row">
-              <a
-                href={site.lineUrl}
-                target="_blank"
-                rel="noopener"
-                className="flex w-full items-center justify-center gap-2.5 rounded-full bg-[#06C755] px-8 py-3.5 text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.98] md:w-auto"
-              >
-                <LineIcon className="size-4" />
-                จองคิว / สอบถามราคา ผ่าน LINE
-              </a>
-              <p className="max-w-xs text-center text-[0.66rem] italic leading-[1.8] text-[var(--store-muted)] md:text-right">
-                *ราคาขึ้นอยู่กับการประเมินของแพทย์ จำนวนเส้น และโครงหน้าของแต่ละบุคคล
-              </p>
-            </div>
+            <p className="mx-auto mt-12 max-w-xs text-center text-[0.66rem] italic leading-[1.8] text-[var(--store-muted)]">
+              *ราคาขึ้นอยู่กับการประเมินของแพทย์ จำนวนเส้น และโครงหน้าของแต่ละบุคคล
+            </p>
           </Reveal>
         </div>
       </section>
