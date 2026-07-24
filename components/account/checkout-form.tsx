@@ -96,7 +96,8 @@ export function CheckoutForm({
       <div className="space-y-8">
         {/* Contact */}
         <fieldset className="rounded-[1.5rem] border border-black/5 bg-[var(--store-card)] p-6 shadow-lg shadow-black/5 md:p-8">
-          <legend className="px-2 font-serif text-lg text-[var(--store-ink)]">{t('contact.title')}</legend>
+          <legend className="sr-only">{t('contact.title')}</legend>
+          <p aria-hidden="true" className="font-serif text-lg text-[var(--store-ink)]">{t('contact.title')}</p>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <div className="sm:col-span-1">
               <label htmlFor="name" className="mb-1.5 block text-sm text-ink/70">{t('contact.name')}</label>
@@ -123,7 +124,8 @@ export function CheckoutForm({
 
         {/* Fulfillment */}
         <fieldset className="rounded-[1.5rem] border border-black/5 bg-[var(--store-card)] p-6 shadow-lg shadow-black/5 md:p-8">
-          <legend className="px-2 font-serif text-lg text-[var(--store-ink)]">{t('fulfillment.title')}</legend>
+          <legend className="sr-only">{t('fulfillment.title')}</legend>
+          <p aria-hidden="true" className="font-serif text-lg text-[var(--store-ink)]">{t('fulfillment.title')}</p>
           <div className="mt-4 space-y-3">
             {fulfillments.map((opt) => (
               <label
