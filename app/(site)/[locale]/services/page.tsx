@@ -6,11 +6,10 @@ import Link from 'next/link';
 import { ArrowUpRight, ChevronDown } from 'lucide-react';
 import { site } from '@/lib/site';
 import { doctor, doctorEesha } from '@/lib/doctor';
-import { cloudAssets } from '@/lib/cloud';
-import { getImageOverrides } from '@/lib/site-images-store';
-import { categoryImageKey, posterKeyByDefaultId } from '@/lib/site-images';
-import { siteSocialImage } from '@/lib/metadata-images';
-import { promotionPosters } from '@/lib/promotions';
+import { getImage, getImageOverrides } from '@/lib/site-images-store';
+import { categoryImageKey } from '@/lib/site-images';
+import { socialImage } from '@/lib/metadata-images';
+import { resolvePromotionPosters } from '@/lib/promotions';
 import { serviceCategories, type ServiceCategory } from '@/lib/services';
 import { getAllMergedCategories } from '@/lib/service-products-store';
 import { serviceCategoryListSchema, breadcrumbSchema } from '@/lib/schema';
@@ -27,10 +26,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const pageDescription = t('metaDescription', { siteName: site.name });
 
   // This is the same slot rendered as the page hero, so an admin replacement updates both.
-  const socialImage = await siteSocialImage(
-    'hero-iv-drip-2',
-    `${site.name} ${pageTitle}`,
-  );
+  const socialPublicId = await getImage('hero-iv-drip-2');
+  const socialPreview = socialPublicId
+    ? socialImage(socialPublicId, `${site.name} ${pageTitle}`)
+    : undefined;
 
   return {
     title: pageTitle,
@@ -41,13 +40,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       description: pageDescription,
       url: `${site.url}/services`,
       type: 'website',
-      images: [socialImage],
+      ...(socialPreview && { images: [socialPreview] }),
     },
     twitter: {
-      card: 'summary_large_image',
+      card: socialPreview ? 'summary_large_image' : 'summary',
       title: `${pageTitle} — ${site.name}`,
       description: pageDescription,
-      images: [socialImage.url],
+      ...(socialPreview && { images: [socialPreview.url] }),
     },
   };
 }
@@ -149,11 +148,7 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
 
   // Posters resolve here, in the server component, so the client carousel stays free of the
   // override layer and the D1 read happens once per render.
-  const posters = promotionPosters.map((poster) => {
-    const key = posterKeyByDefaultId.get(poster.src);
-    const override = key ? overrides.get(key)?.public_id : undefined;
-    return override ? { ...poster, src: override } : poster;
-  });
+  const posters = resolvePromotionPosters((key) => overrides.get(key)?.public_id);
 
   const visitPhoto = overrides.get('home-visit')?.public_id;
 
@@ -220,15 +215,21 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
           <Reveal className="md:col-span-6" delay={80}>
             <div className="relative ml-auto w-full sm:max-w-sm">
               <div className="relative aspect-[0.72] w-full overflow-hidden rounded-[1.75rem] bg-[var(--store-card)] shadow-2xl shadow-black/5 md:aspect-[0.618]">
-                <Image
-                  src={pick('hero-iv-drip-2', cloudAssets.heroIvDrip2)}
-                  alt={t('hero.imageAlt')}
-                  fill
-                  priority
-                  fetchPriority="high"
-                  sizes="(min-width: 768px) 24rem, 90vw"
-                  className="object-cover"
-                />
+                {overrides.get('hero-iv-drip-2')?.public_id ? (
+                  <Image
+                    src={overrides.get('hero-iv-drip-2')!.public_id}
+                    alt={t('hero.imageAlt')}
+                    fill
+                    priority
+                    fetchPriority="high"
+                    sizes="(min-width: 768px) 24rem, 90vw"
+                    className="object-cover"
+                  />
+                ) : (
+                  <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center">
+                    <ServiceIcon slug="iv-drip" className="size-12 text-[var(--store-muted)]" strokeWidth={0.75} />
+                  </span>
+                )}
               </div>
             </div>
           </Reveal>
@@ -307,7 +308,7 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
               summary={doctor.summary}
               expertise={doctor.expertise}
               languages={doctor.languages}
-              imageSrc={pick('doctor-pratch', doctor.image)}
+              imageSrc={overrides.get('doctor-pratch')?.public_id}
               imageAlt={`${doctor.nameTh} ${doctor.role} ของ ${site.name}`}
             />
           </div>

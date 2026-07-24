@@ -24,7 +24,7 @@
 
 ## 🔨 กำลังทำ (in progress)
 
-- (ว่าง — ไม่มีงานค้าง)
+- แก้ image fallback และ product catalogue ใน worktree `sai-hai-noi-f51494` เสร็จแล้ว — ยังไม่ commit ตามคำสั่งเจ้าของ · `pnpm lint`, `pnpm typecheck`, `pnpm build` ผ่าน 2026-07-24 · รอ review/commit โดยผู้รับงาน
 
 > ก่อนเริ่มงานที่กินหลายไฟล์ ให้จดที่นี่: **อะไร · เครื่องมือไหน (Claude / Antigravity) · branch ไหน** — กันชนกันและกัน "งานหาย" (ดู CLAUDE.md §0.5 · dual-agent)
 

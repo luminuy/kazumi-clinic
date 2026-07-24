@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { AdminSidebar } from '@/components/admin/sidebar';
 import { countNewLeads } from '@/lib/leads-store';
+import { getImage } from '@/lib/site-images-store';
 
 export const metadata: Metadata = {
   title: { default: 'จัดการเว็บไซต์', template: '%s — Kazumi Admin' },
@@ -14,14 +15,15 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const [adminEmail, newLeads] = await Promise.all([
+  const [adminEmail, newLeads, logoPublicId] = await Promise.all([
     headers().then((h) => h.get('x-admin-email')),
     countNewLeads(),
+    getImage('brand-mark'),
   ]);
 
   return (
     <div className="min-h-screen bg-sand lg:flex">
-      <AdminSidebar email={adminEmail} newLeads={newLeads} />
+      <AdminSidebar email={adminEmail} newLeads={newLeads} logoPublicId={logoPublicId || undefined} />
       <main className="min-w-0 flex-1">
         <div className="mx-auto max-w-5xl px-6 py-8 sm:py-10">{children}</div>
       </main>

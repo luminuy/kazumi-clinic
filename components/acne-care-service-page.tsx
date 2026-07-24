@@ -5,15 +5,19 @@ import { site } from '@/lib/site';
 import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
 import { LineIcon } from '@/components/brand-icons';
+import { ProductThumbnail } from '@/components/product-thumbnail';
 
-function MenuRow({ item }: { item: ServiceItem }) {
+function MenuRow({ item, category }: { item: ServiceItem; category: string }) {
   return (
     <div className="flex items-end justify-between gap-6 border-b border-black/[0.08] pb-4">
-      <div>
+      <div className="flex items-center gap-4">
+        <ProductThumbnail item={item} category={category} className="size-14 rounded-xl" />
+        <div>
         {/* h3, not h4: these rows sit directly under the "Service Menu" h2, so h4 would skip a
             level and break the heading outline. */}
         <h3 className="font-serif text-lg text-[var(--store-ink)] md:text-xl">{item.name}</h3>
         {item.detail && <p className="mt-1 text-sm leading-relaxed text-[var(--store-muted)]/60">{item.detail}</p>}
+        </div>
       </div>
       <p className="shrink-0 text-right text-[0.66rem] uppercase tracking-[0.12em] text-[var(--store-ink)]">
         {/* The reference prints "สอบถามราคา"; lib/services.ts has no price for these programmes,
@@ -117,7 +121,7 @@ export function AcneCareServicePage({
           <div className="mt-12 space-y-10">
             {service.items.map((item, index) => (
               <Reveal key={item.id ?? `${item.name}-${index}`} delay={index * 60}>
-                <MenuRow item={item} />
+                <MenuRow item={item} category={service.slug} />
               </Reveal>
             ))}
           </div>

@@ -1,4 +1,3 @@
-import { cloudAssets } from './cloud';
 // Public professional profile supplied by the clinic. Keep private CV details such as
 // date of birth, personal phone number, and email out of the website.
 export const doctor = {
@@ -8,7 +7,6 @@ export const doctor = {
   givenName: 'Pratch',
   familyName: 'Achawanitkun',
   role: 'แพทย์ด้านเวชศาสตร์ความงาม',
-  image: cloudAssets.doctorPratch,
   summary:
     'ให้คำปรึกษา วางแผนการดูแลเฉพาะบุคคล และให้คำแนะนำก่อน–หลังหัตถการ โดยคำนึงถึงประวัติสุขภาพและเป้าหมายของผู้รับบริการ',
   education: [

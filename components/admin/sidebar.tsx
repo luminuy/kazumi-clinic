@@ -17,7 +17,6 @@ import {
   X,
   type LucideIcon,
 } from 'lucide-react';
-import { site } from '@/lib/site';
 import { cld } from '@/lib/cloud';
 import { cn } from '@/lib/utils';
 
@@ -43,18 +42,25 @@ const NAV: NavGroup[] = [
   },
 ];
 
-function Brand({ onNavigate }: { onNavigate?: () => void }) {
+/**
+ * `logoPublicId` is resolved from the `brand-mark` slot by the layout, not read from
+ * `site.logoMark`: the shipped default no longer exists in Cloudinary, so building the URL from
+ * it put a broken image in the admin's own header. No upload yet → the wordmark stands alone.
+ */
+function Brand({ logoPublicId, onNavigate }: { logoPublicId?: string; onNavigate?: () => void }) {
   return (
     <Link href="/admin" onClick={onNavigate} className="flex items-center gap-2.5">
-      {/* eslint-disable-next-line @next/next/no-img-element -- fixed 56px Cloudinary crop */}
-      <img
-        src={cld(site.logoMark, { width: 56, crop: 'fit' })}
-        alt=""
-        aria-hidden="true"
-        width={28}
-        height={28}
-        className="size-7"
-      />
+      {logoPublicId && (
+        /* eslint-disable-next-line @next/next/no-img-element -- fixed 56px Cloudinary crop */
+        <img
+          src={cld(logoPublicId, { width: 56, crop: 'fit' })}
+          alt=""
+          aria-hidden="true"
+          width={28}
+          height={28}
+          className="size-7"
+        />
+      )}
       <span className="font-serif text-lg tracking-[0.14em] text-ink">KAZUMI</span>
       <span className="rounded-full bg-black/[0.05] px-2 py-0.5 text-[0.58rem] font-medium uppercase tracking-[0.14em] text-ink/45">
         Admin
@@ -127,16 +133,18 @@ function NavLinks({ onNavigate, newLeads }: { onNavigate?: () => void; newLeads:
 function SidebarBody({
   email,
   newLeads,
+  logoPublicId,
   onNavigate,
 }: {
   email: string | null;
   newLeads: number;
+  logoPublicId?: string;
   onNavigate?: () => void;
 }) {
   return (
     <div className="flex h-full flex-col">
       <div className="px-5 py-5">
-        <Brand onNavigate={onNavigate} />
+        <Brand logoPublicId={logoPublicId} onNavigate={onNavigate} />
       </div>
       <div className="flex-1 overflow-y-auto px-3 py-2">
         <NavLinks onNavigate={onNavigate} newLeads={newLeads} />
@@ -172,7 +180,15 @@ function SidebarBody({
   );
 }
 
-export function AdminSidebar({ email, newLeads = 0 }: { email: string | null; newLeads?: number }) {
+export function AdminSidebar({
+  email,
+  newLeads = 0,
+  logoPublicId,
+}: {
+  email: string | null;
+  newLeads?: number;
+  logoPublicId?: string;
+}) {
   const [open, setOpen] = useState(false);
 
   // The drawer closes itself from every in-drawer link (onNavigate) and the backdrop/Escape, so
@@ -196,7 +212,7 @@ export function AdminSidebar({ email, newLeads = 0 }: { email: string | null; ne
     <>
       {/* Mobile top bar */}
       <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-black/[0.07] bg-cream/85 px-4 backdrop-blur-xl lg:hidden">
-        <Brand />
+        <Brand logoPublicId={logoPublicId} />
         <button
           type="button"
           onClick={() => setOpen(true)}
@@ -235,7 +251,12 @@ export function AdminSidebar({ email, newLeads = 0 }: { email: string | null; ne
         >
           <X className="size-4" />
         </button>
-        <SidebarBody email={email} newLeads={newLeads} onNavigate={() => setOpen(false)} />
+        <SidebarBody
+          email={email}
+          newLeads={newLeads}
+          logoPublicId={logoPublicId}
+          onNavigate={() => setOpen(false)}
+        />
       </aside>
     </>
   );

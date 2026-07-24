@@ -7,6 +7,7 @@
 // current, in-date promotions. Do NOT present expired promos as active.
 
 import { cloudAssets } from './cloud';
+import type { SiteImageKey } from './site-images';
 
 export type Promotion = {
   name: string;
@@ -37,14 +38,21 @@ export type PromotionPoster = {
   badgeVariant?: 'red' | 'blue';
 };
 
+/** A poster may wait for its admin-managed image slot to be populated. */
+type PromotionPosterSource = Omit<PromotionPoster, 'src'> & {
+  src?: string;
+  imageKey: SiteImageKey;
+};
+
 /**
  * Visual campaign artwork supplied by the clinic. These are shown as a gallery,
  * not as date-gated offers; visitors should confirm current price and validity
  * with the clinic before booking.
  */
-export const promotionPosters: PromotionPoster[] = [
+export const promotionPosters: PromotionPosterSource[] = [
   {
     src: cloudAssets.promoSignatureFlawless,
+    imageKey: 'promo-signature-flawless',
     alt: 'โปสเตอร์ Signature Flawless IV Drip พร้อมภาพผู้หญิงและถุงสารน้ำ',
     label: 'IV Drip · Signature Flawless',
     categorySlug: 'iv-drip',
@@ -56,6 +64,7 @@ export const promotionPosters: PromotionPoster[] = [
   },
   {
     src: cloudAssets.promoRadiantBright,
+    imageKey: 'promo-radiant-bright',
     alt: 'โปสเตอร์ Radiant Bright IV Drip พร้อมภาพผู้หญิงผมสีน้ำตาล',
     label: 'IV Drip · Radiant Bright',
     categorySlug: 'iv-drip',
@@ -65,6 +74,7 @@ export const promotionPosters: PromotionPoster[] = [
   },
   {
     src: cloudAssets.promoFillerNeura,
+    imageKey: 'promo-filler-neura',
     alt: 'โปสเตอร์ Filler Neura Deep และ Neura Volume พร้อมภาพใบหน้าด้านข้าง',
     label: 'Filler · Neura',
     categorySlug: 'filler',
@@ -76,6 +86,7 @@ export const promotionPosters: PromotionPoster[] = [
   },
   {
     src: cloudAssets.promoOxelleSkinBooster,
+    imageKey: 'promo-oxelle-skin-booster',
     alt: 'โปสเตอร์ Oxelle Skin Boosters พร้อมภาพผิวก่อนและหลัง',
     label: 'Skin Booster · Oxelle',
     categorySlug: 'skin-booster',
@@ -84,7 +95,7 @@ export const promotionPosters: PromotionPoster[] = [
     subtitle: 'Revive & Restore Your Skin.',
   },
   {
-    src: cloudAssets.promoKarismaCollagen,
+    imageKey: 'promo-karisma-collagen',
     alt: 'โปสเตอร์ Velvet Glow IV Drip พร้อมภาพผู้หญิงและถุงสารน้ำ',
     label: 'IV Drip · Velvet Glow',
     categorySlug: 'iv-drip',
@@ -94,6 +105,7 @@ export const promotionPosters: PromotionPoster[] = [
   },
   {
     src: cloudAssets.promoActiveRefresh,
+    imageKey: 'promo-active-refresh',
     alt: 'โปสเตอร์ Active & Refresh IV Drip พร้อมภาพผู้หญิงกลางแจ้ง',
     label: 'IV Drip · Active & Refresh',
     categorySlug: 'iv-drip',
@@ -102,8 +114,9 @@ export const promotionPosters: PromotionPoster[] = [
     subtitle: 'Energize Your Body & Mind.',
   },
   {
-    // ...and promo-velvet-glow holds the KARISMA poster. See the note above.
-    src: cloudAssets.promoVelvetGlow,
+    // ...and promo-velvet-glow holds the KARISMA poster. See the note above. Its Cloudinary
+    // asset is gone (404), so the slot ships with no default and waits for an /admin upload.
+    imageKey: 'promo-velvet-glow',
     alt: 'โปสเตอร์ Karisma Rh Collagen พร้อมภาพแพ็กเกจผลิตภัณฑ์',
     label: 'Collagen · Karisma',
     categorySlug: 'collagen-booster',
@@ -112,6 +125,19 @@ export const promotionPosters: PromotionPoster[] = [
     subtitle: 'Premium Collagen Treatment.',
   },
 ];
+
+/**
+ * Keep an unpopulated admin slot out of image components. This avoids emitting an empty or
+ * stale Cloudinary URL while letting the same card appear as soon as the clinic uploads artwork.
+ */
+export function resolvePromotionPosters(
+  getOverride: (key: SiteImageKey) => string | undefined,
+): PromotionPoster[] {
+  return promotionPosters.flatMap(({ imageKey, src, ...poster }) => {
+    const resolvedSrc = getOverride(imageKey) ?? src;
+    return resolvedSrc ? [{ ...poster, src: resolvedSrc }] : [];
+  });
+}
 
 export const promotions: Promotion[] = [
   {

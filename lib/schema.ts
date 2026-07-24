@@ -35,8 +35,8 @@ export function clinicSchema({
     priceRange: '$$',
     // Aesthetic dermatology — the specialty Google maps the entity to for health/beauty queries.
     medicalSpecialty: 'Dermatology',
-    image: cld(imagePublicId, { width: 1200, height: 630, crop: 'fill' }),
-    logo: cld(logoPublicId, { width: 512, height: 512, crop: 'fit' }),
+    ...(imagePublicId && { image: cld(imagePublicId, { width: 1200, height: 630, crop: 'fill' }) }),
+    ...(logoPublicId && { logo: cld(logoPublicId, { width: 512, height: 512, crop: 'fit' }) }),
     hasMap: site.mapsUrl,
     areaServed: {
       '@type': 'Place',

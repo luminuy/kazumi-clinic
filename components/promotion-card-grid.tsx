@@ -4,14 +4,14 @@ import { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { promotionPosters, type PromotionPoster } from '@/lib/promotions';
+import type { PromotionPoster } from '@/lib/promotions';
 import { cn } from '@/lib/utils';
 
 export function PromotionCardGrid({
-  posters = promotionPosters,
+  posters,
   className,
 }: {
-  posters?: PromotionPoster[];
+  posters: PromotionPoster[];
   className?: string;
 }) {
   const railRef = useRef<HTMLDivElement>(null);

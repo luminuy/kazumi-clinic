@@ -78,7 +78,6 @@ export const siteImages: SiteImageSpec[] = [
     key: 'brand-logo',
     label: 'โลโก้เต็ม (ดอกไม้ + ชื่อ)',
     where: 'โลโก้ใน JSON-LD ที่ Google ใช้',
-    defaultPublicId: cloudAssets.brandLogo,
     ratioHint: 'จัตุรัส — ดอกไม้อยู่บน ตัวหนังสือ KAZUMI CLINIC อยู่ล่าง',
   },
   {
@@ -92,7 +91,6 @@ export const siteImages: SiteImageSpec[] = [
     key: 'hero-filler',
     label: 'รูปหัวหน้าฟิลเลอร์',
     where: '/filler · การ์ดฟิลเลอร์บนหน้าแรกและ /services',
-    defaultPublicId: cloudAssets.heroFiller,
     // Cropped landscape on /filler and /services but portrait in the home atlas card, so no one
     // orientation is the right advice — what matters is that the subject survives both crops.
     ratioHint: 'ถูกครอปทั้งแนวนอน (/filler, /services) และแนวตั้ง (หน้าแรก) — ให้คนอยู่กลางเฟรม',
@@ -107,28 +105,24 @@ export const siteImages: SiteImageSpec[] = [
     key: 'hero-iv-drip-1',
     label: 'รูปหัวหน้า IV Drip',
     where: '/iv-drip · การ์ด IV Drip บนหน้าแรกและ /services · OG หน้ารีวิว',
-    defaultPublicId: cloudAssets.heroIvDrip1,
     ratioHint: 'แนวตั้ง',
   },
   {
     key: 'hero-iv-drip-2',
     label: 'รูปหัวข้อปรัชญา',
     where: 'หน้าแรกส่วนปรัชญา · รูปใหญ่ /services · OG หน้า services/contact',
-    defaultPublicId: cloudAssets.heroIvDrip2,
     ratioHint: 'แนวตั้ง 3:4',
   },
   {
     key: 'hero-iv-drip-3',
     label: 'รูปสำรอง IV Drip',
     where: 'ยังไม่ได้ใช้ที่ไหน',
-    defaultPublicId: cloudAssets.heroIvDrip3,
     ratioHint: 'แนวตั้ง',
   },
   {
     key: 'hero-skin-booster',
     label: 'รูปหัวหน้าสกินบูสเตอร์',
     where: '/skin-booster · การ์ดบนหน้าแรกและ /services · OG หน้าโปรโมชั่น',
-    defaultPublicId: cloudAssets.heroSkinBooster,
     ratioHint: 'แนวนอน',
   },
   // ── หมวดที่ยังไม่มีรูปจริง ─────────────────────────────────────────────
@@ -228,7 +222,6 @@ export const siteImages: SiteImageSpec[] = [
     key: 'doctor-pratch',
     label: 'รูปคุณหมอ',
     where: 'หน้าแรก · /about · /services · รูปใน Person JSON-LD',
-    defaultPublicId: cloudAssets.doctorPratch,
     ratioHint: 'แนวตั้ง 4:5 — เห็นหน้าชัด อยู่กลางเฟรม',
   },
   {
@@ -254,7 +247,6 @@ export const siteImages: SiteImageSpec[] = [
     key: 'og-about',
     label: 'รูป OG หน้าเกี่ยวกับเรา',
     where: 'ตอนแชร์ลิงก์ /about',
-    defaultPublicId: cloudAssets.ogAbout,
     ratioHint: '1200×630 เป๊ะ (สเปก Facebook/LINE)',
   },
   // รูปหน้าคลินิกในส่วน "มาเยี่ยมเรา" บนหน้าแรก (แทนแผนที่ฝัง Google Maps เดิม)
@@ -282,7 +274,6 @@ export const siteImages: SiteImageSpec[] = [
     key: 'promo-karisma-collagen',
     label: 'โปสเตอร์โปรฯ Karisma Collagen',
     where: '/promotions · โปสเตอร์บนหน้าแรกและ /services',
-    defaultPublicId: cloudAssets.promoKarismaCollagen,
     ratioHint: 'แนวตั้ง 4:5 (โปสเตอร์)',
   },
   {
@@ -310,14 +301,12 @@ export const siteImages: SiteImageSpec[] = [
     key: 'promo-velvet-glow',
     label: 'โปสเตอร์โปรฯ Velvet Glow',
     where: '/promotions · โปสเตอร์บนหน้าแรกและ /services',
-    defaultPublicId: cloudAssets.promoVelvetGlow,
     ratioHint: 'แนวตั้ง 4:5 (โปสเตอร์)',
   },
   {
     key: 'hero-contact',
     label: 'รูปหัวหน้าติดต่อเรา',
     where: '/contact — รูปใหญ่ในส่วนหัว',
-    defaultPublicId: cloudAssets.heroIvDrip2,
     ratioHint: 'แนวนอน 21:9 — รูปพื้นหลัง hero เห็นเฉพาะครึ่งล่าง',
   },
 ];
@@ -354,7 +343,9 @@ export const categoryImageKey: Record<string, SiteImageKey> = {
 
 /** Which slot backs each promotion poster, by its default public ID. */
 export const posterKeyByDefaultId = new Map(
-  siteImages.filter((i) => i.key.startsWith('promo-')).map((i) => [i.defaultPublicId, i.key]),
+  siteImages
+    .filter((i) => i.key.startsWith('promo-') && i.defaultPublicId)
+    .map((i) => [i.defaultPublicId!, i.key]),
 );
 
 export type SiteImageSection = {

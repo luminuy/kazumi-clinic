@@ -92,29 +92,19 @@ export const cloudAssets = {
   // The wordmark and the flower mark the site actually renders. They lived in public/ — which
   // meant /admin offered a "change the logo" button that changed nothing, because the header
   // read a baked-in file instead.
-  brandLogo: 'kazumi-clinic/brand-logo',
   brandMark: 'kazumi-clinic/brand-mark',
   heroHome: 'kazumi-clinic/hero-home',
-  heroFiller: 'kazumi-clinic/hero-filler',
-  heroIvDrip1: 'kazumi-clinic/hero-iv-drip-1',
-  heroIvDrip2: 'kazumi-clinic/hero-iv-drip-2',
-  heroIvDrip3: 'kazumi-clinic/hero-iv-drip-3',
-  heroSkinBooster: 'kazumi-clinic/hero-skin-booster',
   // Moved out of public/ so /admin can replace them — a file under public/ is baked into
   // the build and can only change by shipping code.
-  doctorPratch: 'kazumi-clinic/doctor-pratch',
-  ogAbout: 'kazumi-clinic/og-about',
   promoActiveRefresh: 'kazumi-clinic/promo-active-refresh',
   promoFillerNeura: 'kazumi-clinic/promo-filler-neura',
   // promo-karisma-collagen and promo-velvet-glow hold each other's artwork — the two source
   // files were swapped long before they reached Cloudinary, and an unsigned upload can't
   // overwrite, so these two IDs replace them. The old pair is now orphaned; delete it from the
   // Cloudinary media library when convenient.
-  promoKarismaCollagen: 'kazumi-clinic/promo-karisma-rh-collagen',
   promoOxelleSkinBooster: 'kazumi-clinic/promo-oxelle-skin-booster',
   promoRadiantBright: 'kazumi-clinic/promo-radiant-bright',
   promoSignatureFlawless: 'kazumi-clinic/promo-signature-flawless',
-  promoVelvetGlow: 'kazumi-clinic/promo-velvet-glow-iv',
 } as const;
 
 // The `hero-home` asset (1920x1080) has the logo and the "Where balance purity…" quote burnt

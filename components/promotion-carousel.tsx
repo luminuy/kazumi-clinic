@@ -4,17 +4,17 @@ import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide-react';
-import { promotionPosters, type PromotionPoster } from '@/lib/promotions';
+import type { PromotionPoster } from '@/lib/promotions';
 import { cn } from '@/lib/utils';
 
 export function PromotionCarousel({
-  posters = promotionPosters,
+  posters,
   className,
   hidePreviousAtStart = false,
   imageSizes = '(min-width: 1024px) 30vw, (min-width: 640px) 48vw, 88vw',
 }: {
   /** Resolved through the /admin override layer by the server component that renders this. */
-  posters?: PromotionPoster[];
+  posters: PromotionPoster[];
   /** Page-specific layout treatment while preserving the same accessible carousel controls. */
   className?: string;
   /** Hides the previous control on the initial position for a one-way shelf treatment. */

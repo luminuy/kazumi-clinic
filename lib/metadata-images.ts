@@ -20,6 +20,7 @@ export function socialImage(publicId: string, alt?: string): SocialImage {
 }
 
 /** Resolve an admin-managed image slot before building its OG/Twitter image. */
-export async function siteSocialImage(key: SiteImageKey, alt?: string): Promise<SocialImage> {
-  return socialImage(await getImage(key), alt);
+export async function siteSocialImage(key: SiteImageKey, alt?: string): Promise<SocialImage | undefined> {
+  const publicId = await getImage(key);
+  return publicId ? socialImage(publicId, alt) : undefined;
 }
