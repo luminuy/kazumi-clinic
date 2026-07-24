@@ -10,6 +10,7 @@ import { SectionLabel } from '@/components/page-hero';
 import { LineIcon } from '@/components/brand-icons';
 import { PhysicianPanel } from '@/components/physician-panel';
 import { AddToCartButton } from '@/components/account/add-to-cart-button';
+import { ServiceIcon } from '@/components/service-icon';
 
 export function FillerServicePage({
   service,
@@ -19,7 +20,7 @@ export function FillerServicePage({
   eeshaImage,
 }: {
   service: ServiceCategory;
-  heroImage: string;
+  heroImage?: string;
   /** ServiceItem.id → Cloudinary public ID, resolved from /admin by the server component. */
   itemImages?: Record<string, string>;
   doctorImage?: string;
@@ -60,15 +61,28 @@ export function FillerServicePage({
                 and a tall portrait next to a one-line headline is what left the hero so airy.
                 Still golden ratio — just the other way up. */}
             <div className="relative ml-auto aspect-[1.618] w-full overflow-hidden rounded-[1.75rem] bg-[var(--store-card)] shadow-2xl shadow-black/5">
-              <Image
-                src={heroImage}
-                alt={service.heroAlt ?? ''}
-                fill
-                priority
-                fetchPriority="high"
-                sizes="(min-width: 1024px) 40vw, 90vw"
-                className="object-cover"
-              />
+              {heroImage ? (
+                <Image
+                  src={heroImage}
+                  alt={service.heroAlt ?? ''}
+                  fill
+                  priority
+                  fetchPriority="high"
+                  sizes="(min-width: 1024px) 40vw, 90vw"
+                  className="object-cover"
+                />
+              ) : (
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-0 flex items-center justify-center"
+                >
+                  <ServiceIcon
+                    slug={service.slug}
+                    className="size-12 text-[var(--store-muted)]"
+                    strokeWidth={0.75}
+                  />
+                </span>
+              )}
             </div>
             <div
               className="absolute -bottom-6 -left-6 -z-0 hidden h-32 w-32 border-b border-l border-black/[0.08] md:block md:h-40 md:w-40"
