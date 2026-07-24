@@ -34,6 +34,42 @@ export const doctor = {
     'ประเมินผู้รับบริการและวางแผนการดูแลเฉพาะบุคคล',
     'ให้คำแนะนำการเตรียมตัวและการดูแลหลังหัตถการ',
   ],
+  // Continuing-education workshops & certificates, transcribed from the clinic's supplied
+  // "Training Certificate" document. `title` is the course, `provider` the organiser · location.
+  training: [
+    {
+      title: 'Hands-on Workshop — Ultrasound Imaging for Facial Aesthetic Injection Course, Episode III',
+      provider: 'IDS Medical System · Bangkok, Thailand',
+    },
+    {
+      title: 'Certificate of Attendance — Aesthetic Medicine Online Symposium 2024',
+      provider: 'Queen Mary University of London · London, UK',
+    },
+    {
+      title: 'Certificate of Attendance — APEM Thailand 2024',
+      provider: 'APEM · Bangkok, Thailand',
+    },
+    {
+      title: 'Masterclass Hands-on Workshop — Hydrobooster Revolution: Redefining Skin Hydration and Skin Quality',
+      provider: 'Menarini Academy · Bangkok, Thailand',
+    },
+    {
+      title: 'Sculptra Exclusive Hands-on Workshop',
+      provider: 'Galderma Thailand · Bangkok, Thailand',
+    },
+    {
+      title: 'Collagen Stimulator HArmonyCa™ Workshop',
+      provider: 'Allergan Medical Institute · Bangkok, Thailand',
+    },
+    {
+      title: 'Hands-on Workshop — GLOW ON HIT: Firm & Refreshed',
+      provider: 'Galderma Thailand · Bangkok, Thailand',
+    },
+    {
+      title: 'Hands-on Workshop — Launch of the New Indication of HCC: Acne Scar Treatment',
+      provider: 'Alma Lasers (Thailand) Ltd. · Bangkok, Thailand',
+    },
+  ],
   expertise: [
     'Botulinum Toxin',
     'Dermal Filler',
