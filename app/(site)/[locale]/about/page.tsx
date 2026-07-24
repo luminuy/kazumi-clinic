@@ -237,11 +237,35 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
                   >
                     {t('director.experience')}
                   </h3>
-                  <ul className="mt-6 mb-12 space-y-3">
+                  <ul className="mt-6 space-y-3">
                     {doctor.experience.map((item) => (
                       <li key={item} className="flex gap-3 text-xs leading-[1.7] text-[var(--store-muted)]">
                         <span aria-hidden="true" className="mt-2 h-px w-3 shrink-0 bg-black/10" />
                         <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div>
+                  <h3
+                    lang="en"
+                    className="border-b border-black/[0.08] pb-2 text-[0.66rem] font-medium uppercase tracking-[0.2em] text-[var(--store-ink)]"
+                  >
+                    {t('director.training')}
+                  </h3>
+                  <ul className="mt-6 space-y-5">
+                    {doctor.training.map((item) => (
+                      <li
+                        key={item.title}
+                        className="flex flex-col gap-1 md:flex-row md:items-baseline md:gap-6"
+                      >
+                        <span lang="en" className="text-sm leading-snug text-[var(--store-ink)] md:w-72 md:shrink-0">
+                          {item.title}
+                        </span>
+                        <span lang="en" className="text-xs leading-relaxed text-[var(--store-muted)]">
+                          {item.provider}
+                        </span>
                       </li>
                     ))}
                   </ul>
