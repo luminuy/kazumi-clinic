@@ -11,6 +11,7 @@ import {
   Loader2,
   Pencil,
   Plus,
+  RotateCcw,
   Trash2,
   TriangleAlert,
   Upload,
@@ -87,10 +88,12 @@ export function ProductCategoryEditor({
   slug,
   title,
   products,
+  hiddenProducts,
 }: {
   slug: string;
   title: string;
   products: AdminProduct[];
+  hiddenProducts: AdminProduct[];
 }) {
   const router = useRouter();
   // 'new' opens a blank add form; a product id opens that product's edit form.
@@ -191,6 +194,16 @@ export function ProductCategoryEditor({
     );
   }
 
+  async function restore(product: AdminProduct) {
+    await mutate('restore-' + product.id, () =>
+      fetch('/api/admin/products', {
+        method: 'PUT',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ id: product.id, category: slug }),
+      }),
+    );
+  }
+
   async function move(index: number, direction: -1 | 1) {
     const next = index + direction;
     if (next < 0 || next >= products.length) return;
@@ -279,7 +292,99 @@ export function ProductCategoryEditor({
           </li>
         )}
       </ul>
+
+      {hiddenProducts.length > 0 && (
+        <div className="mt-8 border-t border-black/[0.07] pt-8">
+          <SectionHeading title="สินค้าที่ซ่อนอยู่" count={`${hiddenProducts.length} รายการ`} />
+          <ul className="mt-6 space-y-3">
+            {hiddenProducts.map((product) => (
+              <li key={product.id}>
+                <HiddenProductRow
+                  product={product}
+                  busy={busy}
+                  busyId={busyId}
+                  onRestore={() => restore(product)}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </section>
+  );
+}
+
+function HiddenProductRow({
+  product,
+  busy,
+  busyId,
+  onRestore,
+}: {
+  product: AdminProduct;
+  busy: boolean;
+  busyId: string | null;
+  onRestore: () => void;
+}) {
+  const rowBusy = busyId === 'restore-' + product.id;
+
+  return (
+    <div className={cn(card, 'flex gap-4 p-4 opacity-75')}>
+      <div className="relative size-20 shrink-0 overflow-hidden rounded-xl bg-sand ring-1 ring-black/[0.05]">
+        {product.imagePublicId ? (
+          <Image
+            src={product.imagePublicId}
+            alt=""
+            aria-hidden="true"
+            fill
+            sizes="80px"
+            className={cn('object-cover', rowBusy && 'opacity-40')}
+          />
+        ) : (
+          <span className="absolute inset-0 grid place-items-center">
+            <ImageOff className="size-5 text-ink/25" aria-hidden="true" />
+          </span>
+        )}
+        {rowBusy && (
+          <span className="absolute inset-0 grid place-items-center bg-cream/30">
+            <Loader2 className="size-5 animate-spin text-forest" />
+          </span>
+        )}
+      </div>
+
+      <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <h4 className="truncate font-serif text-lg leading-tight text-ink">{product.name}</h4>
+            {(product.detail || product.collection) && (
+              <p className="mt-0.5 truncate text-xs text-ink/50">
+                {[product.collection, product.detail].filter(Boolean).join(' · ')}
+              </p>
+            )}
+          </div>
+          <span className="shrink-0 rounded-full bg-black/[0.05] px-2 py-0.5 text-[0.62rem] font-medium text-ink/45">
+            ซ่อนอยู่
+          </span>
+        </div>
+
+        <p className="mt-1 text-sm font-medium text-ink">
+          {product.priceFrom !== null ? (
+            <>
+              {product.priceFrom.toLocaleString('th-TH')}{' '}
+              <span className="text-xs font-normal text-ink/45">บาท / {product.unit}</span>
+            </>
+          ) : (
+            <span className="text-xs font-normal text-ink/45">สอบถามราคา</span>
+          )}
+        </p>
+
+        <div className="mt-auto pt-3">
+          <button type="button" disabled={busy} onClick={onRestore} className={btn.secondary}>
+            <RotateCcw className="size-3.5" />
+            กู้คืน
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 

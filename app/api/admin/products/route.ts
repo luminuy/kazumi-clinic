@@ -5,6 +5,7 @@ import { serviceCategories } from '@/lib/services';
 import {
   upsertProduct,
   deleteProduct,
+  restoreProduct,
   reorderProducts,
   type ProductInput,
 } from '@/lib/service-products-store';
@@ -115,6 +116,25 @@ export async function DELETE(request: NextRequest) {
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'ลบไม่สำเร็จ' },
+      { status: 502 },
+    );
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  const email = adminEmail(request);
+  if (!email) return NextResponse.json({ error: 'ไม่ได้รับอนุญาต' }, { status: 401 });
+
+  const parsed = deleteSchema.safeParse(await request.json().catch(() => null));
+  if (!parsed.success) return NextResponse.json({ error: 'ข้อมูลไม่ถูกต้อง' }, { status: 400 });
+
+  try {
+    await restoreProduct(parsed.data.id, parsed.data.category, email);
+    revalidateCategory(parsed.data.category);
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'กู้คืนไม่สำเร็จ' },
       { status: 502 },
     );
   }

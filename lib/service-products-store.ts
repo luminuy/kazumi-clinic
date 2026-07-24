@@ -128,6 +128,13 @@ export async function getCategoryItems(slug: string): Promise<ServiceItem[]> {
   return merged.map((m) => m.item);
 }
 
+/** Shipped products the clinic hid, kept separately so the admin can restore them. */
+export async function getHiddenDefaultProducts(slug: string): Promise<ServiceItem[]> {
+  const defaultIds = new Set((getServiceBySlug(slug)?.items ?? []).map((item) => item.id));
+  const rows = (await getProductRowsByCategory()).get(slug) ?? [];
+  return rows.filter((row) => row.deleted && defaultIds.has(row.id)).map(rowToItem);
+}
+
 /** A category with its items resolved through the override layer — what pages/schema render. */
 export async function getMergedCategory(slug: string) {
   const base = getServiceBySlug(slug);
@@ -223,19 +230,47 @@ export async function setProductImage(
 export async function deleteProduct(id: string, category: string, updatedBy: string) {
   const binding = await db();
   requireDb(binding);
-  const isHardcoded = Boolean(getServiceBySlug(category)?.items.some((item) => item.id === id));
-  if (isHardcoded) {
+  const base = getServiceBySlug(category)?.items.find((item) => item.id === id);
+  if (base) {
     await binding
       .prepare(
-        `INSERT INTO service_products (id, category, name, unit, sort_order, deleted, updated_at, updated_by)
-         VALUES (?1, ?2, ?1, 'ครั้ง', 0, 1, ?3, ?4)
-         ON CONFLICT(id) DO UPDATE SET deleted = 1, updated_at = ?3, updated_by = ?4`,
+        `INSERT INTO service_products
+           (id, category, name, detail, tagline, benefits, collection, price_from, unit,
+            image_public_id, sort_order, deleted, updated_at, updated_by)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, 1, ?12, ?13)
+         ON CONFLICT(id) DO UPDATE SET deleted = 1, updated_at = ?12, updated_by = ?13`,
       )
-      .bind(id, category, Date.now(), updatedBy)
+      .bind(
+        id,
+        category,
+        base.name,
+        base.detail ?? null,
+        base.tagline ?? null,
+        base.benefits && base.benefits.length > 0 ? JSON.stringify(base.benefits) : null,
+        base.collection ?? null,
+        base.priceFrom ?? null,
+        base.unit,
+        base.imagePublicId ?? null,
+        baseSortOrder(category, id),
+        Date.now(),
+        updatedBy,
+      )
       .run();
   } else {
     await binding.prepare('DELETE FROM service_products WHERE id = ?1').bind(id).run();
   }
+}
+
+/** Restore a shipped product that was previously hidden with a tombstone. */
+export async function restoreProduct(id: string, category: string, updatedBy: string): Promise<void> {
+  const binding = await db();
+  requireDb(binding);
+  await binding
+    .prepare(
+      'UPDATE service_products SET deleted = 0, updated_at = ?1, updated_by = ?2 WHERE id = ?3 AND category = ?4',
+    )
+    .bind(Date.now(), updatedBy, id, category)
+    .run();
 }
 
 /**
