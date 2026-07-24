@@ -14,7 +14,7 @@ import {
   SheetTrigger,
   SheetClose,
 } from '@/components/ui/sheet';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { HeaderActions } from '@/components/header-actions';
 
@@ -28,6 +28,7 @@ export default function Header({
   isLoggedIn?: boolean;
 }) {
   const t = useTranslations('Navigation');
+  const isEn = useLocale() === 'en';
   const serviceGroups = resolvedServiceNavGroups();
 
   return (
@@ -80,8 +81,7 @@ export default function Header({
                       {serviceGroups.map(({ group, categories }) => (
                         <div key={group.title}>
                           <p className="text-sm font-semibold leading-snug text-[var(--store-ink)]">
-                            {/* TODO: Translate group.title */}
-                            {group.title}
+                            {isEn ? group.titleEn : group.title}
                           </p>
                           <ul className="mt-3 space-y-2">
                             {categories.map((c) => (
@@ -90,8 +90,7 @@ export default function Header({
                                   href={`/${c.slug}`}
                                   className="text-sm text-[var(--store-muted)] transition-colors hover:text-primary"
                                 >
-                                  {/* TODO: Translate c.title */}
-                                  {c.title}
+                                  {isEn ? c.titleEn : c.title}
                                 </Link>
                               </li>
                             ))}
@@ -164,7 +163,8 @@ export default function Header({
                         {serviceGroups.map(({ group, categories }) => (
                           <div key={group.title}>
                             <p className="px-3 text-[0.7rem] leading-snug text-olive-light">
-                              <span aria-hidden="true">{group.glyph}</span> {group.title}
+                              <span aria-hidden="true">{group.glyph}</span>{' '}
+                              {isEn ? group.titleEn : group.title}
                             </p>
                             {categories.map((c) => (
                               <SheetClose
@@ -177,7 +177,7 @@ export default function Header({
                                 }
                               >
                                 <ServiceIcon slug={c.slug} className="size-3.5 text-olive-light" />
-                                {c.title}
+                                {isEn ? c.titleEn : c.title}
                               </SheetClose>
                             ))}
                           </div>

@@ -27,6 +27,8 @@ export type ServiceNavGroup = {
   /** Leading glyph from the spec — decorative, so it's aria-hidden wherever it renders. */
   glyph: string;
   title: string;
+  /** English column heading, shown on the /en locale. Category names come from category.titleEn. */
+  titleEn: string;
   slugs: string[];
 };
 
@@ -34,17 +36,39 @@ export const serviceNavGroups: ServiceNavGroup[] = [
   {
     glyph: '💉',
     title: 'โบทูลินัมท็อกซิน ฟิลเลอร์ และร้อยไหม',
+    titleEn: 'Botulinum Toxin, Filler & Thread Lift',
     slugs: ['filler', 'botox', 'thread-lift'],
   },
   {
     glyph: '✨',
     title: 'สกินบูสเตอร์และโปรแกรมกระตุ้นคอลลาเจน',
+    titleEn: 'Skin Boosters & Collagen Stimulation',
     slugs: ['skin-booster', 'collagen-booster'],
   },
-  { glyph: '💧', title: 'เมโสบำรุงผิวและเมโสแฟต', slugs: ['mesotherapy'] },
-  { glyph: '🩺', title: 'โปรแกรมดูแลสิวและหลุมสิว', slugs: ['acne-care'] },
-  { glyph: '⚡', title: 'เลเซอร์และเครื่องมือแพทย์', slugs: ['laser-hifu'] },
-  { glyph: '🧴', title: 'วิตามินบำรุงสุขภาพและผิว', slugs: ['iv-drip'] },
+  {
+    glyph: '💧',
+    title: 'เมโสบำรุงผิวและเมโสแฟต',
+    titleEn: 'Mesotherapy & Meso Fat',
+    slugs: ['mesotherapy'],
+  },
+  {
+    glyph: '🩺',
+    title: 'โปรแกรมดูแลสิวและหลุมสิว',
+    titleEn: 'Acne & Acne Scar Programs',
+    slugs: ['acne-care'],
+  },
+  {
+    glyph: '⚡',
+    title: 'เลเซอร์และเครื่องมือแพทย์',
+    titleEn: 'Laser & Medical Devices',
+    slugs: ['laser-hifu'],
+  },
+  {
+    glyph: '🧴',
+    title: 'วิตามินบำรุงสุขภาพและผิว',
+    titleEn: 'Wellness & Skin Vitamins',
+    slugs: ['iv-drip'],
+  },
 ];
 
 export type ResolvedServiceNavGroup = { group: ServiceNavGroup; categories: ServiceCategory[] };
