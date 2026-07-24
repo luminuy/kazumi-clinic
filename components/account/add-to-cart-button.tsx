@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ShoppingBag, Check, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { cn } from '@/lib/utils';
 
 type State = 'idle' | 'busy' | 'done' | 'error';
 
@@ -17,9 +18,14 @@ type State = 'idle' | 'busy' | 'done' | 'error';
 export function AddToCartButton({
   productId,
   className = '',
+  iconOnly = false,
+  'aria-label': ariaLabel,
 }: {
   productId: string;
   className?: string;
+  /** Render a compact, accessible cart control for dense purchase-action rows. */
+  iconOnly?: boolean;
+  'aria-label'?: string;
 }) {
   const t = useTranslations('Cart');
   const router = useRouter();
@@ -49,13 +55,18 @@ export function AddToCartButton({
       type="button"
       onClick={add}
       disabled={state === 'busy'}
-      aria-label={t('add')}
-      className={`inline-flex items-center justify-center gap-2 rounded-full bg-forest px-5 py-2.5 text-xs font-medium text-white transition-all duration-200 hover:bg-mint active:scale-[0.98] disabled:opacity-70 ${className}`}
+      aria-label={iconOnly && state === 'done' ? t('added') : (ariaLabel ?? t('add'))}
+      className={cn(
+        iconOnly
+          ? 'grid size-10 shrink-0 place-items-center rounded-full border border-black/[0.08] bg-white text-forest transition-all duration-200 hover:bg-forest hover:text-white active:scale-[0.96] disabled:opacity-60'
+          : 'inline-flex items-center justify-center gap-2 rounded-full bg-forest px-5 py-2.5 text-xs font-medium text-white transition-all duration-200 hover:bg-mint active:scale-[0.98] disabled:opacity-70',
+        className,
+      )}
     >
       {state === 'busy' && <Loader2 className="size-4 animate-spin" />}
       {state === 'done' && <Check className="size-4" />}
       {(state === 'idle' || state === 'error') && <ShoppingBag className="size-4" />}
-      {state === 'done' ? t('added') : state === 'error' ? t('addError') : t('add')}
+      {!iconOnly && (state === 'done' ? t('added') : state === 'error' ? t('addError') : t('add'))}
     </button>
   );
 }
