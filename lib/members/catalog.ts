@@ -1,4 +1,4 @@
-import { serviceCategories } from '@/lib/services';
+import { getAllMergedCategories } from '@/lib/service-products-store';
 
 /**
  * The subset of the service catalog that can go in a cart: a product is "purchasable" only when it
@@ -24,10 +24,10 @@ function displayTitle(name: string, detail?: string): string {
   return detail ? `${name} · ${detail}` : name;
 }
 
-/** All purchasable products across every category, in catalog order. */
-export function purchasableProducts(): PurchasableProduct[] {
+/** All purchasable products across every category in the D1-merged catalog, in catalog order. */
+export async function purchasableProducts(): Promise<PurchasableProduct[]> {
   const out: PurchasableProduct[] = [];
-  for (const category of serviceCategories) {
+  for (const category of await getAllMergedCategories()) {
     for (const item of category.items) {
       if (!item.id || item.priceFrom === undefined) continue;
       out.push({
@@ -46,11 +46,11 @@ export function purchasableProducts(): PurchasableProduct[] {
 }
 
 /** Look up one purchasable product by id, or null if it doesn't exist / isn't purchasable. */
-export function findPurchasableProduct(id: string): PurchasableProduct | null {
-  return purchasableProducts().find((p) => p.id === id) ?? null;
+export async function findPurchasableProduct(id: string): Promise<PurchasableProduct | null> {
+  return (await purchasableProducts()).find((p) => p.id === id) ?? null;
 }
 
 /** True when the given product id can be added to a cart. */
-export function isPurchasable(id: string | undefined): boolean {
-  return !!id && findPurchasableProduct(id) !== null;
+export async function isPurchasable(id: string | undefined): Promise<boolean> {
+  return !!id && (await findPurchasableProduct(id)) !== null;
 }
