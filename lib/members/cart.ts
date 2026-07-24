@@ -161,7 +161,7 @@ function clampQty(qty: number): number {
 export async function addItem(productId: string, qty = 1): Promise<CartSummary> {
   const db = await memberDb();
   requireDb(db);
-  const product = findPurchasableProduct(productId);
+  const product = await findPurchasableProduct(productId);
   if (!product) throw new Error('NOT_PURCHASABLE');
 
   const cartId = await currentCartId(db, true);
