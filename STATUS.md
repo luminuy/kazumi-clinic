@@ -4,7 +4,7 @@
 > **"ล่าสุด" = `origin/main` เสมอ** (ดู CLAUDE.md §0.5) — ไฟล์นี้แค่สรุปให้อ่านเร็ว ถ้าขัดกับ git ให้เชื่อ git
 > อัปเดตไฟล์นี้เป็นส่วนหนึ่งของ workflow: หลัง **deploy** และตอน **เริ่ม/จบงานสำคัญ** (ดู CLAUDE.md §0)
 
-**อัปเดตล่าสุด:** 2026-07-24 13:25 · โดย: Claude Code
+**อัปเดตล่าสุด:** 2026-07-24 15:52 · โดย: Claude Code (ร่วมกับ Codex CLI เป็นคนลงมือแก้โค้ด — ดู "ปมค้าง" ด้านล่าง)
 
 ---
 
@@ -12,7 +12,7 @@
 
 | | |
 |---|---|
-| **workers.dev** | Version `06bdedc5` — deploy 2026-07-24 06:21 UTC (ผ่าน CD อัตโนมัติ) · ตรงกับ main `3c08f1a` (สินค้าจาก /admin ขึ้นครบ 9 หมวด + ตัด Cloudinary default ที่ 404 ทิ้ง, PR #211) |
+| **workers.dev** | Version `fd8886ca` — deploy 2026-07-24 08:51 UTC (ผ่าน CD อัตโนมัติ) · ตรงกับ main `5652ac5` (PR #220 signed Cloudinary upload — ล่าสุดของ 6 PR ที่ merge วันนี้: #215–#220) |
 | **โดเมนจริง** (kazumiclinic.com) | ❌ ยังไม่ขึ้น — `SITE_ENV=preview`, robots `Disallow: /` (ตั้งใจ ห้ามลบจนกว่าโดเมนจะขึ้น) |
 | **URL ตรวจ** | https://kazumi-clinic.bankjack10452.workers.dev |
 
@@ -24,9 +24,21 @@
 
 ## 🔨 กำลังทำ (in progress)
 
-- (ว่าง — PR #211 merge + deploy แล้ว)
+- (ว่าง — PR #215–#220 merge + deploy ครบแล้ว)
 
 > ก่อนเริ่มงานที่กินหลายไฟล์ ให้จดที่นี่: **อะไร · เครื่องมือไหน (Claude / Antigravity) · branch ไหน** — กันชนกันและกัน "งานหาย" (ดู CLAUDE.md §0.5 · dual-agent)
+
+### ✅ ปิดวันนี้ (2026-07-24 บ่าย) — 6 จุดจาก code/site audit, Claude วางแผน + Codex CLI ลงมือ
+
+ทั้งหมด merge + deploy แล้ว (main `5652ac5`, workers.dev `fd8886ca`):
+
+1. **[#215](https://github.com/luminuy/kazumi-clinic/pull/215)** `lib/members/catalog.ts` เคยอ่าน `serviceCategories` hardcoded แทน D1 merged catalogue → แก้ราคา/ซ่อนสินค้าใน /admin ไม่เคยไปถึง cart จริง ตอนนี้อ่าน `getAllMergedCategories()` แล้ว (async)
+2. **[#216](https://github.com/luminuy/kazumi-clinic/pull/216)** เพิ่ม `pnpm cf:build` เข้า CI (`ci.yml`) — เดิม CI เช็คแค่ `next build` ไม่เช็ค OpenNext/Worker build ที่ deploy จริงใช้
+3. **[#217](https://github.com/luminuy/kazumi-clinic/pull/217)** เพิ่ม rate limit ให้ `/api/cart/items` (60 req/5min ต่อ IP) — เดิมไม่มีเลยต่างจาก login/lead/checkout
+4. **[#218](https://github.com/luminuy/kazumi-clinic/pull/218)** sync `README.md`/`docs/infrastructure.md`/`docs/deploy-for-antigravity.md` ให้ตรง CI/CD จริง + Next.js 16.2 (README เคยบอก 15.5)
+5. **[#219](https://github.com/luminuy/kazumi-clinic/pull/219)** เพิ่มเทสต์คุม hide/restore merge logic (`tests/service-products-store.test.ts`) และ cart catalog pricing (`tests/members-catalog.test.ts`) — เดิมมีแค่ 2 ไฟล์เทสต์
+6. **[#220](https://github.com/luminuy/kazumi-clinic/pull/220)** `lib/cloudinary-upload.ts` เปลี่ยนจาก unsigned preset (`littlesmileflower`, ชื่อหลุดอยู่ใน git history สาธารณะ) เป็น **signed upload** — ต้องตั้ง secret `CLOUDINARY_API_KEY`/`CLOUDINARY_API_SECRET` ก่อน (**ตั้งแล้ว**, key name `kazumi-clinic-worker`, role **Master Admin** — Cloudinary free plan ไม่รองรับ scoped role แบบจำกัดเฉพาะโฟลเดอร์) · ทดสอบอัปรูปจริงที่ `/admin/products` แล้วผ่าน (เจ้าของยืนยัน 2026-07-24)
+   - ⚠️ **preset เดิม `littlesmileflower` ห้ามลบ/ปิด** — ยังมีโปรเจกต์ littlesmileflower ใช้งานจริงอยู่ (บัญชี Cloudinary เดียวกัน) การปิด full signed-upload migration ของ preset นั้นเป็นงานฝั่งโปรเจกต์นั้น ไม่ใช่ Kazumi
 
 ### 📨 ส่งไม้ต่อ → Antigravity (2026-07-23 เช้า · จาก Claude Code)
 
@@ -59,6 +71,8 @@
 - **สองเครื่องมือแก้ร่วมกัน** (Claude ใน worktree · Antigravity ในโฟลเดอร์หลัก): งานที่ไม่ push = มองไม่เห็นตอน deploy — commit+push ทุกครั้งที่หยุด · ✅ `main` **บังคับด้วย ruleset แล้ว** (repo เป็น public ตั้งแต่ 2026-07-23) — push ตรงเข้า main โดน GitHub ตีกลับทุกกรณี แม้ `--no-verify` ต้องผ่าน PR + `verify` เขียวเท่านั้น
 - **repo เป็น public แล้ว** (2026-07-23) — โค้ดและประวัติทั้งหมดเปิดสาธารณะ · ห้าม commit ความลับลงไฟล์เด็ดขาด ใช้ `wrangler secret put` เท่านั้น · ความลับที่หลุดไปแล้วถือว่าหลุดถาวร ต้อง rotate ไม่ใช่ลบ commit
 - **deploy มี CI/CD แล้ว**: `.github/workflows/deploy.yml` จะรัน `pnpm cf:deploy` อัตโนมัติเมื่อ merge เข้า `main` (ต้องตั้ง `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` เป็น GitHub Repository Secrets ก่อน) · ถ้ายังไม่ตั้ง secret สามารถ deploy manual ได้ด้วย `pnpm cf:deploy` แล้วยิงเว็บจริง 2 ครั้งเช็ค `x-nextjs-cache` (ISR เสิร์ฟของเก่ารอบแรก) · เช็คสุขภาพเว็บได้ด้วย `pnpm health`
+- **Codex CLI (`codex exec`) เป็นเครื่องมือลงมือแก้โค้ดตัวใหม่ตั้งแต่ 2026-07-24** — เจ้าของสั่งชัดว่า Claude วางแผน/เขียนสเปก/ตรวจสอบ, Codex เป็นคนแก้โค้ดจริง (`-s workspace-write`, sandbox ไม่มี network — curl/fetch เว็บจริงไม่ได้ ต้องให้ Claude ทำส่วนที่ต้องใช้ network) · Claude ต้อง verify เองทุกครั้งด้วย lint/typecheck/test/build ไม่เชื่อคำอ้าง "ผ่านแล้ว" ของ Codex เฉยๆ (เจอเคสจริงที่ Codex รายงาน `pnpm cf:build` fail เพราะ sandbox ไม่มี network ไปดึง Google Fonts ไม่ใช่โค้ดพัง — Claude ต้อง re-run เองถึงจะรู้)
+- **Cloudinary account (`dvskwrapm`) เป็นแพลนฟรี** — ไม่รองรับ scoped/restricted API key role (จำกัดสิทธิ์เฉพาะโฟลเดอร์) ต้องใช้ role "Master Admin" เท่านั้นสำหรับคีย์ใหม่ที่สร้างแยกจาก Root · account นี้ใช้ร่วมกับโปรเจกต์ littlesmileflower ด้วย — **ห้ามลบ/ปิด unsigned preset ชื่อ `littlesmileflower`** เด็ดขาดแม้จะรู้ว่าชื่อมันหลุดอยู่ใน git history สาธารณะของ Kazumi แล้ว (PR #220 เลิกใช้ preset นี้ในโค้ด Kazumi แล้ว แต่ preset ตัวเองยังต้องอยู่เพื่อ littlesmileflower)
 
 ## 🧰 เครื่องมือ (มีตั้งแต่ 2026-07-22)
 
