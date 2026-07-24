@@ -21,7 +21,7 @@
 
 | ชั้น       | เทคโนโลยี                                                                           |
 | :--------- | :---------------------------------------------------------------------------------- |
-| Framework  | Next.js 15.5 App Router + React 19.2                                                |
+| Framework  | Next.js 16.2 App Router + React 19.2                                                |
 | ภาษา       | TypeScript 5.6                                                                      |
 | Styling    | Tailwind CSS v4 ผ่าน `@theme` ใน `app/globals.css` — ไม่มี `tailwind.config.ts`     |
 | UI         | shadcn/ui บน Base UI (`@base-ui/react`) — ใช้ prop `render`, ไม่ใช่ Radix `asChild` |

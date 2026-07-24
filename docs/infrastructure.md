@@ -2,6 +2,8 @@
 
 ทุกค่าในหน้านี้ **ตรวจจากระบบจริงแล้ว** ไม่ได้คัดจากความจำหรือจากเอกสารอื่น · วันที่ตรวจ: **2026-07-17**
 
+> ℹ️ แถว CI/CD/วิธี deploy และ Workflow หลัง merge ด้านล่างแก้ตามสถานะปัจจุบันเมื่อ 2026-07-24; ค่าอื่นคงผลตรวจวันที่ 2026-07-17
+
 > ⚠️ ถ้าจะอ้างค่าใดในหน้านี้กับ user ให้ **ยิงคำสั่งตรวจซ้ำก่อนพูด** — เอกสารบอกว่า *ตั้งใจให้เป็นยังไง* ไม่ใช่ *ความจริงตอนนี้* (CLAUDE.md §0.5)
 
 ---
@@ -14,14 +16,14 @@
 | Worker name | `kazumi-clinic` |
 | บัญชี Cloudflare | `bankjack10452@gmail.com` (account id `f5af6f66302ba6872d8f51aebf43d3fe`) |
 | Deploy ครั้งแรก | 2026-07-17 (ก่อนหน้านั้น**ไม่เคย deploy เลย** ทั้งที่เอกสารเก่าบอกว่า deploy อัตโนมัติ) |
-| CI/CD | **ไม่มี** — ไม่มี `.github/workflows`, ไม่มี Cloudflare Git integration · `gh pr checks` ตอบ `no checks reported` เป็นปกติ |
-| วิธี deploy | `pnpm cf:deploy` **ด้วยมือเท่านั้น** · merge เข้า main ไม่ deploy อะไรทั้งสิ้น |
+| CI/CD | มี — CI [`.github/workflows/ci.yml`](../.github/workflows/ci.yml): lint + typecheck + test + build + `pnpm cf:build` ทุก PR/push เข้า main · CD [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml): หลัง CI ผ่านบน main จะ deploy อัตโนมัติ |
+| วิธี deploy | merge PR เข้า main → workflow `Deploy` รัน `pnpm cf:deploy` อัตโนมัติหลัง CI ผ่าน · deploy มือเป็นข้อยกเว้นเมื่อ CD เสีย/ถูกปิด และต้องรอ CD จบก่อน |
 
 ### Workflow หลัง merge
 
-- งานที่เปลี่ยน public site/Worker และ user ไม่ได้ห้าม deploy: หลัง merge ให้ agent รัน `pnpm cf:deploy` ต่อเองตาม [CLAUDE.md](../CLAUDE.md) §0
-- งานเอกสารล้วนไม่ต้อง deploy เพราะไม่มี runtime artifact เปลี่ยน
-- ห้ามรายงานว่า deploy สำเร็จจน Wrangler แสดง `Current Version ID`; จากนั้นยิง URL จริงแบบ cache-busting และต้องได้ HTTP 200
+- งานที่เปลี่ยน public site/Worker: หลัง merge ปล่อยให้ workflow `Deploy` รัน `pnpm cf:deploy` อัตโนมัติหลัง CI ผ่าน; deploy มือเป็นข้อยกเว้นเมื่อ CD เสีย/ถูกปิด และห้ามรันชนกับ CD
+- งานเอกสารล้วนไม่ต้อง deploy มือ; workflow `Deploy` จะ redeploy artifact เดิมอัตโนมัติหลัง CI ผ่าน แต่ไม่มี runtime artifact เปลี่ยน
+- ห้ามรายงานว่า deploy สำเร็จจน workflow `Deploy` สำเร็จและ Wrangler แสดง `Current Version ID`; จากนั้นยิง URL จริงอย่างน้อย 2 ครั้งพร้อมดู `x-nextjs-cache` เพราะครั้งแรกอาจได้ ISR cache เก่า
 - `Current Version ID` เปลี่ยนทุก deploy จึงห้ามบันทึกเลขล่าสุดแบบถาวรในเอกสารนี้ ให้รายงานจาก output ของงานนั้นเท่านั้น
 
 ### โดเมนจริง — ยังไม่ได้ใช้
