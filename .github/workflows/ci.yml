@@ -44,3 +44,9 @@ jobs:
       # image store degrades to shipped defaults when the binding is absent (lib/site-images-store.ts).
       - name: Build
         run: pnpm build
+
+      # pnpm build only proves Next.js compiles; cf:deploy ships this OpenNext build →
+      # Worker bundle, catching adapter-level breaks before merge. It reads only the static
+      # wrangler.jsonc config, so no Cloudflare credentials are needed.
+      - name: Cloudflare Worker build
+        run: pnpm cf:build
