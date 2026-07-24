@@ -4,7 +4,6 @@ import type { ServiceCategory, ServiceItem } from '@/lib/services';
 import { site } from '@/lib/site';
 import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
-import { LineIcon } from '@/components/brand-icons';
 import { ProductThumbnail } from '@/components/product-thumbnail';
 import { ServiceItemActions } from '@/components/service-item-actions';
 
@@ -163,26 +162,6 @@ export function MesotherapyServicePage({
             </p>
           </Reveal>
         </div>
-      </section>
-
-      {/* ── LINE CTA band ────────────────────────────────────── */}
-      <section className="px-6 pb-24 sm:px-10 md:px-14 lg:px-20">
-        <Reveal className="mx-auto max-w-6xl">
-          <div className="flex flex-col items-center rounded-[1.75rem] bg-[var(--store-ink)] px-8 py-16 text-center shadow-xl md:px-20 md:py-24">
-            <h2 className="max-w-2xl font-serif text-3xl leading-tight text-[var(--background)] md:text-4xl">
-              พร้อมสัมผัสประสบการณ์ความงามในแบบ {site.name} หรือยัง?
-            </h2>
-            <a
-              href={site.lineUrl}
-              target="_blank"
-              rel="noopener"
-              className="mt-10 inline-flex items-center gap-2.5 rounded-full bg-[#06C755] px-8 py-3.5 text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.98]"
-            >
-              <LineIcon className="size-4" />
-              จองคิวผ่าน LINE
-            </a>
-          </div>
-        </Reveal>
       </section>
 
       {/* ── Transformation ───────────────────────────────────── */}

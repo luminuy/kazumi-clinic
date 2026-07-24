@@ -167,18 +167,9 @@ function TreatmentItem({
 }
 
 /** The reference puts the booking CTA under the specs in the left column, not in the side panel. */
-function BookingCta({ service, hasPrice }: { service: ServiceCategory; hasPrice: boolean }) {
+function BookingCta({ hasPrice }: { hasPrice: boolean }) {
   return (
     <div className="mt-10">
-      <a
-        href={site.lineUrl}
-        target="_blank"
-        rel="noopener"
-        className="flex w-full items-center justify-center gap-2.5 rounded-full bg-[#06C755] py-4 text-center text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.98]"
-      >
-        <LineIcon className="size-4" />
-        จองคิว {service.title} ผ่าน LINE
-      </a>
       {hasPrice && (
         <p className="mt-4 text-center text-[0.66rem] leading-[1.8] text-[var(--store-muted)]">
           ราคาที่แสดงอาจมีการเปลี่ยนแปลง
@@ -415,7 +406,7 @@ export default async function ServiceCategoryPage({ params }: Props) {
               </div>
 
               <Reveal>
-                <BookingCta service={service} hasPrice={hasPrice} />
+                <BookingCta hasPrice={hasPrice} />
               </Reveal>
             </div>
 
