@@ -7,6 +7,7 @@ import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
 import { LineIcon } from '@/components/brand-icons';
 import { ProductThumbnail } from '@/components/product-thumbnail';
+import { ServiceItemActions } from '@/components/service-item-actions';
 
 /**
  * "4 เส้น" → { count: '4', unit: 'เส้น' } so the count can be set large with its unit small
@@ -64,6 +65,7 @@ function MenuRow({ item, last, category }: { item: ServiceItem; last: boolean; c
             <span className="font-sans text-base text-[var(--store-muted)]">สอบถามราคา</span>
           )}
         </p>
+        <ServiceItemActions item={item} compact className="mt-2" />
       </div>
     </div>
   );

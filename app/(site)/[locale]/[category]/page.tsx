@@ -20,7 +20,6 @@ import { socialImage } from '@/lib/metadata-images';
 import { categoryImageKey } from '@/lib/site-images';
 import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
-import { AddToCartButton } from '@/components/account/add-to-cart-button';
 import { LineIcon } from '@/components/brand-icons';
 import { FillerServicePage } from '@/components/filler-service-page';
 import { ThreadLiftServicePage } from '@/components/thread-lift-service-page';
@@ -31,6 +30,7 @@ import { AcneCareServicePage } from '@/components/acne-care-service-page';
 import { SkinBoosterServicePage } from '@/components/skin-booster-service-page';
 import { CollagenBoosterServicePage } from '@/components/collagen-booster-service-page';
 import { ProductThumbnail } from '@/components/product-thumbnail';
+import { ServiceItemActions } from '@/components/service-item-actions';
 
 type Props = { params: Promise<{ locale: string; category: string }> };
 
@@ -161,12 +161,7 @@ function TreatmentItem({
         </ItemSpec>
       </dl>
 
-      {/* Fixed-price products can be added to the cart; price-less programs stay LINE bookings. */}
-      {item.id && item.priceFrom !== undefined && (
-        <div className="mt-5">
-          <AddToCartButton productId={item.id} />
-        </div>
-      )}
+      <ServiceItemActions item={item} className="mt-5" />
     </article>
   );
 }
