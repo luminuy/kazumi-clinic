@@ -39,8 +39,13 @@ export async function POST(request: NextRequest) {
   try {
     const upload = await uploadToCloudinary(file, `post-${id}-${Date.now()}`);
     await setPostImage(id, upload.publicId, email);
+    // Both locales: Thai bare path + English under /en (localePrefix 'as-needed').
     revalidatePath('/blog');
-    if (slug) revalidatePath(`/blog/${slug}`);
+    revalidatePath('/en/blog');
+    if (slug) {
+      revalidatePath(`/blog/${slug}`);
+      revalidatePath(`/en/blog/${slug}`);
+    }
     return NextResponse.json({ ok: true, ...upload });
   } catch (error) {
     return NextResponse.json(

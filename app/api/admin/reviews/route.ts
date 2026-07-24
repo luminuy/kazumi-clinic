@@ -72,6 +72,7 @@ export async function POST(request: NextRequest) {
   try {
     await upsertReview(input, email);
     revalidatePath('/reviews');
+    revalidatePath('/en/reviews');
     return NextResponse.json({ ok: true, id });
   } catch (error) {
     return NextResponse.json(
@@ -91,6 +92,7 @@ export async function DELETE(request: NextRequest) {
   try {
     await deleteReview(parsed.data.id);
     revalidatePath('/reviews');
+    revalidatePath('/en/reviews');
     return NextResponse.json({ ok: true });
   } catch (error) {
     return NextResponse.json(
@@ -110,6 +112,7 @@ export async function PATCH(request: NextRequest) {
   try {
     await reorderReviews(parsed.data.orderedIds, email);
     revalidatePath('/reviews');
+    revalidatePath('/en/reviews');
     return NextResponse.json({ ok: true });
   } catch (error) {
     return NextResponse.json(
