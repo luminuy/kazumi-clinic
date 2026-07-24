@@ -83,31 +83,38 @@ function PurchasableActions({
   }
 
   return (
-    <div className={cn('flex items-center gap-2', className)}>
-      <AddToCartButton
-        productId={item.id!}
-        iconOnly
-        aria-label={`เพิ่ม ${item.name}${item.detail ? ` ${item.detail}` : ''} ลงตะกร้า`}
-        className={compact ? 'size-8' : undefined}
-      />
-      <a
-        href={site.lineUrl}
-        target="_blank"
-        rel="noopener"
-        aria-label={`สอบถาม ${item.name}${item.detail ? ` ${item.detail}` : ''} ผ่าน LINE`}
+    <div className={cn('flex items-center gap-3', className)}>
+      <div
         className={cn(
-          'grid size-10 shrink-0 place-items-center rounded-full bg-[#06C755] text-white transition-all duration-200 hover:bg-[#05b34c] active:scale-[0.96]',
-          compact && 'size-8',
+          'flex items-center gap-1 rounded-full border border-black/5 bg-black/[0.02]',
+          compact ? 'p-0.5' : 'p-1',
         )}
       >
-        <LineIcon className={compact ? 'size-3' : 'size-4'} />
-      </a>
+        <AddToCartButton
+          productId={item.id!}
+          iconOnly
+          aria-label={`เพิ่ม ${item.name}${item.detail ? ` ${item.detail}` : ''} ลงตะกร้า`}
+          className={compact ? 'size-7' : undefined}
+        />
+        <a
+          href={site.lineUrl}
+          target="_blank"
+          rel="noopener"
+          aria-label={`สอบถาม ${item.name}${item.detail ? ` ${item.detail}` : ''} ผ่าน LINE`}
+          className={cn(
+            'grid size-9 shrink-0 place-items-center rounded-full text-[#06C755] transition-all duration-200 hover:bg-white hover:shadow-sm active:scale-[0.94]',
+            compact && 'size-7',
+          )}
+        >
+          <LineIcon className={compact ? 'size-3' : 'size-4'} />
+        </a>
+      </div>
       <button
         type="button"
         onClick={buyNow}
         disabled={buyNowState === 'busy'}
         className={cn(
-          'inline-flex min-w-0 flex-1 items-center justify-center gap-2 rounded-full bg-forest px-5 py-2.5 text-xs font-medium text-white transition-all duration-200 hover:bg-mint active:scale-[0.98] disabled:opacity-70',
+          'inline-flex min-w-0 flex-1 items-center justify-center gap-2 rounded-full bg-forest px-5 py-3 text-xs font-medium text-white shadow-[0_2px_8px_rgba(0,110,43,0.25)] transition-all duration-200 hover:bg-mint hover:shadow-[0_4px_14px_rgba(6,199,85,0.3)] active:scale-[0.98] disabled:opacity-70',
           compact && 'px-4 py-2 text-[0.7rem]',
         )}
       >
