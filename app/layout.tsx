@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { EB_Garamond, Noto_Sans_Thai } from 'next/font/google';
-import { site } from '@/lib/site';
+import { getLocale } from 'next-intl/server';
+import { site, localizedAlternates } from '@/lib/site';
 import { siteSocialImage } from '@/lib/metadata-images';
 import { cn } from '@/lib/utils';
 import './globals.css';
@@ -19,10 +20,10 @@ const sans = Noto_Sans_Thai({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const socialImage = await siteSocialImage(
-    'hero-home',
-    `${site.name} คลินิกความงามสุขุมวิท`,
-  );
+  const [socialImage, locale] = await Promise.all([
+    siteSocialImage('hero-home', `${site.name} คลินิกความงามสุขุมวิท`),
+    getLocale(),
+  ]);
 
   return {
     metadataBase: new URL(site.url),
@@ -31,7 +32,9 @@ export async function generateMetadata(): Promise<Metadata> {
       template: `%s — ${site.name}`,
     },
     description: site.description,
-    alternates: { canonical: site.url },
+    // Fallback for routes that don't set their own metadata (currently none under `(site)`, but
+    // /admin has no `[locale]` segment so this is the only alternates it'll ever see).
+    alternates: localizedAlternates(locale),
     icons: {
       icon: [{ url: '/icon.png', type: 'image/png', sizes: '64x64' }],
       shortcut: ['/icon.png'],
@@ -55,9 +58,10 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const locale = await getLocale();
   return (
-    <html lang="th" className={cn(serif.variable, sans.variable)}>
+    <html lang={locale} className={cn(serif.variable, sans.variable)}>
       {/* Only the document shell lives here — the public site's header, footer and JSON-LD are
           in app/(site)/layout.tsx so /admin renders without them. */}
       <body className="font-sans">{children}</body>

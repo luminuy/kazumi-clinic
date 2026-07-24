@@ -4,7 +4,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, MapPin, ShieldCheck, Sparkles } from 'lucide-react';
-import { site } from '@/lib/site';
+import { site, localizedAlternates } from '@/lib/site';
 import { doctor, doctorEesha } from '@/lib/doctor';
 import { breadcrumbSchema, doctorSchema } from '@/lib/schema';
 import { getImageOverrides } from '@/lib/site-images-store';
@@ -19,15 +19,16 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const pageTitle = t('metaTitle');
   const pageDescription = t('metaDescription', { siteName: site.name, doctorName: doctor.name, doctorRole: doctor.role, license: site.license });
   const socialImage = await siteSocialImage('og-about', `${pageTitle} — ${site.name}`);
+  const alternates = localizedAlternates(locale, '/about');
 
   return {
     title: pageTitle,
     description: pageDescription,
-    alternates: { canonical: `${site.url}/about` },
+    alternates,
     openGraph: {
       title: `${pageTitle} — ${site.name}`,
       description: pageDescription,
-      url: `${site.url}/about`,
+      url: alternates.canonical,
       type: 'website',
       ...(socialImage && { images: [socialImage] }),
     },

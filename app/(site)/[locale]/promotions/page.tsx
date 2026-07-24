@@ -2,7 +2,7 @@ import { jsonLdHtml } from '@/lib/json-ld';
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Sparkles } from 'lucide-react';
-import { site } from '@/lib/site';
+import { site, localizedAlternates } from '@/lib/site';
 import { serviceCategories } from '@/lib/services';
 import { getActivePromotions } from '@/lib/promotions-store';
 import { breadcrumbSchema } from '@/lib/schema';
@@ -24,14 +24,16 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     `${site.name} ${pageTitle}`,
   );
 
+  const alternates = localizedAlternates(locale, '/promotions');
+
   return {
     title: pageTitle,
     description: pageDescription,
-    alternates: { canonical: `${site.url}/promotions` },
+    alternates,
     openGraph: {
       title: `${pageTitle} — ${site.name}`,
       description: pageDescription,
-      url: `${site.url}/promotions`,
+      url: alternates.canonical,
       type: 'website',
       ...(socialImage && { images: [socialImage] }),
     },

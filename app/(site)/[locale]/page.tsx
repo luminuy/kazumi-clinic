@@ -4,7 +4,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowUpRight, BadgeCheck, ChevronDown, Clock, MapPin, Stethoscope } from 'lucide-react';
-import { site } from '@/lib/site';
+import { site, localizedAlternates } from '@/lib/site';
 import { doctor, doctorEesha } from '@/lib/doctor';
 import { serviceCategories } from '@/lib/services';
 import { faqSchema, homePageSchema } from '@/lib/schema';
@@ -27,15 +27,16 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const homeTitle = t('metaTitle');
   const homeDescription = t('metaDescription');
   const socialImage = await siteSocialImage('hero-home', `${site.name} ${homeTitle}`);
+  const alternates = localizedAlternates(locale);
 
   return {
     title: homeTitle,
     description: homeDescription,
-    alternates: { canonical: site.url },
+    alternates,
     openGraph: {
-      title: homeTitle,
+      title: `${homeTitle} — ${site.name}`,
       description: homeDescription,
-      url: site.url,
+      url: alternates.canonical,
       siteName: site.name,
       type: 'website',
       locale: locale === 'en' ? 'en_US' : 'th_TH',
@@ -43,7 +44,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     },
     twitter: {
       card: socialImage ? 'summary_large_image' : 'summary',
-      title: homeTitle,
+      title: `${homeTitle} — ${site.name}`,
       description: homeDescription,
       ...(socialImage && { images: [socialImage.url] }),
     },
