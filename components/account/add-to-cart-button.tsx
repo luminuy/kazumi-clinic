@@ -58,7 +58,7 @@ export function AddToCartButton({
       aria-label={iconOnly && state === 'done' ? t('added') : (ariaLabel ?? t('add'))}
       className={cn(
         iconOnly
-          ? 'grid size-10 shrink-0 place-items-center rounded-full border border-black/[0.08] bg-white text-forest transition-all duration-200 hover:bg-forest hover:text-white active:scale-[0.96] disabled:opacity-60'
+          ? 'grid size-9 shrink-0 place-items-center rounded-full text-forest transition-all duration-200 hover:bg-white hover:shadow-sm active:scale-[0.94] disabled:opacity-60'
           : 'inline-flex items-center justify-center gap-2 rounded-full bg-forest px-5 py-2.5 text-xs font-medium text-white transition-all duration-200 hover:bg-mint active:scale-[0.98] disabled:opacity-70',
         className,
       )}
