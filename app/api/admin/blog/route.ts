@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { upsertPost, deletePost, slugTaken, type PostInput } from '@/lib/blog-store';
 import { serviceCategories } from '@/lib/services';
+import { rateLimit, clientIp } from '@/lib/rate-limit';
 
 const categorySlugs = serviceCategories.map((c) => c.slug) as [string, ...string[]];
 
@@ -43,6 +44,9 @@ const deleteSchema = z.object({ id: z.string().min(1).max(80) });
 export async function POST(request: NextRequest) {
   const email = adminEmail(request);
   if (!email) return NextResponse.json({ error: 'ไม่ได้รับอนุญาต' }, { status: 401 });
+  if (!(await rateLimit('admin-write', clientIp(request), { limit: 60, windowSec: 300 }))) {
+    return NextResponse.json({ error: 'ทำรายการบ่อยเกินไป กรุณาลองใหม่ภายหลัง' }, { status: 429 });
+  }
 
   const parsed = upsertSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) {
@@ -95,6 +99,9 @@ export async function POST(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   const email = adminEmail(request);
   if (!email) return NextResponse.json({ error: 'ไม่ได้รับอนุญาต' }, { status: 401 });
+  if (!(await rateLimit('admin-write', clientIp(request), { limit: 60, windowSec: 300 }))) {
+    return NextResponse.json({ error: 'ทำรายการบ่อยเกินไป กรุณาลองใหม่ภายหลัง' }, { status: 429 });
+  }
 
   const parsed = deleteSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: 'ข้อมูลไม่ถูกต้อง' }, { status: 400 });

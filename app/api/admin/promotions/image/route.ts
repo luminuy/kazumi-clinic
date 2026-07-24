@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { setPromotionImage } from '@/lib/promotions-store';
 import { uploadToCloudinary } from '@/lib/cloudinary-upload';
+import { rateLimit, clientIp } from '@/lib/rate-limit';
 
 function adminEmail(request: NextRequest) {
   return request.headers.get('x-admin-email');
@@ -23,6 +24,9 @@ const schema = z.object({
 export async function POST(request: NextRequest) {
   const email = adminEmail(request);
   if (!email) return NextResponse.json({ error: 'ไม่ได้รับอนุญาต' }, { status: 401 });
+  if (!(await rateLimit('admin-upload', clientIp(request), { limit: 20, windowSec: 300 }))) {
+    return NextResponse.json({ error: 'อัปโหลดบ่อยเกินไป กรุณาลองใหม่ภายหลัง' }, { status: 429 });
+  }
 
   const form = await request.formData();
   const parsed = schema.safeParse({

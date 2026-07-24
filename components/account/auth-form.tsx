@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Link } from '@/i18n/routing';
 import { useTranslations } from 'next-intl';
 import { LineIcon } from '@/components/brand-icons';
+import type { OAuthProvider } from '@/lib/members/oauth';
 
 type Mode = 'login' | 'register';
 type State = { kind: 'idle' | 'sending' } | { kind: 'error'; message: string };
@@ -48,10 +49,12 @@ export function AuthForm({
   mode,
   redirectTo = '/account',
   oauthError,
+  providers = [],
 }: {
   mode: Mode;
   redirectTo?: string;
   oauthError?: string;
+  providers?: OAuthProvider[];
 }) {
   const t = useTranslations('Account');
   const oauthErrorMessage = oauthError
@@ -109,30 +112,36 @@ export function AuthForm({
 
   return (
     <form onSubmit={submit} className="space-y-4" noValidate>
-      {/* Social sign-in. The buttons always render so the clinic can see them; if a provider's
-          keys aren't set yet, the start route bounces back here with an explanatory message. */}
-      <div className="grid gap-3">
-        <a
-          href={oauthHref('line')}
-          className="flex items-center justify-center gap-2.5 rounded-full bg-[#06C755] px-5 py-3 text-sm font-medium text-white transition-all hover:scale-[1.02] hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.98]"
-        >
-          <LineIcon className="size-4" />
-          {t('oauth.line')}
-        </a>
-        <a
-          href={oauthHref('google')}
-          className="flex items-center justify-center gap-2.5 rounded-full border border-black/5 bg-white px-5 py-3 text-sm font-medium text-[var(--store-ink)] transition-all hover:scale-[1.02] hover:bg-black/[0.02] hover:shadow-sm active:scale-[0.98]"
-        >
-          <GoogleIcon className="size-4" />
-          {t('oauth.google')}
-        </a>
-      </div>
+      {providers.length > 0 && (
+        <>
+          <div className="grid gap-3">
+            {providers.includes('line') && (
+              <a
+                href={oauthHref('line')}
+                className="flex items-center justify-center gap-2.5 rounded-full bg-[#06C755] px-5 py-3 text-sm font-medium text-white transition-all hover:scale-[1.02] hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.98]"
+              >
+                <LineIcon className="size-4" />
+                {t('oauth.line')}
+              </a>
+            )}
+            {providers.includes('google') && (
+              <a
+                href={oauthHref('google')}
+                className="flex items-center justify-center gap-2.5 rounded-full border border-black/5 bg-white px-5 py-3 text-sm font-medium text-[var(--store-ink)] transition-all hover:scale-[1.02] hover:bg-black/[0.02] hover:shadow-sm active:scale-[0.98]"
+              >
+                <GoogleIcon className="size-4" />
+                {t('oauth.google')}
+              </a>
+            )}
+          </div>
 
-      <div className="flex items-center gap-3 py-2">
-        <span className="h-px flex-1 bg-black/5" />
-        <span className="text-[0.7rem] uppercase tracking-[0.14em] text-[var(--store-ink)]/40">{t('oauth.or')}</span>
-        <span className="h-px flex-1 bg-black/5" />
-      </div>
+          <div className="flex items-center gap-3 py-2">
+            <span className="h-px flex-1 bg-black/5" />
+            <span className="text-[0.7rem] uppercase tracking-[0.14em] text-[var(--store-ink)]/40">{t('oauth.or')}</span>
+            <span className="h-px flex-1 bg-black/5" />
+          </div>
+        </>
+      )}
 
       {mode === 'register' && (
         <div>

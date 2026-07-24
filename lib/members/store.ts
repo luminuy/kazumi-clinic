@@ -109,13 +109,16 @@ export async function createMember(input: CreateMemberInput): Promise<MemberRow>
 }
 
 /**
- * Finds an existing member by (provider, providerAccountId), else by email, else creates one.
- * Used by the OAuth callbacks (Phase 4). Kept here so account creation logic lives in one place.
+ * Finds an existing member by (provider, providerAccountId), else by verified email, else creates
+ * one. Used by the OAuth callbacks (Phase 4). Kept here so account creation logic lives in one
+ * place.
  */
 export async function upsertOAuthMember(params: {
   provider: string;
   providerAccountId: string;
   email: string | null;
+  /** From OAuthProfile.emailVerified — see that type for why this gates the email-match merge. */
+  emailVerified: boolean;
   name: string | null;
   avatarUrl: string | null;
 }): Promise<MemberRow> {
@@ -134,21 +137,28 @@ export async function upsertOAuthMember(params: {
   if (linked) return linked;
 
   const email = params.email ? normalizeEmail(params.email) : null;
-  let member = email ? await findMemberByEmail(email) : null;
+  // Only merge into an existing account when the provider itself attests the email is verified —
+  // an unverified email is not proof of ownership. Otherwise this sign-in always gets its own new
+  // member row, even if the email happens to match one already on file.
+  let member = email && params.emailVerified ? await findMemberByEmail(email) : null;
 
   if (!member) {
     const id = newId('mbr');
+    // `members.email` is UNIQUE — an unverified email can't be trusted as this person's, so it's
+    // never stored (not even to display): two different unverified sign-ins reusing the same
+    // address would otherwise collide on that constraint and crash the callback.
+    const newRowEmail = params.emailVerified ? email : null;
     await db
       .prepare(
         `INSERT INTO members (id, email, email_verified, name, avatar_url, created_at, updated_at)
          VALUES (?, ?, ?, ?, ?, ?, ?)`,
       )
-      .bind(id, email, email ? 1 : 0, params.name, params.avatarUrl, now, now)
+      .bind(id, newRowEmail, newRowEmail ? 1 : 0, params.name, params.avatarUrl, now, now)
       .run();
     member = {
       id,
-      email,
-      email_verified: email ? 1 : 0,
+      email: newRowEmail,
+      email_verified: newRowEmail ? 1 : 0,
       name: params.name,
       password_hash: null,
       avatar_url: params.avatarUrl,

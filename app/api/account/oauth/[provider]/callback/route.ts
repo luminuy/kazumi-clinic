@@ -63,6 +63,7 @@ export async function GET(
       provider,
       providerAccountId: profile.providerAccountId,
       email: profile.email,
+      emailVerified: profile.emailVerified,
       name: profile.name,
       avatarUrl: profile.avatarUrl,
     });

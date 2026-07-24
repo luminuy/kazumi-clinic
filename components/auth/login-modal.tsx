@@ -5,6 +5,7 @@ import { Dialog } from '@base-ui/react/dialog';
 import { Button } from '@/components/ui/button';
 import { Loader2, XIcon } from 'lucide-react';
 import { LineIcon } from '@/components/brand-icons';
+import type { OAuthProvider } from '@/lib/members/oauth';
 
 type Mode = 'signin' | 'signup';
 
@@ -14,9 +15,11 @@ const inputClass =
 export function LoginModal({
   open,
   onOpenChange,
+  providers = [],
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  providers?: OAuthProvider[];
 }) {
   const [mode, setMode] = React.useState<Mode>('signin');
   const [name, setName] = React.useState('');
@@ -93,14 +96,17 @@ export function LoginModal({
           </div>
 
           <div className="flex flex-col gap-4">
-            <Button
-              className="w-full bg-[#06C755] text-white hover:bg-[#05b34c]"
-              onClick={() => handleOAuthLogin('line')}
-              disabled={pending}
-            >
-              <LineIcon className="mr-2 size-5" />
-              ดำเนินการต่อด้วย LINE
-            </Button>
+            {providers.includes('line') && (
+              <Button
+                className="w-full bg-[#06C755] text-white hover:bg-[#05b34c]"
+                onClick={() => handleOAuthLogin('line')}
+                disabled={pending}
+              >
+                <LineIcon className="mr-2 size-5" />
+                ดำเนินการต่อด้วย LINE
+              </Button>
+            )}
+            {providers.includes('google') && (
             <Button
               variant="outline"
               className="w-full bg-white hover:bg-gray-50"
@@ -127,15 +133,18 @@ export function LoginModal({
               </svg>
               ดำเนินการต่อด้วย Google
             </Button>
+            )}
 
-            <div className="relative my-2">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
+            {providers.length > 0 && (
+              <div className="relative my-2">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">หรือ</span>
+                </div>
               </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">หรือ</span>
-              </div>
-            </div>
+            )}
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-3">
               {isSignup && (

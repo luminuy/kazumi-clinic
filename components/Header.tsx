@@ -17,15 +17,18 @@ import {
 import { useTranslations, useLocale } from 'next-intl';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { HeaderActions } from '@/components/header-actions';
+import type { OAuthProvider } from '@/lib/members/oauth';
 
 export default function Header({
   logoMark,
   cartCount = 0,
   isLoggedIn = false,
+  oauthProviders = [],
 }: {
   logoMark: string;
   cartCount?: number;
   isLoggedIn?: boolean;
+  oauthProviders?: OAuthProvider[];
 }) {
   const t = useTranslations('Navigation');
   const isEn = useLocale() === 'en';
@@ -121,7 +124,7 @@ export default function Header({
 
         <div className="flex items-center gap-1">
           <LanguageSwitcher />
-          <HeaderActions cartCount={cartCount} isLoggedIn={isLoggedIn} />
+          <HeaderActions cartCount={cartCount} isLoggedIn={isLoggedIn} oauthProviders={oauthProviders} />
 
           <Sheet>
             <SheetTrigger

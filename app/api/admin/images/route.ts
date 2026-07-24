@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { siteImageKeys, type SiteImageKey } from '@/lib/site-images';
 import { setImage, resetImage } from '@/lib/site-images-store';
 import { uploadToCloudinary } from '@/lib/cloudinary-upload';
+import { rateLimit, clientIp } from '@/lib/rate-limit';
 
 // middleware.ts already rejected anything without a verified Access JWT, but the identity is
 // read here rather than assumed — if the matcher ever stops covering this path, this throws a
@@ -96,6 +97,9 @@ function revalidateImage(key: SiteImageKey) {
 export async function POST(request: NextRequest) {
   const email = adminEmail(request);
   if (!email) return NextResponse.json({ error: 'ไม่ได้รับอนุญาต' }, { status: 401 });
+  if (!(await rateLimit('admin-write', clientIp(request), { limit: 60, windowSec: 300 }))) {
+    return NextResponse.json({ error: 'ทำรายการบ่อยเกินไป กรุณาลองใหม่ภายหลัง' }, { status: 429 });
+  }
 
   const form = await request.formData();
   const parsed = uploadSchema.safeParse({ key: form.get('key'), file: form.get('file') });
@@ -123,6 +127,9 @@ export async function POST(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   const email = adminEmail(request);
   if (!email) return NextResponse.json({ error: 'ไม่ได้รับอนุญาต' }, { status: 401 });
+  if (!(await rateLimit('admin-write', clientIp(request), { limit: 60, windowSec: 300 }))) {
+    return NextResponse.json({ error: 'ทำรายการบ่อยเกินไป กรุณาลองใหม่ภายหลัง' }, { status: 429 });
+  }
 
   const parsed = resetSchema.safeParse(await request.json().catch(() => ({})));
   if (!parsed.success) return NextResponse.json({ error: 'key ไม่ถูกต้อง' }, { status: 400 });
