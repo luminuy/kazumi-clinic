@@ -81,8 +81,9 @@ export async function POST(request: NextRequest) {
     await notify({ id, name, phone, interest, preferredTime, message });
     return NextResponse.json({ ok: true });
   } catch (error) {
+    console.error(error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'ส่งไม่สำเร็จ' },
+      { error: 'ส่งไม่สำเร็จ' },
       { status: 502 },
     );
   }

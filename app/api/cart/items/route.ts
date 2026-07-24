@@ -53,8 +53,9 @@ export async function POST(request: NextRequest) {
     if (error instanceof Error && error.message === 'NOT_PURCHASABLE') {
       return NextResponse.json({ error: 'รายการนี้ไม่สามารถสั่งซื้อออนไลน์ได้' }, { status: 400 });
     }
+    console.error(error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'เพิ่มลงตะกร้าไม่สำเร็จ' },
+      { error: 'เพิ่มลงตะกร้าไม่สำเร็จ' },
       { status: 502 },
     );
   }
@@ -75,8 +76,9 @@ export async function PATCH(request: NextRequest) {
     const cart = await setItemQty(parsed.data.productId, parsed.data.quantity);
     return NextResponse.json({ ok: true, cart });
   } catch (error) {
+    console.error(error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'แก้ไขตะกร้าไม่สำเร็จ' },
+      { error: 'แก้ไขตะกร้าไม่สำเร็จ' },
       { status: 502 },
     );
   }
@@ -97,8 +99,9 @@ export async function DELETE(request: NextRequest) {
     const cart = await removeItem(parsed.data.productId);
     return NextResponse.json({ ok: true, cart });
   } catch (error) {
+    console.error(error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'ลบรายการไม่สำเร็จ' },
+      { error: 'ลบรายการไม่สำเร็จ' },
       { status: 502 },
     );
   }

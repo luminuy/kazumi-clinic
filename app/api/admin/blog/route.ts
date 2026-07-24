@@ -81,8 +81,12 @@ export async function POST(request: NextRequest) {
     revalidatePath('/sitemap.xml');
     return NextResponse.json({ ok: true, id, slug });
   } catch (error) {
+    if (error instanceof Error && error.message === 'SLUG_TAKEN') {
+      return NextResponse.json({ error: 'slug นี้ถูกใช้แล้ว — เปลี่ยนหัวข้อหรือกำหนด slug เอง' }, { status: 409 });
+    }
+    console.error(error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'บันทึกไม่สำเร็จ' },
+      { error: 'บันทึกไม่สำเร็จ' },
       { status: 502 },
     );
   }
@@ -101,8 +105,9 @@ export async function DELETE(request: NextRequest) {
     revalidatePath('/sitemap.xml');
     return NextResponse.json({ ok: true });
   } catch (error) {
+    console.error(error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'ลบไม่สำเร็จ' },
+      { error: 'ลบไม่สำเร็จ' },
       { status: 502 },
     );
   }

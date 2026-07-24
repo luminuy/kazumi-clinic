@@ -27,8 +27,9 @@ export async function PATCH(request: NextRequest) {
     revalidatePath('/admin/leads');
     return NextResponse.json({ ok: true });
   } catch (error) {
+    console.error(error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'อัปเดตไม่สำเร็จ' },
+      { error: 'อัปเดตไม่สำเร็จ' },
       { status: 502 },
     );
   }
@@ -46,8 +47,9 @@ export async function DELETE(request: NextRequest) {
     revalidatePath('/admin/leads');
     return NextResponse.json({ ok: true });
   } catch (error) {
+    console.error(error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'ลบไม่สำเร็จ' },
+      { error: 'ลบไม่สำเร็จ' },
       { status: 502 },
     );
   }

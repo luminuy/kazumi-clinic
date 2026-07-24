@@ -112,8 +112,9 @@ export async function POST(request: NextRequest) {
     revalidateImage(key);
     return NextResponse.json({ ok: true, ...upload });
   } catch (error) {
+    console.error(error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'อัปโหลดไม่สำเร็จ' },
+      { error: 'อัปโหลดไม่สำเร็จ' },
       { status: 502 },
     );
   }
@@ -131,8 +132,9 @@ export async function DELETE(request: NextRequest) {
     revalidateImage(parsed.data.key);
     return NextResponse.json({ ok: true });
   } catch (error) {
+    console.error(error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'คืนค่าเริ่มต้นไม่สำเร็จ' },
+      { error: 'คืนค่าเริ่มต้นไม่สำเร็จ' },
       { status: 502 },
     );
   }

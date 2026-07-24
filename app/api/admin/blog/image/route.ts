@@ -48,8 +48,9 @@ export async function POST(request: NextRequest) {
     }
     return NextResponse.json({ ok: true, ...upload });
   } catch (error) {
+    console.error(error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'อัปโหลดไม่สำเร็จ' },
+      { error: 'อัปโหลดไม่สำเร็จ' },
       { status: 502 },
     );
   }

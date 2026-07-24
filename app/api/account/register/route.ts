@@ -53,8 +53,9 @@ export async function POST(request: NextRequest) {
     if (error instanceof Error && error.message === 'EMAIL_TAKEN') {
       return NextResponse.json({ error: 'อีเมลนี้มีบัญชีอยู่แล้ว' }, { status: 409 });
     }
+    console.error(error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'สมัครไม่สำเร็จ' },
+      { error: 'สมัครไม่สำเร็จ' },
       { status: 502 },
     );
   }
