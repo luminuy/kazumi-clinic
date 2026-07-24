@@ -471,23 +471,3 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     </>
   );
 }
-
-// Decorative echo of the brand mark — six overlapping petals, used as a faint
-// background texture rather than a literal logo reproduction.
-function FlowerMark({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 200 200" fill="none" className={className} aria-hidden="true">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <ellipse
-          key={i}
-          cx="100"
-          cy="60"
-          rx="28"
-          ry="44"
-          fill="currentColor"
-          transform={`rotate(${i * 60} 100 100)`}
-        />
-      ))}
-    </svg>
-  );
-}

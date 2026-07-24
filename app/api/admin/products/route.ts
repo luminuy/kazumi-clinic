@@ -53,8 +53,12 @@ const reorderSchema = z.object({
 
 function revalidateCategory(category: string) {
   // The category page shows the products; /services lists a program summary per category.
+  // Thai (default) lives at the bare path, English under /en (localePrefix 'as-needed') — mirror
+  // both so an /admin edit refreshes the English page immediately, not just after the hourly ISR.
   revalidatePath(`/${category}`);
   revalidatePath('/services');
+  revalidatePath(`/en/${category}`);
+  revalidatePath('/en/services');
 }
 
 export async function POST(request: NextRequest) {

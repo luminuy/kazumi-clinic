@@ -42,6 +42,7 @@ export async function POST(request: NextRequest) {
     const upload = await uploadToCloudinary(file, `review-${id}-${which}-${Date.now()}`);
     await setReviewImage(id, which, upload.publicId, email);
     revalidatePath('/reviews');
+    revalidatePath('/en/reviews');
     return NextResponse.json({ ok: true, ...upload });
   } catch (error) {
     return NextResponse.json(

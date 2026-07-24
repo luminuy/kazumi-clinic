@@ -43,8 +43,11 @@ export async function POST(request: NextRequest) {
     // is a new Cloudinary object and D1 records which one is live.
     const upload = await uploadToCloudinary(file, `product-${id}-${Date.now()}`);
     await setProductImage(id, category, upload.publicId, email);
+    // Refresh both locales (Thai bare path + English under /en) so the new photo shows immediately.
     revalidatePath(`/${category}`);
     revalidatePath('/services');
+    revalidatePath(`/en/${category}`);
+    revalidatePath('/en/services');
     return NextResponse.json({ ok: true, ...upload });
   } catch (error) {
     return NextResponse.json(
