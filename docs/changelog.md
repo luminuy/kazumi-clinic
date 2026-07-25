@@ -6,6 +6,22 @@
 
 ---
 
+## 2026-07-25 — กวาดข้อความไทยที่ค้างบนหน้า `/en` ให้หมด (PR #257, #258, #259)
+
+เว็บเป็น 2 ภาษามาตั้งแต่ #233 แต่ยังมีของค้างที่ทำให้ `/en` ใช้งานจริงไม่ได้เต็มที่ · เจอทั้งหมดจากการ**เปิดหน้า `/en` จริงแล้วอ่าน accessibility tree** ไม่ใช่จากการอ่านโค้ด
+
+| PR | ปัญหา |
+|---|---|
+| [#257](https://github.com/luminuy/kazumi-clinic/pull/257) | ป็อปอัปล็อกอิน (เปิดจากปุ่มบัญชีบน header ทุกหน้า) hardcode ภาษาไทยทั้งไฟล์ |
+| [#258](https://github.com/luminuy/kazumi-clinic/pull/258) | 17 ไฟล์ import `Link` จาก `next/link` ซึ่งไม่รู้จัก locale → คนอ่านอังกฤษกดลิงก์แล้วเด้งกลับหน้าไทย เสียภาษาที่เลือกทั้ง session |
+| [#259](https://github.com/luminuy/kazumi-clinic/pull/259) | `aria-label` ไทยที่เหลือ (carousel/grid/filter/แถบแบรนด์) + ปุ่ม "ซื้อเลย"/"จองคิว…ผ่าน LINE" |
+
+**วิธีทำงาน**: Claude เขียนสเปกรายจุด → Codex CLI (`gpt-5.6-sol`) ลงมือ → Claude อ่าน diff เองและรัน lint/typecheck/test/build ซ้ำทุกรอบ · Codex ทักกลับ 3 ครั้งว่าสเปกผิดแทนที่จะเดาแก้เอง (เทสต์ที่ Header เป็น sync, `brand-strip` ไม่มี `'use client'`, ปุ่ม autoplay ที่ regex ตรวจไม่เจอ) — ทั้งสามข้อเป็นความผิดของสเปก ไม่ใช่ของ Codex
+
+**บทเรียน**: ระหว่างทางเผลอแตก branch จาก `origin/main` ที่ยังไม่ `fetch` สด ทำให้ขาด #258 ไปทั้งชุด · จับได้เพราะ grep แล้วเจอ aria-label ที่ควรถูกแก้ไปแล้ว → `git merge-base --is-ancestor origin/main HEAD` ก่อน push ทุกครั้ง (CLAUDE.md §0.5 เตือนไว้แล้ว)
+
+---
+
 ## 2026-07-25 — ตัด Cloudinary default ที่ตายแล้ว (PR #255)
 
 `kazumi-clinic/brand-mark` กับ `kazumi-clinic/hero-home` ถูกลบจาก Cloudinary ไปแล้ว (404) แต่ยังชิปเป็น `defaultPublicId` · ไม่มีใครเห็นเพราะคลินิกอัปทับทั้งสอง slot — **แต่ปุ่ม "คืนรูปเดิม" ใน /admin คือการกลับไปใช้ default** แปลว่าคลิกเดียวจะทำให้โลโก้ทุกหน้า + hero + `image` ใน JSON-LD ชี้ไปรูปที่ไม่มีอยู่ · ตัด default ทั้งสองออก แล้วทำให้ Header/Footer แสดงเฉพาะตัวหนังสือ, hero เหลือพื้นเข้ม, `primaryImageOfPage` ถูกตัดทิ้งเมื่อไม่มีรูป
