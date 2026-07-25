@@ -2,12 +2,26 @@
 
 ไฟล์นี้เป็น **กฎที่ AI ทุกตัว** (Claude Code, Cursor, Copilot, Codex, etc.) ต้องทำตามเมื่อแก้โค้ดในโปรเจกต์นี้ เพื่อให้ SEO และ metadata สม่ำเสมอตลอดทั้งไซต์
 
-**เอกสารที่ต้องอ่านก่อนลงมือ:**
-- **[docs/infrastructure.md](docs/infrastructure.md)** — เว็บอยู่ที่ไหน, binding/vars จริงมีอะไร, deploy ยังไง, ข้อจำกัดของเครื่อง dev, สถานะโดเมน
-- **[docs/images.md](docs/images.md)** — รูปทำงานยังไงตั้งแต่ /admin ถึงหน้าเว็บ, เพิ่มรูปใหม่ต้องแตะไฟล์ไหนบ้าง, กับดัก 6 ข้อที่เคยเหยียบมาแล้ว
-- **[docs/design.md](docs/design.md)** — design system ปัจจุบัน, โครงหน้า Services, และกฎ responsive/accessibility ที่ต้องรักษา
+## แผนที่เอกสาร — ใครเป็นเจ้าของข้อเท็จจริงไหน
 
-Stack: Next.js App Router (React 19) + TypeScript + Tailwind CSS v4 + shadcn/ui (Base UI primitives) + Zod, deploy บน Cloudflare Workers ผ่าน OpenNext (KV incremental cache + D1 tag cache + Durable Object queue สำหรับ ISR)
+**กฎ: หนึ่งข้อเท็จจริง มีเจ้าของไฟล์เดียว** ที่อื่นให้ *ลิงก์* ไม่ใช่ *เขียนซ้ำ* — การเขียนซ้ำคือสาเหตุที่เอกสารเคยขัดกันเอง (เคยมีไฟล์หนึ่งบอกว่า "ไม่มี CI/CD ต้อง deploy มือทุกครั้ง" อยู่หลายเดือนหลัง CD เปิดใช้จริง)
+
+| อยากรู้เรื่อง | อ่านที่ | อัปเดตที่ |
+| --- | --- | --- |
+| ตอนนี้ถึงไหน / ใครค้างอะไร / deploy version ไหน | **[STATUS.md](STATUS.md)** | STATUS.md |
+| งานที่ปิดไปแล้ว + เหตุผล/บทเรียนของงานนั้น | [docs/changelog.md](docs/changelog.md) | docs/changelog.md (ย้ายออกจาก STATUS เมื่อปิดงาน) |
+| กฎการทำงาน, workflow, medical/SEO compliance, บทเรียน | **ไฟล์นี้** | ไฟล์นี้ |
+| entrypoint ของ agent ที่อ่าน `AGENTS.md` (Codex ฯลฯ) | [AGENTS.md](AGENTS.md) | AGENTS.md (สรุปสั้น ลิงก์กลับมาที่นี่) |
+| ขั้นตอน deploy, macOS/workerd, verify หลัง deploy | [docs/deploy.md](docs/deploy.md) | docs/deploy.md |
+| binding, secret, var, ตาราง D1, Access, โดเมน | [docs/infrastructure.md](docs/infrastructure.md) | docs/infrastructure.md |
+| รูป: /admin → Cloudinary → D1 → หน้า/OG/JSON-LD | [docs/images.md](docs/images.md) | docs/images.md |
+| สี, ตัวอักษร, layout, โครงหน้า Services, a11y | [docs/design.md](docs/design.md) (ค่าจริง = [app/globals.css](app/globals.css)) | docs/design.md |
+| สมาชิก, ตะกร้า, checkout, OAuth, payment | [docs/member-system.md](docs/member-system.md) | docs/member-system.md |
+| ภาพรวมโปรเจกต์สำหรับคนนอก | [README.md](README.md) | README.md |
+
+**ถ้าเอกสารขัดกับโค้ด ให้เชื่อโค้ดบน `origin/main` แล้วแก้เอกสารใน PR เดียวกัน** — เอกสารบอกว่า*ตั้งใจให้เป็นยังไง* ไม่ใช่*ความจริงตอนนี้*
+
+Stack: Next.js 16 App Router (React 19) + TypeScript + Tailwind CSS v4 + shadcn/ui (Base UI primitives) + next-intl (ไทย/อังกฤษ) + Zod, deploy บน Cloudflare Workers ผ่าน OpenNext (KV incremental cache + D1 tag cache + Durable Object queue สำหรับ ISR)
 
 **Backend**: ใช้ Next.js Route Handlers (`app/api/*/route.ts`) เป็น backend เดียว — ไม่แยก backend service ต่างหาก เพราะ `@opennextjs/cloudflare` รัน API routes เป็นส่วนหนึ่งของ Worker เดียวกับหน้าเว็บอยู่แล้ว (คนละ endpoint แต่ deploy พร้อมกัน, share `lib/` และ D1 binding เดียวกัน) — ทุก route handler ต้อง validate input ด้วย Zod ก่อนแตะ DB เสมอ
 
@@ -88,8 +102,9 @@ Stack: Next.js App Router (React 19) + TypeScript + Tailwind CSS v4 + shadcn/ui 
 - [ ] `pnpm lint` ผ่าน (exit 0) — เพิ่งใช้งานได้จริง 2026-07-17 ก่อนหน้านั้นมันไม่เคย lint อะไรเลย (ดู §0.5)
 - [ ] `pnpm typecheck` ผ่าน
 - [ ] `pnpm test` ผ่าน
-- [ ] `pnpm build` ผ่าน (static params ของ `/[category]` ต้อง generate ครบทุก slug ใน `lib/services.ts`)
+- [ ] `pnpm build` ผ่าน (static params ของ `/[category]` ต้อง generate ครบทุก slug ใน `lib/services.ts` × ทุก locale)
 - [ ] **ถ้าแตะโค้ดที่รันบน Worker จริง (crypto, D1, cookies, binding, Web API) → เทสต์ที่ผ่านไม่ใช่หลักฐาน** ต้องยิง endpoint จริงหลัง deploy ด้วย · `vitest` รันบน Node ซึ่งมี API/ลิมิตไม่เหมือน workerd (ดู §0.5 · 2026-07-25 PBKDF2) · `pnpm smoke` ครอบ register/login ให้แล้ว แต่ path อื่นต้องยิงเอง
+- [ ] ถ้าแตะข้อความ UI → key มีครบทั้ง `messages/th.json` และ `messages/en.json` และเปิดดูหน้า `/en` ด้วย (ดู §13)
 - [ ] `git status` — ไม่มีไฟล์ untracked แปลกปลอม (`.DS_Store`, `* 2.*`, ฯลฯ) ก่อน push
 - [ ] อ่าน diff ของตัวเอง (`git diff`) — ตรรกะถูก, ไม่มี debug code/log ค้าง
 - [ ] ถ้าแตะ SEO/metadata/ราคา/บริการ → เช็ค Checklist ข้อ 10 และข้อ 0.2
@@ -102,8 +117,11 @@ Stack: Next.js App Router (React 19) + TypeScript + Tailwind CSS v4 + shadcn/ui 
 
 - **ใช้ความสามารถออกแบบของ agent ได้เต็มที่** — ไม่ต้องถามก่อนทุก step
 - เรียก skill `frontend-design` เมื่อเหมาะ (สร้าง component, page, หรือ overhaul ครั้งใหญ่)
-- ตัดสินใจเรื่อง spacing / typography / color / layout / motion ได้เอง โดยอิงโทนสีที่มีในโปรเจกต์: `#006E2B` forest (green primary/CTA), `#06C755` mint (bright green — ปุ่มหลัก + LINE), `#3EE26C` mint-glow (เขียวอ่อนบนพื้นเข้ม), `#3D4E46` olive-deep (พื้นเข้ม/deep-forest), `#4D573E` olive, `#7A7A5E` olive-light, `#EEE9DF` sand (background), `#F6F3EC` cream, `#26281F` ink (text) — ค่าจริงอยู่ใน `@theme`/`:root` ของ [app/globals.css](app/globals.css) (Tailwind v4 ไม่มี `tailwind.config.ts` แล้ว ห้ามสร้างไฟล์นั้นกลับมา) · **2026 editorial redesign**: หน้าแรก ([app/(site)/page.tsx](<app/(site)/page.tsx>)) ใช้เขียว (`forest`/`mint`/`mint-glow`) เป็นสี action หลัก + มุมเหลี่ยม (sharp) ตามดีไซน์ใหม่ · `mint` = `#06C755` เป็นทั้งปุ่มหลักและ LINE (ไม่แยกสีแล้ว) · หน้าอื่นยังเป็น olive อยู่ — ถ้าจะไล่เปลี่ยนเป็นเขียวให้ทำทีละหน้าแล้ว verify
-- สไตล์แบรนด์: Japanese Editorial Luxury — มินิมอล ญี่ปุ่น สงบ, ใช้ negative space, asymmetry, เส้นบาง, มุมเหลี่ยม และสัดส่วน 1.618 ตาม [docs/design.md](docs/design.md)
+- ตัดสินใจเรื่อง spacing / typography / color / layout / motion ได้เอง โดย **อ่านค่า token จริงจาก `:root` ใน [app/globals.css](app/globals.css) ก่อนเสมอ** (Tailwind v4 ไม่มี `tailwind.config.ts` ห้ามสร้างไฟล์นั้นกลับมา)
+  ⚠️ **ชื่อ token ไม่ได้บอกสีอีกต่อไป** — ไซต์ถูก re-tone เป็น Apple-style light theme โดยคง*ชื่อ*เดิมไว้ ค่าปัจจุบัน (ตรวจ 2026-07-25): `ink`/`olive-deep` = `#1d1d1f` · `olive` = `#6e6e73` · `olive-light` = `#86868b` · `sand` = `#f5f5f7` · `cream` = `#ffffff` · `border` = `#d2d2d7` · สี action = `mint` `#06c755` (เท่ากับ `line` โดยตั้งใจ) · `forest` `#006e2b` · `mint-glow` `#3ee26c` — **ห้าม hardcode hex ใน component** ต้องการเฉดใหม่ให้เพิ่ม token
+- รูปทรง: มุม **มน** ตามขนาดกล่อง (`--radius: 0.75rem` เป็นค่ากลาง, การ์ดใหญ่ `rounded-[1.75rem]`/`rounded-2xl`, control กลม `rounded-full`) — กฎ "มุมเหลี่ยม" เป็นของยุคดีไซน์แรก ไม่ตรงกับไซต์ปัจจุบันแล้ว
+- สไตล์แบรนด์: โครงและจังหวะยังเป็น editorial (negative space, asymmetry, สัดส่วน 1.618) บนผิว Apple-style neutrals + เขียวเป็นสี action — รายละเอียดและกฎ 2 ยุคอยู่ใน [docs/design.md](docs/design.md)
+- ข้อความ UI ต้องมาจาก `messages/th.json` + `messages/en.json` ทั้งคู่ (ดู §13)
 - ห้ามทำแค่ "ลด padding ให้พอผ่าน" — ถ้าจุดนั้นดูไม่ดี ให้คิดใหม่ทั้ง section
 - กฎเดิม (§0.1, §0.3, §0 auto-merge) ยังบังคับใช้
 
@@ -123,7 +141,7 @@ Stack: Next.js App Router (React 19) + TypeScript + Tailwind CSS v4 + shadcn/ui 
 
   ใช้แบบเดียวกันกับ `SheetTrigger`, `SheetClose`, และ Base UI primitive อื่นทุกตัวใน `components/ui/`
 - เพิ่ม component ใหม่ด้วย `npx shadcn@latest add <name>` — ห้ามเขียน component เองโดยไม่เช็ค registry ก่อน (จะได้ API ที่ไม่ตรงกับที่มีอยู่)
-- ห้ามรัน `npx shadcn@latest init` ซ้ำ — จะ overwrite `app/globals.css`/`app/layout.tsx` ทับสี brand และฟอนต์ Thai ที่ตั้งไว้ (ครั้งก่อนมันเคยใส่ font `Geist` ทับ `Noto Sans Thai` มาแล้ว ทำให้ข้อความไทยพังเงียบ ๆ)
+- ห้ามรัน `npx shadcn@latest init` ซ้ำ — จะ overwrite `app/globals.css`/`app/(site)/[locale]/layout.tsx` ทับสี brand และฟอนต์ Thai ที่ตั้งไว้ (ครั้งก่อนมันเคยใส่ font `Geist` ทับ `Noto Sans Thai` มาแล้ว ทำให้ข้อความไทยพังเงียบ ๆ)
 
 ### 0.4.2 Cloudflare Workers runtime — ห้ามใส่ `export const runtime = 'edge'`
 
@@ -134,7 +152,21 @@ Stack: Next.js App Router (React 19) + TypeScript + Tailwind CSS v4 + shadcn/ui 
 
 ### 0.5 Lessons learned — กฎจากความผิดพลาดจริง
 
-อ่านส่วนนี้ทุกครั้งก่อนเริ่มงาน
+อ่านส่วนนี้ทุกครั้งก่อนเริ่มงาน · รายการเรียงจากใหม่ไปเก่า — ใช้ดัชนีข้างล่างหาเรื่องที่ตรงกับงานที่กำลังจะทำ
+
+**ดัชนีบทเรียน — งานแบบไหน ต้องอ่านข้อไหน**
+
+| กำลังจะทำ | บทเรียนที่เกี่ยวโดยตรง |
+| --- | --- |
+| แตะ auth / crypto / D1 / binding | 2026-07-25 (PBKDF2 100k · เทสต์ไม่ใช่หลักฐาน · smoke test ที่ปลุกผิด) |
+| เขียน/ผูก migration | 2026-07-24 (table-rebuild ลบรูปทุก deploy) |
+| deploy หรือรายงานผลหลัง deploy | 2026-07-17 ×3 (dev server ปน `.next` · ISR เสิร์ฟของเก่า · `Current Version ID` ไม่พอ), 2026-07-16 (ห้ามรายงานสิ่งที่ไม่ได้ตรวจ) |
+| ดึงโค้ด / merge / จัดการ branch, worktree | 2026-07-23 (stash+pull พังเงียบ · CI ไม่รันรอบใหม่ → เปิด branch ใหม่), 2026-07-22 ×2 (งานไม่ push = มองไม่เห็น · worktree ค้างเก่า) |
+| แตะความลับ / เปลี่ยน visibility ของ repo | 2026-07-23 (`SESSION_SECRET` fallback ในกิต · ห้าม `\|\|` ให้ความลับ) |
+| แตะรูป / metadata / cache | 2026-07-22 (ตาราง `revalidations` หาย → ISR ตายเงียบ), 2026-07-17 (แก้เฉพาะที่เห็นบนหน้า = ทิ้งบั๊กใน OG/JSON-LD) |
+| แตะ UI ที่มีหลายหน้าใช้ pattern เดียวกัน | บล็อก "พอร์ตมาจาก littlesmileflower" (แก้ทั้ง pattern ไม่ใช่ไฟล์เดียว · list ทุก state ก่อนแก้ conditional) |
+| เขียน/แก้เอกสาร | 2026-07-17 ×3 (เอกสารเก่าทำให้ทำผิดซ้ำ · อ่านไฟล์จาก branch ผิด · พอร์ตข้อเท็จจริงมาโดยไม่ตรวจ) |
+| เจอคำสั่งใน `package.json` ที่ fail | 2026-07-17 (`pnpm lint` พังมาหลายเดือนโดยไม่มีใครสงสัย) |
 
 **เมื่อพลาด (bug ที่ user เจอ, แก้ผิด, ลืม edge case, รายงานผิด) ให้บันทึกทันที ห้ามข้าม:**
 
@@ -201,12 +233,12 @@ Stack: Next.js App Router (React 19) + TypeScript + Tailwind CSS v4 + shadcn/ui 
 - **`position: fixed` ตายเงียบใน ancestor ที่มี `transform`** · CSS spec: ancestor ที่มี `transform`/`filter`/`perspective`/`will-change: transform` กลายเป็น containing block ของ `fixed` descendant → `fixed inset-0` จะกางเท่า ancestor ไม่ใช่เต็มจอ และ **z-index ไม่ช่วย** · **เราเสี่ยงจริง**: [`.reveal` ใน app/globals.css](app/globals.css) ใช้ `transform: translateY(28px)` และห่อเนื้อหาแทบทุก section → **ถ้าจะทำ modal/lightbox/drawer เอง ต้อง `createPortal(..., document.body)` เสมอ** · ตอนนี้ยังไม่พังเพราะ `components/ui/sheet.tsx` ของ Base UI portal ให้อยู่แล้ว — กฎนี้มีไว้กันตอนเขียน overlay เอง
 - **แก้ bug ต้องแก้ทั้ง pattern ไม่ใช่แค่ไฟล์ที่ user ส่งรูปมา** · ที่โน่นแก้ lightbox z-index ไฟล์เดียวตามสกรีนช็อต ทิ้งอีกไฟล์ที่ bug เดียวกัน → user เจอซ้ำรอบสอง → **grep หา pattern ก่อนเสมอ แล้วเลือกให้ชัด: (a) แก้ทุกไฟล์ที่ match พร้อมกัน หรือ (b) เขียนในรายงานว่าไฟล์อื่นไม่แก้เพราะอะไร — ห้ามแก้ไฟล์เดียวแล้วเงียบ**
 - **ก่อนแก้ conditional ให้ list ทุก state ที่เงื่อนไขนั้นครอบคลุม** · ที่โน่นแก้ gate ของ status `confirmed` ตามรูปที่ user ส่ง ลืมว่า `delivering`/`completed` ใช้ gate เดียวกัน → **ถามทุกครั้งว่า "state อื่นพังแบบเดียวกันไหม" ไม่ใช่แก้แค่เคสในรูป**
-- **ห้ามลบ `eslint-disable`/guard/suppression โดยเชื่อ label "unused"** · ที่โน่นลบ directive 2 ตัวทั้งที่ lint บอกว่า unused **เฉพาะตัวที่สอง** → error โผล่ · **tool ที่ report ตำแหน่งเจาะจง (บรรทัด/ไฟล์) ให้แก้เฉพาะตำแหน่งนั้น ห้าม generalize ไปลบพี่น้องที่หน้าตาเหมือนกัน** · ถือว่าการลบ safety directive = destructive change ต้อง verify หลังลบทุกครั้ง · **เกี่ยวกับเราตรง ๆ**: `app/(site)/page.tsx`, `app/(site)/[category]/page.tsx` ฯลฯ มี `// eslint-disable-next-line react/no-danger` คุม JSON-LD อยู่ทุกไฟล์
+- **ห้ามลบ `eslint-disable`/guard/suppression โดยเชื่อ label "unused"** · ที่โน่นลบ directive 2 ตัวทั้งที่ lint บอกว่า unused **เฉพาะตัวที่สอง** → error โผล่ · **tool ที่ report ตำแหน่งเจาะจง (บรรทัด/ไฟล์) ให้แก้เฉพาะตำแหน่งนั้น ห้าม generalize ไปลบพี่น้องที่หน้าตาเหมือนกัน** · ถือว่าการลบ safety directive = destructive change ต้อง verify หลังลบทุกครั้ง · **เกี่ยวกับเราตรง ๆ**: `app/(site)/[locale]/page.tsx`, `app/(site)/[locale]/[category]/page.tsx` ฯลฯ มี `// eslint-disable-next-line react/no-danger` คุม JSON-LD อยู่ทุกไฟล์
 - **`npx tsc --noEmit` ลอย ๆ ไม่นับเป็น verify — ใช้ `pnpm typecheck` ตาม `package.json` เสมอ** · และ iCloud Drive ชอบสร้างสำเนา `* 2.ts` / `* 2.tsx` / `.next/* 2.*` ค้างไว้ ทำให้ typecheck ล้มด้วย `Duplicate identifier` แบบงง ๆ · **เกิดกับเราแล้วจริง** (2026-07-16: `.next/types/routes.d 2.ts` ทำ `pnpm typecheck` ล้ม ทั้งที่โค้ดไม่ผิด) → เจอ error แปลก ๆ ให้ `find . -name '* 2.*' -not -path './node_modules/*'` ก่อนไล่แก้โค้ด
 - **หน้าที่ตั้ง `robots: { index: false }` ต้อง `disallow` ใน [app/robots.ts](app/robots.ts) ด้วยเสมอ** · meta noindex = ห้าม index, robots.txt = ห้าม crawl เป็นคนละ layer ต้องใช้คู่กัน · **จะสำคัญตอนทำหน้า `/admin`** (robots.ts เรา disallow `/admin` ไว้แล้ว — ตอนสร้างหน้าจริงอย่าลืมใส่ `index: false` ใน metadata ด้วย)
 - **ค่า enum/unit/code ใน JSON-LD ต้องเช็คกับเอกสารของ Google ไม่ใช่แค่ schema.org** · ที่โน่นใส่ `unitCode: 'HUR'` ซึ่ง valid ตาม schema.org แต่ Google ไม่รับ → GSC ขึ้น error ทั้ง 27 สินค้า · **Google จำกัด enum แคบกว่า schema.org เสมอ** → เพิ่ม field ใหม่ที่มีค่า fixed (`availability`, `priceCurrency`, `@type` ของ MedicalProcedure ฯลฯ) ให้เปิด doc ของ Google เช็ค "supported values" ก่อน ship แล้วทดสอบ 1 หน้าใน Rich Results Test
 
-- 2026-07-16 — `wrangler dev`/`opennextjs-cloudflare deploy` พังบนเครื่องนี้ด้วย error macOS version (ต้องการ macOS 13.5+, เครื่อง dev เป็น 12.6.0) เพราะทั้งสองคำสั่งรัน local `workerd`/miniflare ก่อน (สำหรับ dev server จริง, และสำหรับ deploy ใช้อ่าน env ผ่าน `getPlatformProxy`) → **deploy จริงยังทำได้** โดยข้าม wrapper: ใช้ `OPEN_NEXT_DEPLOY=true wrangler deploy` แทน `opennextjs-cloudflare deploy` — env var นี้บอก wrangler ไม่ต้อง delegate ไปที่ opennextjs-cloudflare's deploy command (ซึ่งเป็นจุดที่เรียก workerd) แล้วรัน plain `wrangler deploy` ตรง ๆ จาก `.open-next/worker.js` ที่ build ไว้แล้วแทน (อัปโหลด asset ได้ปกติ ไม่ต้องรัน worker locally) — ผูกไว้ใน `cf:deploy` script ของ `package.json` แล้ว · `wrangler dev`/`cf:preview` (local preview ที่ต้องรัน worker จริง) ยังใช้ trick นี้ไม่ได้ เพราะจำเป็นต้องรัน workerd จริงเพื่อ serve request — ต้อง deploy จริงแล้วดูผลบน Cloudflare แทนถ้าจะ preview บนเครื่องนี้
+- 2026-07-16 — `wrangler dev`/`opennextjs-cloudflare deploy` พังบนเครื่องนี้ด้วย error macOS version (ต้องการ macOS 13.5+, เครื่อง dev เป็น 12.7.6 — ตรวจซ้ำด้วย `sw_vers` 2026-07-25) เพราะทั้งสองคำสั่งรัน local `workerd`/miniflare ก่อน (สำหรับ dev server จริง, และสำหรับ deploy ใช้อ่าน env ผ่าน `getPlatformProxy`) → **deploy จริงยังทำได้** โดยข้าม wrapper: ใช้ `OPEN_NEXT_DEPLOY=true wrangler deploy` แทน `opennextjs-cloudflare deploy` — env var นี้บอก wrangler ไม่ต้อง delegate ไปที่ opennextjs-cloudflare's deploy command (ซึ่งเป็นจุดที่เรียก workerd) แล้วรัน plain `wrangler deploy` ตรง ๆ จาก `.open-next/worker.js` ที่ build ไว้แล้วแทน (อัปโหลด asset ได้ปกติ ไม่ต้องรัน worker locally) — ผูกไว้ใน `cf:deploy` script ของ `package.json` แล้ว · `wrangler dev`/`cf:preview` (local preview ที่ต้องรัน worker จริง) ยังใช้ trick นี้ไม่ได้ เพราะจำเป็นต้องรัน workerd จริงเพื่อ serve request — ต้อง deploy จริงแล้วดูผลบน Cloudflare แทนถ้าจะ preview บนเครื่องนี้
 
 ---
 
@@ -235,6 +267,10 @@ alternates: { canonical: `${site.url}/filler/` }
 
 หน้าแรกใช้ `/` ตัวเดียวเสมอ (root path ไม่ใช่ trailing slash) — ใน sitemap ใช้ `${base}/` สำหรับหน้าแรกเท่านั้น
 
+### เว็บมี 2 ภาษา — path มี prefix เฉพาะอังกฤษ
+
+ไทย (default) = path เปล่า `/filler` · อังกฤษ = `/en/filler` (`localePrefix: 'as-needed'`) · canonical/hreflang/sitemap ต้องแยกต่อ locale — ดู **§13**
+
 ### ทำไม
 
 Google มอง `/filler` กับ `/filler/` เป็น 2 URL ต่างกัน → duplicate content ตรงกับ Next.js/Cloudflare default
@@ -251,7 +287,7 @@ export const metadata: Metadata = {
 };
 ```
 
-หน้า dynamic (`app/(site)/[category]/page.tsx`) ใช้ `generateMetadata` — canonical และ `openGraph.url` ต้องตรงกัน
+หน้า dynamic (`app/(site)/[locale]/[category]/page.tsx`) ใช้ `generateMetadata` — canonical และ `openGraph.url` ต้องตรงกัน
 
 ---
 
@@ -259,7 +295,7 @@ export const metadata: Metadata = {
 
 ### 3.1 MedicalBusiness อยู่ที่ public site layout เท่านั้น
 
-`clinicSchema()` ใน [lib/schema.ts](lib/schema.ts) ถูก inject ผ่าน [app/(site)/layout.tsx](<app/(site)/layout.tsx>) ทุกหน้าสาธารณะ มี `@id: ${site.url}/#business` และรับ hero/logo public ID ที่ resolve จาก image slot แล้ว
+`clinicSchema()` ใน [lib/schema.ts](lib/schema.ts) ถูก inject ผ่าน [app/(site)/[locale]/layout.tsx](<app/(site)/[locale]/layout.tsx>) ทุกหน้าสาธารณะ มี `@id: ${site.url}/#business` และรับ hero/logo public ID ที่ resolve จาก image slot แล้ว
 
 **ห้าม** เขียน `MedicalBusiness`/`HealthAndBeautyBusiness` ซ้ำในหน้าอื่น — ใช้ `@id` ref แทน:
 
@@ -309,7 +345,7 @@ provider: { '@id': `${site.url}/#business` }   // ✓ ถูก
 
 ## 6. OpenGraph / Twitter card
 
-- root layout ตั้ง default OG/Twitter ผ่าน async `generateMetadata` ใน [app/layout.tsx](app/layout.tsx)
+- layout ของ `[locale]` ตั้ง document shell + default OG/Twitter ผ่าน async `generateMetadata` ใน [app/(site)/[locale]/layout.tsx](<app/(site)/[locale]/layout.tsx>) (ไม่มี root `app/layout.tsx` แล้ว — `/admin` มี layout ของตัวเอง ดู §13)
 - รูปที่ `/admin` เปลี่ยนได้ต้อง resolve ด้วย `siteSocialImage(key)` หรือ `getImage(key)` ภายใน async `generateMetadata`; **ห้าม** `const ogImage = cld(...)` ระดับโมดูล
 - OG และ Twitter ของหน้าเดียวกันต้องใช้ image slot เดียวกัน; หน้า `/services` ใช้ `hero-iv-drip-2` ซึ่งเป็น slot เดียวกับ hero ที่ render จริง
 - หน้า service category ใช้ `categoryImageKey` เพื่ออ่าน admin override และ fallback ไป `service.heroImage`; หมวดที่ยังไม่มีรูปจริงให้ใช้ Twitter summary/no image แทนการยืม hero หน้าแรกหรือรูปหัตถการอื่น
@@ -343,10 +379,13 @@ provider: { '@id': `${site.url}/#business` }   // ✓ ถูก
 | ชื่อร้าน, เบอร์, ที่อยู่, เวลาทำการ, social | [lib/site.ts](lib/site.ts)           |
 | หมวดบริการ + ราคา                          | [lib/services.ts](lib/services.ts)   |
 | ข้อมูลแพทย์                                 | [lib/doctor.ts](lib/doctor.ts)       |
-| โปรโมชั่น/โปสเตอร์                          | [lib/promotions.ts](lib/promotions.ts) |
+| โปรโมชั่น/โปสเตอร์                          | [lib/promotions.ts](lib/promotions.ts) + ตาราง D1 `promotions` (ของจริง) |
 | image slots + ตำแหน่งที่ใช้                 | [lib/site-images.ts](lib/site-images.ts) |
 | MedicalBusiness JSON-LD + schema helpers   | [lib/schema.ts](lib/schema.ts)       |
 | สี/ฟอนต์ของแบรนด์ (CSS variables)          | [app/globals.css](app/globals.css)   |
+| ข้อความ UI ทุกภาษา                          | [messages/th.json](messages/th.json) + [messages/en.json](messages/en.json) |
+| locale/routing config                       | [i18n/routing.ts](i18n/routing.ts)   |
+| % มัดจำ + กติกาตะกร้า/checkout               | [lib/members/config.ts](lib/members/config.ts) |
 | design system และโครงหน้า Services          | [docs/design.md](docs/design.md)     |
 
 เพิ่มบริการ/หมวดใหม่ → แก้ `lib/services.ts` → sitemap + schema + หน้า listing generate อัตโนมัติ
@@ -360,6 +399,8 @@ provider: { '@id': `${site.url}/#business` }   // ✓ ถูก
       grep -rn 'href="/[a-z][^"]*/"\|href={`/[^`]*/`}' app components   # ต้องไม่มี output
       ```
 - [ ] หน้าใหม่มี `canonical`, `openGraph`, JSON-LD ที่เหมาะกับประเภทหน้า
+- [ ] หน้าใหม่มี `alternates` ครบทั้ง th/en ผ่าน `localizedAlternates()` ([lib/site.ts](lib/site.ts)) — **ห้ามต่อ URL เอง** ด้วย `${site.url}${path}` (ทำให้ canonical/hreflang ของ th กับ en เหมือนกันหมด · เจอใน audit 2026-07-24)
+- [ ] เพิ่มหน้า static ใหม่แล้วเพิ่มใน `staticUrls` ของ [app/sitemap.ts](app/sitemap.ts) ด้วย (ดู §13 เรื่อง sitemap ยังเป็นภาษาไทยล้วน)
 - [ ] ถ้าเป็นหน้า service listing — มี `ItemList`
 - [ ] ถ้าหน้าอยู่ลึกกว่า 1 ระดับ — มี `BreadcrumbList`
 - [ ] รูป OG เฉพาะของหน้านั้น
@@ -400,6 +441,29 @@ provider: { '@id': `${site.url}/#business` }   // ✓ ถูก
 - ❌ **เอาไฟล์รูปใส่ `public/`** — จะถูก build ติดไปกับโค้ด ทำให้คลินิกเปลี่ยนเองผ่าน /admin ไม่ได้ · **เกิดมาแล้ว 2 รอบ** (รูปหมอ+โปสเตอร์ → PR #38, โลโก้ → PR #45) รอบหลังทำให้การ์ด "โลโก้" ใน /admin กลายเป็นของหลอกกดแล้วไม่มีอะไรเกิดขึ้น · รูปทุกใบต้องขึ้น Cloudinary (ดู [docs/images.md](docs/images.md)) · ถ้าจำเป็นต้อง baked-in จริง ๆ ต้องใส่ใน `bakedInImages` ให้ /admin บอก user ตรง ๆ ว่าแก้ไม่ได้
 - ❌ ลบ var `SITE_ENV` โดยยังไม่มีโดเมนจริง (robots.txt จะเปิดให้ Google เก็บ workers.dev ที่ canonical ชี้ไปโดเมนคนอื่น) — และ **ห้ามลืมลบมันตอนมีโดเมนจริง** (เว็บจริงจะห้ามเก็บ) ดู [docs/infrastructure.md](docs/infrastructure.md)
 - ❌ รัน `npx shadcn@latest init` ซ้ำ หรือสร้าง `tailwind.config.ts` กลับมา (Tailwind v4 ใช้ `@theme` ใน `app/globals.css`)
+- ❌ Hardcode ข้อความไทยใน component ใหม่ — ต้องผ่าน `messages/*.json` ทั้งสองภาษา (ดู §13)
+- ❌ Hardcode hex สีใน component — ใช้ token จาก `:root`/`@theme` (ดู §0.4)
+- ❌ ต่อ canonical/hreflang เองด้วย `${site.url}${path}` ในหน้าใต้ `[locale]` — ใช้ `localizedAlternates()`
+- ❌ ผูก migration ที่มี `ALTER`/`DROP`/`RENAME`/`INSERT..SELECT` เข้า `cf:deploy` (ดู §0.5 · 2026-07-24)
+- ❌ ตั้ง PBKDF2 เกิน 100,000 รอบ — workerd ปฏิเสธ ทำให้ auth ตายทั้งระบบ (ดู §0.5 · 2026-07-25)
+- ❌ `pnpm cf:deploy` จาก branch ที่ยังไม่ merge หรือชนกับ CD ที่กำลังรัน (ดู [docs/deploy.md](docs/deploy.md) §0)
+
+---
+
+## 13. i18n — เว็บ 2 ภาษา (ไทย/อังกฤษ)
+
+ตั้งค่าใน [i18n/routing.ts](i18n/routing.ts): `locales: ['th','en']` · `defaultLocale: 'th'` · `localePrefix: 'as-needed'` · **`localeDetection: false`**
+
+- **ไทยอยู่ที่ path เปล่า** (`/filler`), **อังกฤษอยู่ใต้ `/en`** (`/en/filler`) — หน้าสาธารณะทั้งหมดอยู่ใต้ `app/(site)/[locale]/*`
+- **`localeDetection` ปิดโดยตั้งใจ** — คลินิกไทยต้องเสิร์ฟไทยที่ `/` เสมอ · ถ้าเปิด detection คนที่ browser ตั้ง Accept-Language เป็นอังกฤษ (หรือมีคุกกี้ `NEXT_LOCALE=en` ค้าง) จะโดนเด้งไป `/en` ทั้งที่ไม่เคยเลือก · **ห้ามเปิดกลับ**
+- **`/admin` ไม่มี locale** — อยู่นอก `[locale]` และมี root layout ของตัวเอง (จำเป็นต่อ ISR ของหน้าสาธารณะ ดู PR #243)
+- ข้อความ UI ทุกชิ้นมาจาก `messages/th.json` + `messages/en.json` ผ่าน `useTranslations()`/`getTranslations()` — **เพิ่ม key ต้องเพิ่มทั้งสองไฟล์ในคอมมิตเดียว** ไม่งั้น `/en` โชว์ key ดิบ
+- เนื้อหา catalogue มี `titleEn` อยู่ใน `lib/services.ts` แล้ว — อย่าแปลซ้ำใน messages
+- Metadata: ใช้ `localizedAlternates(locale, path)` เท่านั้น (canonical + hreflang + x-default ออกมาพร้อมกัน)
+- `generateStaticParams` ต้อง cross product `routing.locales × slugs` ไม่งั้นหน้าอังกฤษหลุด prerender
+- แก้รูปใน /admin: `REVALIDATION_TARGETS` ใส่ path ไทยพอ — route handler mirror ไป `/en` ให้เอง
+
+> ⚠️ **ปมค้างที่รู้อยู่**: [app/sitemap.ts](app/sitemap.ts) ยังลิสต์เฉพาะ URL ภาษาไทย ทั้งที่ hreflang ชี้ไป `/en` — หน้าอังกฤษจึงไม่มีใน sitemap · ถ้าจะแก้ ให้ generate ทั้ง `routing.locales` แล้วทดสอบว่าไม่ชนกับ `SITE_ENV=preview` (robots ยัง `Disallow: /` อยู่)
 
 ---
 
