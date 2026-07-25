@@ -5,7 +5,7 @@ import type { ServiceCategory, ServiceItem } from '@/lib/services';
 import { site } from '@/lib/site';
 import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
-import { LineIcon } from '@/components/brand-icons';
+import { LineCtaButton } from '@/components/line-cta-button';
 import { ProductThumbnail } from '@/components/product-thumbnail';
 import { ServiceItemActions } from '@/components/service-item-actions';
 
@@ -215,15 +215,9 @@ export function SkinBoosterServicePage({
             เริ่มต้นดูแลผิวพรรณของคุณกับทีมแพทย์ {site.name}
           </p>
           <div className="mt-10 flex flex-col items-center gap-4">
-            <a
-              href={site.lineUrl}
-              target="_blank"
-              rel="noopener"
-              className="inline-flex w-full max-w-xs items-center justify-center gap-2.5 rounded-full bg-[#06C755] px-8 py-3.5 text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.98]"
-            >
-              <LineIcon className="size-4" />
+            <LineCtaButton className="inline-flex w-full max-w-xs items-center justify-center gap-2.5 rounded-full bg-[#06C755] px-8 py-3.5 text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.98]">
               จองคิวผ่าน LINE
-            </a>
+            </LineCtaButton>
             <Link
               href="/services"
               className="border-b border-white/30 pb-1 text-[0.66rem] uppercase tracking-[0.18em] text-white/80 transition-colors hover:text-white"

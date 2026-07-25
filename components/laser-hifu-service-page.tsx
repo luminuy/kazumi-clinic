@@ -5,7 +5,7 @@ import type { ServiceCategory, ServiceItem } from '@/lib/services';
 import { site } from '@/lib/site';
 import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
-import { LineIcon } from '@/components/brand-icons';
+import { LineCtaButton } from '@/components/line-cta-button';
 import { ProductThumbnail } from '@/components/product-thumbnail';
 import { ServiceItemActions } from '@/components/service-item-actions';
 
@@ -190,15 +190,9 @@ export function LaserHifuServicePage({
               ก่อนตัดสินใจเข้ารับบริการ
             </p>
             <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-              <a
-                href={site.lineUrl}
-                target="_blank"
-                rel="noopener"
-                className="inline-flex flex-1 items-center justify-center gap-2.5 rounded-full bg-[#06C755] px-8 py-3.5 text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.98]"
-              >
-                <LineIcon className="size-4" />
+              <LineCtaButton className="inline-flex flex-1 items-center justify-center gap-2.5 rounded-full bg-[#06C755] px-8 py-3.5 text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.98]">
                 จองคิวผ่าน LINE
-              </a>
+              </LineCtaButton>
               <Link
                 href="/services"
                 className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-black/[0.08] bg-transparent px-8 py-3.5 text-xs font-medium text-[var(--store-ink)] transition-all duration-200 hover:border-[var(--store-ink)] hover:bg-black/5 active:scale-[0.98]"
