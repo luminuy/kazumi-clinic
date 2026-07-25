@@ -21,10 +21,10 @@ export default async function LoginPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; registered?: string }>;
 }) {
   const { locale } = await params;
-  const { error } = await searchParams;
+  const { error, registered } = await searchParams;
   setRequestLocale(locale);
   const t = await getTranslations('Account');
 
@@ -39,6 +39,16 @@ export default async function LoginPage({
           <p className="mb-8 mt-2 text-[0.9rem] leading-[1.6] text-[var(--store-muted)]">
             {t('login.lead')}
           </p>
+          {/* Shown after /account/register, which never signs anyone in — the copy has to read the
+              same whether the address was new or already had an account (see that route handler). */}
+          {registered && (
+            <p
+              className="mb-6 rounded-2xl bg-mint/10 px-4 py-3 text-[0.85rem] leading-[1.6] text-forest"
+              role="status"
+            >
+              {t('login.registered')}
+            </p>
+          )}
           <AuthForm
             mode="login"
             oauthError={error}

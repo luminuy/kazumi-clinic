@@ -27,6 +27,7 @@ export function LoginModal({
   const [password, setPassword] = React.useState('');
   const [pending, setPending] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [notice, setNotice] = React.useState<string | null>(null);
 
   // Clear transient form state when the modal closes, so a prior error/entry doesn't linger into
   // the next open. Done in the change handler (an event) rather than an effect on purpose.
@@ -38,6 +39,7 @@ export function LoginModal({
       setPassword('');
       setPending(false);
       setError(null);
+      setNotice(null);
     }
     onOpenChange(next);
   }
@@ -54,6 +56,7 @@ export function LoginModal({
     if (pending) return;
     setPending(true);
     setError(null);
+    setNotice(null);
 
     const endpoint = mode === 'signin' ? '/api/account/login' : '/api/account/register';
     const body =
@@ -70,6 +73,18 @@ export function LoginModal({
       if (!res.ok) {
         const data = (await res.json().catch(() => null)) as { error?: string } | null;
         throw new Error(data?.error ?? 'ดำเนินการไม่สำเร็จ กรุณาลองใหม่');
+      }
+      if (mode === 'signup') {
+        // Registration issues no session on purpose (app/api/account/register/route.ts): the reply
+        // is identical whether the address was free or already taken, so it cannot be used to find
+        // out who has an account here. Hand the visitor to sign-in with wording that fits both.
+        setMode('signin');
+        setPassword('');
+        setPending(false);
+        setNotice(
+          'ดำเนินการเรียบร้อย — เข้าสู่ระบบเพื่อเริ่มใช้งาน หากอีเมลนี้เคยสมัครไว้แล้ว ให้ใช้รหัสผ่านเดิม (จำไม่ได้ ทักไลน์คลินิกได้)',
+        );
+        return;
       }
       // Session cookie is set — reload so the server re-renders as signed in and merges the cart.
       window.location.reload();
@@ -185,6 +200,15 @@ export function LoginModal({
                 className={inputClass}
                 aria-label="รหัสผ่าน"
               />
+
+              {notice && (
+                <p
+                  className="rounded-lg bg-mint/10 px-3 py-2 text-xs leading-relaxed text-forest"
+                  role="status"
+                >
+                  {notice}
+                </p>
+              )}
 
               {error && (
                 <p className="rounded-lg bg-red-50 px-3 py-2 text-xs text-red-600" role="alert">

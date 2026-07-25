@@ -135,10 +135,10 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations('ServicesPage');
-  const tHome = await getTranslations('HomePage');
+  const tNav = await getTranslations('Navigation');
   
   const breadcrumb = breadcrumbSchema([
-    { name: tHome('Navigation.home'), path: '/' },
+    { name: tNav('home'), path: '/' },
     { name: t('breadcrumb'), path: '/services' },
   ]);
 

@@ -83,8 +83,8 @@ assert_status() {
 
 echo "Worker smoke test → $BASE"
 
-# A duplicate email is rejected before hashPassword(), so it cannot detect Workers-only crypto
-# failures. Every run must register a fresh address to force the real hashing path.
+# A duplicate email answers 200 as well (the endpoint refuses to say who has an account), so only a
+# fresh address proves the real create-and-hash path ran. Every run must register a new one.
 assert_status "200" "register" "fresh member" \
   "{\"email\":\"$EMAIL\",\"password\":\"$PASSWORD\"}"
 assert_status "200" "login" "correct password" \

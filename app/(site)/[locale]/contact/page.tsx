@@ -87,12 +87,12 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations('ContactPage');
-  const tHome = await getTranslations('HomePage');
+  const tNav = await getTranslations('Navigation');
 
   const heroImage = await getImage('hero-contact');
 
   const breadcrumb = breadcrumbSchema([
-    { name: tHome('Navigation.home'), path: '/' },
+    { name: tNav('home'), path: '/' },
     { name: t('breadcrumb'), path: '/contact' },
   ]);
 

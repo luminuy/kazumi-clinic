@@ -7,16 +7,26 @@ import {
   type PublicMember,
 } from '@/lib/members/store';
 import { newId } from '@/lib/members/db';
-import { createSession } from '@/lib/members/session';
-import { mergeGuestCartIntoMember } from '@/lib/members/cart';
+import { hashPassword } from '@/lib/members/password';
 import { rateLimit, clientIp } from '@/lib/rate-limit';
 import {
   isEmailConfigured,
   sendAccountExistsEmail,
 } from '@/lib/members/password-reset';
 
-// PUBLIC endpoint — creates an email/password member account and starts a session. Validation
-// mirrors app/api/leads: strict Zod, a body-size guard, and generic error text.
+// PUBLIC endpoint — creates an email/password member account. Validation mirrors app/api/leads:
+// strict Zod, a body-size guard, and generic error text.
+//
+// It deliberately does NOT start a session, and answers a duplicate email with the same 200 body as
+// a fresh signup. Both facts serve one goal: the response must not reveal whether an address
+// already belongs to a member. For an aesthetic clinic that is health-adjacent personal data
+// (PDPA), so "does this person have an account here" is not ours to hand out. Issuing a session
+// only on the real-signup branch would leak exactly that through the Set-Cookie header, which is
+// why the caller is sent to /account/login instead of being logged straight in.
+//
+// Residual, and honest about it: an attacker who registers an address and then succeeds at logging
+// in with the password they just chose learns the address was previously unused. Closing that needs
+// verify-before-create over email — see lib/members/password-reset.ts once a provider is wired.
 
 const MAX_BODY = 4 * 1024;
 
@@ -66,11 +76,14 @@ export async function POST(request: NextRequest) {
       password: parsed.data.password,
       name: parsed.data.name ?? null,
     });
-    await createSession(member.id, request.headers.get('user-agent'));
-    await mergeGuestCartIntoMember(member.id);
     return NextResponse.json({ ok: true, member: toPublicMember(member) });
   } catch (error) {
     if (error instanceof Error && error.message === 'EMAIL_TAKEN') {
+      // createMember rejects a duplicate BEFORE it hashes anything, so returning here directly
+      // would answer roughly a PBKDF2 run sooner than a real signup — a timing oracle in place of
+      // the message we just removed. Burn the same work, and discard it.
+      await hashPassword(parsed.data.password);
+
       if (isEmailConfigured()) {
         try {
           await sendAccountExistsEmail({ to: parsed.data.email });
@@ -78,15 +91,12 @@ export async function POST(request: NextRequest) {
           // Delivery faults must not turn the duplicate-only path into an account oracle.
           console.error('Account-exists email delivery failed.');
         }
-
-        // A real signup also sets a session cookie while this path cannot. That residual signal is
-        // accepted: removing it would require issuing a session for an account we did not create.
-        return NextResponse.json({
-          ok: true,
-          member: registrationDecoy(parsed.data),
-        });
       }
-      return NextResponse.json({ error: 'อีเมลนี้มีบัญชีอยู่แล้ว' }, { status: 409 });
+
+      return NextResponse.json({
+        ok: true,
+        member: registrationDecoy(parsed.data),
+      });
     }
     console.error(error);
     return NextResponse.json(

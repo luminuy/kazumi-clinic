@@ -54,7 +54,7 @@ export default async function PromotionsPage({ params }: { params: Promise<{ loc
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations('PromotionsPage');
-  const tHome = await getTranslations('HomePage');
+  const tNav = await getTranslations('Navigation');
   
   const promos = await getActivePromotions();
 
@@ -78,7 +78,7 @@ export default async function PromotionsPage({ params }: { params: Promise<{ loc
     .map((category) => ({ slug: category.slug, title: category.title }));
 
   const breadcrumb = breadcrumbSchema([
-    { name: tHome('Navigation.home'), path: '/' },
+    { name: tNav('home'), path: '/' },
     { name: t('breadcrumb'), path: '/promotions' },
   ]);
 

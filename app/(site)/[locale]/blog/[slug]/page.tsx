@@ -83,9 +83,9 @@ export default async function BlogPostPage({ params }: Params) {
     imagePublicId: post.cover_image_public_id ?? undefined,
   });
 
-  const tHome = await getTranslations('HomePage');
+  const tNav = await getTranslations('Navigation');
   const breadcrumb = breadcrumbSchema([
-    { name: tHome('Navigation.home'), path: '/' },
+    { name: tNav('home'), path: '/' },
     { name: t('breadcrumb'), path: '/blog' },
     { name: post.title, path: `/blog/${post.slug}` },
   ]);
