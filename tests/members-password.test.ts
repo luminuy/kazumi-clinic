@@ -10,6 +10,14 @@ describe('hashPassword / verifyPassword', () => {
     expect(Number(parts[1])).toBeGreaterThan(0);
   });
 
+  it('stays within the Cloudflare Workers PBKDF2 iteration ceiling', async () => {
+    const stored = await hashPassword('worker-compatible password');
+    // Workers throws "NotSupportedError: Pbkdf2 failed: iteration counts above 100000 are not
+    // supported (requested 600000)." Node WebCrypto does not, so assert the serialized cost directly.
+    const iterations = Number(stored.split('$')[1]);
+    expect(iterations).toBeLessThanOrEqual(100_000);
+  });
+
   it('verifies the correct password against its own hash', async () => {
     const stored = await hashPassword('a real password');
     await expect(verifyPassword('a real password', stored)).resolves.toBe(true);

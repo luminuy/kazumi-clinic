@@ -1,14 +1,16 @@
 /**
  * Password hashing with PBKDF2 over the Web Crypto API — no native deps, runs on the Cloudflare
- * Workers runtime. Format: `pbkdf2$<iterations>$<saltB64>$<hashB64>`, self-describing so the cost
- * can be raised later without breaking existing hashes.
+ * Workers runtime. Format: `pbkdf2$<iterations>$<saltB64>$<hashB64>`, self-describing so hashes
+ * retain the cost they were created with.
  *
  * Verification recomputes with the stored parameters and compares in constant time.
  */
 
-// OWASP 2023 baseline for PBKDF2-HMAC-SHA256. Stored per-hash (see format below), so raising this
-// only affects new/updated hashes — existing ones keep verifying with their recorded iteration count.
-const ITERATIONS = 600_000;
+// Cloudflare Workers caps PBKDF2 at 100,000 iterations and throws:
+// "NotSupportedError: Pbkdf2 failed: iteration counts above 100000 are not supported (requested 600000)."
+// This is below OWASP's 600,000 PBKDF2-HMAC-SHA256 recommendation; a stronger KDF here requires a
+// WASM Argon2/bcrypt build rather than increasing this PBKDF2 count.
+const ITERATIONS = 100_000;
 const KEY_LEN = 32; // bytes
 const SALT_LEN = 16; // bytes
 
