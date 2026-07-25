@@ -5,6 +5,13 @@ import { Loader2, TriangleAlert, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslations } from 'next-intl';
 import { formatSatang } from '@/lib/members/money';
+import { CSRF_COOKIE_NAME, CSRF_HEADER_NAME } from '@/lib/csrf';
+
+/** Reads a cookie by name from document.cookie — used for the CSRF double-submit token. */
+function readCookie(name: string): string | null {
+  const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]) : null;
+}
 
 type Fulfillment = 'booking_request' | 'deposit' | 'full_payment';
 type PaymentMethod = 'pay_at_clinic' | 'gateway';
@@ -63,7 +70,10 @@ export function CheckoutForm({
     try {
       const res = await fetch('/api/checkout', {
         method: 'POST',
-        headers: { 'content-type': 'application/json' },
+        headers: {
+          'content-type': 'application/json',
+          [CSRF_HEADER_NAME]: readCookie(CSRF_COOKIE_NAME) ?? '',
+        },
         body: JSON.stringify({
           contactName: form.name.trim(),
           contactPhone: form.phone.trim(),

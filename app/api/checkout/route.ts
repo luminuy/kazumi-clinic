@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import { createOrder } from '@/lib/members/orders';
 import { rateLimit, clientIp } from '@/lib/rate-limit';
+import { CSRF_COOKIE_NAME, CSRF_HEADER_NAME, csrfTokensMatch } from '@/lib/csrf';
 
 // Creates an order from the current cart. Zod-validated; the cart itself is read server-side (never
 // trusted from the client), so the body carries only contact details + the chosen fulfillment.
@@ -28,6 +29,13 @@ export async function POST(request: NextRequest) {
   // Order-spam guard: 15 checkouts per IP per 5 minutes.
   if (!(await rateLimit('checkout', clientIp(request), { limit: 15, windowSec: 300 }))) {
     return NextResponse.json({ error: 'ทำรายการบ่อยเกินไป กรุณาลองใหม่ภายหลัง' }, { status: 429 });
+  }
+
+  // CSRF: SameSite=Lax already blocks the classic cross-site form/XHR forgery, but checkout writes
+  // real customer PII and drives an order, so it gets the extra double-submit check too — see
+  // lib/csrf.ts for why a non-httpOnly cookie is the right call here, not a weaker one.
+  if (!csrfTokensMatch(request.cookies.get(CSRF_COOKIE_NAME)?.value, request.headers.get(CSRF_HEADER_NAME))) {
+    return NextResponse.json({ error: 'เซสชันหมดอายุ กรุณารีเฟรชหน้าแล้วลองใหม่' }, { status: 403 });
   }
 
   const raw = await request.text();
