@@ -161,12 +161,13 @@ Stack: Next.js 16 App Router (React 19) + TypeScript + Tailwind CSS v4 + shadcn/
 | แตะ auth / crypto / D1 / binding | 2026-07-25 (PBKDF2 100k · เทสต์ไม่ใช่หลักฐาน · smoke test ที่ปลุกผิด) |
 | เขียน/ผูก migration | 2026-07-24 (table-rebuild ลบรูปทุก deploy) |
 | deploy หรือรายงานผลหลัง deploy | 2026-07-17 ×3 (dev server ปน `.next` · ISR เสิร์ฟของเก่า · `Current Version ID` ไม่พอ), 2026-07-16 (ห้ามรายงานสิ่งที่ไม่ได้ตรวจ) |
-| ดึงโค้ด / merge / จัดการ branch, worktree | 2026-07-23 (stash+pull พังเงียบ · CI ไม่รันรอบใหม่ → เปิด branch ใหม่), 2026-07-22 ×2 (งานไม่ push = มองไม่เห็น · worktree ค้างเก่า) |
+| ดึงโค้ด / merge / จัดการ branch, worktree | **2026-07-25 (แตก branch จาก origin/main ที่ไม่ได้ fetch → ฐานขาดงานที่เพิ่ง merge)**, 2026-07-23 (stash+pull พังเงียบ · CI ไม่รันรอบใหม่ → เปิด branch ใหม่), 2026-07-22 ×2 (งานไม่ push = มองไม่เห็น · worktree ค้างเก่า) |
 | แตะความลับ / เปลี่ยน visibility ของ repo | 2026-07-23 (`SESSION_SECRET` fallback ในกิต · ห้าม `\|\|` ให้ความลับ) |
 | แตะรูป / metadata / cache | 2026-07-22 (ตาราง `revalidations` หาย → ISR ตายเงียบ), 2026-07-17 (แก้เฉพาะที่เห็นบนหน้า = ทิ้งบั๊กใน OG/JSON-LD) |
 | แตะ UI ที่มีหลายหน้าใช้ pattern เดียวกัน | บล็อก "พอร์ตมาจาก littlesmileflower" (แก้ทั้ง pattern ไม่ใช่ไฟล์เดียว · list ทุก state ก่อนแก้ conditional) |
 | เขียน/แก้เอกสาร | 2026-07-17 ×3 (เอกสารเก่าทำให้ทำผิดซ้ำ · อ่านไฟล์จาก branch ผิด · พอร์ตข้อเท็จจริงมาโดยไม่ตรวจ) |
 | เจอคำสั่งใน `package.json` ที่ fail | 2026-07-17 (`pnpm lint` พังมาหลายเดือนโดยไม่มีใครสงสัย) |
+| สั่ง agent อื่น (Codex) ให้ลงมือแก้โค้ด | 2026-07-25 (เขียนสเปกโดยไม่อ่านโค้ดก่อน → สั่งผิด 3 จุด · grep พิสูจน์งานที่ครอบไม่ครบ) |
 
 **เมื่อพลาด (bug ที่ user เจอ, แก้ผิด, ลืม edge case, รายงานผิด) ให้บันทึกทันที ห้ามข้าม:**
 
@@ -181,6 +182,15 @@ Stack: Next.js 16 App Router (React 19) + TypeScript + Tailwind CSS v4 + shadcn/
    ```
 
 <!-- รูปแบบ: - YYYY-MM-DD — สิ่งที่พลาด → กฎใหม่ -->
+
+- 2026-07-25 — **แตก branch จาก `origin/main` ที่ไม่ได้ fetch สด แล้วทำงานทับของที่ merge ไปแล้ว** · หลัง merge PR #258 ผมรัน `git switch -c <ใหม่> origin/main` ทันทีโดยไม่ `git fetch` ก่อน — `origin/main` ในเครื่องยังชี้ commit ก่อน #258 · งานรอบใหม่จึงเริ่มจากฐานที่ขาดงานตัวเองไปทั้งชุด · **จับได้เพราะบังเอิญ** grep แล้วเจอ aria-label ที่เพิ่งแก้ไปเมื่อ 10 นาทีก่อนกลับมาโผล่อีก ถ้าไม่เจอตอนนั้น PR ถัดไปจะ revert งานของ #258 ทิ้งเงียบ ๆ ตอน merge
+  → **กฎ: ก่อน `git switch -c <branch> origin/main` ต้อง `git fetch origin` เสมอ** — `origin/main` เป็น ref ในเครื่อง ไม่ใช่ของจริงบน GitHub · ยิ่งเพิ่ง merge เองยิ่งต้อง fetch เพราะ ref ในเครื่องไม่ขยับตามการ merge ฝั่ง server
+  → **กฎ: ก่อน push ทุกครั้ง ตรวจว่า branch มี main ล่าสุดจริง** `git merge-base --is-ancestor origin/main HEAD; echo $?` (ต้องได้ 0 หลัง fetch สด) · เป็นคำสั่งเดียวกับที่ [docs/2026-07-local-version-mismatch.md](docs/2026-07-local-version-mismatch.md) เขียนไว้ตั้งแต่ 2026-07-16 — บทเรียนมีอยู่แล้ว แต่ไม่มีใครรันมันตอนแตก branch จึงย้ายมาไว้ใน §0.5 ให้เห็นพร้อมกฎอื่น
+
+- 2026-07-25 — **เขียนสเปกให้ Codex โดยไม่เปิดไฟล์เป้าหมายอ่านก่อน ทำให้สั่งผิด 3 ครั้งในงานเดียว** · (1) สั่งให้เปลี่ยน `Header`/`Footer` เป็น async server component เพื่อใช้ `getTranslations` ทั้งที่ทั้งคู่ใช้ `useTranslations` ได้อยู่แล้ว → เทสต์ที่ผมเขียนเองแดง 3 ตัว (2) สั่งให้ใช้ `useTranslations` กับ `brand-strip.tsx` ที่ไม่มี `'use client'` (3) เขียน grep ตรวจงานเป็น `aria-label="..."` ซึ่งมองไม่เห็น `aria-label={...}` ที่เป็น JSX expression จึงมีจุดตกหล่น · **Codex ทักกลับทั้งสามข้อแทนที่จะเดาแก้เอง** เพราะสเปกเขียนไว้ว่า "ถ้าสเปกไม่ตรงกับโค้ดจริง ให้บอกตรง ๆ" — ถ้าไม่มีประโยคนั้นมันคงแก้ตามใจแล้วผมต้องมาไล่ย้อน
+  → **กฎ: สเปกที่สั่ง agent อื่นต้องเขียนจากโค้ดที่เปิดอ่านแล้ว ไม่ใช่จากที่จำได้** — อย่างน้อยต้องรู้ว่าไฟล์เป็น client หรือ server component, มี translator อยู่แล้วหรือยัง, และเทสต์ตัวไหนแตะไฟล์นั้น
+  → **กฎ: ใส่ประโยค "ถ้าสเปกไม่ตรงกับโค้ดจริง ให้รายงานกลับ ห้ามเดาแก้เอง" ในทุกสเปกที่ส่งให้ agent อื่น** · และ **ห้ามเชื่อผลตรวจของ agent อื่น** — รัน `pnpm lint`/`typecheck`/`test`/`build` เองทุกครั้ง (Codex รัน build ไม่ได้เพราะ sandbox ไม่มี network)
+  → **กฎ: คำสั่ง grep ที่ใช้ "พิสูจน์ว่างานเสร็จ" ต้องครอบทั้ง `attr="..."` และ `attr={...}`** ไม่งั้นมันพิสูจน์แค่ครึ่งเดียวแล้วรายงานว่าครบ
 
 - 2026-07-25 — **ระบบสมาชิกด้วยรหัสผ่านตายสนิทบน production มาหลายวัน ทั้งที่เทสต์ 47 ตัวเขียว CI เขียว และ security audit ชมค่านั้นด้วยซ้ำ** · `lib/members/password.ts` ตั้ง PBKDF2 ไว้ 600,000 รอบ แต่ workerd **ปฏิเสธเกิน 100,000** แล้ว throw `NotSupportedError: Pbkdf2 failed: iteration counts above 100000 are not supported` → `hashPassword()`/`verifyPassword()` พังทุกครั้ง = สมัคร/ล็อกอิน/รีเซ็ตรหัส ใช้ไม่ได้เลยทั้งหมด (ยืนยัน: สมาชิกทุกรายใน D1 เป็น OAuth-only ไม่เคยมีใครสมัครด้วยรหัสผ่านสำเร็จ) · ไม่มีด่านไหนจับได้เพราะ `vitest.config` ตั้ง `environment: 'node'` และ WebCrypto ของ Node **ไม่มีลิมิตนี้** — เทสต์ทั้งชุดรันบน runtime ที่โค้ดไม่ได้ทำงานอยู่บนนั้น · เจอเพราะยิง `/api/account/register` จริงบน production หลัง deploy แล้วได้ 502 → ไล่ด้วย `wrangler tail`
   → **กฎ: โค้ดที่พึ่ง Web API / crypto / binding ของ Worker — "เทสต์ผ่าน + CI เขียว" ไม่ใช่หลักฐานว่าใช้งานได้** ต้องยิงของจริงบน Worker ที่ deploy แล้วเท่านั้น · เพิ่มเข้า §0.3 checklist แล้ว · ทุกครั้งที่ deploy ตอนนี้มี `pnpm smoke` ([scripts/smoke.sh](scripts/smoke.sh)) ยิง register/login จริงให้อัตโนมัติ — แต่ครอบแค่ 2 path นั้น path อื่นยังต้องยิงเอง

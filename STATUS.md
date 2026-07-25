@@ -5,7 +5,7 @@
 > อัปเดตไฟล์นี้เป็นส่วนหนึ่งของ workflow: หลัง **deploy** และตอน **เริ่ม/จบงานสำคัญ** (ดู CLAUDE.md §0)
 > งานที่ปิดไปแล้วย้ายไป [docs/changelog.md](docs/changelog.md) — ไฟล์นี้เก็บแค่ **ตอนนี้ · ต่อไป · ค้าง**
 
-**อัปเดตล่าสุด:** 2026-07-25 11:15 UTC · โดย: Claude Code (วางแผน/ตรวจ) + Codex CLI `gpt-5.6-sol` (ลงมือแก้)
+**อัปเดตล่าสุด:** 2026-07-25 11:40 UTC · โดย: Claude Code (วางแผน/ตรวจ) + Codex CLI `gpt-5.6-sol` (ลงมือแก้)
 
 ---
 
@@ -36,7 +36,7 @@
 | เรื่อง | รายละเอียด |
 |---|---|
 | **Password reset ส่งอีเมลไม่ได้** | ไม่มี provider — วางไว้หลัง seam `lib/members/password-reset.ts` (`isEmailConfigured()` อ่าน `EMAIL_API_KEY` เป็นชื่อ placeholder) · ลิงก์ "ลืมรหัสผ่าน?" **ซ่อนอยู่** จนกว่าจะตั้ง secret จริง แล้วมันจะโผล่เอง — ตั้งใจ ไม่ใช่ของค้าง |
-| **`blog/[slug]` ไม่ prerender ตอน build** | slug อยู่ใน D1 · ใส่ `generateStaticParams` คืน list ว่างเพื่อให้เข้า ISR ตอน on-demand แล้ว ถ้าอยาก prerender จริงต้องให้ CI เข้าถึง D1 ได้ |
+| **`blog/[slug]` ไม่ prerender ตอน build — ตั้งใจ ไม่ใช่ของค้าง** | slug อยู่ใน D1 ซึ่ง CI เข้าไม่ถึง · `generateStaticParams` คืน list ว่างเพื่อให้เข้า ISR ตอน on-demand (คนแรกที่เปิดจ่ายค่า render, ที่เหลือได้ cache) · จะ prerender จริงต้องให้ CI ถือ Cloudflare API token ไปอ่าน D1 ตอน build = เพิ่ม secret + ทำให้ build ล้มได้เมื่อ D1 ล่ม แลกกับ latency ของ request แรกเท่านั้น — **ไม่คุ้ม อย่าเปลี่ยนโดยไม่มีเหตุใหม่** |
 
 ---
 
@@ -46,6 +46,7 @@
 - [ ] **เจ้าของอัปรูปเข้า /admin/images** — ตรวจของจริง 2026-07-25: มี **36 slot** · มีรูปจริง **6** (`about-hero`, `brand-mark`, `collagen-booster-editorial`, `hero-collagen-booster`, `hero-contact`, `hero-home` — โหลดได้ 200 ทุกใบ) + `brand-logo` ที่ใช้ default `kazumi-clinic/logo` · **ที่เหลือว่าง** จึงขึ้นกล่องไอคอน (ไม่ใช่รูปแตก) · ที่ควรอัปก่อนเพราะเห็นบ่อยสุด: `doctor-pratch`, `og-about` (รูปตอนแชร์ลิงก์), `hero-filler`, `hero-botox`, `hero-iv-drip-2` (ใช้ทั้ง /services และการ์ดแชร์ /blog)
 - [ ] **เจ้าของทดสอบ**: เปลี่ยนรูปสักช่องใน /admin → รีเฟรชหน้านั้น ควรอัปเดตใน ~ไม่กี่วินาที (ยืนยัน on-demand revalidation หลังแก้ tag cache 2026-07-22)
 - [ ] **ขึ้นโดเมนจริง**: จดโดเมน → เปลี่ยน `site.url` → **ลบ var `SITE_ENV`** → เพิ่ม destination ใน Cloudflare Access (ดู docs/infrastructure.md)
+- [ ] **เจ้าของลบ orphan บน Cloudinary** (ไม่เร่ง): `kazumi-clinic/promo-velvet-glow`, `kazumi-clinic/promo-karisma-collagen` — เก็บภาพสลับกันมาแต่ต้น ไม่มีโค้ดไหนอ้างถึงแล้ว · ลบที่ Media Library ของบัญชี `dvskwrapm` เท่านั้น (agent ไม่มีและไม่ควรถือคีย์ Master Admin ของบัญชีที่ใช้ร่วมกับ littlesmileflower)
 - [ ] **เปิด R2** (ตอนนี้ใช้ KV แทน) — ต้องกดเปิดใน Cloudflare dashboard เอง
 - [ ] **ตั้ง GitHub secret `BACKUP_PASSPHRASE`** ไม่งั้น workflow backup D1 ไม่ทำงาน
 - [x] เปิด Google/LINE Login — secret ตั้งครบแล้ว (ยืนยัน `wrangler secret list` 2026-07-25)

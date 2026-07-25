@@ -164,8 +164,18 @@ export async function setPostImage(id: string, imagePublicId: string, updatedBy:
 }
 
 /** Remove a post outright. */
-export async function deletePost(id: string) {
+/**
+ * Removes a post and reports the slug it had. The caller needs that slug to purge the article's own
+ * cached URL: without it a deleted post keeps being served from the ISR cache for up to an hour —
+ * which for clinic content (a wrong price, an unreviewed medical claim) is exactly the case where
+ * "deleted" has to mean gone now. Returns null when the id matched nothing.
+ */
+export async function deletePost(id: string): Promise<string | null> {
   const binding = await db();
   requireDb(binding);
-  await binding.prepare('DELETE FROM posts WHERE id = ?1').bind(id).run();
+  const row = await binding
+    .prepare('DELETE FROM posts WHERE id = ?1 RETURNING slug')
+    .bind(id)
+    .first<{ slug: string }>();
+  return row?.slug ?? null;
 }
