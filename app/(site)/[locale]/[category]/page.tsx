@@ -10,11 +10,10 @@ import { routing } from '@/i18n/routing';
 import {
   serviceCategories,
   getServiceBySlug,
-  type ServiceCategory,
   type ServiceItem,
 } from '@/lib/services';
 import { serviceItemListSchema, breadcrumbSchema } from '@/lib/schema';
-import { getCategoryItems } from '@/lib/service-products-store';
+import { getMergedCategory } from '@/lib/service-products-store';
 import { getImage, getImageOverrides } from '@/lib/site-images-store';
 import { socialImage } from '@/lib/metadata-images';
 import { categoryImageKey } from '@/lib/site-images';
@@ -188,12 +187,10 @@ function BookingCta({ hasPrice }: { hasPrice: boolean }) {
 export default async function ServiceCategoryPage({ params }: Props) {
   const { locale, category } = await params;
   setRequestLocale(locale);
-  const base = getServiceBySlug(category);
-  if (!base) notFound();
-
   // Items resolved through the /admin override layer (edits, additions, removals). Category
   // structure itself stays in code — only the product list is editable.
-  const service: ServiceCategory = { ...base, items: await getCategoryItems(category) };
+  const service = await getMergedCategory(category);
+  if (!service) notFound();
 
   // A hero the clinic replaced through /admin wins over the one compiled into lib/services.ts.
   const overrides = await getImageOverrides();

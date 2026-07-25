@@ -19,8 +19,8 @@ type CartSummary = { items: CartLine[]; count: number; subtotalSatang: number };
 /**
  * Interactive cart. Quantity/remove actions PATCH or DELETE /api/cart/items, which returns the
  * updated cart — we render straight from that response, then router.refresh() so the header badge
- * (a Server Component) stays in sync. The checkout CTA is disabled until Phase 3 wires the order
- * flow; the interim guidance points at LINE so a customer is never stuck.
+ * (a Server Component) stays in sync. Checkout CTA goes to /cart/checkout; the LINE button next to
+ * it stays as an always-available alternative for anyone who'd rather book that way.
  */
 export function CartView({ initialCart, lineUrl }: { initialCart: CartSummary; lineUrl: string }) {
   const t = useTranslations('Cart');

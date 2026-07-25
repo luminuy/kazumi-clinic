@@ -341,13 +341,6 @@ export const categoryImageKey: Record<string, SiteImageKey> = {
   'laser-hifu': 'hero-laser-hifu',
 };
 
-/** Which slot backs each promotion poster, by its default public ID. */
-export const posterKeyByDefaultId = new Map(
-  siteImages
-    .filter((i) => i.key.startsWith('promo-') && i.defaultPublicId)
-    .map((i) => [i.defaultPublicId!, i.key]),
-);
-
 export type SiteImageSection = {
   id: string;
   title: string;

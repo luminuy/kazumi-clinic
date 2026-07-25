@@ -68,8 +68,3 @@ export const ACCESS_JWT_HEADER = 'cf-access-jwt-assertion';
  * signature is checked against Cloudflare's JWKS either way, so a forged cookie can't pass.
  */
 export const ACCESS_COOKIE_NAME = 'CF_Authorization';
-
-/** True when the deploy has Access wired up at all — used to explain the 404 in logs/UI. */
-export function isAccessConfigured() {
-  return readConfig() !== null;
-}
