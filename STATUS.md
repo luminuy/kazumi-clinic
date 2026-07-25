@@ -5,7 +5,7 @@
 > อัปเดตไฟล์นี้เป็นส่วนหนึ่งของ workflow: หลัง **deploy** และตอน **เริ่ม/จบงานสำคัญ** (ดู CLAUDE.md §0)
 > งานที่ปิดไปแล้วย้ายไป [docs/changelog.md](docs/changelog.md) — ไฟล์นี้เก็บแค่ **ตอนนี้ · ต่อไป · ค้าง**
 
-**อัปเดตล่าสุด:** 2026-07-25 09:55 UTC · โดย: Claude Code
+**อัปเดตล่าสุด:** 2026-07-25 09:45 UTC · โดย: Claude Code
 
 ---
 
@@ -13,7 +13,7 @@
 
 | | |
 |---|---|
-| **workers.dev** | Version `51fb4e67` — deploy 2026-07-25 09:20 UTC ผ่าน CD (run [30152607190](https://github.com/luminuy/kazumi-clinic/actions/runs/30152607190)) · ตรงกับ main `67f4b9a` (PR [#253](https://github.com/luminuy/kazumi-clinic/pull/253)) · ยืนยันบน production: register อีเมลใหม่/อีเมลซ้ำตอบเหมือนกันเป๊ะและไม่มี `Set-Cookie` · breadcrumb JSON-LD เป็น "หน้าแรก" แล้วทั้ง 6 หน้า · `pnpm smoke` เขียว |
+| **workers.dev** | Version `f24098a4` — deploy 2026-07-25 09:40 UTC ผ่าน CD (run [30153131870](https://github.com/luminuy/kazumi-clinic/actions/runs/30153131870)) · ตรงกับ main `b332493` (PR [#255](https://github.com/luminuy/kazumi-clinic/pull/255)) · ยืนยันบน production: `pnpm health` เขียวทุกหน้า · โลโก้/hero ยังขึ้นปกติ · JSON-LD มี `logo` แล้ว (โหลดได้ 200) |
 | **โดเมนจริง** (kazumiclinic.com) | ❌ ยังไม่ขึ้น — `SITE_ENV=preview`, robots `Disallow: /` (ตั้งใจ ห้ามลบจนกว่าโดเมนจะขึ้น) |
 | **URL ตรวจ** | https://kazumi-clinic.bankjack10452.workers.dev · ตรวจ 2026-07-25: HTTP 200 |
 
