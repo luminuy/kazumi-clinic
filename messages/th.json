@@ -11,7 +11,9 @@
     "allServices": "บริการทั้งหมด",
     "search": "ค้นหา",
     "cart": "ตะกร้าสินค้า",
-    "account": "บัญชีสมาชิก"
+    "account": "บัญชีสมาชิก",
+    "homeLink": "Kazumi Clinic หน้าหลัก",
+    "openMenu": "เปิดเมนู"
   },
   "Footer": {
     "location": "ที่ตั้ง",

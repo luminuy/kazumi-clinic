@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Search, User, ShoppingBag } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { Button } from '@/components/ui/button';
 import type { OAuthProvider } from '@/lib/members/oauth';
@@ -22,6 +23,7 @@ export function HeaderActions({
 }: {
   oauthProviders?: OAuthProvider[];
 }) {
+  const t = useTranslations('Navigation');
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [searchModalOpen, setSearchModalOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
@@ -78,7 +80,7 @@ export function HeaderActions({
             variant="ghost"
             size="icon"
             className="rounded-full text-foreground/80 hover:text-primary"
-            aria-label="ตะกร้าสินค้า"
+            aria-label={t('cart')}
             render={<Link href="/cart" />}
           >
             <ShoppingBag className="size-5" />

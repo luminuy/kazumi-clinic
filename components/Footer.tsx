@@ -16,7 +16,7 @@ export default function Footer({ logoMark }: { logoMark: string }) {
             <Link
               href="/"
               className="inline-flex items-center gap-3"
-              aria-label="Kazumi Clinic หน้าหลัก"
+              aria-label={tNav('homeLink')}
             >
               {logoMark && (
                 <Image

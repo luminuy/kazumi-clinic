@@ -2,7 +2,7 @@ import { jsonLdHtml } from '@/lib/json-ld';
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { ArrowUpRight, ChevronDown } from 'lucide-react';
 import { site, localizedAlternates } from '@/lib/site';
 import { doctor, doctorEesha } from '@/lib/doctor';

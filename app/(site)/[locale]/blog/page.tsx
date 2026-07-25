@@ -1,7 +1,7 @@
 import { jsonLdHtml } from '@/lib/json-ld';
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import Image from 'next/image';
 import { FileText, ArrowRight } from 'lucide-react';
 import { LineIcon, InstagramIcon } from '@/components/brand-icons';
