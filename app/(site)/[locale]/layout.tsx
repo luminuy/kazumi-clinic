@@ -45,11 +45,15 @@ export default async function SiteLayout({
     logoPublicId: brandLogo,
   });
 
-  const messages = await getMessages();
-  // Cart badge count — read per request (cookie-scoped). Safe under local dev: getCartCount
+  // Independent reads (i18n messages, cart cookie lookup, member session lookup) — no data
+  // dependency between them, so they go out together instead of adding up their latencies
+  // one after another. Cart badge count is cookie-scoped and safe under local dev: getCartCount
   // returns 0 when D1 is unavailable.
-  const cartCount = await getCartCount();
-  const member = await getCurrentMemberRow();
+  const [messages, cartCount, member] = await Promise.all([
+    getMessages(),
+    getCartCount(),
+    getCurrentMemberRow(),
+  ]);
 
   return (
     <NextIntlClientProvider messages={messages}>

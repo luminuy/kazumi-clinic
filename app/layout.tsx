@@ -62,6 +62,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const locale = await getLocale();
   return (
     <html lang={locale} className={cn(serif.variable, sans.variable)}>
+      {/* Nearly every hero/LCP image on the site resolves through res.cloudinary.com
+          (lib/cloud.ts) — without this hint the browser can't start DNS/TLS/TCP setup for that
+          origin until it parses the <img> tag referencing it, adding a full connection handshake
+          in front of every LCP image request. Next.js hoists direct <link> children into <head>. */}
+      <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
       {/* Only the document shell lives here — the public site's header, footer and JSON-LD are
           in app/(site)/layout.tsx so /admin renders without them. */}
       <body className="font-sans">{children}</body>

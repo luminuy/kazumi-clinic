@@ -1,12 +1,21 @@
 'use client';
 
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
 import { Search, User, ShoppingBag } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { Button } from '@/components/ui/button';
-import { LoginModal } from '@/components/auth/login-modal';
-import { SearchModal } from '@/components/search-modal';
 import type { OAuthProvider } from '@/lib/members/oauth';
+
+// Both modals sit in the tree on every page (just visually hidden via `open`), so their JS shipped
+// and hydrated for every visitor regardless of whether they ever open search or account. Splitting
+// them into their own chunks means that cost is only paid once someone actually opens one.
+const LoginModal = dynamic(() => import('@/components/auth/login-modal').then((m) => m.LoginModal), {
+  ssr: false,
+});
+const SearchModal = dynamic(() => import('@/components/search-modal').then((m) => m.SearchModal), {
+  ssr: false,
+});
 
 export function HeaderActions({
   cartCount = 0,
