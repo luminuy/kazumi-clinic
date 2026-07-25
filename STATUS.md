@@ -5,7 +5,7 @@
 > อัปเดตไฟล์นี้เป็นส่วนหนึ่งของ workflow: หลัง **deploy** และตอน **เริ่ม/จบงานสำคัญ** (ดู CLAUDE.md §0)
 > งานที่ปิดไปแล้วย้ายไป [docs/changelog.md](docs/changelog.md) — ไฟล์นี้เก็บแค่ **ตอนนี้ · ต่อไป · ค้าง**
 
-**อัปเดตล่าสุด:** 2026-07-25 09:35 UTC · โดย: Claude Code
+**อัปเดตล่าสุด:** 2026-07-25 09:55 UTC · โดย: Claude Code
 
 ---
 
@@ -35,7 +35,6 @@
 
 | เรื่อง | รายละเอียด |
 |---|---|
-| **รูป: `/admin` กด "คืนรูปเดิม" ที่โลโก้หรือ hero หน้าแรกแล้วจะพัง** | default ที่ compile มากับโค้ด 2 ตัว (`kazumi-clinic/brand-mark`, `kazumi-clinic/hero-home`) **ตอบ 404 บน Cloudinary แล้ว** (ตรวจ 2026-07-25) · ตอนนี้ยังไม่เห็นผลเพราะมี override ใน D1 ทับอยู่ทั้งคู่ — แต่ถ้ากดคืนรูปเดิมเมื่อไหร่ โลโก้ทุกหน้า + hero หน้าแรก + `image` ใน JSON-LD จะชี้ไปรูปที่ไม่มีอยู่ · แก้ทางเดียวกับ PR #211 (ตัด default ที่ตายแล้วออก) แต่ต้องทำ fallback ให้ Header/Footer/hero/schema รับค่าว่างได้ก่อน |
 | **Password reset ส่งอีเมลไม่ได้** | ไม่มี provider — วางไว้หลัง seam `lib/members/password-reset.ts` (`isEmailConfigured()` อ่าน `EMAIL_API_KEY` เป็นชื่อ placeholder) · ลิงก์ "ลืมรหัสผ่าน?" **ซ่อนอยู่** จนกว่าจะตั้ง secret จริง แล้วมันจะโผล่เอง — ตั้งใจ ไม่ใช่ของค้าง |
 | **`blog/[slug]` ไม่ prerender ตอน build** | slug อยู่ใน D1 · ใส่ `generateStaticParams` คืน list ว่างเพื่อให้เข้า ISR ตอน on-demand แล้ว ถ้าอยาก prerender จริงต้องให้ CI เข้าถึง D1 ได้ |
 
@@ -44,7 +43,7 @@
 ## 📋 ต่อไป / TODO
 
 - [ ] **เชื่อม payment gateway**: แก้ `lib/members/payments.ts` (`initiatePayment`) — ตอนนี้จองก่อนจ่ายที่คลินิกได้เต็ม, ชำระออนไลน์เป็น placeholder (ดู [docs/member-system.md](docs/member-system.md))
-- [ ] **เจ้าของอัปรูปเข้า /admin/images** — ตรวจของจริง 2026-07-25: มี **36 slot** ทั้งเว็บ · มีรูปจริงแค่ **6** (`about-hero`, `brand-mark`, `collagen-booster-editorial`, `hero-collagen-booster`, `hero-contact`, `hero-home` — ทั้ง 6 โหลดได้ 200) · **24 slot ว่างสนิท** จึงขึ้นกล่องไอคอนแทน (ไม่ใช่รูปแตก) ที่ควรอัปก่อนเพราะเห็นบ่อยสุด: `brand-logo` (โลโก้ใน JSON-LD ของ Google), `doctor-pratch`, `og-about` (รูปตอนแชร์ลิงก์), `hero-filler`, `hero-botox`, `hero-iv-drip-2` (ใช้ทั้ง /services และการ์ดแชร์ /blog)
+- [ ] **เจ้าของอัปรูปเข้า /admin/images** — ตรวจของจริง 2026-07-25: มี **36 slot** · มีรูปจริง **6** (`about-hero`, `brand-mark`, `collagen-booster-editorial`, `hero-collagen-booster`, `hero-contact`, `hero-home` — โหลดได้ 200 ทุกใบ) + `brand-logo` ที่ใช้ default `kazumi-clinic/logo` · **ที่เหลือว่าง** จึงขึ้นกล่องไอคอน (ไม่ใช่รูปแตก) · ที่ควรอัปก่อนเพราะเห็นบ่อยสุด: `doctor-pratch`, `og-about` (รูปตอนแชร์ลิงก์), `hero-filler`, `hero-botox`, `hero-iv-drip-2` (ใช้ทั้ง /services และการ์ดแชร์ /blog)
 - [ ] **เจ้าของทดสอบ**: เปลี่ยนรูปสักช่องใน /admin → รีเฟรชหน้านั้น ควรอัปเดตใน ~ไม่กี่วินาที (ยืนยัน on-demand revalidation หลังแก้ tag cache 2026-07-22)
 - [ ] **ขึ้นโดเมนจริง**: จดโดเมน → เปลี่ยน `site.url` → **ลบ var `SITE_ENV`** → เพิ่ม destination ใน Cloudflare Access (ดู docs/infrastructure.md)
 - [ ] **เปิด R2** (ตอนนี้ใช้ KV แทน) — ต้องกดเปิดใน Cloudflare dashboard เอง

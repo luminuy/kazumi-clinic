@@ -38,14 +38,18 @@ export default function Header({
           aria-label="Kazumi Clinic หน้าหลัก"
           className="group flex items-center gap-3 text-olive-deep"
         >
-          <Image
-            src={logoMark}
-            alt="Kazumi Clinic"
-            width={36}
-            height={36}
-            sizes="36px"
-            className="size-9 rounded-[0.35rem] object-cover ring-1 ring-olive/10 transition-transform duration-300 group-hover:scale-[1.03]"
-          />
+          {/* Empty until the clinic uploads a mark (lib/site-images.ts ships no dead default any
+              more) — the wordmark beside it already names the clinic, so nothing is lost. */}
+          {logoMark && (
+            <Image
+              src={logoMark}
+              alt="Kazumi Clinic"
+              width={36}
+              height={36}
+              sizes="36px"
+              className="size-9 rounded-[0.35rem] object-cover ring-1 ring-olive/10 transition-transform duration-300 group-hover:scale-[1.03]"
+            />
+          )}
           <span className="flex flex-col font-serif leading-none tracking-[0.18em]">
             <span className="text-[1.08rem]">KAZUMI</span>
             <span className="mt-1 pl-0.5 text-[0.56rem] tracking-[0.34em] text-olive/75">

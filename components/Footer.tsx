@@ -18,14 +18,16 @@ export default function Footer({ logoMark }: { logoMark: string }) {
               className="inline-flex items-center gap-3"
               aria-label="Kazumi Clinic หน้าหลัก"
             >
-              <Image
-                src={logoMark}
-                alt="Kazumi Clinic"
-                width={30}
-                height={30}
-                sizes="30px"
-                className="size-7 object-cover"
-              />
+              {logoMark && (
+                <Image
+                  src={logoMark}
+                  alt="Kazumi Clinic"
+                  width={30}
+                  height={30}
+                  sizes="30px"
+                  className="size-7 object-cover"
+                />
+              )}
               <span className="font-serif text-lg">Kazumi Clinic</span>
             </Link>
             <p className="mt-5 text-xs leading-[1.75] text-ink/60">{site.description}</p>
