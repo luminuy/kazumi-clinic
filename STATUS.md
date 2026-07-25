@@ -5,7 +5,7 @@
 > อัปเดตไฟล์นี้เป็นส่วนหนึ่งของ workflow: หลัง **deploy** และตอน **เริ่ม/จบงานสำคัญ** (ดู CLAUDE.md §0)
 > งานที่ปิดไปแล้วย้ายไป [docs/changelog.md](docs/changelog.md) — ไฟล์นี้เก็บแค่ **ตอนนี้ · ต่อไป · ค้าง**
 
-**อัปเดตล่าสุด:** 2026-07-25 12:20 UTC · โดย: Claude Code
+**อัปเดตล่าสุด:** 2026-07-25 13:25 UTC · โดย: Claude Code
 
 ---
 
@@ -13,7 +13,7 @@
 
 | | |
 |---|---|
-| **workers.dev** | Version `74725138` — deploy 2026-07-25 11:32 UTC ผ่าน CD (run [30156371946](https://github.com/luminuy/kazumi-clinic/actions/runs/30156371946)) · ตรงกับ main `b7bf69a` (PR [#261](https://github.com/luminuy/kazumi-clinic/pull/261)) · `pnpm health` เขียวทุกหน้า |
+| **workers.dev** | Version `c9cdab1f` — deploy 2026-07-25 13:20 UTC ผ่าน CD (run [30159515215](https://github.com/luminuy/kazumi-clinic/actions/runs/30159515215)) · ตรงกับ main `d9f8e0d` (PR [#264](https://github.com/luminuy/kazumi-clinic/pull/264) — ต่อ Resend) · `pnpm health` + `pnpm smoke` เขียว · ยิง `/api/account/forgot-password` จริง: ยังตอบ 200 ปกติแม้ยังไม่ตั้ง secret |
 | **โดเมนจริง** (kazumiclinic.com) | ❌ ยังไม่ขึ้น — `SITE_ENV=preview`, robots `Disallow: /` (ตั้งใจ ห้ามลบจนกว่าโดเมนจะขึ้น) |
 | **URL ตรวจ** | https://kazumi-clinic.bankjack10452.workers.dev · ตรวจ 2026-07-25: HTTP 200 |
 
@@ -45,7 +45,7 @@
 - [ ] **เชื่อม payment gateway**: แก้ `lib/members/payments.ts` (`initiatePayment`) — ตอนนี้จองก่อนจ่ายที่คลินิกได้เต็ม, ชำระออนไลน์เป็น placeholder (ดู [docs/member-system.md](docs/member-system.md))
 - [ ] **เจ้าของอัปรูปเข้า /admin/images** — ตรวจของจริง 2026-07-25: มี **36 slot** · มีรูปจริง **6** (`about-hero`, `brand-mark`, `collagen-booster-editorial`, `hero-collagen-booster`, `hero-contact`, `hero-home` — โหลดได้ 200 ทุกใบ) + `brand-logo` ที่ใช้ default `kazumi-clinic/logo` · **ที่เหลือว่าง** จึงขึ้นกล่องไอคอน (ไม่ใช่รูปแตก) · ที่ควรอัปก่อนเพราะเห็นบ่อยสุด: `doctor-pratch`, `og-about` (รูปตอนแชร์ลิงก์), `hero-filler`, `hero-botox`, `hero-iv-drip-2` (ใช้ทั้ง /services และการ์ดแชร์ /blog)
 - [ ] **เจ้าของทดสอบ**: เปลี่ยนรูปสักช่องใน /admin → รีเฟรชหน้านั้น ควรอัปเดตใน ~ไม่กี่วินาที (ยืนยัน on-demand revalidation หลังแก้ tag cache 2026-07-22)
-- [ ] **ขึ้นโดเมนจริง**: จดโดเมน → เปลี่ยน `site.url` → **ลบ var `SITE_ENV`** → เพิ่ม destination ใน Cloudflare Access (ดู docs/infrastructure.md) · ความเป็นเจ้าของ `kazumiclinic.com` ยังไม่ยืนยัน — ข้อนี้บล็อกทั้งการขึ้นเว็บจริง**และ**การยืนยันโดเมนกับ Resend (ข้อบนสุดของตาราง "ค้าง")
+- [ ] **ขึ้นโดเมนจริง**: จดโดเมน → เปลี่ยน `site.url` → **ลบ var `SITE_ENV`** → เพิ่ม destination ใน Cloudflare Access (ดู docs/infrastructure.md) · ความเป็นเจ้าของ `kazumiclinic.com` ยังไม่ยืนยันในเอกสาร แต่**เจ้าของแจ้งด้วยวาจา 2026-07-25 ว่าทีมกำลังซื้อโดเมนอยู่** (ยังไม่ได้ตรวจซ้ำด้วย `dig`/registrar — ตรวจก่อนอ้างเป็นข้อเท็จจริงในเอกสารอื่น) · ข้อนี้บล็อกทั้งการขึ้นเว็บจริง**และ**การยืนยันโดเมนกับ Resend (ข้อบนสุดของตาราง "ค้าง")
 - [ ] **เจ้าของลบ orphan บน Cloudinary** (ไม่เร่ง): `kazumi-clinic/promo-velvet-glow`, `kazumi-clinic/promo-karisma-collagen` — เก็บภาพสลับกันมาแต่ต้น ไม่มีโค้ดไหนอ้างถึงแล้ว · ลบที่ Media Library ของบัญชี `dvskwrapm` เท่านั้น (agent ไม่มีและไม่ควรถือคีย์ Master Admin ของบัญชีที่ใช้ร่วมกับ littlesmileflower)
 - [ ] **เปิด R2** (ตอนนี้ใช้ KV แทน) — ต้องกดเปิดใน Cloudflare dashboard เอง
 - [x] **`BACKUP_PASSPHRASE`** ตั้งแล้วตั้งแต่ 2026-07-23 — backup D1 รันจริงทุกวัน (ตรวจ 2026-07-25: `gh secret list` + 3 run ล่าสุด success · artifact ล่าสุด 43,932 bytes หมดอายุ 2026-08-23) · **เก็บ passphrase ไว้ให้ดี ถ้าหาย backup ทุกก้อนอ่านไม่ได้**
@@ -62,6 +62,7 @@
 - ⚠️ **Codex ชอบแก้ `STATUS.md` เองโดยไม่ได้สั่ง** และเนื้อหาที่มันเขียนมักเก่า — ตรวจ `git status` ทุกครั้งหลัง Codex จบ ถ้ามันแตะ STATUS.md ให้ `git checkout -- STATUS.md` แล้วเขียนเอง
 - **Codex เป็นคนลงมือแก้โค้ด, Claude วางแผน/ตรวจ** (เจ้าของสั่งตั้งแต่ 2026-07-24) · sandbox ของ Codex ไม่มี network → งานที่ต้อง curl/fetch ต้องให้ Claude ทำ · Claude ต้อง verify เองทุกครั้งด้วย lint/typecheck/test/build ไม่เชื่อคำอ้าง "ผ่านแล้ว"
 - **Cloudinary account (`dvskwrapm`) เป็นแพลนฟรี** — ไม่รองรับ scoped API key role ต้องใช้ Master Admin · ใช้ร่วมกับ littlesmileflower → **ห้ามลบ/ปิด unsigned preset `littlesmileflower`** แม้ Kazumi เลิกใช้แล้ว (PR #220)
+- **CI ค้างสถานะ `queued` (0 steps) นาน ๆ ได้โดยไม่ใช่ของเราพัง** — เจอจริง 2026-07-25 (PR #264): job ค้าง queued **1 ชั่วโมงเต็ม** ทั้งที่ run อื่นก่อน/หลังวิ่งปกติ ~1-2 นาที (repo public → ไม่ใช่ปัญหา billing minutes) แล้วอยู่ ๆ ก็เริ่มรันเองและผ่านปกติ · น่าจะเป็น backlog ฝั่ง GitHub Actions runner ที่พ้นการควบคุมเรา · ก่อนสงสัยว่า repo/PR มีปัญหา ให้เช็คก่อนว่า run อื่นในช่วงเวลาเดียวกันค้างเหมือนกันไหม (`gh run list -L 5`) ถ้าค้างเฉพาะตัวเดียวก็แค่รอ ไม่ต้อง debug โค้ด
 
 ---
 
