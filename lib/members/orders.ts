@@ -67,7 +67,7 @@ export type CreateOrderResult = {
   payment: PaymentInitiation;
 };
 
-function computeAmounts(fulfillment: Fulfillment, subtotal: number) {
+export function computeAmounts(fulfillment: Fulfillment, subtotal: number) {
   const deposit = fulfillment === 'deposit' ? depositSatang(subtotal) : 0;
   const amountDue =
     fulfillment === 'booking_request' ? 0 : fulfillment === 'deposit' ? deposit : subtotal;
