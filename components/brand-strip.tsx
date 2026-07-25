@@ -1,3 +1,5 @@
+import { getTranslations } from 'next-intl/server';
+
 /**
  * Brands & technologies the clinic actually uses on its menu (lib/services.ts) — a quiet
  * credibility band. Rendered as wordmarks rather than logo images on purpose: the real brand
@@ -13,10 +15,11 @@ const brands = [
   'HIFU',
 ] as const;
 
-export function BrandStrip() {
+export async function BrandStrip() {
+  const t = await getTranslations('A11y');
   return (
     <section
-      aria-label="แบรนด์และเทคโนโลยีที่คลินิกเลือกใช้"
+      aria-label={t('brandStrip')}
       className="border-y border-olive/10 bg-cream"
     >
       <div className="mx-auto max-w-6xl px-6 py-9 md:px-12 md:py-11">

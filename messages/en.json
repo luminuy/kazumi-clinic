@@ -412,7 +412,10 @@
       "checkoutSoon": "Ordering & payment is coming very soon.",
       "bookLine": "Book via LINE now",
       "priceNote": "Prices shown may change; please confirm current prices and conditions with the clinic before your visit. Results vary by individual and depend on a doctor's assessment."
-    }
+    },
+    "bookOrAskLine": "Book or ask about pricing on LINE",
+    "buyNow": "Buy now",
+    "buyNowError": "Couldn't add to cart"
   },
   "Checkout": {
     "title": "Confirm booking",
@@ -499,5 +502,26 @@
     "type": {
       "category": "Category"
     }
+  },
+  "A11y": {
+    "promotionGallery": "Kazumi Clinic promotions gallery",
+    "promotionScroll": "Scroll promotions",
+    "promotionPrev": "Previous promotion",
+    "promotionNext": "Next promotion",
+    "promotionChoose": "Choose a promotion",
+    "promotionDetail": "{name} — view service details",
+    "promotionView": "View {name}",
+    "promotionFilter": "Filter promotions by category",
+    "blogFilter": "Filter articles by category",
+    "brandStrip": "Brands and technologies the clinic uses",
+    "serviceGallery": "Kazumi Clinic services gallery",
+    "serviceList": "Our services",
+    "servicePosition": "Service position",
+    "viewService": "View {name}",
+    "serviceAutoplayStart": "Start auto-scrolling services",
+    "serviceAutoplayStop": "Stop auto-scrolling services",
+    "bookViaLine": "Book {name} via LINE",
+    "addItemToCart": "Add {name} to cart",
+    "askViaLine": "Ask about {name} on LINE"
   }
 }

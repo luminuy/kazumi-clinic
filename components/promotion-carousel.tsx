@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { Link } from '@/i18n/routing';
 import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type { PromotionPoster } from '@/lib/promotions';
 import { cn } from '@/lib/utils';
 
@@ -22,6 +23,7 @@ export function PromotionCarousel({
   /** Match the responsive image source to the card width for the rendering context. */
   imageSizes?: string;
 }) {
+  const t = useTranslations('A11y');
   const railRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<number | null>(null);
   const programmaticIndexRef = useRef<number | null>(null);
@@ -102,7 +104,7 @@ export function PromotionCarousel({
           className="promotion-carousel-rail"
           onScroll={handleScroll}
           role="region"
-          aria-label="แกลเลอรีโปรโมชั่นของ Kazumi Clinic"
+          aria-label={t('promotionGallery')}
         >
           {posters.map((poster, index) => (
             <article
@@ -115,7 +117,7 @@ export function PromotionCarousel({
             >
               <Link
                 href={`/${poster.categorySlug}`}
-                aria-label={`${poster.label} — ดูรายละเอียดบริการ`}
+                aria-label={t('promotionDetail', { name: poster.label })}
                 className="promotion-carousel-card__link group"
               >
                 <Image
@@ -135,7 +137,11 @@ export function PromotionCarousel({
           ))}
         </div>
 
-        <div className="promotion-carousel-controls" role="group" aria-label="เลื่อนโปรโมชั่น">
+        <div
+          className="promotion-carousel-controls"
+          role="group"
+          aria-label={t('promotionScroll')}
+        >
           <button
             type="button"
             className={cn(
@@ -143,7 +149,7 @@ export function PromotionCarousel({
               hidePreviousAtStart && activeIndex === 0 && 'promotion-carousel-arrow--hidden',
             )}
             onClick={() => goTo(activeIndex - 1)}
-            aria-label="ดูโปรโมชั่นก่อนหน้า"
+            aria-label={t('promotionPrev')}
             aria-controls="promotion-gallery-rail"
             disabled={hidePreviousAtStart && activeIndex === 0}
           >
@@ -153,7 +159,7 @@ export function PromotionCarousel({
             type="button"
             className="promotion-carousel-arrow"
             onClick={() => goTo(activeIndex + 1)}
-            aria-label="ดูโปรโมชั่นถัดไป"
+            aria-label={t('promotionNext')}
             aria-controls="promotion-gallery-rail"
           >
             <ArrowRight className="size-4" />
@@ -165,13 +171,17 @@ export function PromotionCarousel({
         <span className="promotion-carousel-note">
           สอบถามช่วงเวลาและสิทธิ์โปรโมชั่นกับทีม Kazumi
         </span>
-        <div className="promotion-carousel-dots" role="group" aria-label="เลือกโปรโมชั่น">
+        <div
+          className="promotion-carousel-dots"
+          role="group"
+          aria-label={t('promotionChoose')}
+        >
           {posters.map((poster, index) => (
             <button
               key={poster.src}
               type="button"
               aria-current={activeIndex === index ? 'true' : undefined}
-              aria-label={`ดู ${poster.label}`}
+              aria-label={t('promotionView', { name: poster.label })}
               className={cn(
                 'promotion-carousel-dot',
                 activeIndex === index && 'promotion-carousel-dot--active',
