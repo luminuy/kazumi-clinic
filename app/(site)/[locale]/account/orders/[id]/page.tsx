@@ -7,6 +7,7 @@ import { Link } from '@/i18n/routing';
 import { getOrderById } from '@/lib/members/orders';
 import { getCurrentMember } from '@/lib/members/session';
 import { formatSatang } from '@/lib/members/money';
+import { isGuestOrderLinkExpired } from '@/lib/members/config';
 
 export async function generateMetadata({
   params,
@@ -33,9 +34,13 @@ export default async function OrderPage({
   if (!order) notFound();
 
   // A member's order is private to them; a guest order (no member_id) is viewable by anyone holding
-  // the freshly issued id — the post-checkout confirmation link.
+  // the freshly issued id — the post-checkout confirmation link. That link carries PII (name,
+  // phone, email, note) with no re-authentication, so it expires after GUEST_ORDER_LINK_TTL_MS
+  // instead of staying valid forever — a member's own orders don't need this, they're already
+  // gated behind their session.
   const member = await getCurrentMember();
   if (order.memberId && order.memberId !== member?.id) notFound();
+  if (!order.memberId && isGuestOrderLinkExpired(order.createdAt)) notFound();
 
   // Next-step guidance depends on how they chose to settle.
   const awaitingGateway = order.status === 'awaiting_payment' && order.paymentMethod === 'gateway';

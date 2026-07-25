@@ -1,9 +1,22 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { ACCESS_COOKIE_NAME, ACCESS_JWT_HEADER, verifyAdmin } from '@/lib/auth';
+import { CSRF_COOKIE_NAME } from '@/lib/csrf';
 import createMiddleware from 'next-intl/middleware';
 import { routing } from './i18n/routing';
 
 const intlMiddleware = createMiddleware(routing);
+
+/** Issues the double-submit CSRF cookie for /api/checkout if this visitor doesn't have one yet. */
+function ensureCsrfCookie(request: NextRequest, response: NextResponse) {
+  if (request.cookies.get(CSRF_COOKIE_NAME)) return;
+  response.cookies.set(CSRF_COOKIE_NAME, crypto.randomUUID(), {
+    httpOnly: false, // client JS must read this — see lib/csrf.ts
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 60 * 60 * 24, // 24h — long enough to cover an abandoned-then-resumed checkout
+  });
+}
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
@@ -28,10 +41,14 @@ export async function middleware(request: NextRequest) {
   if (pathname !== '/' && pathname.endsWith('/')) {
     const url = request.nextUrl.clone();
     url.pathname = pathname.slice(0, -1);
-    return NextResponse.redirect(url, 308);
+    const response = NextResponse.redirect(url, 308);
+    ensureCsrfCookie(request, response);
+    return response;
   }
 
-  return intlMiddleware(request);
+  const response = intlMiddleware(request);
+  ensureCsrfCookie(request, response);
+  return response;
 }
 
 export const config = {
