@@ -6,6 +6,16 @@
 
 ---
 
+## 2026-07-25 — register เลิกเป็น account oracle + breadcrumb ที่ส่งชื่อ key ให้ Google (PR #253)
+
+**register**: อีเมลซ้ำเคยได้ `409 "อีเมลนี้มีบัญชีอยู่แล้ว"` → สคริปต์เดียวไล่เช็คได้ว่าใครเป็นลูกค้าคลินิก (ข้อมูลอ่อนไหวตาม PDPA) · ตอนนี้ตอบ 200 body เดียวกับสมัครสำเร็จ, **ไม่ออก session ให้ใครเลย** (ไม่งั้น `Set-Cookie` บอกความต่างแทน) และเผา `hashPassword()` ทิ้งบนเส้นทางซ้ำเพื่อไม่ให้เวลาตอบเป็นคำตอบ · แลกด้วยการที่คนสมัครใหม่ต้องล็อกอินอีกครั้ง · **ยังปิดไม่สนิท**: สมัครแล้วล็อกอินผ่าน = รู้ว่าอีเมลนั้นเดิมว่าง — ต้อง verify-before-create ทางอีเมลถึงจะปิดจริง
+
+**breadcrumb**: 7 หน้าเรียก `getTranslations('HomePage')` แล้วขอ `'Navigation.home'` ซึ่งเป็น namespace ระดับบน · next-intl ตอบกลับเป็นชื่อคีย์แทนที่จะพัง → JSON-LD บน production ส่ง `"name":"HomePage.Navigation.home"` ให้ Google มาตลอด (ยืนยันด้วย curl ก่อนแก้) · บทเรียน: **missing key ของ next-intl ไม่พัง มันชิป** จึงเพิ่ม invariant test ว่า th/en ต้องมีคีย์ตรงกันและไม่มีค่าว่าง
+
+**ปิดปมค้างเก่า 2 ข้อ**: เทสต์ปุ่มซื้อ/ตะกร้า (jsdom + Testing Library — ล็อกกฎ §0.2 ว่าของที่ยังไม่มีราคาต้องมีแค่ปุ่ม LINE) และ `scripts/verify-reset-revocation.sh` ที่พิสูจน์บน Worker จริงว่ารีเซ็ตรหัสถอน session ทุกเครื่อง (2 → 0, คุกกี้ตายทั้งคู่, token ใช้ครั้งเดียว)
+
+---
+
 ## 2026-07-25 — sitemap ครอบทั้ง 2 ภาษา (PR #251)
 
 `app/sitemap.ts` ลิสต์เฉพาะ URL ภาษาไทย ทั้งที่ `alternates.languages` ของทุกหน้าชี้ไป `/en` → เว็บส่งสัญญาณขัดกันเอง · แก้ที่โครงสร้าง: sitemap ประกาศ "หน้า" เป็น path ที่ไม่ผูกภาษา แล้ว `expand()` กระจายเป็นหนึ่ง entry ต่อ locale โดยดึง URL + hreflang จาก `localizedAlternates()` ตัวเดียวกับที่หน้าเว็บใช้ — sitemap จึงขัดกับ canonical ไม่ได้อีกโดยโครงสร้าง · เพิ่ม invariant test 3 ตัว · ยืนยันบน production: 72 URL (36 หน้า × 2 ภาษา) พร้อม hreflang ครบทุก entry

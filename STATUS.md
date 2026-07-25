@@ -5,7 +5,7 @@
 > อัปเดตไฟล์นี้เป็นส่วนหนึ่งของ workflow: หลัง **deploy** และตอน **เริ่ม/จบงานสำคัญ** (ดู CLAUDE.md §0)
 > งานที่ปิดไปแล้วย้ายไป [docs/changelog.md](docs/changelog.md) — ไฟล์นี้เก็บแค่ **ตอนนี้ · ต่อไป · ค้าง**
 
-**อัปเดตล่าสุด:** 2026-07-25 09:20 UTC · โดย: Claude Code
+**อัปเดตล่าสุด:** 2026-07-25 09:35 UTC · โดย: Claude Code
 
 ---
 
@@ -13,7 +13,7 @@
 
 | | |
 |---|---|
-| **workers.dev** | Version `90d47839` — deploy 2026-07-25 06:26 UTC ผ่าน CD (run [30147475833](https://github.com/luminuy/kazumi-clinic/actions/runs/30147475833)) · ตรงกับ main `19f9cbf` (PR [#251](https://github.com/luminuy/kazumi-clinic/pull/251)) · ยืนยัน `/sitemap.xml` = 200 · 72 URL (36 หน้า × 2 ภาษา) |
+| **workers.dev** | Version `51fb4e67` — deploy 2026-07-25 09:20 UTC ผ่าน CD (run [30152607190](https://github.com/luminuy/kazumi-clinic/actions/runs/30152607190)) · ตรงกับ main `67f4b9a` (PR [#253](https://github.com/luminuy/kazumi-clinic/pull/253)) · ยืนยันบน production: register อีเมลใหม่/อีเมลซ้ำตอบเหมือนกันเป๊ะและไม่มี `Set-Cookie` · breadcrumb JSON-LD เป็น "หน้าแรก" แล้วทั้ง 6 หน้า · `pnpm smoke` เขียว |
 | **โดเมนจริง** (kazumiclinic.com) | ❌ ยังไม่ขึ้น — `SITE_ENV=preview`, robots `Disallow: /` (ตั้งใจ ห้ามลบจนกว่าโดเมนจะขึ้น) |
 | **URL ตรวจ** | https://kazumi-clinic.bankjack10452.workers.dev · ตรวจ 2026-07-25: HTTP 200 |
 
