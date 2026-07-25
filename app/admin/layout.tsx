@@ -1,8 +1,23 @@
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
+import { EB_Garamond, Noto_Sans_Thai } from 'next/font/google';
 import { AdminSidebar } from '@/components/admin/sidebar';
 import { countNewLeads } from '@/lib/leads-store';
 import { getImage } from '@/lib/site-images-store';
+import { cn } from '@/lib/utils';
+import '../globals.css';
+
+const serif = EB_Garamond({
+  subsets: ['latin'],
+  variable: '--font-serif',
+  weight: ['400', '500', '600'],
+});
+
+const sans = Noto_Sans_Thai({
+  subsets: ['thai', 'latin'],
+  variable: '--font-sans',
+  weight: ['300', '400', '500', '600'],
+});
 
 export const metadata: Metadata = {
   title: { default: 'จัดการเว็บไซต์', template: '%s — Kazumi Admin' },
@@ -22,11 +37,15 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   ]);
 
   return (
-    <div className="min-h-screen bg-sand lg:flex">
-      <AdminSidebar email={adminEmail} newLeads={newLeads} logoPublicId={logoPublicId || undefined} />
-      <main className="min-w-0 flex-1">
-        <div className="mx-auto max-w-5xl px-6 py-8 sm:py-10">{children}</div>
-      </main>
-    </div>
+    <html lang="th" className={cn(serif.variable, sans.variable)}>
+      <body className="font-sans">
+        <div className="min-h-screen bg-sand lg:flex">
+          <AdminSidebar email={adminEmail} newLeads={newLeads} logoPublicId={logoPublicId || undefined} />
+          <main className="min-w-0 flex-1">
+            <div className="mx-auto max-w-5xl px-6 py-8 sm:py-10">{children}</div>
+          </main>
+        </div>
+      </body>
+    </html>
   );
 }

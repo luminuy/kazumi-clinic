@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Search, User, ShoppingBag } from 'lucide-react';
 import { Link } from '@/i18n/routing';
@@ -18,16 +18,48 @@ const SearchModal = dynamic(() => import('@/components/search-modal').then((m) =
 });
 
 export function HeaderActions({
-  cartCount = 0,
-  isLoggedIn = false,
   oauthProviders = [],
 }: {
-  cartCount?: number;
-  isLoggedIn?: boolean;
   oauthProviders?: OAuthProvider[];
 }) {
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [searchModalOpen, setSearchModalOpen] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // The brief logged-out/empty state keeps cookie-bound reads out of the static site layout.
+    void Promise.all([
+      fetch('/api/cart', { cache: 'no-store' }),
+      fetch('/api/account/me', { cache: 'no-store' }),
+    ])
+      .then(async ([cartResponse, memberResponse]) => {
+        const cartPayload: unknown = cartResponse.ok ? await cartResponse.json() : null;
+        const memberPayload: unknown = memberResponse.ok ? await memberResponse.json() : null;
+
+        if (
+          typeof cartPayload === 'object' &&
+          cartPayload !== null &&
+          'cart' in cartPayload &&
+          typeof cartPayload.cart === 'object' &&
+          cartPayload.cart !== null &&
+          'count' in cartPayload.cart &&
+          typeof cartPayload.cart.count === 'number'
+        ) {
+          setCartCount(cartPayload.cart.count);
+        }
+
+        if (
+          typeof memberPayload === 'object' &&
+          memberPayload !== null &&
+          'isLoggedIn' in memberPayload &&
+          typeof memberPayload.isLoggedIn === 'boolean'
+        ) {
+          setIsLoggedIn(memberPayload.isLoggedIn);
+        }
+      })
+      .catch(() => undefined);
+  }, []);
 
   return (
     <>

@@ -30,7 +30,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const alternates = localizedAlternates(locale);
 
   return {
-    title: homeTitle,
+    // The brand suffix is spelled out here rather than left to the layout's `title.template`:
+    // a template never applies to the segment that declares it, and this page shares a segment
+    // with the layout that owns it. Child routes (/about, /services…) still get it from there.
+    title: `${homeTitle} — ${site.name}`,
     description: homeDescription,
     alternates,
     openGraph: {

@@ -11,8 +11,14 @@ import { socialImage, siteSocialImage } from '@/lib/metadata-images';
 import { getPublishedPostBySlug } from '@/lib/blog-store';
 import { Prose } from '@/components/prose';
 
-// Posts live in D1 and aren't known at build time, so this route renders on demand and caches via
-// ISR (re-rendered on the blog API's revalidatePath). No generateStaticParams.
+export function generateStaticParams() {
+  return [];
+}
+
+// Post slugs live in D1 and are genuinely unknown at build time because the CI builder cannot
+// reach D1. Returning an empty list still opts this route into ISR, so on-demand renders are cached
+// for this window instead of hitting D1 on every request; the blog admin API's revalidatePath
+// refreshes the cached post on publish.
 export const revalidate = 3600;
 
 type Params = { params: Promise<{ slug: string; locale: string }> };
