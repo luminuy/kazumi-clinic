@@ -148,7 +148,7 @@ export async function getCartCount(): Promise<number> {
   return row?.n ?? 0;
 }
 
-function clampQty(qty: number): number {
+export function clampQty(qty: number): number {
   if (!Number.isFinite(qty)) return 1;
   return Math.max(1, Math.min(MAX_QTY, Math.floor(qty)));
 }
