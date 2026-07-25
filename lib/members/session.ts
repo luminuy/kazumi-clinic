@@ -6,12 +6,12 @@ export const SESSION_COOKIE = 'kz_member_session';
 const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 
 /** sha256 hex of the raw token — only this derived value is stored, never the token itself. */
-async function hashToken(token: string): Promise<string> {
+export async function hashToken(token: string): Promise<string> {
   const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(token));
   return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
-function randomToken(): string {
+export function randomToken(): string {
   const bytes = crypto.getRandomValues(new Uint8Array(32));
   let s = '';
   for (const b of bytes) s += b.toString(16).padStart(2, '0');

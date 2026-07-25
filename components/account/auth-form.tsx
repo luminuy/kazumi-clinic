@@ -35,7 +35,7 @@ function GoogleIcon({ className }: { className?: string }) {
   );
 }
 
-const fieldClass =
+export const fieldClass =
   'w-full rounded-xl border border-black/5 bg-black/[0.04] px-4 py-3 text-sm text-[var(--store-ink)] outline-none transition-all placeholder:text-[var(--store-ink)]/40 focus:border-transparent focus:bg-white focus:ring-2 focus:ring-forest/50 focus:shadow-[0_4px_12px_rgb(0,0,0,0.05)]';
 
 /**
@@ -50,11 +50,13 @@ export function AuthForm({
   redirectTo = '/account',
   oauthError,
   providers = [],
+  emailConfigured = false,
 }: {
   mode: Mode;
   redirectTo?: string;
   oauthError?: string;
   providers?: OAuthProvider[];
+  emailConfigured?: boolean;
 }) {
   const t = useTranslations('Account');
   const oauthErrorMessage = oauthError
@@ -172,14 +174,25 @@ export function AuthForm({
           className={fieldClass}
           value={form.email}
           onChange={(e) => set({ email: e.target.value })}
-          placeholder="you@example.com"
+          placeholder={t('field.emailPlaceholder')}
         />
       </div>
 
       <div>
-        <label htmlFor="password" className="mb-1.5 block text-sm text-ink/70">
-          {t('field.password')}
-        </label>
+        <div className="mb-1.5 flex items-center justify-between gap-4">
+          <label htmlFor="password" className="block text-sm text-ink/70">
+            {t('field.password')}
+          </label>
+          {/* Promising an email that cannot arrive is worse than offering no recovery link. */}
+          {mode === 'login' && emailConfigured && (
+            <Link
+              href="/account/forgot-password"
+              className="text-xs font-medium text-forest hover:underline"
+            >
+              {t('forgot.link')}
+            </Link>
+          )}
+        </div>
         <input
           id="password"
           type="password"
