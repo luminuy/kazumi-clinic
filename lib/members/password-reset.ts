@@ -5,10 +5,10 @@ const PASSWORD_RESET_TTL_MS = 60 * 60 * 1000;
 const PASSWORD_RESET_TYPE = 'password_reset';
 
 /**
- * Password-reset email provider seam. The clinic will connect its chosen provider here later;
+ * Member-account email provider seams. The clinic will connect its chosen provider here later;
  * this file is the ONLY place that needs to change when delivery is wired.
  *
- * The route supplies a complete reset URL, but neither this seam nor its callers may log it: the
+ * Neither these seams nor their callers may log recipient addresses, tokens, or reset URLs: the
  * URL contains the same single-use credential as the raw token.
  */
 
@@ -19,6 +19,14 @@ export type PasswordResetEmailDelivery =
 export type PasswordResetEmail = {
   to: string;
   resetUrl: string;
+};
+
+export type AccountExistsEmailDelivery =
+  | { status: 'sent' }
+  | { status: 'not_configured' };
+
+export type AccountExistsEmail = {
+  to: string;
 };
 
 /** True once the chosen email provider's credentials are present in the environment. */
@@ -37,6 +45,20 @@ export async function sendPasswordResetEmail(
 
   // TODO(email-provider): send `message.resetUrl` to `message.to` with the provider SDK/REST API,
   // then return { status: 'sent' }. Until that integration exists, never claim delivery happened.
+  void message;
+  return { status: 'not_configured' };
+}
+
+export async function sendAccountExistsEmail(
+  message: AccountExistsEmail,
+): Promise<AccountExistsEmailDelivery> {
+  if (!isEmailConfigured()) {
+    console.warn('Account-exists email delivery is not configured.');
+    return { status: 'not_configured' };
+  }
+
+  // TODO(email-provider): send the localized Account.accountExists email copy to `message.to`,
+  // then return { status: 'sent' }. Never log the recipient address or provider payload.
   void message;
   return { status: 'not_configured' };
 }

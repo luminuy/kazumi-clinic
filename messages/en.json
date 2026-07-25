@@ -333,6 +333,10 @@
       "invalid": "This reset link may be invalid, expired, or already used. Please request a new one.",
       "requestNew": "Request a new link"
     },
+    "accountExists": {
+      "subject": "Someone tried to register with your email",
+      "body": "Someone tried to create a Kazumi membership with this email. If that was you, sign in or reset your password."
+    },
     "dashboard": {
       "title": "My account",
       "eyebrow": "Kazumi Member",
