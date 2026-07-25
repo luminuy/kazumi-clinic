@@ -5,7 +5,7 @@
 > อัปเดตไฟล์นี้เป็นส่วนหนึ่งของ workflow: หลัง **deploy** และตอน **เริ่ม/จบงานสำคัญ** (ดู CLAUDE.md §0)
 > งานที่ปิดไปแล้วย้ายไป [docs/changelog.md](docs/changelog.md) — ไฟล์นี้เก็บแค่ **ตอนนี้ · ต่อไป · ค้าง**
 
-**อัปเดตล่าสุด:** 2026-07-25 11:35 UTC · โดย: Claude Code (วางแผน/ตรวจ) + Codex CLI `gpt-5.6-sol` (ลงมือแก้)
+**อัปเดตล่าสุด:** 2026-07-25 11:55 UTC · โดย: Claude Code (วางแผน/ตรวจ) + Codex CLI `gpt-5.6-sol` (ลงมือแก้)
 
 ---
 
@@ -48,7 +48,7 @@
 - [ ] **ขึ้นโดเมนจริง**: จดโดเมน → เปลี่ยน `site.url` → **ลบ var `SITE_ENV`** → เพิ่ม destination ใน Cloudflare Access (ดู docs/infrastructure.md)
 - [ ] **เจ้าของลบ orphan บน Cloudinary** (ไม่เร่ง): `kazumi-clinic/promo-velvet-glow`, `kazumi-clinic/promo-karisma-collagen` — เก็บภาพสลับกันมาแต่ต้น ไม่มีโค้ดไหนอ้างถึงแล้ว · ลบที่ Media Library ของบัญชี `dvskwrapm` เท่านั้น (agent ไม่มีและไม่ควรถือคีย์ Master Admin ของบัญชีที่ใช้ร่วมกับ littlesmileflower)
 - [ ] **เปิด R2** (ตอนนี้ใช้ KV แทน) — ต้องกดเปิดใน Cloudflare dashboard เอง
-- [ ] **ตั้ง GitHub secret `BACKUP_PASSPHRASE`** ไม่งั้น workflow backup D1 ไม่ทำงาน
+- [x] **`BACKUP_PASSPHRASE`** ตั้งแล้วตั้งแต่ 2026-07-23 — backup D1 รันจริงทุกวัน (ตรวจ 2026-07-25: `gh secret list` + 3 run ล่าสุด success · artifact ล่าสุด 43,932 bytes หมดอายุ 2026-08-23) · **เก็บ passphrase ไว้ให้ดี ถ้าหาย backup ทุกก้อนอ่านไม่ได้**
 - [x] เปิด Google/LINE Login — secret ตั้งครบแล้ว (ยืนยัน `wrangler secret list` 2026-07-25)
 
 ---
@@ -76,4 +76,4 @@
 | **Test** | `pnpm test` (vitest) — invariant tests + member/cart/password · ⚠️ รันบน Node ไม่ใช่ workerd |
 | **Health** | `pnpm health` เช็คทุกหน้า 200 · uptime workflow ยิงทุก 6 ชม. ([uptime.yml](.github/workflows/uptime.yml)) |
 | **Smoke** | `pnpm smoke` สมัคร/ล็อกอินจริงบน Worker หลัง deploy (exit 2 = 429 สรุปไม่ได้ ไม่ใช่ fail) |
-| **DB Backup** ([backup.yml](.github/workflows/backup.yml)) | export D1 ทุกวัน 02:00 (Asia/Bangkok) → encrypt AES256 → artifact 30 วัน · ⚠️ ต้องตั้ง secret `BACKUP_PASSPHRASE` ก่อนถึงจะทำงาน |
+| **DB Backup** ([backup.yml](.github/workflows/backup.yml)) | export D1 ทุกวัน 02:00 (Asia/Bangkok) → encrypt GPG → artifact 30 วัน · ✅ ทำงานอยู่จริง (ตรวจ 2026-07-25) · restore: `gpg --batch --decrypt --passphrase "$BACKUP_PASSPHRASE" -o restore.sql <ไฟล์>.gpg` แล้ว `wrangler d1 execute --file` |
