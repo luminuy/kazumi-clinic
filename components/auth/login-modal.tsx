@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { Dialog } from '@base-ui/react/dialog';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Loader2, XIcon } from 'lucide-react';
 import { LineIcon } from '@/components/brand-icons';
@@ -21,6 +22,7 @@ export function LoginModal({
   onOpenChange: (open: boolean) => void;
   providers?: OAuthProvider[];
 }) {
+  const t = useTranslations('Account');
   const [mode, setMode] = React.useState<Mode>('signin');
   const [name, setName] = React.useState('');
   const [email, setEmail] = React.useState('');
@@ -72,7 +74,7 @@ export function LoginModal({
       });
       if (!res.ok) {
         const data = (await res.json().catch(() => null)) as { error?: string } | null;
-        throw new Error(data?.error ?? 'ดำเนินการไม่สำเร็จ กรุณาลองใหม่');
+        throw new Error(data?.error ?? t('error.submit'));
       }
       if (mode === 'signup') {
         // Registration issues no session on purpose (app/api/account/register/route.ts): the reply
@@ -81,15 +83,13 @@ export function LoginModal({
         setMode('signin');
         setPassword('');
         setPending(false);
-        setNotice(
-          'ดำเนินการเรียบร้อย — เข้าสู่ระบบเพื่อเริ่มใช้งาน หากอีเมลนี้เคยสมัครไว้แล้ว ให้ใช้รหัสผ่านเดิม (จำไม่ได้ ทักไลน์คลินิกได้)',
-        );
+        setNotice(t('login.registered'));
         return;
       }
       // Session cookie is set — reload so the server re-renders as signed in and merges the cart.
       window.location.reload();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'ดำเนินการไม่สำเร็จ กรุณาลองใหม่');
+      setError(err instanceof Error ? err.message : t('error.submit'));
       setPending(false);
     }
   }
@@ -103,11 +103,9 @@ export function LoginModal({
         <Dialog.Popup className="fixed left-[50%] top-[50%] z-50 grid w-full max-w-sm translate-x-[-50%] translate-y-[-50%] gap-6 border bg-background p-8 shadow-xl transition duration-200 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0 sm:rounded-2xl">
           <div className="flex flex-col gap-2 text-center">
             <h2 className="text-2xl font-semibold tracking-tight">
-              {isSignup ? 'สมัครสมาชิก' : 'เข้าสู่ระบบ'}
+              {isSignup ? t('register.title') : t('login.title')}
             </h2>
-            <p className="text-sm text-muted-foreground">
-              เข้าสู่ระบบสมาชิก Kazumi เพื่อจัดการการจองและตะกร้าของคุณ
-            </p>
+            <p className="text-sm text-muted-foreground">{t('login.lead')}</p>
           </div>
 
           <div className="flex flex-col gap-4">
@@ -118,7 +116,7 @@ export function LoginModal({
                 disabled={pending}
               >
                 <LineIcon className="mr-2 size-5" />
-                ดำเนินการต่อด้วย LINE
+                {t('oauth.line')}
               </Button>
             )}
             {providers.includes('google') && (
@@ -146,7 +144,7 @@ export function LoginModal({
                   fill="#EA4335"
                 />
               </svg>
-              ดำเนินการต่อด้วย Google
+              {t('oauth.google')}
             </Button>
             )}
 
@@ -156,7 +154,7 @@ export function LoginModal({
                   <span className="w-full border-t" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">หรือ</span>
+                  <span className="bg-background px-2 text-muted-foreground">{t('oauth.or')}</span>
                 </div>
               </div>
             )}
@@ -167,12 +165,12 @@ export function LoginModal({
                   type="text"
                   name="name"
                   autoComplete="name"
-                  placeholder="ชื่อ (ไม่บังคับ)"
+                  placeholder={t('field.nameOptional')}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   disabled={pending}
                   className={inputClass}
-                  aria-label="ชื่อ"
+                  aria-label={t('field.name')}
                 />
               )}
               <input
@@ -180,12 +178,12 @@ export function LoginModal({
                 name="email"
                 autoComplete="email"
                 required
-                placeholder="อีเมล"
+                placeholder={t('field.email')}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={pending}
                 className={inputClass}
-                aria-label="อีเมล"
+                aria-label={t('field.email')}
               />
               <input
                 type="password"
@@ -193,12 +191,14 @@ export function LoginModal({
                 autoComplete={isSignup ? 'new-password' : 'current-password'}
                 required
                 minLength={isSignup ? 8 : undefined}
-                placeholder={isSignup ? 'รหัสผ่าน (อย่างน้อย 8 ตัว)' : 'รหัสผ่าน'}
+                placeholder={
+                  isSignup ? t('field.passwordWithHint') : t('field.password')
+                }
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={pending}
                 className={inputClass}
-                aria-label="รหัสผ่าน"
+                aria-label={t('field.password')}
               />
 
               {notice && (
@@ -218,12 +218,12 @@ export function LoginModal({
 
               <Button type="submit" className="w-full" disabled={pending}>
                 {pending && <Loader2 className="mr-2 size-4 animate-spin" />}
-                {isSignup ? 'สมัครสมาชิก' : 'เข้าสู่ระบบ'}
+                {isSignup ? t('submit.register') : t('submit.login')}
               </Button>
             </form>
 
             <p className="mt-1 text-center text-sm text-muted-foreground">
-              {isSignup ? 'มีบัญชีอยู่แล้ว? ' : 'ยังไม่มีบัญชี? '}
+              {isSignup ? t('switch.haveAccount') : t('switch.noAccount')}{' '}
               <button
                 type="button"
                 onClick={() => {
@@ -233,7 +233,7 @@ export function LoginModal({
                 disabled={pending}
                 className="font-semibold text-primary hover:underline disabled:opacity-50"
               >
-                {isSignup ? 'เข้าสู่ระบบ' : 'สมัครสมาชิก'}
+                {isSignup ? t('submit.login') : t('submit.register')}
               </button>
             </p>
           </div>
@@ -242,7 +242,7 @@ export function LoginModal({
             render={<Button variant="ghost" size="icon-sm" className="absolute right-4 top-4" />}
           >
             <XIcon />
-            <span className="sr-only">Close</span>
+            <span className="sr-only">{t('close')}</span>
           </Dialog.Close>
         </Dialog.Popup>
       </Dialog.Portal>

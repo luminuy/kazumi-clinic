@@ -349,10 +349,12 @@
     },
     "field": {
       "name": "ชื่อ",
+      "nameOptional": "ชื่อ (ไม่บังคับ)",
       "namePlaceholder": "ชื่อ-นามสกุล",
       "email": "อีเมล",
       "emailPlaceholder": "you@example.com",
       "password": "รหัสผ่าน",
+      "passwordWithHint": "รหัสผ่าน (อย่างน้อย 8 ตัวอักษร)",
       "newPassword": "รหัสผ่านใหม่",
       "passwordHint": "อย่างน้อย 8 ตัวอักษร"
     },
@@ -367,6 +369,7 @@
       "noAccount": "ยังไม่มีบัญชี?"
     },
     "logout": "ออกจากระบบ",
+    "close": "ปิด",
     "error": {
       "email": "กรุณากรอกอีเมล",
       "password": "รหัสผ่านไม่ถูกต้อง",
