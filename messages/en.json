@@ -349,10 +349,12 @@
     },
     "field": {
       "name": "Name",
+      "nameOptional": "Name (optional)",
       "namePlaceholder": "Full name",
       "email": "Email",
       "emailPlaceholder": "you@example.com",
       "password": "Password",
+      "passwordWithHint": "Password (at least 8 characters)",
       "newPassword": "New password",
       "passwordHint": "At least 8 characters"
     },
@@ -367,6 +369,7 @@
       "noAccount": "No account yet?"
     },
     "logout": "Sign out",
+    "close": "Close",
     "error": {
       "email": "Please enter your email",
       "password": "Invalid password",
