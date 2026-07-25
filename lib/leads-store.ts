@@ -80,13 +80,25 @@ function idSuffix() {
   return Math.floor(Math.random() * 1e6).toString(36);
 }
 
-/** Every lead, newest first — the admin dashboard. Empty when D1 is unavailable. */
+/**
+ * The most recent leads, newest first — the admin dashboard. Empty when D1 is unavailable.
+ *
+ * Capped rather than truly paginated: LeadsDashboard (components/admin/leads-dashboard.tsx) does
+ * client-side status filtering over the full array it's given, with per-status tab counts computed
+ * from that same array — real pagination would mean fetching status counts separately from the
+ * page of rows, which is a bigger change than this needed. A cap at least keeps the query and the
+ * page payload from growing without bound as leads accumulate; older leads stay in D1, just not
+ * reachable from this dashboard once past the cap. Revisit with real pagination if that matters.
+ */
+const LEADS_QUERY_LIMIT = 500;
+
 export async function getAllLeads(): Promise<LeadRow[]> {
   const binding = await db();
   if (!binding) return [];
   try {
     const { results } = await binding
-      .prepare('SELECT * FROM leads ORDER BY created_at DESC')
+      .prepare('SELECT * FROM leads ORDER BY created_at DESC LIMIT ?1')
+      .bind(LEADS_QUERY_LIMIT)
       .all<LeadRow>();
     return results;
   } catch {
