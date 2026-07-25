@@ -81,8 +81,10 @@ export function isPreviewDeploy() {
   return process.env.SITE_ENV === 'preview';
 }
 
-const LOCALES = ['th', 'en'] as const;
-const DEFAULT_LOCALE = 'th';
+/** Mirrors `i18n/routing.ts`. Kept here (plain consts, no next-intl import) so metadata and the
+ * sitemap can expand every locale without pulling the navigation helpers into a server module. */
+export const LOCALES = ['th', 'en'] as const;
+export const DEFAULT_LOCALE = 'th';
 
 /**
  * Builds `alternates.canonical` + `alternates.languages` for a locale-aware page — single place
