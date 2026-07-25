@@ -20,29 +20,11 @@ export function cld(publicId: string, opts: CldOptions = {}) {
 }
 
 /**
- * Exact pixel crop followed by a resize, as two chained transformation segments
- * (Cloudinary requires the crop segment before the resize segment when chaining —
- * a single `c_crop,...,w_,h_` segment treats width/height as the crop box, not the
- * final output size). Used for cropping a sub-region out of a larger source image,
- * e.g. isolating just the flower mark out of the full logo-plus-wordmark asset.
- */
-export function cldCropThenResize(
-  publicId: string,
-  crop: { width: number; height: number; x: number; y: number },
-  resize: { width?: number; height?: number } = {},
-) {
-  const cropSeg = `c_crop,w_${crop.width},h_${crop.height},x_${crop.x},y_${crop.y}`;
-  const resizeParts = ['f_auto', 'q_auto'];
-  if (resize.width) resizeParts.push(`w_${resize.width}`);
-  if (resize.height) resizeParts.push(`h_${resize.height}`);
-  return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${cropSeg}/${resizeParts.join(',')}/${publicId}`;
-}
-
-/**
  * A `next/image` src that carries its own leading transformation segment, e.g.
  * `cldSrc(cloudAssets.heroHome, 'c_crop,w_1060,h_1080,x_0,y_0')`. The loader below appends
  * its `f_auto,q_,w_` segment *after* these, which is the order Cloudinary needs for a crop
- * (see `cldCropThenResize`) — so this is how you feed next/image a sub-region of an asset.
+ * (a single `c_crop,...,w_,h_` segment would treat width/height as the crop box, not the final
+ * output size) — so this is how you feed next/image a sub-region of an asset.
  */
 export function cldSrc(publicId: string, transforms: string) {
   return `${transforms}/${publicId}`;
@@ -88,7 +70,6 @@ export default cloudinaryLoader;
 // There's no separate og-default asset — the default OG/Twitter image is just heroHome
 // cropped to 1200x630 via cld(cloudAssets.heroHome, { width: 1200, height: 630, crop: 'fill' }).
 export const cloudAssets = {
-  logo: 'kazumi-clinic/logo',
   // The wordmark and the flower mark the site actually renders. They lived in public/ — which
   // meant /admin offered a "change the logo" button that changed nothing, because the header
   // read a baked-in file instead.
@@ -112,12 +93,3 @@ export const cloudAssets = {
 // portrait is everything left of x≈1100, so the homepage hero uses this crop and renders the
 // live headline beside it instead of on top of it.
 export const heroHomePortrait = cldSrc(cloudAssets.heroHome, 'c_crop,w_1060,h_1080,x_0,y_0');
-
-// `logo` is a 1500x1500 asset with the flower mark up top and "KAZUMI CLINIC" wordmark
-// below — the header only wants the mark. Crop box measured directly from the source
-// pixels (flower spans roughly x:491-1008, y:306-824) with ~18% padding on each side.
-export const logoIconUrl = cldCropThenResize(
-  cloudAssets.logo,
-  { width: 704, height: 704, x: 397, y: 213 },
-  { width: 96, height: 96 },
-);

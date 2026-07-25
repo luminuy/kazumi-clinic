@@ -29,7 +29,7 @@ export const inputClass =
   'w-full rounded-xl border border-black/[0.1] bg-sand/60 px-3.5 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-ink/35 focus:border-forest/45 focus:bg-white';
 
 /** Green-dotted micro-label above a page title. */
-export function Eyebrow({ children }: { children: ReactNode }) {
+function Eyebrow({ children }: { children: ReactNode }) {
   return (
     <span className="inline-flex items-center gap-2 text-[0.7rem] font-medium uppercase tracking-[0.16em] text-forest">
       <span className="size-1 rounded-full bg-forest" />
