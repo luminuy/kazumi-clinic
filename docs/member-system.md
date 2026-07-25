@@ -47,7 +47,18 @@ npx wrangler tail   # อ่าน error จริงตอนยิง endpoint
 | สมัคร/ล็อกอินด้วยรหัสผ่าน | ✅ ใช้งานได้ (หลังแก้ PBKDF2 · PR #247) |
 | ลืมรหัสผ่าน | ⚠️ flow ครบแล้ว แต่ **ส่งอีเมลไม่ได้** — ยังไม่มี provider · ลิงก์บนหน้า login **ซ่อนอยู่** จนกว่าจะตั้ง key จริง (ตั้งใจ) |
 | Payment gateway | ❌ ยังไม่เชื่อม — checkout รองรับ "จ่ายที่คลินิก" เต็มรูปแบบ, ชำระออนไลน์เป็น placeholder |
-| Account enumeration ที่ `/api/account/register` | ⚠️ ยังรั่วผ่าน 409 "อีเมลนี้มีบัญชีอยู่แล้ว" — เป็น trade-off UX ที่เจ้าของต้องตัดสิน (forgot-password ปิดช่องนี้แล้ว) |
+| Account enumeration ที่ `/api/account/register` | ✅ ปิดที่ระดับ response แล้ว — ดูหัวข้อถัดไป |
+| ถอน session ทุกเครื่องตอนรีเซ็ตรหัส | ✅ ทดสอบบน Worker จริงแล้ว 2026-07-25 — `bash scripts/verify-reset-revocation.sh` |
+
+### สมัครสมาชิกไม่บอกว่าอีเมลไหนมีบัญชีอยู่
+
+บัญชีของคลินิกความงามบอกได้ว่าคนคนหนึ่ง**เป็นลูกค้าที่นี่** — เป็นข้อมูลส่วนบุคคลที่อ่อนไหวตาม PDPA เพราะงั้น `/api/account/register` จึง:
+
+- ตอบ **200 พร้อม body หน้าตาเดียวกัน** ไม่ว่าอีเมลนั้นจะว่างหรือมีบัญชีอยู่แล้ว (เดิมตอบ 409 "อีเมลนี้มีบัญชีอยู่แล้ว")
+- **ไม่ออก session ให้ใครทั้งนั้น** — ถ้าออกเฉพาะเคสสมัครจริง header `Set-Cookie` ก็บอกความต่างแทน · ผู้สมัครจึงถูกส่งไปหน้า `/account/login?registered=1` ที่ข้อความอ่านได้ทั้งสองความหมาย
+- เผา `hashPassword()` ทิ้งบนเส้นทางอีเมลซ้ำ เพราะ `createMember()` ตีกลับ **ก่อน** hash — ไม่งั้นเวลาตอบที่เร็วกว่าหนึ่งรอบ PBKDF2 ก็เป็นคำตอบอยู่ดี
+
+> ⚠️ **ยังเหลือช่องที่ปิดไม่ได้จนกว่าจะมีอีเมล**: คนที่สมัครอีเมลหนึ่งแล้ว**ล็อกอินด้วยรหัสที่เพิ่งตั้งสำเร็จ** ย่อมรู้ว่าอีเมลนั้นเดิมยังว่าง · ปิดสนิทต้อง verify-before-create ทางอีเมล (`lib/members/password-reset.ts` — เมื่อต่อ provider แล้ว)
 
 ### ปุ่ม OAuth แสดงเมื่อไหร่
 
@@ -86,4 +97,15 @@ D1 รันใน `next dev` บน macOS 12.x ไม่ได้ (workerd ต�
 
 ## เทสต์ที่มีอยู่
 
-`tests/members-*.test.ts` (password, password-reset, cart, catalog, money) + `tests/account-*-route.test.ts` — ครอบ logic ล้วนบน Node · **ไม่ครอบพฤติกรรม runtime ของ workerd** (ดูกฎข้อแรก) · ปุ่ม "ซื้อเลย"/`service-item-actions.tsx` ยังไม่มีเทสต์
+- `tests/members-*.test.ts` (password, password-reset, cart, catalog, money) + `tests/account-*-route.test.ts` — logic ล้วนบน Node
+- `tests/service-item-actions.test.tsx` — ปุ่มซื้อ/ตะกร้า/LINE ใน jsdom (ล็อกกฎ §0.2: ของที่ยังไม่มีราคาต้องมีแค่ปุ่ม LINE) · ไฟล์ `.tsx` เปิด jsdom ด้วย docblock `@vitest-environment jsdom` ตัวอื่นยังรันบน node ตามเดิม
+- **ไม่มีอันไหนครอบพฤติกรรม runtime ของ workerd** (ดูกฎข้อแรก)
+
+### ตรวจ runtime ที่เทสต์พิสูจน์ไม่ได้
+
+```bash
+pnpm smoke                              # สมัคร/ล็อกอินจริงหลัง deploy
+bash scripts/verify-reset-revocation.sh # รีเซ็ตรหัสแล้ว session ทุกเครื่องต้องตาย
+```
+
+`verify-reset-revocation.sh` สร้างสมาชิกชั่วคราว เปิด 2 session ยัด reset token ลง D1 เอง (เพราะยังไม่มี provider ส่งอีเมล) แล้วตรวจว่า: `member_sessions` เหลือ 0 · คุกกี้ทั้งสองใบใช้ไม่ได้ · token ถูกใช้ครั้งเดียว · รหัสเก่าใช้ไม่ได้ รหัสใหม่ใช้ได้ · แล้วลบข้อมูลตัวเองทิ้ง (กวาด `reset-probe-%@smoke.invalid` ทั้ง prefix เผื่อรอบก่อนตายกลางคัน) · exit `2` = เจอ rate limit สรุปไม่ได้ ไม่ใช่พัง

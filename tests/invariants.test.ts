@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import sitemap from '@/app/sitemap';
+import thMessages from '@/messages/th.json';
+import enMessages from '@/messages/en.json';
 import { navItems } from '@/lib/nav';
 import { serviceCategories } from '@/lib/services';
 import { site } from '@/lib/site';
@@ -70,6 +72,46 @@ describe('service catalog integrity (single source of truth — lib/services.ts)
     for (const c of serviceCategories) {
       expect(c.title.trim().length, `${c.slug} missing title`).toBeGreaterThan(0);
     }
+  });
+});
+
+// next-intl answers a missing key with the key itself, so a typo doesn't crash — it ships. That is
+// how `HomePage.Navigation.home` ended up as the breadcrumb name in the JSON-LD on seven live pages
+// (fixed 2026-07-25): the pages asked the HomePage translator for a top-level namespace.
+describe('messages (CLAUDE.md §13)', () => {
+  function paths(node: unknown, prefix = ''): string[] {
+    if (typeof node !== 'object' || node === null) return [prefix];
+    return Object.entries(node).flatMap(([key, value]) =>
+      paths(value, prefix ? `${prefix}.${key}` : key),
+    );
+  }
+
+  it('th and en carry exactly the same keys', () => {
+    const th = paths(thMessages).sort();
+    const en = paths(enMessages).sort();
+    expect(th.filter((k) => !en.includes(k)), 'missing from en.json').toEqual([]);
+    expect(en.filter((k) => !th.includes(k)), 'missing from th.json').toEqual([]);
+  });
+
+  it('every message resolves to a non-empty string', () => {
+    for (const [label, messages] of [
+      ['th', thMessages],
+      ['en', enMessages],
+    ] as const) {
+      for (const path of paths(messages)) {
+        const value = path
+          .split('.')
+          .reduce<unknown>((node, key) => (node as Record<string, unknown>)?.[key], messages);
+        expect(typeof value, `${label}: ${path} is not a string`).toBe('string');
+        expect((value as string).trim().length, `${label}: ${path} is empty`).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it('breadcrumb pages can reach the home label they ask for', () => {
+    // The seven breadcrumbs call getTranslations('Navigation') then t('home').
+    expect(thMessages.Navigation.home).toBeTruthy();
+    expect(enMessages.Navigation.home).toBeTruthy();
   });
 });
 

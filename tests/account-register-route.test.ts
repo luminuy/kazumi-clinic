@@ -5,17 +5,15 @@ import type { MemberRow, PublicMember } from '@/lib/members/store';
 const {
   clientIpMock,
   createMemberMock,
-  createSessionMock,
+  hashPasswordMock,
   isEmailConfiguredMock,
-  mergeGuestCartIntoMemberMock,
   rateLimitMock,
   sendAccountExistsEmailMock,
 } = vi.hoisted(() => ({
   clientIpMock: vi.fn(),
   createMemberMock: vi.fn(),
-  createSessionMock: vi.fn(),
+  hashPasswordMock: vi.fn(),
   isEmailConfiguredMock: vi.fn(),
-  mergeGuestCartIntoMemberMock: vi.fn(),
   rateLimitMock: vi.fn(),
   sendAccountExistsEmailMock: vi.fn(),
 }));
@@ -30,12 +28,8 @@ vi.mock('@/lib/members/store', async (importOriginal) => ({
   createMember: createMemberMock,
 }));
 
-vi.mock('@/lib/members/session', () => ({
-  createSession: createSessionMock,
-}));
-
-vi.mock('@/lib/members/cart', () => ({
-  mergeGuestCartIntoMember: mergeGuestCartIntoMemberMock,
+vi.mock('@/lib/members/password', () => ({
+  hashPassword: hashPasswordMock,
 }));
 
 vi.mock('@/lib/members/password-reset', () => ({
@@ -76,47 +70,28 @@ beforeEach(() => {
   vi.clearAllMocks();
   clientIpMock.mockReturnValue('203.0.113.2');
   rateLimitMock.mockResolvedValue(true);
+  hashPasswordMock.mockResolvedValue('hashed-password');
   isEmailConfiguredMock.mockReturnValue(false);
   sendAccountExistsEmailMock.mockResolvedValue({ status: 'sent' });
 });
 
 describe('POST /api/account/register duplicate-email gate', () => {
-  it('keeps the clear 409 response while email delivery is unconfigured', async () => {
-    createMemberMock.mockRejectedValue(new Error('EMAIL_TAKEN'));
-
-    const response = await POST(registerRequest());
-
-    expect(response.status).toBe(409);
-    await expect(response.json()).resolves.toEqual({
-      error: 'อีเมลนี้มีบัญชีอยู่แล้ว',
-    });
-    expect(sendAccountExistsEmailMock).not.toHaveBeenCalled();
-    expect(createSessionMock).not.toHaveBeenCalled();
-    expect(mergeGuestCartIntoMemberMock).not.toHaveBeenCalled();
-  });
-
-  it('matches a genuine signup response when email delivery is configured without creating a session', async () => {
-    isEmailConfiguredMock.mockReturnValue(true);
+  // A clinic account tells you the person is a customer of an aesthetic clinic — health-adjacent
+  // personal data under PDPA. These lock in that the endpoint cannot be asked "who has an account".
+  it('answers a duplicate exactly like a genuine signup, even with no email provider', async () => {
     createMemberMock
       .mockResolvedValueOnce(newMember)
       .mockRejectedValueOnce(new Error('EMAIL_TAKEN'));
 
-    const genuineResponse = await POST(registerRequest());
-    const duplicateResponse = await POST(registerRequest());
-    const genuineBody = (await genuineResponse.json()) as {
-      ok: boolean;
-      member: PublicMember;
-    };
-    const duplicateBody = (await duplicateResponse.json()) as {
-      ok: boolean;
-      member: PublicMember;
-    };
+    const genuine = await POST(registerRequest());
+    const duplicate = await POST(registerRequest());
+    const genuineBody = (await genuine.json()) as { ok: boolean; member: PublicMember };
+    const duplicateBody = (await duplicate.json()) as { ok: boolean; member: PublicMember };
 
-    expect(duplicateResponse.status).toBe(genuineResponse.status);
+    expect(duplicate.status).toBe(genuine.status);
+    expect(duplicate.status).toBe(200);
     expect(Object.keys(duplicateBody).sort()).toEqual(Object.keys(genuineBody).sort());
-    expect(Object.keys(duplicateBody.member).sort()).toEqual(
-      Object.keys(genuineBody.member).sort(),
-    );
+    expect(Object.keys(duplicateBody.member).sort()).toEqual(Object.keys(genuineBody.member).sort());
     expect(duplicateBody).toMatchObject({
       ok: true,
       member: {
@@ -129,14 +104,56 @@ describe('POST /api/account/register duplicate-email gate', () => {
     });
     expect(duplicateBody.member.id).toMatch(/^mbr_[a-z0-9]{12}$/);
     expect(duplicateBody.member.id).not.toBe(newMember.id);
-    expect(createMemberMock).toHaveBeenCalledTimes(2);
-    expect(createSessionMock).toHaveBeenCalledTimes(1);
-    expect(createSessionMock).toHaveBeenCalledWith('mbr_new', 'route-test');
-    expect(mergeGuestCartIntoMemberMock).toHaveBeenCalledTimes(1);
-    expect(mergeGuestCartIntoMemberMock).toHaveBeenCalledWith('mbr_new');
+    // No provider configured: the duplicate branch must stay silent rather than fall back to
+    // telling the caller the address is taken.
+    expect(sendAccountExistsEmailMock).not.toHaveBeenCalled();
+  });
+
+  it('burns the same password hashing on the duplicate path so timing does not answer instead', async () => {
+    createMemberMock.mockRejectedValue(new Error('EMAIL_TAKEN'));
+
+    await POST(registerRequest());
+
+    // createMember rejects a duplicate before hashing anything; without this the duplicate reply
+    // would come back a full PBKDF2 run early.
+    expect(hashPasswordMock).toHaveBeenCalledTimes(1);
+    expect(hashPasswordMock).toHaveBeenCalledWith('password-123');
+  });
+
+  it('sends the account-exists email only once a provider is configured', async () => {
+    isEmailConfiguredMock.mockReturnValue(true);
+    createMemberMock.mockRejectedValue(new Error('EMAIL_TAKEN'));
+
+    const response = await POST(registerRequest());
+
+    expect(response.status).toBe(200);
     expect(sendAccountExistsEmailMock).toHaveBeenCalledTimes(1);
-    expect(sendAccountExistsEmailMock).toHaveBeenCalledWith({
-      to: 'patient@example.com',
-    });
+    expect(sendAccountExistsEmailMock).toHaveBeenCalledWith({ to: 'patient@example.com' });
+  });
+
+  it('keeps answering 200 when the account-exists email fails to send', async () => {
+    isEmailConfiguredMock.mockReturnValue(true);
+    createMemberMock.mockRejectedValue(new Error('EMAIL_TAKEN'));
+    sendAccountExistsEmailMock.mockRejectedValue(new Error('provider down'));
+
+    const response = await POST(registerRequest());
+
+    // A delivery fault must not surface as a different status — that would be the oracle again.
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toMatchObject({ ok: true });
+  });
+});
+
+describe('POST /api/account/register session policy', () => {
+  it('never returns a session cookie, so Set-Cookie cannot reveal which branch ran', async () => {
+    createMemberMock
+      .mockResolvedValueOnce(newMember)
+      .mockRejectedValueOnce(new Error('EMAIL_TAKEN'));
+
+    const genuine = await POST(registerRequest());
+    const duplicate = await POST(registerRequest());
+
+    expect(genuine.headers.get('set-cookie')).toBeNull();
+    expect(duplicate.headers.get('set-cookie')).toBeNull();
   });
 });

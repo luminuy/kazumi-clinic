@@ -35,6 +35,16 @@ function GoogleIcon({ className }: { className?: string }) {
   );
 }
 
+/**
+ * Keeps a hard navigation on the language the visitor is actually reading. `localePrefix` is
+ * 'as-needed' (i18n/routing.ts), so an English visitor sits under /en and a bare `/account` would
+ * silently drop them back into Thai.
+ */
+function withCurrentLocale(path: string): string {
+  const prefix = window.location.pathname.startsWith('/en') ? '/en' : '';
+  return `${prefix}${path}`;
+}
+
 export const fieldClass =
   'w-full rounded-xl border border-black/5 bg-black/[0.04] px-4 py-3 text-sm text-[var(--store-ink)] outline-none transition-all placeholder:text-[var(--store-ink)]/40 focus:border-transparent focus:bg-white focus:ring-2 focus:ring-forest/50 focus:shadow-[0_4px_12px_rgb(0,0,0,0.05)]';
 
@@ -102,8 +112,14 @@ export function AuthForm({
         }
         throw new Error(message);
       }
+      if (mode === 'register') {
+        // Registration deliberately issues no session — see app/api/account/register/route.ts. The
+        // same landing is used whether the address was new or already taken, which is the point.
+        window.location.assign(withCurrentLocale('/account/login?registered=1'));
+        return;
+      }
       // Full reload so Server Components pick up the session cookie.
-      window.location.assign(redirectTo);
+      window.location.assign(withCurrentLocale(redirectTo));
     } catch (err) {
       setState({ kind: 'error', message: err instanceof Error ? err.message : t('error.submit') });
     }

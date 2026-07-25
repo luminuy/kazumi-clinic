@@ -96,7 +96,7 @@ export default async function ReviewsPage({ params }: { params: Promise<{ locale
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations('ReviewsPage');
-  const tHome = await getTranslations('HomePage');
+  const tNav = await getTranslations('Navigation');
   
   const [reviews, googleReviews] = await Promise.all([
     getPublishedReviews(),
@@ -104,7 +104,7 @@ export default async function ReviewsPage({ params }: { params: Promise<{ locale
   ]);
 
   const breadcrumb = breadcrumbSchema([
-    { name: tHome('Navigation.home'), path: '/' },
+    { name: tNav('home'), path: '/' },
     { name: t('breadcrumb'), path: '/reviews' },
   ]);
 

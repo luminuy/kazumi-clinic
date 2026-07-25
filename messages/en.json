@@ -312,7 +312,8 @@
   "Account": {
     "login": {
       "title": "Sign in",
-      "lead": "Sign in to your Kazumi membership to manage your bookings and cart."
+      "lead": "Sign in to your Kazumi membership to manage your bookings and cart.",
+      "registered": "All set — sign in to continue. If this email was already registered, use your existing password (message us on LINE if you don't remember it)."
     },
     "register": {
       "title": "Create account",

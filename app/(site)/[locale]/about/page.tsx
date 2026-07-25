@@ -54,7 +54,7 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations('AboutPage');
-  const tHome = await getTranslations('HomePage');
+  const tNav = await getTranslations('Navigation');
 
   const overrides = await getImageOverrides();
   const doctorSrc = overrides.get('doctor-pratch')?.public_id;
@@ -64,7 +64,7 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
   const interiorSrc = overrides.get('about-interior')?.public_id;
 
   const breadcrumb = breadcrumbSchema([
-    { name: tHome('Navigation.home'), path: '/' },
+    { name: tNav('home'), path: '/' },
     { name: t('breadcrumb'), path: '/about' },
   ]);
 
