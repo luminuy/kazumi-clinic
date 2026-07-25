@@ -5,7 +5,7 @@
 > อัปเดตไฟล์นี้เป็นส่วนหนึ่งของ workflow: หลัง **deploy** และตอน **เริ่ม/จบงานสำคัญ** (ดู CLAUDE.md §0)
 > งานที่ปิดไปแล้วย้ายไป [docs/changelog.md](docs/changelog.md) — ไฟล์นี้เก็บแค่ **ตอนนี้ · ต่อไป · ค้าง**
 
-**อัปเดตล่าสุด:** 2026-07-25 11:55 UTC · โดย: Claude Code (วางแผน/ตรวจ) + Codex CLI `gpt-5.6-sol` (ลงมือแก้)
+**อัปเดตล่าสุด:** 2026-07-25 12:20 UTC · โดย: Claude Code
 
 ---
 
@@ -35,7 +35,7 @@
 
 | เรื่อง | รายละเอียด |
 |---|---|
-| **Password reset ส่งอีเมลไม่ได้** | ไม่มี provider — วางไว้หลัง seam `lib/members/password-reset.ts` (`isEmailConfigured()` อ่าน `EMAIL_API_KEY` เป็นชื่อ placeholder) · ลิงก์ "ลืมรหัสผ่าน?" **ซ่อนอยู่** จนกว่าจะตั้ง secret จริง แล้วมันจะโผล่เอง — ตั้งใจ ไม่ใช่ของค้าง |
+| **Password reset ส่งอีเมลไม่ได้ — โค้ดเสร็จแล้ว รอเจ้าของ (PR #264)** | ต่อ [Resend](https://resend.com) แล้ว (ฟรี 3,000/เดือน พอสำหรับปริมาณคลินิกนี้) แต่ยังส่งจริงไม่ได้จนกว่าเจ้าของจะ (1) สมัคร Resend (2) ยืนยันโดเมนด้วย DNS — **ติดปัญหาเดียวกับที่ขึ้นโดเมนจริงติด**: `kazumiclinic.com` ยังไม่ยืนยันว่าเป็นของใคร ใช้โดเมนอื่นที่ถืออยู่จริงส่งอีเมลไปก่อนได้ ไม่ต้องรอโดเมนเว็บ (3) `wrangler secret put RESEND_API_KEY` + `RESEND_FROM_EMAIL` — ตั้งครบเมื่อไหร่ปุ่ม "ลืมรหัสผ่าน?" โผล่เอง ดู [docs/member-system.md](docs/member-system.md) |
 | **`blog/[slug]` ไม่ prerender ตอน build — ตั้งใจ ไม่ใช่ของค้าง** | slug อยู่ใน D1 ซึ่ง CI เข้าไม่ถึง · `generateStaticParams` คืน list ว่างเพื่อให้เข้า ISR ตอน on-demand (คนแรกที่เปิดจ่ายค่า render, ที่เหลือได้ cache) · จะ prerender จริงต้องให้ CI ถือ Cloudflare API token ไปอ่าน D1 ตอน build = เพิ่ม secret + ทำให้ build ล้มได้เมื่อ D1 ล่ม แลกกับ latency ของ request แรกเท่านั้น — **ไม่คุ้ม อย่าเปลี่ยนโดยไม่มีเหตุใหม่** |
 
 ---
@@ -45,7 +45,7 @@
 - [ ] **เชื่อม payment gateway**: แก้ `lib/members/payments.ts` (`initiatePayment`) — ตอนนี้จองก่อนจ่ายที่คลินิกได้เต็ม, ชำระออนไลน์เป็น placeholder (ดู [docs/member-system.md](docs/member-system.md))
 - [ ] **เจ้าของอัปรูปเข้า /admin/images** — ตรวจของจริง 2026-07-25: มี **36 slot** · มีรูปจริง **6** (`about-hero`, `brand-mark`, `collagen-booster-editorial`, `hero-collagen-booster`, `hero-contact`, `hero-home` — โหลดได้ 200 ทุกใบ) + `brand-logo` ที่ใช้ default `kazumi-clinic/logo` · **ที่เหลือว่าง** จึงขึ้นกล่องไอคอน (ไม่ใช่รูปแตก) · ที่ควรอัปก่อนเพราะเห็นบ่อยสุด: `doctor-pratch`, `og-about` (รูปตอนแชร์ลิงก์), `hero-filler`, `hero-botox`, `hero-iv-drip-2` (ใช้ทั้ง /services และการ์ดแชร์ /blog)
 - [ ] **เจ้าของทดสอบ**: เปลี่ยนรูปสักช่องใน /admin → รีเฟรชหน้านั้น ควรอัปเดตใน ~ไม่กี่วินาที (ยืนยัน on-demand revalidation หลังแก้ tag cache 2026-07-22)
-- [ ] **ขึ้นโดเมนจริง**: จดโดเมน → เปลี่ยน `site.url` → **ลบ var `SITE_ENV`** → เพิ่ม destination ใน Cloudflare Access (ดู docs/infrastructure.md)
+- [ ] **ขึ้นโดเมนจริง**: จดโดเมน → เปลี่ยน `site.url` → **ลบ var `SITE_ENV`** → เพิ่ม destination ใน Cloudflare Access (ดู docs/infrastructure.md) · ความเป็นเจ้าของ `kazumiclinic.com` ยังไม่ยืนยัน — ข้อนี้บล็อกทั้งการขึ้นเว็บจริง**และ**การยืนยันโดเมนกับ Resend (ข้อบนสุดของตาราง "ค้าง")
 - [ ] **เจ้าของลบ orphan บน Cloudinary** (ไม่เร่ง): `kazumi-clinic/promo-velvet-glow`, `kazumi-clinic/promo-karisma-collagen` — เก็บภาพสลับกันมาแต่ต้น ไม่มีโค้ดไหนอ้างถึงแล้ว · ลบที่ Media Library ของบัญชี `dvskwrapm` เท่านั้น (agent ไม่มีและไม่ควรถือคีย์ Master Admin ของบัญชีที่ใช้ร่วมกับ littlesmileflower)
 - [ ] **เปิด R2** (ตอนนี้ใช้ KV แทน) — ต้องกดเปิดใน Cloudflare dashboard เอง
 - [x] **`BACKUP_PASSPHRASE`** ตั้งแล้วตั้งแต่ 2026-07-23 — backup D1 รันจริงทุกวัน (ตรวจ 2026-07-25: `gh secret list` + 3 run ล่าสุด success · artifact ล่าสุด 43,932 bytes หมดอายุ 2026-08-23) · **เก็บ passphrase ไว้ให้ดี ถ้าหาย backup ทุกก้อนอ่านไม่ได้**

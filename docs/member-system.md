@@ -45,7 +45,7 @@ npx wrangler tail   # อ่าน error จริงตอนยิง endpoint
 | Google Login | ✅ secret ตั้งแล้ว (`GOOGLE_CLIENT_ID`/`_SECRET`) |
 | LINE Login | ✅ secret ตั้งแล้ว (`LINE_CHANNEL_ID`/`_SECRET`) |
 | สมัคร/ล็อกอินด้วยรหัสผ่าน | ✅ ใช้งานได้ (หลังแก้ PBKDF2 · PR #247) |
-| ลืมรหัสผ่าน | ⚠️ flow ครบแล้ว แต่ **ส่งอีเมลไม่ได้** — ยังไม่มี provider · ลิงก์บนหน้า login **ซ่อนอยู่** จนกว่าจะตั้ง key จริง (ตั้งใจ) |
+| ลืมรหัสผ่าน | ✅ โค้ดพร้อมส่งจริงแล้ว (Resend, PR #264) — **รอเจ้าของสมัคร + ยืนยันโดเมน** ก่อนตั้ง secret ถึงจะทำงาน ดูหัวข้อถัดไป · ลิงก์บนหน้า login **ซ่อนอยู่จนกว่าจะตั้ง secret** (ตั้งใจ) |
 | Payment gateway | ❌ ยังไม่เชื่อม — checkout รองรับ "จ่ายที่คลินิก" เต็มรูปแบบ, ชำระออนไลน์เป็น placeholder |
 | Account enumeration ที่ `/api/account/register` | ✅ ปิดที่ระดับ response แล้ว — ดูหัวข้อถัดไป |
 | ถอน session ทุกเครื่องตอนรีเซ็ตรหัส | ✅ ทดสอบบน Worker จริงแล้ว 2026-07-25 — `bash scripts/verify-reset-revocation.sh` |
@@ -58,7 +58,30 @@ npx wrangler tail   # อ่าน error จริงตอนยิง endpoint
 - **ไม่ออก session ให้ใครทั้งนั้น** — ถ้าออกเฉพาะเคสสมัครจริง header `Set-Cookie` ก็บอกความต่างแทน · ผู้สมัครจึงถูกส่งไปหน้า `/account/login?registered=1` ที่ข้อความอ่านได้ทั้งสองความหมาย
 - เผา `hashPassword()` ทิ้งบนเส้นทางอีเมลซ้ำ เพราะ `createMember()` ตีกลับ **ก่อน** hash — ไม่งั้นเวลาตอบที่เร็วกว่าหนึ่งรอบ PBKDF2 ก็เป็นคำตอบอยู่ดี
 
-> ⚠️ **ยังเหลือช่องที่ปิดไม่ได้จนกว่าจะมีอีเมล**: คนที่สมัครอีเมลหนึ่งแล้ว**ล็อกอินด้วยรหัสที่เพิ่งตั้งสำเร็จ** ย่อมรู้ว่าอีเมลนั้นเดิมยังว่าง · ปิดสนิทต้อง verify-before-create ทางอีเมล (`lib/members/password-reset.ts` — เมื่อต่อ provider แล้ว)
+> ⚠️ **ยังเหลือช่องที่ปิดไม่ได้จนกว่าจะมีอีเมล**: คนที่สมัครอีเมลหนึ่งแล้ว**ล็อกอินด้วยรหัสที่เพิ่งตั้งสำเร็จ** ย่อมรู้ว่าอีเมลนั้นเดิมยังว่าง · ปิดสนิทต้อง verify-before-create ทางอีเมล — ตอนนี้ตัว provider (Resend) ต่อแล้ว แต่ verify-before-create เป็นงานคนละก้อน ยังไม่ได้ทำ
+
+### ส่งอีเมลด้วย Resend — โค้ดพร้อมแล้ว รอ 2 อย่างจากเจ้าของ
+
+เลือก [Resend](https://resend.com) เพราะ **ฟรีและพอสำหรับปริมาณของคลินิกนี้**: 3,000 อีเมล/เดือน, 100/วัน — งานที่ยิงจริงมีแค่ "ลืมรหัสผ่าน" กับ "แจ้งว่ามีคนพยายามสมัครซ้ำ" ซึ่งวันนึงคงหลักหน่วย ไม่มีทางถึง 100 (ตรวจราคา/ลิมิตกับเอกสารทางการของ Resend ก่อนอ้างซ้ำ เผื่อเปลี่ยนหลังจากนี้)
+
+`lib/members/password-reset.ts` ยิง REST API ของ Resend ตรง ๆ ด้วย `fetch` (ไม่ใช้ SDK — แบบเดียวกับ [lib/cloudinary-upload.ts](../lib/cloudinary-upload.ts)) `import 'server-only'` กันคีย์หลุดไปฝั่ง client
+
+**ที่เหลือทำแทนไม่ได้ — agent ไม่ควรสมัครบริการแทนเจ้าของ**:
+
+1. สมัคร Resend (ฟรี) ที่ [resend.com](https://resend.com)
+2. เพิ่มโดเมนที่จะส่งอีเมล แล้วยืนยันด้วย DNS records (TXT/CNAME ที่ registrar) — **ติดปัญหาจริง**: [docs/infrastructure.md](./infrastructure.md) บันทึกไว้ว่า `kazumiclinic.com` "จดไปแล้วแต่คลินิกบอกว่าไม่ได้ซื้อ ยังไม่ยืนยันว่าเป็นของใคร" ถ้ายังเข้า DNS ของโดเมนนั้นไม่ได้ ให้ใช้โดเมนอื่นที่เจ้าของถืออยู่จริงสำหรับส่งอีเมลไปก่อน (ไม่จำเป็นต้องเป็นโดเมนเดียวกับเว็บ)
+3. คัดลอก API key จาก dashboard แล้วตั้ง secret:
+   ```bash
+   wrangler secret put RESEND_API_KEY
+   wrangler secret put RESEND_FROM_EMAIL   # เช่น "Kazumi Clinic <noreply@โดเมนที่ยืนยันแล้ว>"
+   ```
+4. deploy — `isEmailConfigured()` เช็ค 2 ตัวนี้พร้อมกัน ตั้งครบเมื่อไหร่ปุ่ม "ลืมรหัสผ่าน?" จะโผล่เอง (ไม่ต้องแก้โค้ด)
+
+ยิงทดสอบจริงหลังตั้ง secret ด้วย `bash scripts/verify-reset-revocation.sh` (สร้าง token เองไม่ผ่านอีเมล จึงพิสูจน์แค่ revoke ไม่ใช่ delivery) แล้วลองกด "ลืมรหัสผ่าน" จริงที่หน้าเว็บดูว่าอีเมลถึงจริง — **ยังไม่มีใครยิงทดสอบ delivery จริงเพราะยังไม่มีคีย์**
+
+**เนื้อหาอีเมล** อยู่ใน `messages/{th,en}.json` ที่ `Account.passwordResetEmail` และ `Account.accountExists` (คีย์เดียวกับที่ใช้ในหน้าเว็บ — ห้ามแก้ที่นี่โดยไม่แก้ทั้งสองภาษา ตาม §13) เลือกภาษาให้ตรงกับที่ผู้ใช้กำลังอ่านอยู่ ณ ตอนกดปุ่ม (ส่งมาจาก client ด้วย `useLocale()`)
+
+> ⚠️ **ลิงก์รีเซ็ตต้องใช้ origin ของ request ที่วิ่งเข้ามาจริง ไม่ใช่ `site.url`** — `site.url` (`kazumiclinic.com`) เป็นค่าที่ SEO/JSON-LD ตั้งใจให้ชี้ไปโดเมนจริงในอนาคต แต่ตอนนี้เว็บจริงยังอยู่ที่ workers.dev (`SITE_ENV=preview`) ลิงก์ที่สร้างจาก `site.url` วันนี้จะ 404 ทันที · แก้ด้วยวิธีเดียวกับ OAuth redirect URI ([lib/members/oauth.ts](../lib/members/oauth.ts)): อ่าน origin จาก `new URL(request.url).origin`
 
 ### ปุ่ม OAuth แสดงเมื่อไหร่
 

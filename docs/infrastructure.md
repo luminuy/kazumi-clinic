@@ -91,6 +91,13 @@
 | `LINE_CHANNEL_ID` / `LINE_CHANNEL_SECRET` | เหมือนกัน | ปุ่ม LINE ไม่แสดง |
 | `SESSION_SECRET` | ❌ **ไม่มีโค้ดไหนอ่านแล้ว** — ระบบ session ปัจจุบัน ([lib/members/session.ts](../lib/members/session.ts)) ใช้ opaque token 256-bit เก็บใน D1 ไม่มี signing secret · ไฟล์ JWT เก่าถูกลบใน PR #185 | ไม่มีผล — เป็นซากที่ลบได้ (`wrangler secret delete SESSION_SECRET`) |
 
+**ยังไม่ได้ตั้ง** (โค้ดพร้อมรับแล้วตั้งแต่ PR #264 — รอเจ้าของสมัคร Resend + ยืนยันโดเมนก่อน ดู [member-system.md](./member-system.md)):
+
+| Secret | ใช้ที่ไหน | ไม่ตั้งแล้วเกิดอะไร |
+| --- | --- | --- |
+| `RESEND_API_KEY` | [lib/members/password-reset.ts](../lib/members/password-reset.ts) | `isEmailConfigured()` เป็น false — ลิงก์ "ลืมรหัสผ่าน?" ซ่อนอยู่ ไม่มีอะไรพัง |
+| `RESEND_FROM_EMAIL` | เหมือนกัน — เช่น `Kazumi Clinic <noreply@โดเมนที่ยืนยันแล้ว>` | เหมือนกัน — ต้องตั้ง**คู่กับ** `RESEND_API_KEY` ทั้งสองตัว |
+
 > 🔴 **ห้าม `process.env.X || 'ค่า fallback'` สำหรับความลับ** — repo เป็น public ค่านั้นจะหลุดถาวร และระบบจะ "ทำงานได้" ทั้งที่ config หาย = พังเงียบชนิดที่แย่ที่สุด · production ต้อง **throw**, dev ค่อยมี fallback · resolve **ตอนเรียก ไม่ใช่ตอน import** ไม่งั้น `next build` ที่ไม่มี secret จะพังทันที (บทเรียน 2026-07-23)
 
 **Secret ของ GitHub Actions** (คนละที่กับ Worker — ตั้งใน repo settings): `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` (CD), `BACKUP_PASSPHRASE` (workflow backup D1)

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Loader2, TriangleAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from '@/i18n/routing';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { LineIcon } from '@/components/brand-icons';
 import type { OAuthProvider } from '@/lib/members/oauth';
 
@@ -69,6 +69,7 @@ export function AuthForm({
   emailConfigured?: boolean;
 }) {
   const t = useTranslations('Account');
+  const locale = useLocale();
   const oauthErrorMessage = oauthError
     ? t.has(`oauth.errors.${oauthError}`)
       ? t(`oauth.errors.${oauthError}`)
@@ -93,7 +94,12 @@ export function AuthForm({
     const endpoint = mode === 'register' ? '/api/account/register' : '/api/account/login';
     const payload =
       mode === 'register'
-        ? { name: form.name.trim() || null, email: form.email.trim(), password: form.password }
+        ? {
+            name: form.name.trim() || null,
+            email: form.email.trim(),
+            password: form.password,
+            locale,
+          }
         : { email: form.email.trim(), password: form.password };
 
     try {
