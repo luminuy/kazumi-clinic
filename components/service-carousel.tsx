@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { ArrowUpRight, Pause, Play } from 'lucide-react';
 import type { ServiceCategory } from '@/lib/services';
 import { ServiceIcon } from '@/components/service-icon';

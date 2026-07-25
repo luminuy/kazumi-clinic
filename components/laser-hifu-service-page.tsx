@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { ShieldCheck, Stethoscope } from 'lucide-react';
 import type { ServiceCategory, ServiceItem } from '@/lib/services';
 import { site } from '@/lib/site';

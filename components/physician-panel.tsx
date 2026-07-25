@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { ArrowUpRight, Sparkles } from 'lucide-react';
 import { Reveal } from '@/components/reveal';
 import { useTranslations } from 'next-intl';

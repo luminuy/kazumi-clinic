@@ -35,7 +35,7 @@ export default function Header({
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <Link
           href="/"
-          aria-label="Kazumi Clinic หน้าหลัก"
+          aria-label={t('homeLink')}
           className="group flex items-center gap-3 text-olive-deep"
         >
           {/* Empty until the clinic uploads a mark (lib/site-images.ts ships no dead default any
@@ -129,7 +129,12 @@ export default function Header({
           <Sheet>
             <SheetTrigger
               render={
-                <Button variant="ghost" size="icon" className="md:hidden" aria-label="เปิดเมนู" />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="md:hidden"
+                  aria-label={t('openMenu')}
+                />
               }
             >
               <Menu className="size-5" />

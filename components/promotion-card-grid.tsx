@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import type { PromotionPoster } from '@/lib/promotions';
 import { cn } from '@/lib/utils';

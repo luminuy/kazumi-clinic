@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { ArrowRight, FlaskConical, ShieldCheck, Syringe } from 'lucide-react';
 import type { ServiceCategory } from '@/lib/services';
 import { doctors } from '@/lib/doctor';
