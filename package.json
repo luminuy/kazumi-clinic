@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "health": "bash scripts/healthcheck.sh",
+    "smoke": "bash scripts/smoke.sh",
     "setup:hooks": "git config core.hooksPath .githooks",
     "postinstall": "git config core.hooksPath .githooks || true",
     "cf:build": "opennextjs-cloudflare build",
