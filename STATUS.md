@@ -5,7 +5,7 @@
 > อัปเดตไฟล์นี้เป็นส่วนหนึ่งของ workflow: หลัง **deploy** และตอน **เริ่ม/จบงานสำคัญ** (ดู CLAUDE.md §0)
 > งานที่ปิดไปแล้วย้ายไป [docs/changelog.md](docs/changelog.md) — ไฟล์นี้เก็บแค่ **ตอนนี้ · ต่อไป · ค้าง**
 
-**อัปเดตล่าสุด:** 2026-07-25 06:00 UTC · โดย: Claude Code
+**อัปเดตล่าสุด:** 2026-07-25 06:30 UTC · โดย: Claude Code
 
 ---
 
@@ -13,7 +13,7 @@
 
 | | |
 |---|---|
-| **workers.dev** | Version `cbdc89c2` — deploy 2026-07-25 05:48 UTC ผ่าน CD (run [30146355865](https://github.com/luminuy/kazumi-clinic/actions/runs/30146355865)) · ตรงกับ main `2089883` (PR [#249](https://github.com/luminuy/kazumi-clinic/pull/249)) |
+| **workers.dev** | Version `90d47839` — deploy 2026-07-25 06:26 UTC ผ่าน CD (run [30147475833](https://github.com/luminuy/kazumi-clinic/actions/runs/30147475833)) · ตรงกับ main `19f9cbf` (PR [#251](https://github.com/luminuy/kazumi-clinic/pull/251)) · ยืนยัน `/sitemap.xml` = 200 · 72 URL (36 หน้า × 2 ภาษา) |
 | **โดเมนจริง** (kazumiclinic.com) | ❌ ยังไม่ขึ้น — `SITE_ENV=preview`, robots `Disallow: /` (ตั้งใจ ห้ามลบจนกว่าโดเมนจะขึ้น) |
 | **URL ตรวจ** | https://kazumi-clinic.bankjack10452.workers.dev · ตรวจ 2026-07-25: HTTP 200 |
 
@@ -35,7 +35,6 @@
 
 | เรื่อง | รายละเอียด |
 |---|---|
-| **sitemap ยังเป็นภาษาไทยล้วน** | [app/sitemap.ts](app/sitemap.ts) ลิสต์เฉพาะ URL ไทย ทั้งที่ hreflang ชี้ไป `/en` → หน้าอังกฤษไม่มีใน sitemap (พบ 2026-07-25 ตอนตรวจเอกสาร) · ยังไม่กระทบจริงเพราะ robots ปิดทั้งไซต์อยู่ แต่ต้องแก้ก่อนขึ้นโดเมนจริง |
 | **`/api/account/register` รั่ว account enumeration** | ผ่าน 409 "อีเมลนี้มีบัญชีอยู่แล้ว" (forgot-password ปิดช่องนี้แล้ว) — trade-off UX ที่เจ้าของต้องตัดสินก่อนแก้ |
 | **Password reset ส่งอีเมลไม่ได้** | ไม่มี provider — วางไว้หลัง seam `lib/members/password-reset.ts` (`isEmailConfigured()` อ่าน `EMAIL_API_KEY` เป็นชื่อ placeholder) · ลิงก์ "ลืมรหัสผ่าน?" **ซ่อนอยู่** จนกว่าจะตั้ง secret จริง แล้วมันจะโผล่เอง — ตั้งใจ ไม่ใช่ของค้าง |
 | **ถอน session ทุกเครื่องตอนรีเซ็ตรหัส ยังไม่ได้ทดสอบ runtime** | PR #244 ใช้ `db.batch()` ให้ atomic แต่ตรวจด้วยการอ่านโค้ดเท่านั้น — ต้องมี D1 จริง + สมาชิกจริงถึงจะยิงทดสอบได้ |
@@ -49,7 +48,7 @@
 - [ ] **เชื่อม payment gateway**: แก้ `lib/members/payments.ts` (`initiatePayment`) — ตอนนี้จองก่อนจ่ายที่คลินิกได้เต็ม, ชำระออนไลน์เป็น placeholder (ดู [docs/member-system.md](docs/member-system.md))
 - [ ] **เจ้าของอัปรูปที่หายกลับเข้า /admin/images**: asset เดิมบน Cloudinary หายไปหลายใบ (404) — `hero-filler`, `hero-skin-booster`, `hero-iv-drip-1/2/3`, `doctor-pratch`, `og-about`, `brand-logo`, โปสเตอร์ Karisma/Velvet Glow · PR #211 ตัด default ที่ตายแล้วออก หน้าจึงแสดงกล่องไอคอนแทนรูปแตก **จนกว่าจะอัปใหม่**
 - [ ] **เจ้าของทดสอบ**: เปลี่ยนรูปสักช่องใน /admin → รีเฟรชหน้านั้น ควรอัปเดตใน ~ไม่กี่วินาที (ยืนยัน on-demand revalidation หลังแก้ tag cache 2026-07-22)
-- [ ] **ขึ้นโดเมนจริง**: จดโดเมน → เปลี่ยน `site.url` → **ลบ var `SITE_ENV`** → เพิ่ม destination ใน Cloudflare Access → แก้ sitemap ให้ครอบ `/en` (ดู docs/infrastructure.md)
+- [ ] **ขึ้นโดเมนจริง**: จดโดเมน → เปลี่ยน `site.url` → **ลบ var `SITE_ENV`** → เพิ่ม destination ใน Cloudflare Access (ดู docs/infrastructure.md)
 - [ ] **เปิด R2** (ตอนนี้ใช้ KV แทน) — ต้องกดเปิดใน Cloudflare dashboard เอง
 - [ ] **ตั้ง GitHub secret `BACKUP_PASSPHRASE`** ไม่งั้น workflow backup D1 ไม่ทำงาน
 - [x] เปิด Google/LINE Login — secret ตั้งครบแล้ว (ยืนยัน `wrangler secret list` 2026-07-25)
