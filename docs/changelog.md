@@ -6,6 +6,22 @@
 
 ---
 
+## 2026-07-25 — sitemap ครอบทั้ง 2 ภาษา (PR #251)
+
+`app/sitemap.ts` ลิสต์เฉพาะ URL ภาษาไทย ทั้งที่ `alternates.languages` ของทุกหน้าชี้ไป `/en` → เว็บส่งสัญญาณขัดกันเอง · แก้ที่โครงสร้าง: sitemap ประกาศ "หน้า" เป็น path ที่ไม่ผูกภาษา แล้ว `expand()` กระจายเป็นหนึ่ง entry ต่อ locale โดยดึง URL + hreflang จาก `localizedAlternates()` ตัวเดียวกับที่หน้าเว็บใช้ — sitemap จึงขัดกับ canonical ไม่ได้อีกโดยโครงสร้าง · เพิ่ม invariant test 3 ตัว · ยืนยันบน production: 72 URL (36 หน้า × 2 ภาษา) พร้อม hreflang ครบทุก entry
+
+เจอระหว่างตรวจเอกสารใน #250 — ตัวอย่างของกฎ "เอกสารขัดกับโค้ด ให้เชื่อโค้ด แล้วไล่ดูว่าโค้ดขัดกับตัวเองตรงไหนด้วย"
+
+---
+
+## 2026-07-25 — ไล่แก้เอกสารทั้งชุด (PR #250)
+
+เอกสาร 4 ไฟล์บอกข้อเท็จจริงผิด: `deploy-for-antigravity.md` สอนว่า "ไม่มี CI/CD ต้อง deploy มือทุกครั้ง" (CD เปิดตั้งแต่ 2026-07-23) · ค่าสีใน `design.md` + CLAUDE.md §0.4 เป็นของยุค olive ทั้งที่ไซต์ re-tone เป็น Apple neutrals โดยคงชื่อ token เดิม · `infrastructure.md` บอก "ไม่มี Worker secret สักตัว" ทั้งที่มี 7 ตัว และยังบอกว่าอัป Cloudinary แบบ unsigned ทั้งที่ย้ายเป็น signed ตั้งแต่ PR #220 · `member-system.md` บอกปุ่ม OAuth แสดงเสมอ
+
+เพิ่ม: CLAUDE.md §13 (i18n — ไม่เคยมีเอกสารไหนพูดถึงเลยทั้งที่ทุกหน้าอยู่ใต้ `[locale]`), แผนที่เอกสาร "หนึ่งข้อเท็จจริง = หนึ่งเจ้าของไฟล์", ดัชนีบทเรียนใน §0.5, `docs/deploy.md` (เปลี่ยนชื่อจาก deploy-for-antigravity + ลิงก์จาก README/AGENTS/CLAUDE ซึ่งเดิมไม่มีใครลิงก์ถึง), และย้ายประวัติออกจาก STATUS.md มาไฟล์นี้
+
+---
+
 ## 2026-07-25 — ระบบรหัสผ่านตายสนิทบน production (PR #247, #248, #249)
 
 **[#247](https://github.com/luminuy/kazumi-clinic/pull/247)** `lib/members/password.ts` ตั้ง PBKDF2 ไว้ 600,000 รอบ แต่ workerd ปฏิเสธเกิน 100,000 → `hashPassword()`/`verifyPassword()` throw ทุกครั้ง = สมัคร/ล็อกอิน/รีเซ็ตรหัสใช้ไม่ได้เลยหลายวัน · เทสต์ 47 ตัวเขียว CI เขียว security audit ชมค่านั้นด้วยซ้ำ เพราะ `vitest` รันบน Node ที่ไม่มีลิมิตนี้ · เจอเพราะยิง `/api/account/register` จริงบน production แล้วได้ 502 → ไล่ด้วย `wrangler tail`
