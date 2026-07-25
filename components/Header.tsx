@@ -21,13 +21,9 @@ import type { OAuthProvider } from '@/lib/members/oauth';
 
 export default function Header({
   logoMark,
-  cartCount = 0,
-  isLoggedIn = false,
   oauthProviders = [],
 }: {
   logoMark: string;
-  cartCount?: number;
-  isLoggedIn?: boolean;
   oauthProviders?: OAuthProvider[];
 }) {
   const t = useTranslations('Navigation');
@@ -124,7 +120,7 @@ export default function Header({
 
         <div className="flex items-center gap-1">
           <LanguageSwitcher />
-          <HeaderActions cartCount={cartCount} isLoggedIn={isLoggedIn} oauthProviders={oauthProviders} />
+          <HeaderActions oauthProviders={oauthProviders} />
 
           <Sheet>
             <SheetTrigger
