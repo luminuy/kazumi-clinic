@@ -4,7 +4,7 @@
 > **"ล่าสุด" = `origin/main` เสมอ** (ดู CLAUDE.md §0.5) — ไฟล์นี้แค่สรุปให้อ่านเร็ว ถ้าขัดกับ git ให้เชื่อ git
 > อัปเดตไฟล์นี้เป็นส่วนหนึ่งของ workflow: หลัง **deploy** และตอน **เริ่ม/จบงานสำคัญ** (ดู CLAUDE.md §0)
 
-**อัปเดตล่าสุด:** 2026-07-25 00:00 · โดย: Claude Code
+**อัปเดตล่าสุด:** 2026-07-25 10:00 · โดย: Claude Code (วางแผน/ตรวจ) + Codex CLI `gpt-5.6-sol` (ลงมือแก้)
 
 ---
 
@@ -12,7 +12,7 @@
 
 | | |
 |---|---|
-| **workers.dev** | Version `c47e9c52` — deploy 2026-07-24 16:39 UTC (ผ่าน CD อัตโนมัติ) · ตรงกับ main `ba4a8a5` (PR [#231](https://github.com/luminuy/kazumi-clinic/pull/231) — 🔒 patch ความปลอดภัยด่วน: `next` 16.2.10 → 16.2.11 แก้ CVE middleware-bypass GHSA-6gpp-xcg3-4w24 + SSRF/DoS 3 ตัว) |
+| **workers.dev** | Version `8dafe0d5` — deploy 2026-07-25 02:36 UTC (ผ่าน CD อัตโนมัติ) · ตรงกับ main `7b484ab` (PR [#243](https://github.com/luminuy/kazumi-clinic/pull/243) — คืน ISR ให้ทั้งเว็บ) · ⏳ PR [#244](https://github.com/luminuy/kazumi-clinic/pull/244) (password reset) merge แล้ว รอ CD รอบถัดไป — **agent ถัดไปช่วยยืนยัน Version ID ใหม่แล้วอัปเดตบรรทัดนี้** |
 | **โดเมนจริง** (kazumiclinic.com) | ❌ ยังไม่ขึ้น — `SITE_ENV=preview`, robots `Disallow: /` (ตั้งใจ ห้ามลบจนกว่าโดเมนจะขึ้น) |
 | **URL ตรวจ** | https://kazumi-clinic.bankjack10452.workers.dev |
 
@@ -24,13 +24,38 @@
 
 ## 🔨 กำลังทำ (in progress)
 
-- **รอ direction ต่อจาก audit**: audit ทั้งเว็บ (SEO + code review + performance + security + dead code) เสร็จแล้ว 2026-07-24 23:50 — รายงานเต็ม 33 findings ส่งให้เจ้าของแล้ว (ไม่ commit เข้า repo เพราะเป็น one-off report) แก้ไปแล้วเฉพาะ critical ตัวเดียวที่เป็นช่องโหว่จริง (PR #231) ส่วนที่เหลือ (โดยเฉพาะ `cookies()` ใน shared layout ที่ทำให้ทั้งเว็บหลุดจาก ISR/KV cache — งานรีแฟกเตอร์สถาปัตยกรรม, และ password-reset flow ที่ยังไม่มี — ทั้งคู่ต้องคุยแผนก่อนลงมือ) รอเจ้าของสั่งว่าจะเริ่มจากตรงไหนต่อ — **สรุปย่อ findings หลักไว้ที่นี่กันหาย:**
-  - 🔴 `cookies()` ใน `app/(site)/[locale]/layout.tsx` (อ่าน cart/session) ทำทั้ง subtree เป็น dynamic แม้แต่ละหน้าตั้ง `revalidate=3600` ไว้ — ทุก request ยิง D1 สดทุกครั้ง ไม่ได้ใช้ KV cache เลย
-  - 🟠 SEO: title หน้าแรกซ้ำชื่อแบรนด์ 2 รอบ, `<html lang="th">` ค่าตายตัวผิดบนหน้า `/en`, `/th`+`/en` แชร์ canonical เดียวกันไม่มี hreflang (คาดว่า `/en` ไม่ได้ index เลย)
-  - 🟠 Security: admin write/upload endpoints ไม่มี rate limit, error message ดิบหลุดไปหา client ~27 จุด, ไม่มี password-reset flow ทั้งที่มี schema `member_tokens` รองรับแล้ว
-  - 🟡🟢 อีก 19 ข้อ (dead code 4 จุด, ปุ่ม LINE ซ้ำ 8 ไฟล์, test coverage ขาดสำหรับ logic เรื่องเงิน/auth ฯลฯ) — ดูรายละเอียดเต็มในรายงานที่ส่งให้เจ้าของ (ไม่ได้เก็บไว้ใน repo)
+- (ว่าง — audit 33 findings ปิดครบแล้ว ดูด้านล่าง)
+
+### ⚠️ ค้างไว้ให้คนถัดไป (จาก audit รอบ 2026-07-24/25)
+
+- **ยังไม่ได้ทดสอบ runtime**: การถอน session ทุกเครื่องตอนรีเซ็ตรหัสผ่านสำเร็จ (PR #244) — logic ใช้ `db.batch()` ให้ atomic แต่ต้องมี D1 จริง + สมาชิกจริงถึงจะยิงทดสอบได้ ตรวจด้วยการอ่านโค้ดเท่านั้น
+- **Password reset ยังส่งอีเมลไม่ได้**: ไม่มี provider — วางไว้หลัง seam `lib/members/password-reset.ts` (`isEmailConfigured()` อ่าน `EMAIL_API_KEY` เป็นชื่อ placeholder) · ลิงก์ "ลืมรหัสผ่าน?" บนหน้า login **ซ่อนอยู่** จนกว่าจะ `wrangler secret put` ตัวจริง แล้วมันจะโผล่เอง — ตั้งใจ ไม่ใช่ของค้าง
+- **`/api/account/register` ยังรั่ว account enumeration** ผ่าน 409 "อีเมลนี้มีบัญชีอยู่แล้ว" (forgot-password ปิดช่องนี้แล้ว แต่ register ยังเปิด) — เป็นของเดิม trade-off เรื่อง UX ต้องให้เจ้าของตัดสินก่อนแก้
+- **`blog/[slug]` ไม่ prerender ตอน build** (slug อยู่ใน D1) — ใส่ `generateStaticParams` คืน list ว่างเพื่อให้เข้า ISR ตอน on-demand แล้ว ถ้าอยาก prerender จริงต้องให้ CI เข้าถึง D1 ได้
 
 > ก่อนเริ่มงานที่กินหลายไฟล์ ให้จดที่นี่: **อะไร · เครื่องมือไหน (Claude / Antigravity) · branch ไหน** — กันชนกันและกัน "งานหาย" (ดู CLAUDE.md §0.5 · dual-agent)
+
+### ✅ ปิดแล้ว (2026-07-25 เช้า) — audit 33 findings ปิดครบ 13 PR (#231–#244)
+
+Claude วางแผน/เขียน spec/ตรวจสอบ · Codex CLI ลงมือแก้โค้ด (ดู "ปมค้าง" เรื่องโมเดล)
+
+| PR | เรื่อง |
+|---|---|
+| [#231](https://github.com/luminuy/kazumi-clinic/pull/231) | 🔒 `next` 16.2.10 → 16.2.11 — CVE middleware-bypass GHSA-6gpp-xcg3-4w24 + SSRF/DoS 3 ตัว |
+| [#233](https://github.com/luminuy/kazumi-clinic/pull/233) | SEO: title ซ้ำแบรนด์, `<html lang>` ตามภาษาจริง, canonical+hreflang แยก th/en, `/llms.txt` |
+| [#234](https://github.com/luminuy/kazumi-clinic/pull/234) | error message ดิบหลุดหา client 27 จุด + race condition ตอนสมัคร/สร้าง slug ซ้ำ |
+| [#235](https://github.com/luminuy/kazumi-clinic/pull/235) | rate limit admin write/upload, ซ่อนปุ่ม OAuth ที่ยังไม่ตั้งค่า, เลิกเชื่อ email จาก LINE โดยไม่มี verify |
+| [#236](https://github.com/luminuy/kazumi-clinic/pull/236) | ลิงก์ order ของ guest หมดอายุใน 7 วัน + CSRF double-submit ที่ checkout |
+| [#237](https://github.com/luminuy/kazumi-clinic/pull/237) | lazy-load modal, preconnect Cloudinary, `Promise.all` ใน layout |
+| [#238](https://github.com/luminuy/kazumi-clinic/pull/238) | `will-change` เฉพาะตอนรอ animate |
+| [#239](https://github.com/luminuy/kazumi-clinic/pull/239) | ลบ dead code 5 จุด + comment ที่ขัดกับโค้ดจริง |
+| [#240](https://github.com/luminuy/kazumi-clinic/pull/240) | รวมปุ่ม LINE ท้ายหน้าเป็น `LineCtaButton` (ซ้ำ 6 ไฟล์) |
+| [#241](https://github.com/luminuy/kazumi-clinic/pull/241) | `getAllLeads()` ไม่มี LIMIT → ใส่ cap 500 |
+| [#242](https://github.com/luminuy/kazumi-clinic/pull/242) | เทสต์ 20 → 39 (deposit/order math, cart clamp, password hashing) |
+| [#243](https://github.com/luminuy/kazumi-clinic/pull/243) | **คืน ISR ให้ทั้งเว็บ** — ดูด้านล่าง |
+| [#244](https://github.com/luminuy/kazumi-clinic/pull/244) | password reset flow (เทสต์ 39 → 43) |
+
+**#243 สำคัญและมีบทเรียน**: 6 หน้าตั้ง `revalidate=3600` ไว้แต่ถูกเสิร์ฟ dynamic หมด — KV/D1 tag cache ที่ตั้งไว้ไม่ได้ถูกใช้เลย · audit รอบแรกชี้ว่าเป็นเพราะ `cookies()` ในlayout **แต่แก้จุดนั้นอย่างเดียวไม่มีอะไรเปลี่ยน** · ไล่ bisect ด้วยการ build ซ้ำทีละจุดพบว่ามี **3 สาเหตุซ้อนกัน**: (1) `getLocale()` ใน root layout — regression จาก #233 เอง (2) ไม่มี `generateStaticParams` ที่ `[locale]` layout (3) `cookies()` · แก้โดยย้าย document shell ไป `[locale]` layout (ได้ locale จาก `params` ไม่ต้องอ่าน request) + แยก `/admin` เป็น root layout ของตัวเอง + ย้าย cart badge/login state ไป fetch ฝั่ง client · ยืนยันด้วย `x-nextjs-cache: HIT` บน production จริง
 
 ### ✅ ปิดวันนี้ (2026-07-24 ดึก) — patch ความปลอดภัยด่วน: next 16.2.10 มี CVE middleware-bypass
 
@@ -98,6 +123,8 @@
 - **สองเครื่องมือแก้ร่วมกัน** (Claude ใน worktree · Antigravity ในโฟลเดอร์หลัก): งานที่ไม่ push = มองไม่เห็นตอน deploy — commit+push ทุกครั้งที่หยุด · ✅ `main` **บังคับด้วย ruleset แล้ว** (repo เป็น public ตั้งแต่ 2026-07-23) — push ตรงเข้า main โดน GitHub ตีกลับทุกกรณี แม้ `--no-verify` ต้องผ่าน PR + `verify` เขียวเท่านั้น
 - **repo เป็น public แล้ว** (2026-07-23) — โค้ดและประวัติทั้งหมดเปิดสาธารณะ · ห้าม commit ความลับลงไฟล์เด็ดขาด ใช้ `wrangler secret put` เท่านั้น · ความลับที่หลุดไปแล้วถือว่าหลุดถาวร ต้อง rotate ไม่ใช่ลบ commit
 - **deploy มี CI/CD แล้ว**: `.github/workflows/deploy.yml` จะรัน `pnpm cf:deploy` อัตโนมัติเมื่อ merge เข้า `main` (ต้องตั้ง `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` เป็น GitHub Repository Secrets ก่อน) · ถ้ายังไม่ตั้ง secret สามารถ deploy manual ได้ด้วย `pnpm cf:deploy` แล้วยิงเว็บจริง 2 ครั้งเช็ค `x-nextjs-cache` (ISR เสิร์ฟของเก่ารอบแรก) · เช็คสุขภาพเว็บได้ด้วย `pnpm health`
+- **Codex CLI: ใช้ `-m gpt-5.6-sol` เสมอ (2026-07-25)** — ค่า default ใน `~/.codex/config.toml` คือ `gpt-5.6-terra` ซึ่งเจ้าของยืนยันว่าอ่อนกว่า · เจอจริง: `terra` ค้าง 40 นาทีกับงานแก้ 3 บรรทัด ไม่สร้าง session ไม่แตะไฟล์เลย ต้อง `pkill` ทิ้ง แล้ว `sol` ทำงานเดียวกันเสร็จใน ~2 นาที · **แต่ `sol` ก็ค้างได้เหมือนกัน** (ค้างอีก 27 นาทีในรอบถัดมา) → วิธีจับว่าค้างจริง: ดูว่ามีไฟล์ rollout ใหม่ใน `~/.codex/sessions/<yyyy>/<mm>/<dd>/` ไหม + log file ยังโตอยู่ไหม (`stat -f %m`) — process ยังอยู่แต่ log ไม่ขยับเกิน ~3 นาที = ค้าง ให้ kill แล้วรันใหม่ หรือทำเองถ้าเป็นงานเล็ก
+- ⚠️ **Codex ชอบแก้ `STATUS.md` เองโดยไม่ได้สั่ง** — และเนื้อหาที่มันเขียนมักเก่า (อ่านจาก state ก่อนหน้า) เจอรอบ #244 ที่มันเขียนว่างาน ISR "ยังต้องคุยแผนก่อนลงมือ" ทั้งที่ merge ไปแล้ว · ตรวจ `git status` ทุกครั้งหลัง Codex จบ ถ้ามันแตะ STATUS.md ให้ `git checkout -- STATUS.md` แล้วเขียนเอง
 - **Codex CLI (`codex exec`) เป็นเครื่องมือลงมือแก้โค้ดตัวใหม่ตั้งแต่ 2026-07-24** — เจ้าของสั่งชัดว่า Claude วางแผน/เขียนสเปก/ตรวจสอบ, Codex เป็นคนแก้โค้ดจริง (`-s workspace-write`, sandbox ไม่มี network — curl/fetch เว็บจริงไม่ได้ ต้องให้ Claude ทำส่วนที่ต้องใช้ network) · Claude ต้อง verify เองทุกครั้งด้วย lint/typecheck/test/build ไม่เชื่อคำอ้าง "ผ่านแล้ว" ของ Codex เฉยๆ (เจอเคสจริงที่ Codex รายงาน `pnpm cf:build` fail เพราะ sandbox ไม่มี network ไปดึง Google Fonts ไม่ใช่โค้ดพัง — Claude ต้อง re-run เองถึงจะรู้)
 - **Cloudinary account (`dvskwrapm`) เป็นแพลนฟรี** — ไม่รองรับ scoped/restricted API key role (จำกัดสิทธิ์เฉพาะโฟลเดอร์) ต้องใช้ role "Master Admin" เท่านั้นสำหรับคีย์ใหม่ที่สร้างแยกจาก Root · account นี้ใช้ร่วมกับโปรเจกต์ littlesmileflower ด้วย — **ห้ามลบ/ปิด unsigned preset ชื่อ `littlesmileflower`** เด็ดขาดแม้จะรู้ว่าชื่อมันหลุดอยู่ใน git history สาธารณะของ Kazumi แล้ว (PR #220 เลิกใช้ preset นี้ในโค้ด Kazumi แล้ว แต่ preset ตัวเองยังต้องอยู่เพื่อ littlesmileflower)
 
