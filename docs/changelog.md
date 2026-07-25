@@ -1,0 +1,108 @@
+# Changelog — งานที่ปิดไปแล้ว
+
+บันทึกงานที่ **เสร็จแล้ว** ย้ายออกมาจาก [STATUS.md](../STATUS.md) เพื่อให้ไฟล์นั้นเหลือแต่ "ตอนนี้/ต่อไป/ค้าง" · เรียงใหม่ → เก่า
+
+> git log บอกสิ่งที่เสร็จอยู่แล้ว — ไฟล์นี้เก็บ **เหตุผลและบทเรียน** ที่ commit message ใส่ไม่หมด
+
+---
+
+## 2026-07-25 — ระบบรหัสผ่านตายสนิทบน production (PR #247, #248, #249)
+
+**[#247](https://github.com/luminuy/kazumi-clinic/pull/247)** `lib/members/password.ts` ตั้ง PBKDF2 ไว้ 600,000 รอบ แต่ workerd ปฏิเสธเกิน 100,000 → `hashPassword()`/`verifyPassword()` throw ทุกครั้ง = สมัคร/ล็อกอิน/รีเซ็ตรหัสใช้ไม่ได้เลยหลายวัน · เทสต์ 47 ตัวเขียว CI เขียว security audit ชมค่านั้นด้วยซ้ำ เพราะ `vitest` รันบน Node ที่ไม่มีลิมิตนี้ · เจอเพราะยิง `/api/account/register` จริงบน production แล้วได้ 502 → ไล่ด้วย `wrangler tail`
+
+**[#248](https://github.com/luminuy/kazumi-clinic/pull/248)** เพิ่ม `pnpm smoke` ([scripts/smoke.sh](../scripts/smoke.sh)) ยิง register/login จริงหลังทุก deploy · ออกแบบให้ 429 (rate limit) = exit 2 "สรุปไม่ได้" ไม่ใช่ fail เพราะ smoke ที่ปลุกผิดบ่อยจะโดนปิดทิ้ง · cleanup แบบ self-healing (ลบทั้ง prefix `smoke-%@smoke.invalid`)
+
+**[#249](https://github.com/luminuy/kazumi-clinic/pull/249)** บันทึกบทเรียน runtime-vs-test-environment ลง CLAUDE.md §0.5
+
+---
+
+## 2026-07-25 (เช้า) — audit 33 findings ปิดครบ 13 PR (#231–#244)
+
+Claude วางแผน/เขียน spec/ตรวจสอบ · Codex CLI ลงมือแก้โค้ด
+
+| PR | เรื่อง |
+|---|---|
+| [#231](https://github.com/luminuy/kazumi-clinic/pull/231) | 🔒 `next` 16.2.10 → 16.2.11 — CVE middleware-bypass GHSA-6gpp-xcg3-4w24 + SSRF/DoS 3 ตัว |
+| [#233](https://github.com/luminuy/kazumi-clinic/pull/233) | SEO: title ซ้ำแบรนด์, `<html lang>` ตามภาษาจริง, canonical+hreflang แยก th/en, `/llms.txt` |
+| [#234](https://github.com/luminuy/kazumi-clinic/pull/234) | error message ดิบหลุดหา client 27 จุด + race condition ตอนสมัคร/สร้าง slug ซ้ำ |
+| [#235](https://github.com/luminuy/kazumi-clinic/pull/235) | rate limit admin write/upload, ซ่อนปุ่ม OAuth ที่ยังไม่ตั้งค่า, เลิกเชื่อ email จาก LINE โดยไม่มี verify |
+| [#236](https://github.com/luminuy/kazumi-clinic/pull/236) | ลิงก์ order ของ guest หมดอายุใน 7 วัน + CSRF double-submit ที่ checkout |
+| [#237](https://github.com/luminuy/kazumi-clinic/pull/237) | lazy-load modal, preconnect Cloudinary, `Promise.all` ใน layout |
+| [#238](https://github.com/luminuy/kazumi-clinic/pull/238) | `will-change` เฉพาะตอนรอ animate |
+| [#239](https://github.com/luminuy/kazumi-clinic/pull/239) | ลบ dead code 5 จุด + comment ที่ขัดกับโค้ดจริง |
+| [#240](https://github.com/luminuy/kazumi-clinic/pull/240) | รวมปุ่ม LINE ท้ายหน้าเป็น `LineCtaButton` (ซ้ำ 6 ไฟล์) |
+| [#241](https://github.com/luminuy/kazumi-clinic/pull/241) | `getAllLeads()` ไม่มี LIMIT → ใส่ cap 500 |
+| [#242](https://github.com/luminuy/kazumi-clinic/pull/242) | เทสต์ 20 → 39 (deposit/order math, cart clamp, password hashing) |
+| [#243](https://github.com/luminuy/kazumi-clinic/pull/243) | **คืน ISR ให้ทั้งเว็บ** — ดูด้านล่าง |
+| [#244](https://github.com/luminuy/kazumi-clinic/pull/244) | password reset flow (เทสต์ 39 → 43) |
+
+**#243 สำคัญและมีบทเรียน**: 6 หน้าตั้ง `revalidate=3600` ไว้แต่ถูกเสิร์ฟ dynamic หมด — KV/D1 tag cache ที่ตั้งไว้ไม่ได้ถูกใช้เลย · audit รอบแรกชี้ว่าเป็นเพราะ `cookies()` ใน layout **แต่แก้จุดนั้นอย่างเดียวไม่มีอะไรเปลี่ยน** · ไล่ bisect ด้วยการ build ซ้ำทีละจุดพบว่ามี **3 สาเหตุซ้อนกัน**: (1) `getLocale()` ใน root layout — regression จาก #233 เอง (2) ไม่มี `generateStaticParams` ที่ `[locale]` layout (3) `cookies()` · แก้โดยย้าย document shell ไป `[locale]` layout (ได้ locale จาก `params` ไม่ต้องอ่าน request) + แยก `/admin` เป็น root layout ของตัวเอง + ย้าย cart badge/login state ไป fetch ฝั่ง client · ยืนยันด้วย `x-nextjs-cache: HIT` บน production จริง
+
+---
+
+## 2026-07-24 (ดึก) — patch ความปลอดภัยด่วน: next 16.2.10 มี CVE middleware-bypass
+
+**[#231](https://github.com/luminuy/kazumi-clinic/pull/231)** `pnpm audit --prod` ยืนยันว่า `next@16.2.10` มี 4 high-severity advisory ที่แก้ใน `16.2.11` โดยเฉพาะ **GHSA-6gpp-xcg3-4w24** (middleware/proxy bypass) ซึ่งอันตรายเป็นพิเศษกับเว็บนี้เพราะ auth ของ `/admin` ทั้งหมดพึ่ง `middleware.ts` จุดเดียว (route handler เชื่อ header `x-admin-email` โดยไม่เช็คซ้ำ) — bypass สำเร็จ = เขียน/ลบข้อมูลคลินิกได้โดยไม่ล็อกอิน · แก้ด้วยการ bump เวอร์ชันอย่างเดียว
+
+---
+
+## 2026-07-24 (ค่ำ) — UI fix จากสกรีนช็อตของเจ้าของ
+
+**[#229](https://github.com/luminuy/kazumi-clinic/pull/229)** (1) `<legend>` ใน `CheckoutForm` ใช้ตำแหน่ง default ของ browser ที่คร่อมเส้นขอบบนของ `<fieldset>` เสมอ พอการ์ดเป็นทรงมนหัวข้อเลยดูโผล่ทะลุกรอบ → ซ่อน legend ให้ screen reader อ่านอย่างเดียว (`sr-only`) แล้วใช้ `<p>` แสดงหัวข้อแทน (2) `PromotionsGrid` — `Card` มี `py-(--card-spacing)` และเงื่อนไข `has-[>img:first-child]:pt-0` ไว้ยกเว้นให้รูปชิดขอบ แต่รูปโปรฯ ถูกห่อด้วย `<div>` อีกชั้นเลยไม่เข้าเงื่อนไข → เพิ่ม `pt-0` ตรง ๆ เมื่อการ์ดมีรูป
+
+---
+
+## 2026-07-24 (เย็น) — หน้า Services ทั้ง 9 หมวดได้ระบบซื้อผ่านเว็บ
+
+เจ้าของสั่งให้ Claude วางแผน/ตรวจ, Codex CLI ลงมือแก้โค้ดทุก PR:
+
+- **[#214](https://github.com/luminuy/kazumi-clinic/pull/214)** ปุ่ม "ซ่อน/กู้คืนสินค้า" ใน `/admin/products` — สินค้าที่ซ่อนแล้วเคยหายจากทั้งเว็บและแอดมิน (กู้ไม่ได้เลยนอกจากแก้ D1 ตรง ๆ)
+- **[#222](https://github.com/luminuy/kazumi-clinic/pull/222)** หน้า `/filler` ตกไปใช้เทมเพลตธรรมดาเงียบ ๆ เพราะเงื่อนไข `heroImage` บล็อกการ์ดที่มีอยู่แล้ว (รูป hero หายจาก Cloudinary) → fallback เป็นไอคอน
+- **[#223](https://github.com/luminuy/kazumi-clinic/pull/223)** เพิ่มปุ่ม "เพิ่มลงตะกร้า" ให้ 5 หมวดที่ไม่เคยมี — ยังไม่ขึ้นจริงเพราะ 5 หมวดนั้นยังไม่มีสินค้าตั้งราคา (รอเจ้าของ/แพทย์ ตาม CLAUDE.md §0.2)
+- **[#224](https://github.com/luminuy/kazumi-clinic/pull/224)** สร้าง `components/service-item-actions.tsx` ให้ทั้ง 9 หมวดใช้ร่วมกัน (ก่อนหน้านี้แต่ละหน้าเขียนปุ่มเอง บางหน้า label อังกฤษ บางหน้าไม่มีปุ่ม LINE)
+- **[#225](https://github.com/luminuy/kazumi-clinic/pull/225)** ปุ่ม "ซื้อเลย" (เพิ่มตะกร้า+ไปเช็คเอาท์ทันที) + ปุ่มไอคอนตะกร้า/LINE
+- **[#226](https://github.com/luminuy/kazumi-clinic/pull/226)** ลบปุ่ม LINE ซ้ำซ้อนบน 3 หน้า
+- **[#227](https://github.com/luminuy/kazumi-clinic/pull/227)** ปรับสไตล์ปุ่มตะกร้า+LINE ให้เป็นชุดเดียวกันแบบ Apple style (เอาแพทเทิร์นจากปุ่ม +/- ใน `cart-view.tsx` มาใช้ซ้ำ)
+
+**ยังไม่ทำ**: ปุ่ม "ซื้อเลย"/purchase-action ยังไม่มี automated test คุม
+
+---
+
+## 2026-07-24 (บ่าย) — 6 จุดจาก code/site audit
+
+- **[#215](https://github.com/luminuy/kazumi-clinic/pull/215)** `lib/members/catalog.ts` เคยอ่าน `serviceCategories` hardcoded แทน D1 merged catalogue → แก้ราคา/ซ่อนสินค้าใน /admin ไม่เคยไปถึง cart จริง
+- **[#216](https://github.com/luminuy/kazumi-clinic/pull/216)** เพิ่ม `pnpm cf:build` เข้า CI — เดิมเช็คแค่ `next build` ไม่เช็ค OpenNext/Worker build ที่ deploy จริงใช้
+- **[#217](https://github.com/luminuy/kazumi-clinic/pull/217)** rate limit `/api/cart/items` (60 req/5min ต่อ IP)
+- **[#218](https://github.com/luminuy/kazumi-clinic/pull/218)** sync เอกสารให้ตรง CI/CD จริง + Next.js 16.2
+- **[#219](https://github.com/luminuy/kazumi-clinic/pull/219)** เทสต์คุม hide/restore merge logic + cart catalog pricing
+- **[#220](https://github.com/luminuy/kazumi-clinic/pull/220)** `lib/cloudinary-upload.ts` เปลี่ยนจาก unsigned preset (`littlesmileflower`, ชื่อหลุดใน git history สาธารณะ) เป็น **signed upload** · ตั้ง secret `CLOUDINARY_API_KEY`/`_SECRET` แล้ว (key `kazumi-clinic-worker`, role Master Admin — free plan ไม่รองรับ scoped role) · เจ้าของทดสอบอัปรูปจริงผ่าน 2026-07-24
+  - ⚠️ preset เดิม `littlesmileflower` **ห้ามลบ/ปิด** — โปรเจกต์ littlesmileflower ยังใช้อยู่บนบัญชี Cloudinary เดียวกัน
+
+---
+
+## 2026-07-24 — รูปโปรโมชั่นหายทุก deploy
+
+`cf:deploy` เคยผูก `migrations/0011_promotions_image.sql` ซึ่งเป็น table rebuild ที่ `INSERT ... SELECT` **ไม่ได้ copy `image_public_id`** → รอบแรก (ตารางว่าง) ถูกต้อง แต่รอบถัด ๆ ไปลบรูปทั้งหมดเป็น null ทุก deploy · อาการหลอกมาก: ผู้ใช้อัปรูป → ขึ้น → deploy อะไรก็ได้ → รูปหาย โดยผู้ใช้ "ไม่ได้ทำอะไรเลย" · วินิจฉัยผิดรอบแรกไปโทษ `upsertPromotion` (เป็นปัญหารองจริง แต่ไม่ใช่ต้นเหตุ) แล้วบอกผู้ใช้ให้อัปใหม่ → deploy ถัดไปลบซ้ำอีก
+
+---
+
+## 2026-07-23 — repo เป็น public + branch protection + CD
+
+1. **push ตรงเข้า `main` ไม่ได้แล้ว** — ruleset `protect-main` `bypass_actors: []` · GitHub ตีกลับด้วย `GH013` ทุกกรณี แม้ `--no-verify` · commit บน main ก็ไม่ได้ (pre-commit hook)
+2. **repo เป็น public** — ห้ามใส่ความลับลงไฟล์ ใช้ `wrangler secret put` · ห้าม `process.env.X || 'fallback'` สำหรับความลับ
+3. **git identity ของ repo นี้** ตั้ง local override เป็น `luminuy` (เดิม global เครื่องเป็น "Little Smile Flower" ทำให้ commit ขึ้นชื่อผิดมา 100+ ตัว)
+4. **CD เปิด** ([.github/workflows/deploy.yml](../.github/workflows/deploy.yml)) — CI ผ่านบน main → `pnpm cf:deploy` รันเอง
+
+**ที่ปิดไปด้วยวันนั้น**: CI แดงบน main (lint `no-explicit-any` ใน `lib/session.ts`) · `SESSION_SECRET` ที่ไม่เคยตั้งจน production เซ็น session ด้วยสตริงในกิต (ภายหลังเลิกใช้ JWT ทั้งระบบ — PR #185) · guardrail ย้ายไปอยู่ที่ commit-time + server-side
+
+---
+
+## 2026-07-23 — งาน contact ของ Antigravity ถูก park
+
+เจ้าของสั่งให้ใช้เวอร์ชัน contact ของ Claude (PR #166, deployed) แทน · งาน AG ที่แก้ค้าง (`contact/page.tsx`, `globals.css`, `booking-form.tsx`) เก็บไว้ใน **git stash ของโฟลเดอร์หลัก** ชื่อ `AG-contact-redesign-wip-2026-07-23` — กู้ได้ด้วย `git stash list` แล้ว `git stash apply <ref>` (⚠️ `contact/page.tsx` จะชนกับเวอร์ชันปัจจุบัน ต้อง resolve เอง)
+
+---
+
+## 2026-07-22 — เปลี่ยนรูปใน /admin แล้วหน้าไม่อัปเดต
+
+ตาราง `revalidations` ของ OpenNext ไม่เคยถูกสร้างใน D1 เพราะ `cf:deploy` เลี่ยง workerd ด้วย `wrangler deploy` ตรง ๆ จึงข้าม `populateCache` ที่ปกติเป็นคนสร้าง → `revalidatePath()` ไม่มีที่บันทึก = on-demand ISR ตายเงียบ · แก้ด้วย `migrations/0007_tag_cache_revalidations.sql` ผูกเข้า `cf:deploy` (idempotent)

@@ -1,10 +1,15 @@
 # ค่าตั้งค่าของเว็บ — Kazumi Clinic
 
-ทุกค่าในหน้านี้ **ตรวจจากระบบจริงแล้ว** ไม่ได้คัดจากความจำหรือจากเอกสารอื่น · วันที่ตรวจ: **2026-07-17**
+ทุกค่าในหน้านี้ **ตรวจจากระบบจริงแล้ว** ไม่ได้คัดจากความจำหรือจากเอกสารอื่น
 
-> ℹ️ แถว CI/CD/วิธี deploy และ Workflow หลัง merge ด้านล่างแก้ตามสถานะปัจจุบันเมื่อ 2026-07-24; ค่าอื่นคงผลตรวจวันที่ 2026-07-17
+| ส่วน | ตรวจล่าสุด | ตรวจซ้ำด้วย |
+| --- | --- | --- |
+| Secret, Cloudinary, ตาราง D1, CI/CD | **2026-07-25** | `wrangler secret list` · `ls migrations/` · `gh run list --workflow=Deploy` |
+| Binding, var, Access, โดเมน, ข้อจำกัดเครื่อง | 2026-07-17 (ทวนโดเมน/เครื่อง 2026-07-25) | `wrangler.jsonc` · `sw_vers` · `dig` |
 
 > ⚠️ ถ้าจะอ้างค่าใดในหน้านี้กับ user ให้ **ยิงคำสั่งตรวจซ้ำก่อนพูด** — เอกสารบอกว่า *ตั้งใจให้เป็นยังไง* ไม่ใช่ *ความจริงตอนนี้* (CLAUDE.md §0.5)
+>
+> วิธี deploy ทั้งหมดอยู่ที่ [deploy.md](./deploy.md) — หน้านี้บอกว่า **มีอะไรอยู่ตรงไหน** ไม่ใช่ขั้นตอน
 
 ---
 
@@ -73,7 +78,22 @@
 
 **ทำไม 2 ค่าหลังไม่ใช่ secret** — AUD เป็น public identifier ของ Access application, team domain เป็น hostname สาธารณะ · ความปลอดภัยมาจาก [lib/auth.ts](../lib/auth.ts) ที่ **verify ลายเซ็น JWT** กับ key set ของ Cloudflare → รู้ค่าพวกนี้ก็ปลอม JWT ไม่ได้ · อยู่ใน git ดีกว่าเพราะรีวิวได้
 
-**ตอนนี้ไม่มี Worker secret สักตัว** — ถ้าจะเพิ่ม ใช้ `wrangler secret put <NAME>`
+---
+
+## Secrets (ตั้งด้วย `wrangler secret put` — ไม่อยู่ใน git)
+
+ตรวจด้วย `npx wrangler secret list` เมื่อ **2026-07-25** ได้ 7 ตัว:
+
+| Secret | ใช้ที่ไหน | ไม่ตั้งแล้วเกิดอะไร |
+| --- | --- | --- |
+| `CLOUDINARY_API_KEY` / `CLOUDINARY_API_SECRET` | [lib/cloudinary-upload.ts](../lib/cloudinary-upload.ts) — signed upload | อัปรูปใน `/admin` ทุกช่อง throw ทันที (ไม่มี fallback โดยตั้งใจ) |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | [lib/members/oauth.ts](../lib/members/oauth.ts) | ปุ่ม Google **ไม่แสดง** บนหน้า login (`configuredProviders()` กรองออก) |
+| `LINE_CHANNEL_ID` / `LINE_CHANNEL_SECRET` | เหมือนกัน | ปุ่ม LINE ไม่แสดง |
+| `SESSION_SECRET` | ❌ **ไม่มีโค้ดไหนอ่านแล้ว** — ระบบ session ปัจจุบัน ([lib/members/session.ts](../lib/members/session.ts)) ใช้ opaque token 256-bit เก็บใน D1 ไม่มี signing secret · ไฟล์ JWT เก่าถูกลบใน PR #185 | ไม่มีผล — เป็นซากที่ลบได้ (`wrangler secret delete SESSION_SECRET`) |
+
+> 🔴 **ห้าม `process.env.X || 'ค่า fallback'` สำหรับความลับ** — repo เป็น public ค่านั้นจะหลุดถาวร และระบบจะ "ทำงานได้" ทั้งที่ config หาย = พังเงียบชนิดที่แย่ที่สุด · production ต้อง **throw**, dev ค่อยมี fallback · resolve **ตอนเรียก ไม่ใช่ตอน import** ไม่งั้น `next build` ที่ไม่มี secret จะพังทันที (บทเรียน 2026-07-23)
+
+**Secret ของ GitHub Actions** (คนละที่กับ Worker — ตั้งใน repo settings): `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` (CD), `BACKUP_PASSPHRASE` (workflow backup D1)
 
 ---
 
@@ -100,14 +120,15 @@ middleware ครอบ `/admin/:path*` **และ** `/api/admin/:path*` — �
 
 | บริการ | ค่า | หมายเหตุ |
 | --- | --- | --- |
-| Cloudinary cloud | `dvskwrapm` | **ใช้บัญชีเดียวกับ littlesmileflower** |
+| Cloudinary cloud | `dvskwrapm` | **ใช้บัญชีเดียวกับ littlesmileflower** · แพลนฟรี → API key ต้อง role `Master Admin` (ไม่รองรับ scoped role) |
 | โฟลเดอร์ | `kazumi-clinic/` | |
-| Unsigned upload preset | `littlesmileflower` | **ไม่มี API secret ในโปรเจกต์นี้** ดู [images.md](./images.md) |
+| วิธีอัป | **signed upload** ตั้งแต่ PR #220 — เซ็นด้วย `CLOUDINARY_API_KEY`/`_SECRET` ฝั่ง Worker | ดู [images.md](./images.md) |
+| Unsigned preset `littlesmileflower` | โค้ด Kazumi **เลิกใช้แล้ว** (ชื่อหลุดใน git history สาธารณะ) | ⛔ **ห้ามลบ/ปิด preset** — โปรเจกต์ littlesmileflower ยังใช้อยู่บนบัญชีเดียวกัน |
 | LINE OA | `https://lin.ee/1tshhNn` | ใน `lib/site.ts` |
 
 ---
 
-## ข้อจำกัดของเครื่อง dev (macOS 12.6)
+## ข้อจำกัดของเครื่อง dev (macOS 12.7.6 — `sw_vers` 2026-07-25)
 
 | คำสั่ง | ใช้ได้ไหม |
 | --- | --- |
@@ -115,15 +136,17 @@ middleware ครอบ `/admin/:path*` **และ** `/api/admin/:path*` — �
 | `pnpm build` | ✅ |
 | `pnpm cf:build` | ✅ |
 | `pnpm cf:deploy` | ✅ ผ่าน trick `OPEN_NEXT_DEPLOY=true wrangler deploy` (ข้าม wrapper ที่เรียก workerd) |
-| `wrangler dev` / `cf:preview` | ❌ `Unsupported macOS version: 12.6.0 (ต้อง 13.5.0+)` |
+| `wrangler dev` / `cf:preview` | ❌ `Unsupported macOS version: 12.7.6 (ต้อง 13.5.0+)` |
 | `wrangler d1 ... --local` | ❌ เหตุผลเดียวกัน (ใช้ workerd) |
 | `wrangler d1 ... --remote` | ✅ ผ่าน API ไม่ใช้ workerd → **migration รันได้** |
 
 **ผลที่ตามมา: โค้ดที่แตะ D1/KV ทดสอบในเครื่องไม่ได้เลย — ต้อง deploy แล้วยิงทดสอบบน Worker จริง**
 
+> 🔴 **และ `pnpm test` ก็ไม่ใช่หลักฐานเช่นกัน** — `vitest.config.ts` ตั้ง `environment: 'node'` ซึ่งมี Web API/ลิมิตไม่ตรงกับ workerd · PBKDF2 600k รอบผ่านบน Node แต่ workerd ปฏิเสธเกิน 100k → ระบบรหัสผ่านตายสนิทหลายวันโดย CI เขียวตลอด (2026-07-25) · โค้ดที่แตะ crypto/binding/Web API ต้องยิงบน Worker จริง (`pnpm smoke`, `wrangler tail`)
+
 ---
 
-## ตาราง D1
+## ตาราง D1 (ทั้งหมดอยู่ใน `kazumi-clinic-tag-cache`)
 
 รันด้วย `npx wrangler d1 execute kazumi-clinic-tag-cache --remote --file migrations/xxxx.sql`
 
@@ -135,8 +158,19 @@ middleware ครอบ `/admin/:path*` **และ** `/api/admin/:path*` — �
 | `reviews` | [migrations/0004_reviews.sql](../migrations/0004_reviews.sql) | รีวิว + ภาพก่อน-หลังจาก `/admin/reviews` — แสดงเฉพาะ row ที่ `consent=1` **และ** `published=1`; ภาพก่อน-หลังถูกซ่อนถ้าไม่มี consent (บังคับทั้ง read และ write · §0.2) |
 | `posts` | [migrations/0005_posts.sql](../migrations/0005_posts.sql) | บทความจาก `/admin/blog` → หน้า `/blog` + `/blog/[slug]`; `slug` unique, `body` เป็น markdown subset render ผ่าน [components/prose.tsx](../components/prose.tsx) แบบไม่มี dangerouslySetInnerHTML |
 | `leads` | [migrations/0006_leads.sql](../migrations/0006_leads.sql) | คำขอนัดหมายจากฟอร์มใน `/contact` — เขียนผ่าน **public endpoint เดียวของแอป** `POST /api/leads` (Zod + honeypot); admin ดู/จัดการสถานะที่ `/admin/leads` |
-| ตารางอื่น | OpenNext สร้างเอง | tag cache ของ ISR — **ห้ามแตะ** |
+| `revalidations` | [migrations/0007_tag_cache_revalidations.sql](../migrations/0007_tag_cache_revalidations.sql) | tag cache ของ OpenNext — **ถ้าหาย on-demand ISR ตายเงียบ** (ดูหัวข้อ binding ด้านบน) |
+| `members`, `member_sessions`, `carts`, `cart_items`, `orders`, `order_items`, `password_resets` | [migrations/0009_member_system.sql](../migrations/0009_member_system.sql) | ระบบสมาชิก/ตะกร้า/คำสั่งซื้อ — เงินเก็บเป็น **satang** ทุกคอลัมน์ · ดู [member-system.md](./member-system.md) |
+| `rate_limits` | [migrations/0010_rate_limits.sql](../migrations/0010_rate_limits.sql) | นับ request ต่อ IP ของ register/login/lead/checkout/cart/admin |
+| ตารางอื่น | OpenNext สร้างเอง | cache ภายในของ ISR — **ห้ามแตะ** |
 
-> ⚠️ migration 0003–0006 ยังต้องรัน `wrangler d1 execute ... --remote --file` ให้ครบก่อน feature ทำงานบน production (ทุกไฟล์เป็น `CREATE TABLE IF NOT EXISTS` — รันซ้ำปลอดภัย)
+### migration ตัวไหนรันเอง / ตัวไหนต้องรันมือ
+
+| กลุ่ม | ไฟล์ | สถานะ |
+| --- | --- | --- |
+| อยู่ใน `cf:deploy` (รันทุก deploy) | `0007`, `0009`, `0010` | `CREATE TABLE IF NOT EXISTS` ล้วน — idempotent จริง |
+| ต้องรันมือครั้งเดียว | `0001`–`0006` | `CREATE TABLE IF NOT EXISTS` — รันซ้ำปลอดภัย แต่ไม่ต้องผูก |
+| ต้องรันมือ **อย่างระวัง** | `0008_add_en_columns` (ALTER), `0011_promotions_image` (table rebuild), `0012_posts_category` | ⛔ **ห้ามผูกเข้า `cf:deploy` เด็ดขาด** |
+
+> 🔴 `0011` เคยถูกผูกใน `cf:deploy` — มันเป็น rebuild ที่ `INSERT ... SELECT` ไม่ครบคอลัมน์ ทำให้ **รูปโปรโมชั่นถูกล้างเป็น null ทุก deploy** ผู้ใช้เห็นเป็น "อัปรูปแล้วหายเอง" (2026-07-24 · CLAUDE.md §0.5) · ก่อนใส่อะไรเข้า chain ต้องอ่าน SQL ให้จบว่ามี `DROP`/`RENAME`/`ALTER`/`INSERT..SELECT` ไหม
 
 **Var เสริม (ไม่บังคับ)**: `LEAD_WEBHOOK_URL` — ถ้าตั้งไว้ `POST /api/leads` จะยิง JSON แจ้งเตือน lead ใหม่ไปที่ URL นั้นแบบ fire-and-forget (LINE Notify ปิดบริการแล้ว จึงใช้ webhook ทั่วไปแทน) · ยังไม่ได้ตั้ง = ไม่แจ้งเตือน แค่บันทึกลง D1

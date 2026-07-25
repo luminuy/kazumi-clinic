@@ -5,17 +5,20 @@
 ## ต้องอ่านก่อนลงมือ
 
 0. อ่าน [STATUS.md](STATUS.md) — ตอนนี้ถึงไหน, deploy อะไรอยู่, ใครทำอะไรค้าง (จุดส่งไม้ต่อ · อัปเดตมันตอนจบงานด้วย)
-1. อ่าน [CLAUDE.md](CLAUDE.md) **ทั้งไฟล์** — workflow, medical compliance, SEO, lessons learned และข้อห้าม
-2. อ่าน [docs/infrastructure.md](docs/infrastructure.md) เมื่อแตะ deploy, Cloudflare, cache, D1, Access, domain หรือรายงานสถานะ production
-3. อ่าน [docs/images.md](docs/images.md) เมื่อแตะรูป, `/admin`, Cloudinary, metadata, JSON-LD หรือ revalidation
-4. อ่าน [docs/design.md](docs/design.md) เมื่อแตะ UI/UX, layout, styling, responsive หรือหน้า Services
+1. อ่าน [CLAUDE.md](CLAUDE.md) **ทั้งไฟล์** — workflow, medical compliance, SEO, i18n, lessons learned และข้อห้าม (มีแผนที่เอกสารอยู่หัวไฟล์)
+2. อ่าน [docs/deploy.md](docs/deploy.md) เมื่อจะ deploy หรือรายงานผลหลัง deploy
+3. อ่าน [docs/infrastructure.md](docs/infrastructure.md) เมื่อแตะ Cloudflare, cache, D1, secret, Access, domain หรือรายงานสถานะ production
+4. อ่าน [docs/images.md](docs/images.md) เมื่อแตะรูป, `/admin`, Cloudinary, metadata, JSON-LD หรือ revalidation
+5. อ่าน [docs/design.md](docs/design.md) เมื่อแตะ UI/UX, layout, styling, responsive หรือหน้า Services
+6. อ่าน [docs/member-system.md](docs/member-system.md) เมื่อแตะสมาชิก, auth, ตะกร้า, checkout, OAuth
 
-ถ้าเอกสารขัดกับ implementation ให้ตรวจ `origin/main` และ source files จริง (`package.json`, `open-next.config.ts`, `wrangler.jsonc`, `lib/services.ts`, `lib/site-images.ts`) ก่อนสรุป แล้วแก้เอกสารที่ล้าสมัยใน PR เดียวกัน
+ถ้าเอกสารขัดกับ implementation ให้ตรวจ `origin/main` และ source files จริง (`package.json`, `open-next.config.ts`, `wrangler.jsonc`, `i18n/routing.ts`, `app/globals.css`, `lib/services.ts`, `lib/site-images.ts`) ก่อนสรุป แล้วแก้เอกสารที่ล้าสมัยใน PR เดียวกัน
 
 ## กฎ fail-safe ที่ห้ามข้าม
 
 - Fetch และระบุ ref ก่อน audit; ห้ามเรียกไฟล์บน branch ค้างว่า “main ล่าสุด”
-- สำรวจก่อนแก้ วางแผน แล้ว verify ด้วย `pnpm lint` + `pnpm typecheck` + `pnpm build` + อ่าน diff
+- สำรวจก่อนแก้ วางแผน แล้ว verify ด้วย `pnpm lint` + `pnpm typecheck` + `pnpm test` + `pnpm build` + อ่าน diff
+- 🔴 **เทสต์เขียว + CI เขียว ≠ ใช้งานได้บน Cloudflare** — vitest รันบน Node ซึ่งมี Web API/ลิมิตไม่เหมือน workerd · โค้ดที่แตะ crypto/D1/binding/cookie ต้องยิงของจริงหลัง deploy (`pnpm smoke`, `npx wrangler tail`) · PBKDF2 600k รอบผ่านเทสต์หมดแต่ workerd ปฏิเสธเกิน 100k → ระบบรหัสผ่านตายสนิทหลายวัน (2026-07-25)
 - Stage เฉพาะไฟล์งาน, commit, push, เปิด PR และ merge ตาม [CLAUDE.md](CLAUDE.md) §0
 - **CRITICAL DEPLOY RULE**: ปกติ **ไม่ต้อง deploy เอง** — CD ทำให้แล้ว (ดูข้อ CD ด้านล่าง) · ห้ามรัน `pnpm cf:deploy` จาก local branch ที่ยังไม่ถูก merge โดยเด็ดขาด และ **ห้าม deploy มือชนกับ CD ที่กำลังรัน** (`wrangler deploy` สองตัวพร้อมกัน = prod ครึ่ง ๆ กลาง ๆ) · ถ้าจำเป็นต้อง deploy มือจริง ๆ: 1. รอ run ของ workflow `Deploy` จบก่อน (`gh run list --workflow=Deploy`) 2. `git switch main` + `git pull --rebase` ให้ได้โค้ดที่ merge แล้ว 3. หยุด `pnpm dev` ทุกตัวที่ใช้ working tree เดียวกัน 4. ค่อย `pnpm cf:deploy` — ไม่งั้นโค้ดเก่าจะทับโค้ดใหม่บนหน้าเว็บจริง (เคยเกิดปัญหาปุ่มกลับเป็นสีขาวมาแล้ว)
 - **CRITICAL MERGE CONFLICT RULE**: ห้ามใช้ `git stash` แล้วตามด้วย `git pull --rebase` และ `git stash pop` แบบอัตโนมัติรวดเดียวเด็ดขาด! หากมีงานที่แก้ค้างไว้ ต้อง `git commit` ให้เรียบร้อยก่อนดึงโค้ดเสมอ หากมี Merge Conflict ต้องตรวจเช็คไฟล์และแก้ให้เสร็จสิ้นก่อน เพราะการปล่อยผ่านจะทำให้ไฟล์โดนย้อนกลับไปเป็นเวอร์ชันเก่า (เคยเกิดปัญหา Apple Header หายกลับไปเป็นปุ่มสีเขียวมาแล้ว)
@@ -32,6 +35,8 @@
 - shadcn ใช้ Base UI prop `render`; ห้าม Radix `asChild`
 - ห้ามสร้าง `tailwind.config.ts` หรือรัน shadcn init ซ้ำ
 - URL ภายใน/canonical/JSON-LD ไม่มี trailing slash ยกเว้น root `/`
+- เว็บมี 2 ภาษา: ไทย = path เปล่า, อังกฤษ = `/en` · ข้อความ UI ต้องเพิ่มทั้ง `messages/th.json` และ `messages/en.json` ในคอมมิตเดียว · canonical/hreflang ใช้ `localizedAlternates()` ห้ามต่อ URL เอง · ห้ามเปิด `localeDetection` (คลินิกไทยต้องได้ไทยที่ `/` เสมอ) — ดู CLAUDE.md §13
+- สี/รูปทรงให้ยึดค่าจริงใน [app/globals.css](app/globals.css) — ชื่อ token เดิม (`olive`, `sand`) ถูก remap เป็น Apple neutrals แล้ว **ชื่อไม่ได้บอกสี** · ห้าม hardcode hex ใน component
 - MedicalBusiness มีเฉพาะ public site layout; FAQ มีเฉพาะ home; หน้า service ใช้ ItemList/Breadcrumb ตาม [CLAUDE.md](CLAUDE.md)
 - ห้าม hardcode ข้อมูลที่มี source of truth ใน `lib/site.ts`, `lib/doctor.ts`, `lib/services.ts`, `lib/promotions.ts`
 - ห้ามอ้างสรรพคุณเกินจริงหรือเผยแพร่ข้อความทางการแพทย์ใหม่โดยไม่ผ่านการตรวจของคลินิก/แพทย์
