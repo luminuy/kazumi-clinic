@@ -8,7 +8,7 @@ import { site, localizedAlternates } from '@/lib/site';
 import { doctor, doctorEesha } from '@/lib/doctor';
 import { serviceCategories } from '@/lib/services';
 import { faqSchema, homePageSchema } from '@/lib/schema';
-import { cloudAssets, heroHomePortrait } from '@/lib/cloud';
+
 import { getImageOverrides } from '@/lib/site-images-store';
 import { getAllMergedCategories } from '@/lib/service-products-store';
 import { categoryImageKey } from '@/lib/site-images';
@@ -85,7 +85,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const overrides = await getImageOverrides();
   const pick = (key: string, fallback: string) => overrides.get(key)?.public_id ?? fallback;
 
-  const heroSrc = overrides.has('hero-home') ? pick('hero-home', '') : heroHomePortrait;
+  // Empty when the clinic hasn't uploaded a hero yet: the section keeps its dark tonal ground
+  // rather than rendering an <Image> with no source (the old baked-in default was deleted from
+  // Cloudinary, so falling back to it drew a broken image).
+  const heroSrc = pick('hero-home', '');
   const doctorSrc = overrides.get('doctor-pratch')?.public_id;
   const eeshaSrc = overrides.get('doctor-eesha')?.public_id;
   const visitPhoto = overrides.get('home-visit')?.public_id;
@@ -111,21 +114,23 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: jsonLdHtml(homePageSchema(pick('hero-home', cloudAssets.heroHome))) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(homePageSchema(heroSrc)) }}
       />
 
       {/* ── Hero: full-bleed portrait with overlaid copy ─────── */}
       <section className="relative isolate flex min-h-[60vh] items-end overflow-hidden bg-black text-white md:min-h-[74vh] md:items-center">
-        <Image
-          src={heroSrc}
-          alt=""
-          aria-hidden="true"
-          fill
-          priority
-          fetchPriority="high"
-          sizes="100vw"
-          className="object-cover object-[38%_28%]"
-        />
+        {heroSrc && (
+          <Image
+            src={heroSrc}
+            alt=""
+            aria-hidden="true"
+            fill
+            priority
+            fetchPriority="high"
+            sizes="100vw"
+            className="object-cover object-[38%_28%]"
+          />
+        )}
         <div
           aria-hidden="true"
           className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/35 to-black/5 md:bg-gradient-to-r md:from-black/70 md:via-black/25 md:to-transparent"

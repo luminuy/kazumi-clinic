@@ -2,7 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
-import type { ReactElement } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import thMessages from '@/messages/th.json';
 import { serviceCategories, type ServiceItem } from '@/lib/services';
 import { ServiceItemActions } from '@/components/service-item-actions';
@@ -21,10 +21,27 @@ const { pushMock, refreshMock } = vi.hoisted(() => ({
 
 vi.mock('@/i18n/routing', () => ({
   useRouter: () => ({ push: pushMock }),
+  usePathname: () => '/',
+  // The locale-aware Link needs next-intl's request context, which no unit test has. A plain
+  // anchor keeps the rendered markup (and its accessible name) identical for these assertions.
+  Link: ({ href, children, ...rest }: { href: string; children?: ReactNode }) => (
+    <a href={href} {...rest}>
+      {children}
+    </a>
+  ),
 }));
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ refresh: refreshMock }),
+}));
+
+// next/image runs the project's Cloudinary loader, which expects Next's build-time image config.
+// These assertions only care whether an <img> is rendered at all, so a plain element is enough.
+vi.mock('next/image', () => ({
+  default: ({ src, alt, ...rest }: { src: string; alt: string }) => (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={src} alt={alt} {...rest} />
+  ),
 }));
 
 const priced: ServiceItem = {
@@ -146,5 +163,34 @@ describe('ServiceItemActions — against the real catalogue', () => {
       expect(item.id, `${item.name} has a price but no id`).toBeTruthy();
       expect(typeof item.priceFrom, `${item.name} has a non-numeric price`).toBe('number');
     }
+  });
+});
+
+describe('brand chrome survives an empty logo slot', () => {
+  // `brand-mark` used to ship a baked-in Cloudinary ID that had been deleted from the media
+  // library. One click on /admin's "คืนรูปเดิม" would have put that dead ID back on every page.
+  // The default is gone now, so the slot can legitimately resolve to '' — which must not become
+  // <Image src="">.
+  it('Header renders the wordmark and no image when the mark is empty', async () => {
+    const { default: Header } = await import('@/components/Header');
+    renderWithIntl(<Header logoMark="" />);
+
+    expect(screen.queryByRole('img')).toBeNull();
+    expect(screen.getByLabelText('Kazumi Clinic หน้าหลัก')).toBeTruthy();
+  });
+
+  it('Header renders the mark when one is uploaded', async () => {
+    const { default: Header } = await import('@/components/Header');
+    renderWithIntl(<Header logoMark="kazumi-clinic/brand-mark-123" />);
+
+    expect(screen.getByRole('img', { name: 'Kazumi Clinic' })).toBeTruthy();
+  });
+
+  it('Footer renders the wordmark and no image when the mark is empty', async () => {
+    const { default: Footer } = await import('@/components/Footer');
+    renderWithIntl(<Footer logoMark="" />);
+
+    expect(screen.queryByRole('img')).toBeNull();
+    expect(screen.getByText('Kazumi Clinic')).toBeTruthy();
   });
 });

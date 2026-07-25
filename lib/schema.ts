@@ -4,7 +4,7 @@
 import { site } from './site';
 import { ServiceCategory, serviceCategories } from './services';
 import { doctor } from './doctor';
-import { cld, cloudAssets } from './cloud';
+import { cld } from './cloud';
 
 const dayMap: Record<string, string> = {
   Monday: 'Monday',
@@ -17,7 +17,9 @@ const dayMap: Record<string, string> = {
 };
 
 export function clinicSchema({
-  imagePublicId = cloudAssets.heroHome,
+  // No fallback image: the slot that feeds this is admin-managed and may legitimately be empty,
+  // and `image` is dropped below rather than pointing Google at an asset that isn't there.
+  imagePublicId = '',
   logoPublicId = site.logo,
 }: {
   imagePublicId?: string;
@@ -90,7 +92,7 @@ export const websiteSchema = {
   publisher: { '@id': `${site.url}/#business` },
 };
 
-export function homePageSchema(imagePublicId: string = cloudAssets.heroHome) {
+export function homePageSchema(imagePublicId: string = '') {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
@@ -101,12 +103,16 @@ export function homePageSchema(imagePublicId: string = cloudAssets.heroHome) {
     inLanguage: 'th-TH',
     isPartOf: { '@id': `${site.url}/#website` },
     about: { '@id': `${site.url}/#business` },
-    primaryImageOfPage: {
-      '@type': 'ImageObject',
-      url: cld(imagePublicId, { width: 1200, height: 630, crop: 'fill' }),
-      width: 1200,
-      height: 630,
-    },
+    // Omitted rather than faked when the home hero slot is empty — an ImageObject whose url 404s
+    // is a structured-data error, while a missing optional property is not.
+    ...(imagePublicId && {
+      primaryImageOfPage: {
+        '@type': 'ImageObject',
+        url: cld(imagePublicId, { width: 1200, height: 630, crop: 'fill' }),
+        width: 1200,
+        height: 630,
+      },
+    }),
   };
 }
 

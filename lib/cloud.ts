@@ -67,14 +67,18 @@ function cloudinaryLoader({
 export default cloudinaryLoader;
 
 // Known asset public IDs — keep in sync with what's actually uploaded in Cloudinary.
-// There's no separate og-default asset — the default OG/Twitter image is just heroHome
-// cropped to 1200x630 via cld(cloudAssets.heroHome, { width: 1200, height: 630, crop: 'fill' }).
+//
+// EVERY ID HERE MUST RESOLVE. A shipped ID that 404s is worse than no ID at all: the page renders a
+// broken image, and /admin's "คืนรูปเดิม" turns that into the live state with one click. That is
+// exactly what `brand-mark` and `hero-home` became — both were deleted from the media library, and
+// only the clinic's own uploads (rows in D1 `site_images`) were hiding it. Slots with nothing to
+// fall back to are declared without `defaultPublicId` in lib/site-images.ts, and the pages render
+// their tonal/icon fallback instead. Verify with:
+//   curl -o /dev/null -w '%{http_code}' https://res.cloudinary.com/dvskwrapm/image/upload/<id>
 export const cloudAssets = {
-  // The wordmark and the flower mark the site actually renders. They lived in public/ — which
-  // meant /admin offered a "change the logo" button that changed nothing, because the header
-  // read a baked-in file instead.
-  brandMark: 'kazumi-clinic/brand-mark',
-  heroHome: 'kazumi-clinic/hero-home',
+  // Flower mark + KAZUMI CLINIC wordmark on olive — the logo Google is shown in JSON-LD, and the
+  // fallback for the `brand-logo` slot until the clinic uploads its own.
+  logo: 'kazumi-clinic/logo',
   // Moved out of public/ so /admin can replace them — a file under public/ is baked into
   // the build and can only change by shipping code.
   promoActiveRefresh: 'kazumi-clinic/promo-active-refresh',
@@ -88,8 +92,7 @@ export const cloudAssets = {
   promoSignatureFlawless: 'kazumi-clinic/promo-signature-flawless',
 } as const;
 
-// The `hero-home` asset (1920x1080) has the logo and the "Where balance purity…" quote burnt
-// into its right third — showing it behind the page's own <h1> duplicates that copy. The clean
-// portrait is everything left of x≈1100, so the homepage hero uses this crop and renders the
-// live headline beside it instead of on top of it.
-export const heroHomePortrait = cldSrc(cloudAssets.heroHome, 'c_crop,w_1060,h_1080,x_0,y_0');
+// The old `hero-home` asset had the logo and the "Where balance purity…" quote burnt into its
+// right third, so the homepage cropped it to the clean left portion. That asset is gone from
+// Cloudinary and the crop box was only ever right for that one file (docs/images.md), so nothing
+// is cropped by default any more — whatever the clinic uploads is shown whole.

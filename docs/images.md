@@ -122,8 +122,8 @@ next/image ขอ candidate ถึง `w_3840` · ถ้าไม่มี crop 
 `/[category]` เคยเป็น `generateStaticParams` ที่ไม่มี `revalidate` → เปลี่ยนรูปแล้วไม่ขึ้นตลอดกาล · ตอนนี้ใส่ `revalidate = 3600` เป็น ISR แล้ว · **หน้าไหนอ่าน override ต้อง regenerate ได้**
 
 **5. รูปที่มีตัวหนังสือฝังในภาพ**
-`hero-home` มีโลโก้ + คำโปรยฝังอยู่ในไฟล์ฝั่งขวา → หน้าแรกจึงใช้ `heroHomePortrait` ที่ครอปเอาเฉพาะซ้าย (`c_crop,w_1060,h_1080,x_0,y_0`)
-**crop box นี้ผูกกับรูปนั้นรูปเดียว** — ถ้าคลินิกอัป hero ใหม่ หน้าแรกจะแสดง**เต็มใบ ไม่ครอป** (ดู `heroSrc` ใน `app/(site)/[locale]/page.tsx`) เพราะเอา crop เดิมไปใช้กับรูปอื่นจะตัดมั่ว
+ไฟล์ `hero-home` เดิมมีโลโก้ + คำโปรยฝังอยู่ฝั่งขวา หน้าแรกจึงเคยครอปเอาเฉพาะซ้าย (`c_crop,w_1060,h_1080,x_0,y_0`) · **crop box แบบนั้นผูกกับรูปใบเดียว** เอาไปใช้กับรูปที่คลินิกอัปใหม่จะตัดมั่ว — พอไฟล์เดิมถูกลบจาก Cloudinary จึงเลิกครอปโดยปริยาย ตอนนี้หน้าแรกแสดงรูปที่อัปมา**เต็มใบ** (ดู `heroSrc` ใน `app/(site)/[locale]/page.tsx`)
+**บทเรียนที่ยังใช้ได้**: ถ้าจะอัปรูป hero อย่าเอาไฟล์ที่มีตัวหนังสือ/โลโก้ฝังมา เพราะหน้าเว็บมี `<h1>` ของตัวเองทับอยู่แล้ว
 
 **6. ไฟล์ต้นทางสลับกันได้**
 `velvet-glow.jpg` เก็บภาพ KARISMA ส่วน `karisma-collagen.jpg` เก็บภาพ Velvet Glow — สลับกันมาตั้งแต่ต้นทาง และตอนย้ายขึ้น Cloudinary ก็ย้ายความผิดตามไปด้วย · **เปิดรูปดูด้วยตาก่อนเชื่อชื่อไฟล์**
@@ -149,7 +149,20 @@ next/image ขอ candidate ถึง `w_3840` · ถ้าไม่มี crop 
 - [ ] หน้า SSG/ISR มี `revalidate` และทดสอบหลัง admin save/reset **ทั้ง `/` และ `/en`**
 - [ ] Production ตรวจด้วย cache-busting URL; local dev ไม่มี D1/KV จึงพิสูจน์ override ไม่ได้
 
+## กฎเรื่อง `defaultPublicId` — ห้ามชิป id ที่ตายแล้ว
+
+`defaultPublicId` คือรูปที่ compile ไปกับโค้ด และเป็นสิ่งที่ปุ่ม **"คืนรูปเดิม"** ใน /admin พากลับมา · ถ้า id นั้นถูกลบจาก Cloudinary ไปแล้ว ปุ่มนั้นจะกลายเป็นปุ่ม "ทำหน้าเว็บพัง" ที่กดได้ด้วยคลิกเดียว
+
+เกิดขึ้นจริง (เจอ 2026-07-25): `kazumi-clinic/brand-mark` และ `kazumi-clinic/hero-home` **ตอบ 404 แล้ว** ทั้งคู่ แต่ไม่มีใครเห็นเพราะคลินิกอัปรูปทับทั้งสอง slot ไว้ · ถ้ากดคืนรูปเดิมเมื่อไหร่ = โลโก้ทุกหน้า + hero หน้าแรก + `image` ใน JSON-LD ชี้ไปรูปที่ไม่มีอยู่ · **แก้แล้ว**: ตัด default ทั้งสองออก แล้วทำให้ Header/Footer/hero/schema รับค่าว่างได้ (ไม่มีรูป = แสดงตัวหนังสือ/พื้นเข้ม/ไม่ใส่ property นั้นใน JSON-LD)
+
+ก่อนใส่/แก้ `defaultPublicId` ต้องยิงเช็คก่อนเสมอ:
+
+```bash
+curl -o /dev/null -w '%{http_code}\n' \
+  "https://res.cloudinary.com/dvskwrapm/image/upload/w_400,c_limit/kazumi-clinic/<id>"
+```
+
 ## ยังไม่ได้ทำ
 
-- `cloudAssets.logo` (`kazumi-clinic/logo`) ไม่มีใครใช้แล้ว — เหลือไว้เฉย ๆ
+- 24 จาก 36 slot ยังว่าง (ไม่มีทั้ง override และ default) — หน้าจะขึ้นกล่องไอคอนแทน จนกว่าคลินิกจะอัปที่ `/admin/images` · ที่เห็นบ่อยสุดคือ `doctor-pratch`, `og-about`, `hero-filler`, `hero-botox`, `hero-iv-drip-2`
 - id ที่เป็น orphan: `promo-velvet-glow`, `promo-karisma-collagen` (เก็บภาพสลับกัน) — ลบใน media library ได้

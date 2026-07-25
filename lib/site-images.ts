@@ -71,20 +71,21 @@ export const siteImages: SiteImageSpec[] = [
     key: 'brand-mark',
     label: 'โลโก้ (ดอกไม้)',
     where: 'หัวเว็บและท้ายเว็บทุกหน้า',
-    defaultPublicId: cloudAssets.brandMark,
+    // ไม่มี default: ไฟล์เดิมถูกลบจาก Cloudinary แล้ว ถ้าไม่มีรูปที่นี่ หัวเว็บจะแสดงเฉพาะตัวหนังสือ KAZUMI CLINIC
     ratioHint: 'จัตุรัส — เฉพาะดอกไม้ ไม่มีตัวหนังสือ',
   },
   {
     key: 'brand-logo',
     label: 'โลโก้เต็ม (ดอกไม้ + ชื่อ)',
     where: 'โลโก้ใน JSON-LD ที่ Google ใช้',
+    defaultPublicId: cloudAssets.logo,
     ratioHint: 'จัตุรัส — ดอกไม้อยู่บน ตัวหนังสือ KAZUMI CLINIC อยู่ล่าง',
   },
   {
     key: 'hero-home',
     label: 'รูปใหญ่หน้าแรก',
     where: 'หน้าแรก · รูป OG ตอนแชร์ลิงก์',
-    defaultPublicId: cloudAssets.heroHome,
+    // ไม่มี default: ไฟล์เดิมถูกลบจาก Cloudinary แล้ว ถ้าไม่มีรูปที่นี่ hero หน้าแรกจะเป็นพื้นเข้มล้วน
     ratioHint: 'แนวนอน 16:9 — หน้าแรกครอปเอาเฉพาะฝั่งซ้าย ให้คนอยู่ค่อนไปทางซ้าย',
   },
   {
