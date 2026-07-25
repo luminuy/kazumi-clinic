@@ -48,3 +48,30 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      # This catches runtime-only failures that pass under Node but fail under workerd within a
+      # minute of deployment. The Worker is already live, so a red result is an alert, not rollback.
+      - name: Smoke test deployed Worker write paths
+        run: |
+          set +e
+          pnpm smoke
+          smoke_status=$?
+          set -e
+
+          case "$smoke_status" in
+            0)
+              exit 0
+              ;;
+            2)
+              # Registration allows 5 requests/15 min/IP and login 10 requests/5 min/IP.
+              # A 429 proves the Worker, routing, and D1 limiter respond, but cannot test crypto.
+              echo "::warning title=Smoke test inconclusive::Rate limited by an account endpoint; production health was not disproved."
+              exit 0
+              ;;
+            *)
+              exit 1
+              ;;
+          esac
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
