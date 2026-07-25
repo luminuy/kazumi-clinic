@@ -4,6 +4,7 @@ import { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Link } from '@/i18n/routing';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type { PromotionPoster } from '@/lib/promotions';
 import { cn } from '@/lib/utils';
 
@@ -14,6 +15,7 @@ export function PromotionCardGrid({
   posters: PromotionPoster[];
   className?: string;
 }) {
+  const t = useTranslations('A11y');
   const railRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -91,7 +93,7 @@ export function PromotionCardGrid({
             !canScrollLeft && 'promo-card-grid__arrow--hidden',
           )}
           onClick={() => scroll(-1)}
-          aria-label="ดูโปรโมชั่นก่อนหน้า"
+          aria-label={t('promotionPrev')}
           disabled={!canScrollLeft}
         >
           <ArrowLeft className="size-4" />
@@ -103,7 +105,7 @@ export function PromotionCardGrid({
             !canScrollRight && 'promo-card-grid__arrow--hidden',
           )}
           onClick={() => scroll(1)}
-          aria-label="ดูโปรโมชั่นถัดไป"
+          aria-label={t('promotionNext')}
           disabled={!canScrollRight}
         >
           <ArrowRight className="size-4" />

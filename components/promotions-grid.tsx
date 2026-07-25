@@ -5,6 +5,7 @@ import { Reveal } from '@/components/reveal';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 
 export type PromoCard = {
@@ -31,6 +32,7 @@ function formatValidUntil(iso: string) {
 }
 
 export function PromotionsGrid({ promos, tabs }: { promos: PromoCard[]; tabs: PromoTab[] }) {
+  const t = useTranslations('A11y');
   const [active, setActive] = useState<string>('all');
 
   // Only worth showing the filter when there's more than one category to choose between.
@@ -47,7 +49,7 @@ export function PromotionsGrid({ promos, tabs }: { promos: PromoCard[]; tabs: Pr
       {showTabs && (
         <div
           role="tablist"
-          aria-label="กรองโปรโมชั่นตามหมวด"
+          aria-label={t('promotionFilter')}
           className="mb-8 flex flex-wrap gap-2"
         >
           {[{ slug: 'all', title: 'ทั้งหมด' }, ...tabs].map((tab) => {

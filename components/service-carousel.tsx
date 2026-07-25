@@ -4,6 +4,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import Image from 'next/image';
 import { Link } from '@/i18n/routing';
 import { ArrowUpRight, Pause, Play } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import type { ServiceCategory } from '@/lib/services';
 import { ServiceIcon } from '@/components/service-icon';
 
@@ -18,6 +19,8 @@ type ServiceCarouselProps = {
  * rather than cloned, so the stream can loop without ever showing duplicate services.
  */
 export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarouselProps) {
+  const locale = useLocale();
+  const t = useTranslations('A11y');
   const railRef = useRef<HTMLDivElement>(null);
   const pickerRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<number | null>(null);
@@ -168,7 +171,7 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
           className="service-stream-rail"
           onScroll={handleScroll}
           role="region"
-          aria-label="แกลเลอรีบริการของ Kazumi Clinic"
+          aria-label={t('serviceGallery')}
         >
           {orderedItems.map(({ category, position }) => {
             const imageSrc = heroOverrides[category.slug] ?? category.heroImage;
@@ -224,7 +227,7 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
         </div>
       </div>
 
-      <div ref={pickerRef} className="service-stream-picker" aria-label="บริการของเรา">
+      <div ref={pickerRef} className="service-stream-picker" aria-label={t('serviceList')}>
         {orderedItems.map(({ category, categoryIndex, position }) => {
           const imageSrc = heroOverrides[category.slug] ?? category.heroImage;
           return (
@@ -255,13 +258,15 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
       </div>
 
       <div className="service-stream-footer">
-        <div className="service-stream-dots" role="group" aria-label="ตำแหน่งบริการ">
+        <div className="service-stream-dots" role="group" aria-label={t('servicePosition')}>
           {categories.map((category, index) => (
             <button
               key={category.slug}
               type="button"
               onClick={() => goTo(index)}
-              aria-label={`ดูบริการ ${category.title}`}
+              aria-label={t('viewService', {
+                name: locale === 'en' ? category.titleEn : category.title,
+              })}
               aria-current={activeIndex === index ? 'true' : undefined}
               className={activeIndex === index ? 'is-active' : undefined}
             />
@@ -271,7 +276,7 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
           type="button"
           className="service-stream-pause"
           onClick={() => setIsPaused((current) => !current)}
-          aria-label={isPaused ? 'เริ่มการเลื่อนบริการอัตโนมัติ' : 'หยุดการเลื่อนบริการอัตโนมัติ'}
+          aria-label={isPaused ? t('serviceAutoplayStart') : t('serviceAutoplayStop')}
           aria-pressed={isPaused}
         >
           {isPaused ? <Play className="size-3" /> : <Pause className="size-3" />}

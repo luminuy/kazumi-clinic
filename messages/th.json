@@ -412,7 +412,10 @@
       "checkoutSoon": "ขั้นตอนสั่งจอง/ชำระเงินกำลังจะเปิดให้บริการเร็ว ๆ นี้",
       "bookLine": "จองผ่าน LINE ตอนนี้",
       "priceNote": "ราคาที่แสดงอาจมีการเปลี่ยนแปลง กรุณาสอบถามราคาปัจจุบันและเงื่อนไขกับคลินิกก่อนเข้ารับบริการ · ผลลัพธ์แตกต่างกันในแต่ละบุคคลขึ้นอยู่กับการประเมินของแพทย์"
-    }
+    },
+    "bookOrAskLine": "จองคิว / สอบถามราคา ผ่าน LINE",
+    "buyNow": "ซื้อเลย",
+    "buyNowError": "เพิ่มลงตะกร้าไม่สำเร็จ"
   },
   "Checkout": {
     "title": "ยืนยันการจอง",
@@ -499,5 +502,26 @@
     "type": {
       "category": "หมวดบริการ"
     }
+  },
+  "A11y": {
+    "promotionGallery": "แกลเลอรีโปรโมชั่นของ Kazumi Clinic",
+    "promotionScroll": "เลื่อนโปรโมชั่น",
+    "promotionPrev": "ดูโปรโมชั่นก่อนหน้า",
+    "promotionNext": "ดูโปรโมชั่นถัดไป",
+    "promotionChoose": "เลือกโปรโมชั่น",
+    "promotionDetail": "{name} — ดูรายละเอียดบริการ",
+    "promotionView": "ดู {name}",
+    "promotionFilter": "กรองโปรโมชั่นตามหมวด",
+    "blogFilter": "กรองบทความตามหมวด",
+    "brandStrip": "แบรนด์และเทคโนโลยีที่คลินิกเลือกใช้",
+    "serviceGallery": "แกลเลอรีบริการของ Kazumi Clinic",
+    "serviceList": "บริการของเรา",
+    "servicePosition": "ตำแหน่งบริการ",
+    "viewService": "ดูบริการ {name}",
+    "serviceAutoplayStart": "เริ่มการเลื่อนบริการอัตโนมัติ",
+    "serviceAutoplayStop": "หยุดการเลื่อนบริการอัตโนมัติ",
+    "bookViaLine": "จองคิว {name} ผ่าน LINE",
+    "addItemToCart": "เพิ่ม {name} ลงตะกร้า",
+    "askViaLine": "สอบถาม {name} ผ่าน LINE"
   }
 }

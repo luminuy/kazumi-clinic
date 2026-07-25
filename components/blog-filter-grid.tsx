@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { Link } from '@/i18n/routing';
 import Image from 'next/image';
 import { FileText } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 
 export type BlogGridPost = {
@@ -44,6 +45,7 @@ export function BlogFilterGrid({
   locale: string;
   emptyText: string;
 }) {
+  const t = useTranslations('A11y');
   const [active, setActive] = useState<string>('all');
   const showTabs = tabs.length >= 2;
   const current = showTabs ? active : 'all';
@@ -58,7 +60,7 @@ export function BlogFilterGrid({
       {showTabs && (
         <div
           role="tablist"
-          aria-label="กรองบทความตามหมวด"
+          aria-label={t('blogFilter')}
           className="mb-8 overflow-x-auto no-scrollbar"
         >
           <div className="flex gap-2 whitespace-nowrap pb-2">
