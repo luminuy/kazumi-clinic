@@ -107,8 +107,15 @@ export async function DELETE(request: NextRequest) {
   if (!parsed.success) return NextResponse.json({ error: 'ข้อมูลไม่ถูกต้อง' }, { status: 400 });
 
   try {
-    await deletePost(parsed.data.id);
+    const slug = await deletePost(parsed.data.id);
+    // Same four paths the publish branch refreshes — a delete that only purged the Thai listing
+    // left the English listing and the article's own URL serving the post for up to an hour.
     revalidatePath('/blog');
+    revalidatePath('/en/blog');
+    if (slug) {
+      revalidatePath(`/blog/${slug}`);
+      revalidatePath(`/en/blog/${slug}`);
+    }
     revalidatePath('/sitemap.xml');
     return NextResponse.json({ ok: true });
   } catch (error) {
