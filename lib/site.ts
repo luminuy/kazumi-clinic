@@ -85,6 +85,7 @@ export function isPreviewDeploy() {
  * sitemap can expand every locale without pulling the navigation helpers into a server module. */
 export const LOCALES = ['th', 'en'] as const;
 export const DEFAULT_LOCALE = 'th';
+export type Locale = (typeof LOCALES)[number];
 
 /**
  * Builds `alternates.canonical` + `alternates.languages` for a locale-aware page — single place

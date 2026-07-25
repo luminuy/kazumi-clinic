@@ -128,7 +128,10 @@ describe('POST /api/account/register duplicate-email gate', () => {
 
     expect(response.status).toBe(200);
     expect(sendAccountExistsEmailMock).toHaveBeenCalledTimes(1);
-    expect(sendAccountExistsEmailMock).toHaveBeenCalledWith({ to: 'patient@example.com' });
+    expect(sendAccountExistsEmailMock).toHaveBeenCalledWith({
+      to: 'patient@example.com',
+      locale: 'th',
+    });
   });
 
   it('keeps answering 200 when the account-exists email fails to send', async () => {

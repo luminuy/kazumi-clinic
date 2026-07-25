@@ -340,6 +340,10 @@
       "subject": "Someone tried to register with your email",
       "body": "Someone tried to create a Kazumi membership with this email. If that was you, sign in or reset your password."
     },
+    "passwordResetEmail": {
+      "subject": "Reset your Kazumi Clinic password",
+      "body": "Click this link to set a new password: {url} The link is valid for 1 hour. If you didn't request this, you can ignore this email."
+    },
     "dashboard": {
       "title": "My account",
       "eyebrow": "Kazumi Member",

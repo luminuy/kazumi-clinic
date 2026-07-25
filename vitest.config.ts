@@ -11,8 +11,14 @@ export default defineConfig({
     environment: 'node',
     include: ['tests/**/*.test.ts', 'tests/**/*.test.tsx'],
   },
-  // Mirror the "@/..." path alias from tsconfig.json so tests import the same way the app does.
   resolve: {
-    alias: { '@': root },
+    alias: {
+      // Mirror the "@/..." path alias from tsconfig.json so tests import the same way the app does.
+      '@': root,
+      // Next.js no-ops `import 'server-only'` at build time; the real package throws
+      // unconditionally outside that special handling, which is what plain Vite/Node resolution
+      // does under vitest. See tests/shims/server-only.ts for the full story.
+      'server-only': `${root}/tests/shims/server-only.ts`,
+    },
   },
 });

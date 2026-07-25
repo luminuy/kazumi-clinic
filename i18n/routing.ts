@@ -15,3 +15,10 @@ export const routing = defineRouting({
  
 export const {Link, redirect, usePathname, useRouter, getPathname} =
   createNavigation(routing);
+
+// Re-exported from lib/site.ts, not defined fresh here: that file mirrors `routing.locales` as
+// plain consts specifically so server code (route handlers, lib/members/password-reset.ts) can
+// import the type without pulling in `createNavigation`'s client-navigation runtime — which
+// needs `next/navigation`, unresolvable under vitest's plain Node/Vite module resolution (see
+// vitest.config.ts's server-only shim for the sibling case of this same class of problem).
+export type { Locale } from '@/lib/site';

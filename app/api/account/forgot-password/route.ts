@@ -7,13 +7,17 @@ import {
   isEmailConfigured,
   sendPasswordResetEmail,
 } from '@/lib/members/password-reset';
-import { site } from '@/lib/site';
+import { LOCALES, DEFAULT_LOCALE, type Locale } from '@/lib/site';
 
 const MAX_BODY = 4 * 1024;
 const SUCCESS = { ok: true };
 
 const schema = z.object({
   email: z.string().trim().email('อีเมลไม่ถูกต้อง').max(160),
+  // Which language the visitor was reading in, so the email matches it. Optional/defaulted rather
+  // than required: this only ever arrives from our own form (components/account/password-reset-
+  // form.tsx), never from a user typing it, so a missing value means an older client, not abuse.
+  locale: z.enum(LOCALES).optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -43,12 +47,31 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const locale: Locale = parsed.data.locale ?? DEFAULT_LOCALE;
+
   try {
     const member = await findMemberByEmail(parsed.data.email);
     if (member && isEmailConfigured()) {
-      const token = await createPasswordResetToken(member.id);
-      const resetUrl = `${site.url}/account/reset-password?token=${encodeURIComponent(token)}`;
-      await sendPasswordResetEmail({ to: parsed.data.email, resetUrl });
+      // Token creation and delivery are wrapped separately from the outer handler on purpose: only
+      // the member-exists branch can throw here (an unknown email never reaches this line), so
+      // letting either failure fall through to the catch below would turn a D1 hiccup or a Resend
+      // outage into a 502-vs-200 signal for which addresses have accounts — exactly what the
+      // identical SUCCESS response further down exists to prevent.
+      try {
+        const token = await createPasswordResetToken(member.id);
+        // The site's canonical `site.url` (kazumiclinic.com) is what SEO tags point at, but it is
+        // NOT necessarily where this request is being served from today — SITE_ENV=preview means
+        // the live site is still the workers.dev URL (docs/infrastructure.md). A link built from
+        // site.url would 404 for every clinic member until the real domain goes live. Use the
+        // request's own origin instead, the same fix already applied to OAuth redirect URIs
+        // (lib/members/oauth.ts) for the identical reason.
+        const origin = new URL(request.url).origin;
+        const localePrefix = locale === DEFAULT_LOCALE ? '' : `/${locale}`;
+        const resetUrl = `${origin}${localePrefix}/account/reset-password?token=${encodeURIComponent(token)}`;
+        await sendPasswordResetEmail({ to: parsed.data.email, resetUrl, locale });
+      } catch (error) {
+        console.error('Password-reset token/delivery failed:', error);
+      }
     }
     return NextResponse.json(SUCCESS);
   } catch (error) {

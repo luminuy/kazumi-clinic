@@ -13,6 +13,7 @@ import {
   isEmailConfigured,
   sendAccountExistsEmail,
 } from '@/lib/members/password-reset';
+import { LOCALES, DEFAULT_LOCALE } from '@/lib/site';
 
 // PUBLIC endpoint — creates an email/password member account. Validation mirrors app/api/leads:
 // strict Zod, a body-size guard, and generic error text.
@@ -26,7 +27,8 @@ import {
 //
 // Residual, and honest about it: an attacker who registers an address and then succeeds at logging
 // in with the password they just chose learns the address was previously unused. Closing that needs
-// verify-before-create over email — see lib/members/password-reset.ts once a provider is wired.
+// verify-before-create over email — a provider is wired (lib/members/password-reset.ts, Resend)
+// but that specific flow isn't built yet.
 
 const MAX_BODY = 4 * 1024;
 
@@ -34,6 +36,8 @@ const schema = z.object({
   email: z.string().trim().email('อีเมลไม่ถูกต้อง').max(160),
   password: z.string().min(8, 'รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร').max(200),
   name: z.string().trim().max(80).nullish(),
+  // See the matching field in app/api/account/forgot-password/route.ts.
+  locale: z.enum(LOCALES).optional(),
 });
 
 function registrationDecoy(input: z.infer<typeof schema>): PublicMember {
@@ -86,7 +90,10 @@ export async function POST(request: NextRequest) {
 
       if (isEmailConfigured()) {
         try {
-          await sendAccountExistsEmail({ to: parsed.data.email });
+          await sendAccountExistsEmail({
+            to: parsed.data.email,
+            locale: parsed.data.locale ?? DEFAULT_LOCALE,
+          });
         } catch {
           // Delivery faults must not turn the duplicate-only path into an account oracle.
           console.error('Account-exists email delivery failed.');

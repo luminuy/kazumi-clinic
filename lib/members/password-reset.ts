@@ -1,38 +1,81 @@
+import 'server-only';
+import th from '@/messages/th.json';
+import en from '@/messages/en.json';
+import type { Locale } from '@/lib/site';
 import { memberDb, requireDb } from './db';
 import { hashToken, randomToken } from './session';
 
 const PASSWORD_RESET_TTL_MS = 60 * 60 * 1000;
 const PASSWORD_RESET_TYPE = 'password_reset';
+const RESEND_ENDPOINT = 'https://api.resend.com/emails';
 
 /**
- * Member-account email provider seams. The clinic will connect its chosen provider here later;
- * this file is the ONLY place that needs to change when delivery is wired.
+ * Member-account email delivery, via Resend (https://resend.com) — chosen for its free tier
+ * (3,000 emails/month, 100/day) against this clinic's actual volume: password resets and
+ * duplicate-signup notices only, likely single digits a day. `import 'server-only'` keeps the
+ * API key out of any client bundle the same way lib/cloudinary-upload.ts does.
  *
- * Neither these seams nor their callers may log recipient addresses, tokens, or reset URLs: the
- * URL contains the same single-use credential as the raw token.
+ * Two env vars gate delivery — both must be set via `wrangler secret put`:
+ *   RESEND_API_KEY    — from the Resend dashboard after signup
+ *   RESEND_FROM_EMAIL — e.g. "Kazumi Clinic <noreply@kazumiclinic.com>"; the domain in it must be
+ *                        verified with Resend (DNS TXT/CNAME records at the registrar) before
+ *                        Resend will send from it. See docs/member-system.md for the walkthrough
+ *                        and why this is blocked on confirming who controls kazumiclinic.com's DNS.
+ *
+ * Neither these functions nor their callers may log recipient addresses, tokens, reset URLs, or
+ * Resend response bodies: the URL carries the same single-use credential as the raw token, and a
+ * Resend error body echoes the recipient address back.
  */
 
-export type PasswordResetEmailDelivery =
-  | { status: 'sent' }
-  | { status: 'not_configured' };
+type DeliveryStatus = 'sent' | 'not_configured' | 'failed';
 
-export type PasswordResetEmail = {
-  to: string;
-  resetUrl: string;
-};
+export type PasswordResetEmailDelivery = { status: DeliveryStatus };
+export type PasswordResetEmail = { to: string; resetUrl: string; locale: Locale };
 
-export type AccountExistsEmailDelivery =
-  | { status: 'sent' }
-  | { status: 'not_configured' };
+export type AccountExistsEmailDelivery = { status: DeliveryStatus };
+export type AccountExistsEmail = { to: string; locale: Locale };
 
-export type AccountExistsEmail = {
-  to: string;
-};
+const messagesFor = (locale: Locale) => (locale === 'en' ? en : th).Account;
 
-/** True once the chosen email provider's credentials are present in the environment. */
+/** True once both Resend env vars are present. */
 export function isEmailConfigured(): boolean {
-  // Placeholder env name — rename it to match whichever provider the clinic chooses.
-  return !!process.env.EMAIL_API_KEY?.trim();
+  return !!process.env.RESEND_API_KEY?.trim() && !!process.env.RESEND_FROM_EMAIL?.trim();
+}
+
+/**
+ * POSTs one email through Resend. Returns 'failed' rather than throwing on any non-2xx response
+ * or network error — a delivery fault must never propagate as an unhandled rejection into a route
+ * handler whose response shape doubles as an account-existence signal (see the callers in
+ * app/api/account/{forgot-password,register}/route.ts).
+ */
+async function sendViaResend(payload: {
+  to: string;
+  subject: string;
+  text: string;
+}): Promise<Extract<DeliveryStatus, 'sent' | 'failed'>> {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.RESEND_FROM_EMAIL;
+  if (!apiKey || !from) return 'failed'; // isEmailConfigured() should have gated this already.
+
+  try {
+    const res = await fetch(RESEND_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({ from, to: payload.to, subject: payload.subject, text: payload.text }),
+    });
+    if (!res.ok) {
+      // Not res.text(): Resend's error body includes the `to` address we're trying not to log.
+      console.error(`Resend delivery failed with status ${res.status}`);
+      return 'failed';
+    }
+    return 'sent';
+  } catch (error) {
+    console.error('Resend request failed:', error instanceof Error ? error.message : 'unknown error');
+    return 'failed';
+  }
 }
 
 export async function sendPasswordResetEmail(
@@ -43,10 +86,13 @@ export async function sendPasswordResetEmail(
     return { status: 'not_configured' };
   }
 
-  // TODO(email-provider): send `message.resetUrl` to `message.to` with the provider SDK/REST API,
-  // then return { status: 'sent' }. Until that integration exists, never claim delivery happened.
-  void message;
-  return { status: 'not_configured' };
+  const copy = messagesFor(message.locale).passwordResetEmail;
+  const status = await sendViaResend({
+    to: message.to,
+    subject: copy.subject,
+    text: copy.body.replace('{url}', message.resetUrl),
+  });
+  return { status };
 }
 
 export async function sendAccountExistsEmail(
@@ -57,10 +103,9 @@ export async function sendAccountExistsEmail(
     return { status: 'not_configured' };
   }
 
-  // TODO(email-provider): send the localized Account.accountExists email copy to `message.to`,
-  // then return { status: 'sent' }. Never log the recipient address or provider payload.
-  void message;
-  return { status: 'not_configured' };
+  const copy = messagesFor(message.locale).accountExists;
+  const status = await sendViaResend({ to: message.to, subject: copy.subject, text: copy.body });
+  return { status };
 }
 
 /** Creates a one-hour, single-use reset token and supersedes older reset links for this member. */

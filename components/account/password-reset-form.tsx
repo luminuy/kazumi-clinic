@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { CircleCheck, Loader2, TriangleAlert } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Link, useRouter } from '@/i18n/routing';
 import { fieldClass } from './auth-form';
@@ -19,6 +19,7 @@ type ResetState =
 
 export function PasswordResetRequestForm() {
   const t = useTranslations('Account');
+  const locale = useLocale();
   const [email, setEmail] = useState('');
   const [state, setState] = useState<RequestState>({ kind: 'idle' });
   const sending = state.kind === 'sending';
@@ -35,7 +36,7 @@ export function PasswordResetRequestForm() {
       const response = await fetch('/api/account/forgot-password', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ email: email.trim() }),
+        body: JSON.stringify({ email: email.trim(), locale }),
       });
       if (!response.ok) {
         setState({ kind: 'error', status: response.status });

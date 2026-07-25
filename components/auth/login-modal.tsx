@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Dialog } from '@base-ui/react/dialog';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Loader2, XIcon } from 'lucide-react';
 import { LineIcon } from '@/components/brand-icons';
@@ -23,6 +23,7 @@ export function LoginModal({
   providers?: OAuthProvider[];
 }) {
   const t = useTranslations('Account');
+  const locale = useLocale();
   const [mode, setMode] = React.useState<Mode>('signin');
   const [name, setName] = React.useState('');
   const [email, setEmail] = React.useState('');
@@ -64,7 +65,7 @@ export function LoginModal({
     const body =
       mode === 'signin'
         ? { email, password }
-        : { email, password, name: name.trim() || null };
+        : { email, password, name: name.trim() || null, locale };
 
     try {
       const res = await fetch(endpoint, {
