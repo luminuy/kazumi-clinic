@@ -5,7 +5,7 @@ import type { ServiceCategory, ServiceItem } from '@/lib/services';
 import { site } from '@/lib/site';
 import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
-import { LineIcon } from '@/components/brand-icons';
+import { LineCtaButton } from '@/components/line-cta-button';
 import { ProductThumbnail } from '@/components/product-thumbnail';
 import { ServiceItemActions } from '@/components/service-item-actions';
 
@@ -256,15 +256,9 @@ export function ThreadLiftServicePage({
             ปรึกษาทีมแพทย์เพื่อประเมินว่า{service.title}เหมาะกับคุณหรือไม่ ก่อนตัดสินใจเข้ารับบริการ
           </p>
           <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-            <a
-              href={site.lineUrl}
-              target="_blank"
-              rel="noopener"
-              className="inline-flex items-center justify-center gap-2.5 rounded-full bg-[#06C755] px-8 py-3.5 text-center text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.98]"
-            >
-              <LineIcon className="size-4" />
+            <LineCtaButton className="inline-flex items-center justify-center gap-2.5 rounded-full bg-[#06C755] px-8 py-3.5 text-center text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.98]">
               จองคิวผ่าน LINE
-            </a>
+            </LineCtaButton>
             <Link
               href="/services"
               className="group inline-flex items-center justify-center gap-2 rounded-full border border-white/40 bg-transparent px-8 py-3.5 text-center text-xs font-medium text-white transition-all duration-200 hover:border-white hover:bg-white/10 active:scale-[0.98]"
