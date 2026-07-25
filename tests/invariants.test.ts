@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import sitemap from '@/app/sitemap';
 import { navItems } from '@/lib/nav';
 import { serviceCategories } from '@/lib/services';
 import { site } from '@/lib/site';
@@ -69,5 +70,40 @@ describe('service catalog integrity (single source of truth — lib/services.ts)
     for (const c of serviceCategories) {
       expect(c.title.trim().length, `${c.slug} missing title`).toBeGreaterThan(0);
     }
+  });
+});
+
+// The sitemap listed Thai URLs only until 2026-07-25, so Google was told the /en half of the site
+// did not exist while every page's hreflang pointed at it. These lock the bilingual shape in.
+// Blog posts are absent here: getPublishedPosts() returns [] without a D1 binding (see
+// lib/blog-store.ts), which is exactly the "DB blip" path the sitemap is built to survive.
+describe('sitemap covers every locale (CLAUDE.md §13)', () => {
+  it('emits each page once per locale, with hreflang on every entry', async () => {
+    const entries = await sitemap();
+    const urls = entries.map((e) => e.url);
+
+    const pagePaths = ['', '/services', '/promotions', '/blog', '/reviews', '/about', '/contact'];
+    for (const path of [...pagePaths, ...serviceCategories.map((c) => `/${c.slug}`)]) {
+      expect(urls, `Thai URL missing for "${path || '/'}"`).toContain(`${site.url}${path || '/'}`);
+      expect(urls, `English URL missing for "${path || '/'}"`).toContain(`${site.url}/en${path}`);
+    }
+
+    for (const entry of entries) {
+      const languages = entry.alternates?.languages as Record<string, string> | undefined;
+      expect(languages, `${entry.url} has no hreflang set`).toBeDefined();
+      for (const key of ['th', 'en', 'x-default']) {
+        expect(languages?.[key], `${entry.url} missing hreflang "${key}"`).toBeTruthy();
+      }
+    }
+  });
+
+  it('no sitemap URL has a trailing slash except the Thai home page', async () => {
+    const bad = (await sitemap()).map((e) => e.url).filter((u) => !cleanPath(u));
+    expect(bad, `URLs with a trailing slash: ${bad.join(', ')}`).toEqual([]);
+  });
+
+  it('has no duplicate URLs', async () => {
+    const urls = (await sitemap()).map((e) => e.url);
+    expect(new Set(urls).size, 'duplicate sitemap URL').toBe(urls.length);
   });
 });
