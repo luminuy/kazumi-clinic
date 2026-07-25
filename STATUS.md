@@ -5,7 +5,7 @@
 > อัปเดตไฟล์นี้เป็นส่วนหนึ่งของ workflow: หลัง **deploy** และตอน **เริ่ม/จบงานสำคัญ** (ดู CLAUDE.md §0)
 > งานที่ปิดไปแล้วย้ายไป [docs/changelog.md](docs/changelog.md) — ไฟล์นี้เก็บแค่ **ตอนนี้ · ต่อไป · ค้าง**
 
-**อัปเดตล่าสุด:** 2026-07-25 11:40 UTC · โดย: Claude Code (วางแผน/ตรวจ) + Codex CLI `gpt-5.6-sol` (ลงมือแก้)
+**อัปเดตล่าสุด:** 2026-07-25 11:35 UTC · โดย: Claude Code (วางแผน/ตรวจ) + Codex CLI `gpt-5.6-sol` (ลงมือแก้)
 
 ---
 
@@ -13,7 +13,7 @@
 
 | | |
 |---|---|
-| **workers.dev** | Version `d67f9d34` — deploy 2026-07-25 11:09 UTC ผ่าน CD (run [30155724487](https://github.com/luminuy/kazumi-clinic/actions/runs/30155724487)) · ตรงกับ main `c2fd2fe` (PR [#259](https://github.com/luminuy/kazumi-clinic/pull/259)) · ยืนยันบน production: หน้า `/en` ไม่เหลือข้อความ/aria-label ภาษาไทย และลิงก์ภายในมี `/en` ครบ · หน้าไทยไม่เปลี่ยน |
+| **workers.dev** | Version `74725138` — deploy 2026-07-25 11:32 UTC ผ่าน CD (run [30156371946](https://github.com/luminuy/kazumi-clinic/actions/runs/30156371946)) · ตรงกับ main `b7bf69a` (PR [#261](https://github.com/luminuy/kazumi-clinic/pull/261)) · `pnpm health` เขียวทุกหน้า |
 | **โดเมนจริง** (kazumiclinic.com) | ❌ ยังไม่ขึ้น — `SITE_ENV=preview`, robots `Disallow: /` (ตั้งใจ ห้ามลบจนกว่าโดเมนจะขึ้น) |
 | **URL ตรวจ** | https://kazumi-clinic.bankjack10452.workers.dev · ตรวจ 2026-07-25: HTTP 200 |
 
