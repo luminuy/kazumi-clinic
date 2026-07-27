@@ -33,6 +33,7 @@ function formatValidUntil(iso: string) {
 
 export function PromotionsGrid({ promos, tabs }: { promos: PromoCard[]; tabs: PromoTab[] }) {
   const t = useTranslations('A11y');
+  const tPromotions = useTranslations('Promotions');
   const [active, setActive] = useState<string>('all');
 
   // Only worth showing the filter when there's more than one category to choose between.
@@ -52,7 +53,7 @@ export function PromotionsGrid({ promos, tabs }: { promos: PromoCard[]; tabs: Pr
           aria-label={t('promotionFilter')}
           className="mb-8 flex flex-wrap gap-2"
         >
-          {[{ slug: 'all', title: 'ทั้งหมด' }, ...tabs].map((tab) => {
+          {[{ slug: 'all', title: tPromotions('filterAll') }, ...tabs].map((tab) => {
             const selected = current === tab.slug;
             return (
               <button
@@ -105,7 +106,7 @@ export function PromotionsGrid({ promos, tabs }: { promos: PromoCard[]; tabs: Pr
                 )}
                 {p.price !== null ? (
                   <p className="mt-4 text-xl font-medium text-forest">
-                    {p.price.toLocaleString('th-TH')} บาท
+                    {tPromotions('price', { price: p.price.toLocaleString('th-TH') })}
                     {p.originalPrice && (
                       <span className="ml-2 text-sm font-normal text-ink/40 line-through">
                         {p.originalPrice.toLocaleString('th-TH')}
@@ -113,10 +114,14 @@ export function PromotionsGrid({ promos, tabs }: { promos: PromoCard[]; tabs: Pr
                     )}
                   </p>
                 ) : (
-                  <p className="mt-4 text-sm font-medium text-forest">สอบถามราคาเพิ่มเติม</p>
+                  <p className="mt-4 text-sm font-medium text-forest">
+                    {tPromotions('inquirePrice')}
+                  </p>
                 )}
                 {p.note && <p className="mt-1 text-xs text-olive-light">{p.note}</p>}
-                <p className="mt-2 text-xs text-ink/50">ใช้ได้ถึง {formatValidUntil(p.validUntil)}</p>
+                <p className="mt-2 text-xs text-ink/50">
+                  {tPromotions('validUntil', { date: formatValidUntil(p.validUntil) })}
+                </p>
               </CardContent>
             </Card>
           </Reveal>
@@ -125,7 +130,7 @@ export function PromotionsGrid({ promos, tabs }: { promos: PromoCard[]; tabs: Pr
 
       {visible.length === 0 && (
         <p className="rounded-2xl border border-dashed border-olive/30 bg-cream px-6 py-12 text-center text-sm text-ink/50">
-          ไม่มีโปรโมชั่นในหมวดนี้ — ลองเลือกหมวดอื่น
+          {tPromotions('filterEmpty')}
         </p>
       )}
     </>

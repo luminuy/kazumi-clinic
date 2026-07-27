@@ -19,7 +19,7 @@ import { cn } from '@/lib/utils';
  * A route group adds no path segment, so every URL is exactly what it was.
  */
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { routing } from '@/i18n/routing';
 import { notFound } from 'next/navigation';
 import '../../globals.css';
@@ -47,15 +47,19 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const socialImage = await siteSocialImage('hero-home', `${site.name} คลินิกความงามสุขุมวิท`);
+  const t = await getTranslations({ locale, namespace: 'SiteLayout' });
+  const socialImage = await siteSocialImage(
+    'hero-home',
+    t('socialImageAlt', { siteName: site.name }),
+  );
 
   return {
     metadataBase: new URL(site.url),
     title: {
-      default: `${site.name} — สถานเสริมความงาม สุขุมวิท กรุงเทพฯ`,
+      default: t('defaultTitle', { siteName: site.name }),
       template: `%s — ${site.name}`,
     },
-    description: site.description,
+    description: t('description', { siteName: site.name }),
     alternates: localizedAlternates(locale),
     icons: {
       icon: [{ url: '/icon.png', type: 'image/png', sizes: '64x64' }],
@@ -64,7 +68,7 @@ export async function generateMetadata({
     },
     openGraph: {
       title: site.name,
-      description: site.description,
+      description: t('description', { siteName: site.name }),
       url: site.url,
       siteName: site.name,
       type: 'website',
@@ -74,7 +78,7 @@ export async function generateMetadata({
     twitter: {
       card: socialImage ? 'summary_large_image' : 'summary',
       title: site.name,
-      description: site.description,
+      description: t('description', { siteName: site.name }),
       ...(socialImage && { images: [socialImage.url] }),
     },
   };

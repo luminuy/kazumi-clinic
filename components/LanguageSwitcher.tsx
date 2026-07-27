@@ -1,12 +1,13 @@
 'use client';
 
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { usePathname, useRouter } from '@/i18n/routing';
 import { Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export function LanguageSwitcher() {
   const locale = useLocale();
+  const t = useTranslations('LanguageSwitcher');
   const pathname = usePathname();
   const router = useRouter();
 
@@ -25,7 +26,7 @@ export function LanguageSwitcher() {
           onClick={() => switchLocale('th')}
           className={`px-4 py-2 text-sm text-left hover:bg-muted ${locale === 'th' ? 'font-bold text-primary' : 'text-foreground/80'}`}
         >
-          ไทย
+          {t('thai')}
         </button>
         <button
           onClick={() => switchLocale('en')}

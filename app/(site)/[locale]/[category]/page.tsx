@@ -1,7 +1,7 @@
 import { jsonLdHtml } from '@/lib/json-ld';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { setRequestLocale } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import Image from 'next/image';
 import { ArrowUpRight, ShieldCheck, Stethoscope } from 'lucide-react';
@@ -32,6 +32,15 @@ import { ProductThumbnail } from '@/components/product-thumbnail';
 import { ServiceItemActions } from '@/components/service-item-actions';
 
 type Props = { params: Promise<{ locale: string; category: string }> };
+
+type CategoryCopy = {
+  detailLabel: string;
+  priceLabel: string;
+  priceValue: (price: string) => string;
+  inquirePrice: string;
+  priceCaveat: string;
+  medicalDisclaimer: string;
+};
 
 /**
  * Splits a category's items into their `collection` sub-headings, preserving the order they're
@@ -108,10 +117,12 @@ function TreatmentItem({
   item,
   category,
   headingLevel: Heading,
+  copy,
 }: {
   item: ServiceItem;
   category: string;
   headingLevel: 'h3' | 'h4';
+  copy: CategoryCopy;
 }) {
   return (
     // Open, not boxed: the reference keeps this column as editorial type on the page rather than
@@ -143,20 +154,20 @@ function TreatmentItem({
 
       <dl className="mt-6">
         {item.detail && (
-          <ItemSpec label="รายละเอียด">
+          <ItemSpec label={copy.detailLabel}>
             <span className="text-sm text-[var(--store-muted)]">{item.detail}</span>
           </ItemSpec>
         )}
-        <ItemSpec label="ราคา">
+        <ItemSpec label={copy.priceLabel}>
           {item.priceFrom !== undefined ? (
             <>
               <span className="font-serif text-xl text-[var(--store-ink)]">
-                {item.priceFrom.toLocaleString('th-TH')} บาท
+                {copy.priceValue(item.priceFrom.toLocaleString('th-TH'))}
               </span>
               <span className="ml-1 text-xs text-[var(--store-muted)]">/ {item.unit}</span>
             </>
           ) : (
-            <span className="text-sm text-[var(--store-muted)]">สอบถามราคา</span>
+            <span className="text-sm text-[var(--store-muted)]">{copy.inquirePrice}</span>
           )}
         </ItemSpec>
       </dl>
@@ -167,18 +178,16 @@ function TreatmentItem({
 }
 
 /** The reference puts the booking CTA under the specs in the left column, not in the side panel. */
-function BookingCta({ hasPrice }: { hasPrice: boolean }) {
+function BookingCta({ hasPrice, copy }: { hasPrice: boolean; copy: CategoryCopy }) {
   return (
     <div className="mt-10">
       {hasPrice && (
         <p className="mt-4 text-center text-[0.66rem] leading-[1.8] text-[var(--store-muted)]">
-          ราคาที่แสดงอาจมีการเปลี่ยนแปลง
-          กรุณาสอบถามราคาปัจจุบันและเงื่อนไขกับคลินิกก่อนเข้ารับบริการ
+          {copy.priceCaveat}
         </p>
       )}
       <p className="mt-2 text-center text-[0.66rem] leading-[1.8] text-[var(--store-muted)]">
-        *ทุกหัตถการไม่แนะนำสำหรับผู้มีอายุต่ำกว่า 18 ปี · ผลลัพธ์แตกต่างกันในแต่ละบุคคล
-        ขึ้นอยู่กับการประเมินของแพทย์
+        {copy.medicalDisclaimer}
       </p>
     </div>
   );
@@ -187,6 +196,7 @@ function BookingCta({ hasPrice }: { hasPrice: boolean }) {
 export default async function ServiceCategoryPage({ params }: Props) {
   const { locale, category } = await params;
   setRequestLocale(locale);
+  const t = await getTranslations('ServiceCategoryPage');
   // Items resolved through the /admin override layer (edits, additions, removals). Category
   // structure itself stays in code — only the product list is editable.
   const service = await getMergedCategory(category);
@@ -203,9 +213,17 @@ export default async function ServiceCategoryPage({ params }: Props) {
   // Only categories with a published price need the price caveat — the rest already say
   // "สอบถามราคา", and a note about prices changing would be about nothing.
   const hasPrice = service.items.some((item) => item.priceFrom !== undefined);
+  const copy: CategoryCopy = {
+    detailLabel: t('detailLabel'),
+    priceLabel: t('priceLabel'),
+    priceValue: (price) => t('priceValue', { price }),
+    inquirePrice: t('inquirePrice'),
+    priceCaveat: t('priceCaveat'),
+    medicalDisclaimer: t('medicalDisclaimer'),
+  };
 
   const breadcrumb = breadcrumbSchema([
-    { name: 'หน้าหลัก', path: '/' },
+    { name: t('breadcrumbHome'), path: '/' },
     { name: service.title, path: `/${service.slug}` },
   ]);
 
@@ -306,11 +324,11 @@ export default async function ServiceCategoryPage({ params }: Props) {
               <div className="mt-8 flex flex-wrap gap-x-8 gap-y-3">
                 <span className="flex items-center gap-2 text-xs text-[var(--store-muted)]">
                   <Stethoscope aria-hidden="true" className="size-4 shrink-0 text-[var(--store-muted)]" />
-                  ประเมินและดูแลโดยแพทย์
+                  {t('doctorAssessed')}
                 </span>
                 <span className="flex items-center gap-2 text-xs text-[var(--store-muted)]">
                   <ShieldCheck aria-hidden="true" className="size-4 shrink-0 text-[var(--store-muted)]" />
-                  ใบอนุญาตเลขที่ {site.license}
+                  {t('clinicLicense', { license: site.license })}
                 </span>
               </div>
             </Reveal>
@@ -394,7 +412,12 @@ export default async function ServiceCategoryPage({ params }: Props) {
                           <div className={i > 0 ? 'border-t border-black/10 pt-8' : undefined}>
                             {/* Items sit one level under their collection heading when they have
                                 one, so the outline stays contiguous either way. */}
-                            <TreatmentItem item={item} category={service.slug} headingLevel={collection ? 'h4' : 'h3'} />
+                            <TreatmentItem
+                              item={item}
+                              category={service.slug}
+                              headingLevel={collection ? 'h4' : 'h3'}
+                              copy={copy}
+                            />
                           </div>
                         </Reveal>
                       ))}
@@ -404,7 +427,7 @@ export default async function ServiceCategoryPage({ params }: Props) {
               </div>
 
               <Reveal>
-                <BookingCta hasPrice={hasPrice} />
+                <BookingCta hasPrice={hasPrice} copy={copy} />
               </Reveal>
             </div>
 
@@ -459,8 +482,7 @@ export default async function ServiceCategoryPage({ params }: Props) {
               Ready for your transformation?
             </h2>
             <p className="mt-5 text-sm leading-[1.9] text-[var(--store-muted)]">
-              ปรึกษาทีมแพทย์เพื่อประเมินว่า{service.title}เหมาะกับคุณหรือไม่
-              ก่อนตัดสินใจเข้ารับบริการ
+              {t('closingDescription', { serviceTitle: service.title })}
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <a
@@ -470,13 +492,13 @@ export default async function ServiceCategoryPage({ params }: Props) {
                 className="flex w-full items-center justify-center gap-2.5 rounded-full bg-[#06C755] px-8 py-3.5 text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.98] sm:w-auto"
               >
                 <LineIcon className="size-4" />
-                จองคิวผ่าน LINE
+                {t('bookLine')}
               </a>
               <Link
                 href="/services"
                 className="group inline-flex w-full items-center justify-center gap-2 rounded-full border border-black/20 bg-transparent px-8 py-3.5 text-xs font-medium text-[var(--store-ink)] transition-all duration-200 hover:border-black/30 hover:bg-black/5 active:scale-[0.98] sm:w-auto"
               >
-                ดูบริการอื่น
+                {t('viewOtherServices')}
                 <ArrowUpRight className="size-3.5 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
               </Link>
             </div>

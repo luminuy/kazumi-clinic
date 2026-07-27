@@ -175,7 +175,11 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
                 <div className="relative aspect-[3/4] w-full overflow-hidden rounded-[1.75rem] bg-[var(--store-card)] shadow-2xl shadow-black/5">
                   {doctorSrc ? <Image
                     src={doctorSrc}
-                    alt={`${doctor.nameTh} ${doctor.role} ของ ${site.name}`}
+                    alt={t('doctorImageAlt', {
+                      name: doctor.nameTh,
+                      role: doctor.role,
+                      siteName: site.name,
+                    })}
                     fill
                     sizes="(min-width: 768px) 40vw, 90vw"
                     className="object-cover"
@@ -311,7 +315,11 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
                   {eeshaSrc ? (
                     <Image
                       src={eeshaSrc}
-                      alt={`${doctorEesha.name} ${doctorEesha.role} ของ ${site.name}`}
+                      alt={t('doctorImageAlt', {
+                        name: doctorEesha.name,
+                        role: doctorEesha.role,
+                        siteName: site.name,
+                      })}
                       fill
                       sizes="(min-width: 768px) 40vw, 90vw"
                       className="object-cover"

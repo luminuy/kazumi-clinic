@@ -74,7 +74,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     },
     {
       question: t('faq.q4'),
-      answer: t('faq.a4', { doctors: site.doctors.map((d) => `${d.name} (เลขที่ ${d.licenseNo})`).join(', ') }),
+      answer: t('faq.a4', {
+        doctors: site.doctors
+          .map((d) => t('faq.doctorWithLicense', { name: d.name, license: d.licenseNo }))
+          .join(', '),
+      }),
     },
     {
       question: t('faq.q5'),
@@ -238,7 +242,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             href="/about"
             className="group inline-flex items-center gap-1.5 text-[0.9rem] text-forest transition-colors duration-200 hover:text-mint"
           >
-            ดูทีมแพทย์ทั้งหมด{' '}
+            {t('team.viewAll')}{' '}
             <ArrowUpRight className="size-4 transition-transform duration-200 motion-safe:group-hover:translate-x-0.5 motion-safe:group-hover:-translate-y-0.5" />
           </Link>
         </Reveal>
@@ -257,7 +261,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               expertise={doctor.expertise}
               languages={doctor.languages}
               imageSrc={doctorSrc}
-              imageAlt={`${doctor.nameTh} ${doctor.role} ของ ${site.name}`}
+              imageAlt={t('team.imageAlt', {
+                name: doctor.nameTh,
+                role: doctor.role,
+                siteName: site.name,
+              })}
             />
           </div>
           <div className="w-[85%] shrink-0 snap-center md:w-auto md:shrink">
@@ -271,7 +279,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               expertise={doctorEesha.expertise}
               languages={doctorEesha.languages}
               imageSrc={eeshaSrc}
-              imageAlt={`${doctorEesha.name} ${doctorEesha.role} ของ ${site.name}`}
+              imageAlt={t('team.imageAlt', {
+                name: doctorEesha.name,
+                role: doctorEesha.role,
+                siteName: site.name,
+              })}
               delay={80}
             />
           </div>
@@ -375,7 +387,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                 {visitPhoto ? (
                   <Image
                     src={visitPhoto}
-                    alt={`หน้าคลินิก ${site.name}`}
+                    alt={t('visit.clinicImageAlt', { siteName: site.name })}
                     fill
                     sizes="(min-width: 768px) 45vw, 90vw"
                     className="object-cover"
@@ -385,7 +397,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                   // placeholder icon. Uploading a photo via /admin (home-visit) takes over.
                   <iframe
                     src={site.mapsEmbedUrl}
-                    title={`แผนที่ ${site.name} — ${site.addressFull}`}
+                    title={t('visit.mapTitle', {
+                      siteName: site.name,
+                      address: site.addressFull,
+                    })}
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
                     allowFullScreen

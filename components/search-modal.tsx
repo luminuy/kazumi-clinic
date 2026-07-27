@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Dialog } from '@base-ui/react/dialog';
 import { Button } from '@/components/ui/button';
 import { XIcon, SearchIcon, ArrowRightIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export function SearchModal({
   open,
@@ -12,6 +13,7 @@ export function SearchModal({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const t = useTranslations('Search');
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   // Focus input when modal opens
@@ -23,11 +25,15 @@ export function SearchModal({
     }
   }, [open]);
 
+  // These pointed at /services/laser, /services/acne and /services/facial-design, none of which
+  // exist — all three answered 404 in production (checked 2026-07-27). Category slugs live at the
+  // root (`/laser-hifu`), not under /services. "ปรับรูปหน้า" has no category of its own, so it goes
+  // to the catalogue rather than to a guessed treatment.
   const quickLinks = [
-    { name: 'โปรแกรมเลเซอร์หน้าใส', href: '/services/laser' },
-    { name: 'รักษาสิว', href: '/services/acne' },
-    { name: 'ปรับรูปหน้า', href: '/services/facial-design' },
-    { name: 'โปรโมชั่นประจำเดือน', href: '/promotions' },
+    { name: t('quickLinks.laser'), href: '/laser-hifu' },
+    { name: t('quickLinks.acne'), href: '/acne-care' },
+    { name: t('quickLinks.facialDesign'), href: '/services' },
+    { name: t('quickLinks.promotions'), href: '/promotions' },
   ];
 
   return (
@@ -40,7 +46,7 @@ export function SearchModal({
             <input
               ref={inputRef}
               type="text"
-              placeholder="ค้นหาบริการ..."
+              placeholder={t('modalPlaceholder')}
               className="flex-1 bg-transparent text-base sm:text-lg outline-none placeholder:text-black/30"
             />
             <Dialog.Close
@@ -52,7 +58,9 @@ export function SearchModal({
           </div>
           
           <div className="pt-2">
-            <h3 className="mb-3 text-sm font-medium text-muted-foreground">ลิงก์ด่วน</h3>
+            <h3 className="mb-3 text-sm font-medium text-muted-foreground">
+              {t('quickLinksTitle')}
+            </h3>
             <ul className="grid gap-2 sm:grid-cols-2">
               {quickLinks.map((link) => (
                 <li key={link.name}>
