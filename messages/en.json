@@ -277,6 +277,7 @@
     "error": {
       "name": "Please enter your name",
       "phone": "Please enter a valid phone number",
+      "email": "Please enter a valid email address",
       "submit": "Failed to send",
       "submitStatus": "Failed to send ({status})"
     },
@@ -290,9 +291,16 @@
       "namePlaceholder": "Your Name",
       "phoneLabel": "Phone *",
       "phonePlaceholder": "08X-XXX-XXXX",
+      "emailLabel": "Email",
+      "emailPlaceholder": "Receive appointment confirmation (optional)",
       "interestLabel": "Interested Service",
       "interestPlaceholder": "— Select Service —",
       "interestOther": "Other / Consult Doctor",
+      "dateLabel": "Preferred date",
+      "timeSlotLabel": "Preferred time",
+      "timeSlotPlaceholder": "— Select a time —",
+      "timeSlotEmpty": "No selectable times remain for this date. Please choose another day.",
+      "timeSlotChooseDateFirst": "Choose a date first",
       "timeLabel": "Preferred Time",
       "timePlaceholder": "e.g. This Saturday afternoon",
       "messageLabel": "Additional Details",
@@ -351,7 +359,9 @@
       "member": "there",
       "profile": "Account details",
       "orders": "Bookings & cart",
-      "ordersDesc": "View your cart and service bookings."
+      "ordersDesc": "View your cart and service bookings.",
+      "appointments": "My appointments",
+      "appointmentsDesc": "View confirmed times, track requests, and cancel appointments."
     },
     "field": {
       "name": "Name",
@@ -393,6 +403,46 @@
         "oauth_failed": "Sign-in failed. Please try again.",
         "oauth_unknown": "Invalid sign-in method"
       }
+    }
+  },
+  "Appointments": {
+    "myAppointments": {
+      "eyebrow": "Kazumi Member",
+      "title": "My appointments",
+      "emptyTitle": "No appointments yet",
+      "emptyCta": "Request an appointment",
+      "cancelButton": "Cancel appointment",
+      "cancelConfirm": "Cancel this appointment?",
+      "cancelSuccess": "Appointment cancelled",
+      "cancelError": "Could not cancel the appointment",
+      "scheduledLabel": "Appointment time",
+      "requestedLabel": "Requested time",
+      "status": {
+        "new": "Awaiting contact",
+        "contacted": "Contacted",
+        "booked": "Confirmed",
+        "cancelled": "Cancelled",
+        "closed": "Closed"
+      }
+    },
+    "cancelPage": {
+      "title": "Cancel appointment",
+      "desc": "Check the details below before confirming. The clinic team will be notified.",
+      "confirmButton": "Confirm cancellation",
+      "notFound": "This appointment could not be found, or the link is no longer valid.",
+      "alreadyCancelled": "This appointment has already been cancelled.",
+      "success": "Your appointment has been cancelled.",
+      "error": "We could not cancel the appointment. Please try again.",
+      "interestLabel": "Service of interest",
+      "scheduledLabel": "Appointment time"
+    },
+    "confirmationEmail": {
+      "subject": "Your appointment is confirmed — Kazumi Clinic",
+      "body": "Hello {name},\n\nKazumi Clinic has confirmed your appointment.\nDate and time: {datetime}\nEstimated duration: {duration} minutes\nService of interest: {interest}\n\nTo cancel, use this link: {cancelUrl}\n\nIf you need help, call {phone}\n{address}\n\nKazumi Clinic"
+    },
+    "cancelledEmail": {
+      "subject": "Your appointment was cancelled — Kazumi Clinic",
+      "body": "Hello {name},\n\nYour appointment has been cancelled.\nDetails: {datetime}\n\nTo request another appointment or ask a question, call {phone}\n{address}\n\nKazumi Clinic"
     }
   },
   "Cart": {

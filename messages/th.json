@@ -277,6 +277,7 @@
     "error": {
       "name": "กรุณากรอกชื่อ",
       "phone": "กรุณากรอกเบอร์โทรให้ถูกต้อง",
+      "email": "กรุณากรอกอีเมลให้ถูกต้อง",
       "submit": "ส่งไม่สำเร็จ",
       "submitStatus": "ส่งไม่สำเร็จ ({status})"
     },
@@ -290,9 +291,16 @@
       "namePlaceholder": "ชื่อของคุณ",
       "phoneLabel": "เบอร์โทร *",
       "phonePlaceholder": "08X-XXX-XXXX",
+      "emailLabel": "อีเมล",
+      "emailPlaceholder": "รับอีเมลยืนยันนัดหมาย (ไม่บังคับ)",
       "interestLabel": "บริการที่สนใจ",
       "interestPlaceholder": "— เลือกบริการ —",
       "interestOther": "อื่น ๆ / ปรึกษาแพทย์",
+      "dateLabel": "วันที่สะดวก",
+      "timeSlotLabel": "ช่วงเวลาที่สะดวก",
+      "timeSlotPlaceholder": "— เลือกเวลา —",
+      "timeSlotEmpty": "วันนี้ไม่มีช่วงเวลาที่เลือกได้แล้ว กรุณาเลือกวันอื่น",
+      "timeSlotChooseDateFirst": "เลือกวันที่ก่อน",
       "timeLabel": "วัน/เวลาที่สะดวก",
       "timePlaceholder": "เช่น เสาร์นี้ ช่วงบ่าย",
       "messageLabel": "รายละเอียดเพิ่มเติม",
@@ -351,7 +359,9 @@
       "member": "คุณ",
       "profile": "ข้อมูลบัญชี",
       "orders": "การจอง & ตะกร้า",
-      "ordersDesc": "ดูตะกร้าและรายการจองบริการของคุณ"
+      "ordersDesc": "ดูตะกร้าและรายการจองบริการของคุณ",
+      "appointments": "นัดหมายของฉัน",
+      "appointmentsDesc": "ดูเวลานัดที่ยืนยันแล้ว ติดตามคำขอ และยกเลิกนัดหมาย"
     },
     "field": {
       "name": "ชื่อ",
@@ -393,6 +403,46 @@
         "oauth_failed": "เข้าสู่ระบบไม่สำเร็จ กรุณาลองใหม่",
         "oauth_unknown": "ช่องทางเข้าสู่ระบบไม่ถูกต้อง"
       }
+    }
+  },
+  "Appointments": {
+    "myAppointments": {
+      "eyebrow": "สมาชิก Kazumi",
+      "title": "นัดหมายของฉัน",
+      "emptyTitle": "ยังไม่มีนัดหมาย",
+      "emptyCta": "จองนัดหมาย",
+      "cancelButton": "ยกเลิกนัดหมาย",
+      "cancelConfirm": "ยืนยันยกเลิกนัดหมายนี้?",
+      "cancelSuccess": "ยกเลิกนัดหมายแล้ว",
+      "cancelError": "ยกเลิกไม่สำเร็จ",
+      "scheduledLabel": "เวลานัด",
+      "requestedLabel": "เวลาที่ขอไว้",
+      "status": {
+        "new": "รอติดต่อกลับ",
+        "contacted": "ติดต่อแล้ว",
+        "booked": "ยืนยันนัดแล้ว",
+        "cancelled": "ยกเลิกแล้ว",
+        "closed": "ปิดรายการ"
+      }
+    },
+    "cancelPage": {
+      "title": "ยกเลิกนัดหมาย",
+      "desc": "ตรวจสอบรายละเอียดด้านล่างก่อนยืนยัน การยกเลิกจะส่งแจ้งทีมงานของคลินิก",
+      "confirmButton": "ยืนยันยกเลิก",
+      "notFound": "ไม่พบนัดหมายนี้ หรือลิงก์หมดอายุแล้ว",
+      "alreadyCancelled": "นัดหมายนี้ถูกยกเลิกไปแล้ว",
+      "success": "ยกเลิกนัดหมายเรียบร้อยแล้ว",
+      "error": "ยกเลิกนัดหมายไม่สำเร็จ กรุณาลองอีกครั้ง",
+      "interestLabel": "บริการที่สนใจ",
+      "scheduledLabel": "เวลานัด"
+    },
+    "confirmationEmail": {
+      "subject": "ยืนยันนัดหมายของคุณ — Kazumi Clinic",
+      "body": "เรียน {name}\n\nKazumi Clinic ยืนยันนัดหมายของคุณแล้ว\nวันและเวลา: {datetime}\nระยะเวลาโดยประมาณ: {duration} นาที\nบริการที่สนใจ: {interest}\n\nหากต้องการยกเลิกนัดหมาย กรุณาใช้ลิงก์นี้: {cancelUrl}\n\nหากมีคำถาม โทร {phone}\n{address}\n\nKazumi Clinic"
+    },
+    "cancelledEmail": {
+      "subject": "นัดหมายของคุณถูกยกเลิก — Kazumi Clinic",
+      "body": "เรียน {name}\n\nรายการนัดหมายของคุณถูกยกเลิกเรียบร้อยแล้ว\nรายละเอียด: {datetime}\n\nหากต้องการนัดหมายใหม่หรือมีคำถาม โทร {phone}\n{address}\n\nKazumi Clinic"
     }
   },
   "Cart": {

@@ -1,7 +1,10 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
-import { createLead } from '@/lib/leads-store';
+import { createLead, ensureCancelToken } from '@/lib/leads-store';
 import { rateLimit, clientIp } from '@/lib/rate-limit';
+import { getCurrentMember } from '@/lib/members/session';
+import { isValidRequestedSlot } from '@/lib/appointments/schedule';
+import { notifyStaffWebhook } from '@/lib/appointments/notify';
 
 // PUBLIC endpoint — the one unauthenticated write in the app (middleware only gates /api/admin/*).
 // Defence in depth: a strict Zod schema, a honeypot field, and a body-size guard. No secret is
@@ -21,26 +24,30 @@ const schema = z.object({
     .refine((v) => (v.match(/\d/g)?.length ?? 0) >= 8, 'เบอร์โทรไม่ถูกต้อง'),
   interest: z.string().trim().max(120).nullish(),
   preferredTime: z.string().trim().max(120).nullish(),
+  email: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .max(254)
+    .email('อีเมลไม่ถูกต้อง')
+    .optional()
+    .or(z.literal('')),
+  requestedDate: z
+    .string()
+    .trim()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'วันที่ไม่ถูกต้อง')
+    .optional(),
+  requestedTime: z
+    .string()
+    .trim()
+    .regex(/^\d{2}:\d{2}$/, 'เวลาไม่ถูกต้อง')
+    .optional(),
+  locale: z.enum(['th', 'en']),
   message: z.string().trim().max(1000).nullish(),
   // Honeypot: a hidden field real users never fill. Accept any string so validation passes, then
   // the handler silently drops a filled one with a 200 — never a 400, which would tip off a bot.
   website: z.string().max(200).optional(),
 });
-
-/** Fire-and-forget notification to an optional webhook (LINE Notify is retired; use any webhook). */
-async function notify(payload: Record<string, unknown>) {
-  const url = process.env.LEAD_WEBHOOK_URL?.trim();
-  if (!url) return;
-  try {
-    await fetch(url, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-  } catch {
-    // A failed notification must never fail the submission — the lead is already saved.
-  }
-}
 
 export async function POST(request: NextRequest) {
   // Lead-spam guard: 6 submissions per IP per 10 minutes (on top of the honeypot below).
@@ -68,17 +75,52 @@ export async function POST(request: NextRequest) {
   // Honeypot tripped — pretend success so a bot doesn't learn the field exists, but save nothing.
   if (parsed.data.website) return NextResponse.json({ ok: true });
 
-  const { name, phone, interest, preferredTime, message } = parsed.data;
+  const {
+    name,
+    phone,
+    interest,
+    preferredTime,
+    email,
+    requestedDate,
+    requestedTime,
+    locale,
+    message,
+  } = parsed.data;
+  if (requestedDate && requestedTime) {
+    const validity = isValidRequestedSlot({ dateIso: requestedDate, time: requestedTime });
+    if (!validity.ok) {
+      return NextResponse.json({ error: validity.reason }, { status: 400 });
+    }
+  }
+
   try {
+    const member = await getCurrentMember();
+    const contactEmail = email || member?.email || null;
     const id = await createLead({
       name,
       phone,
+      email: contactEmail,
+      memberId: member?.id ?? null,
+      locale,
       interest: interest ?? null,
       preferredTime: preferredTime ?? null,
+      requestedDate: requestedDate ?? null,
+      requestedTime: requestedTime ?? null,
       message: message ?? null,
       source: 'booking-form',
     });
-    await notify({ id, name, phone, interest, preferredTime, message });
+    await ensureCancelToken(id);
+    await notifyStaffWebhook({
+      id,
+      name,
+      phone,
+      email: contactEmail,
+      interest,
+      preferredTime,
+      requestedDate,
+      requestedTime,
+      message,
+    });
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error(error);
