@@ -46,6 +46,7 @@ export function BlogFilterGrid({
   emptyText: string;
 }) {
   const t = useTranslations('A11y');
+  const tBlog = useTranslations('BlogPage');
   const [active, setActive] = useState<string>('all');
   const showTabs = tabs.length >= 2;
   const current = showTabs ? active : 'all';
@@ -64,7 +65,7 @@ export function BlogFilterGrid({
           className="mb-8 overflow-x-auto no-scrollbar"
         >
           <div className="flex gap-2 whitespace-nowrap pb-2">
-            {[{ slug: 'all', title: 'ทั้งหมด' }, ...tabs].map((tab) => {
+            {[{ slug: 'all', title: tBlog('filterAll') }, ...tabs].map((tab) => {
               const selected = current === tab.slug;
               return (
                 <button

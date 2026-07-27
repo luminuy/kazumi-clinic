@@ -21,6 +21,7 @@ type ServiceCarouselProps = {
 export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarouselProps) {
   const locale = useLocale();
   const t = useTranslations('A11y');
+  const tCopy = useTranslations('ServiceCarousel');
   const railRef = useRef<HTMLDivElement>(null);
   const pickerRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<number | null>(null);
@@ -210,14 +211,16 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
                     <p>{category.shortDescription}</p>
                     {startingPrice !== undefined && (
                       <p className="mt-2 text-[0.82rem] text-[rgb(238_233_223/0.85)]">
-                        เริ่มต้น{' '}
+                        {tCopy('startingFrom')}{' '}
                         <span className="font-medium text-sand">
-                          ฿{startingPrice.toLocaleString('th-TH')}
+                          {tCopy('price', {
+                            price: startingPrice.toLocaleString('th-TH'),
+                          })}
                         </span>
                       </p>
                     )}
                     <span className="service-stream-card__action">
-                      ดูรายละเอียด <ArrowUpRight className="size-4" />
+                      {tCopy('details')} <ArrowUpRight className="size-4" />
                     </span>
                   </div>
                 </Link>
@@ -251,7 +254,7 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
                 <ServiceIcon slug={category.slug} className="size-7" strokeWidth={1.1} aria-hidden="true" />
               )}
               <span className="service-stream-picker__title">{category.title}</span>
-              <span className="service-stream-picker__action">ดูรายละเอียด</span>
+              <span className="service-stream-picker__action">{tCopy('details')}</span>
             </Link>
           );
         })}

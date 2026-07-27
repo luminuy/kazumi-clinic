@@ -24,7 +24,7 @@ export async function BrandStrip() {
     >
       <div className="mx-auto max-w-6xl px-6 py-9 md:px-12 md:py-11">
         <p className="text-center text-[0.62rem] uppercase tracking-[0.24em] text-ink/80">
-          แบรนด์และเทคโนโลยีที่เราเลือกใช้
+          {t('brandStripHeading')}
         </p>
         <ul className="mt-5 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 md:mt-6 md:gap-x-12">
           {brands.map((brand) => (

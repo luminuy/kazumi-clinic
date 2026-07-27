@@ -24,6 +24,7 @@ export function PromotionCarousel({
   imageSizes?: string;
 }) {
   const t = useTranslations('A11y');
+  const tPromotions = useTranslations('Promotions');
   const railRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<number | null>(null);
   const programmaticIndexRef = useRef<number | null>(null);
@@ -169,7 +170,7 @@ export function PromotionCarousel({
 
       <div className="promotion-carousel-footer">
         <span className="promotion-carousel-note">
-          สอบถามช่วงเวลาและสิทธิ์โปรโมชั่นกับทีม Kazumi
+          {tPromotions('carouselNote')}
         </span>
         <div
           className="promotion-carousel-dots"

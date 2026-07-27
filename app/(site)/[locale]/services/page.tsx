@@ -311,7 +311,11 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
               expertise={doctor.expertise}
               languages={doctor.languages}
               imageSrc={overrides.get('doctor-pratch')?.public_id}
-              imageAlt={`${doctor.nameTh} ${doctor.role} ของ ${site.name}`}
+              imageAlt={t('assessment.imageAlt', {
+                name: doctor.nameTh,
+                role: doctor.role,
+                siteName: site.name,
+              })}
             />
           </div>
           <div className="w-[85%] shrink-0 snap-center md:w-auto md:shrink">
@@ -325,7 +329,11 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
               expertise={doctorEesha.expertise}
               languages={doctorEesha.languages}
               imageSrc={overrides.get('doctor-eesha')?.public_id}
-              imageAlt={`${doctorEesha.name} ${doctorEesha.role} ของ ${site.name}`}
+              imageAlt={t('assessment.imageAlt', {
+                name: doctorEesha.name,
+                role: doctorEesha.role,
+                siteName: site.name,
+              })}
               delay={80}
             />
           </div>
@@ -361,14 +369,16 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
       <section className="bg-[var(--background)] py-20 md:py-32">
         <div className="mx-auto max-w-6xl px-4 md:px-6">
           <Reveal className="mb-8 flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
-            <h2 className="font-serif text-4xl text-[var(--store-ink)] md:text-5xl">มาเยี่ยมเรา</h2>
+            <h2 className="font-serif text-4xl text-[var(--store-ink)] md:text-5xl">
+              {t('visit.title')}
+            </h2>
             <a
               href={site.mapsUrl}
               target="_blank"
               rel="noopener"
               className="inline-flex items-center gap-1.5 text-[0.9rem] text-[var(--store-ink)] transition-colors duration-200 hover:opacity-60"
             >
-              เปิดใน Google Maps <ArrowUpRight className="size-4" />
+              {t('visit.openMaps')} <ArrowUpRight className="size-4" />
             </a>
           </Reveal>
 
@@ -377,13 +387,15 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
               {/* Left: intro + accordion */}
               <div className="flex flex-col justify-center px-7 py-10 sm:px-12 md:py-14 lg:px-16">
                 <p className="max-w-md text-sm leading-[1.9] text-[var(--store-muted)]">
-                  คลินิกความงามใจกลางสุขุมวิท พื้นที่สงบเป็นส่วนตัวสำหรับการปรึกษาและดูแลอย่างพิถีพิถัน
+                  {t('visit.description')}
                 </p>
 
                 <div className="mt-8">
                   <details open className="visit-accordion group border-t border-[var(--store-control)]/70">
                     <summary className="flex cursor-pointer list-none items-center justify-between py-5 [&::-webkit-details-marker]:hidden">
-                      <span className="font-serif text-xl text-[var(--store-ink)] md:text-2xl">ที่ตั้ง</span>
+                      <span className="font-serif text-xl text-[var(--store-ink)] md:text-2xl">
+                        {t('visit.location')}
+                      </span>
                       <ChevronDown className="size-5 text-[var(--store-muted)] transition-transform duration-300 group-open:rotate-180" />
                     </summary>
                     <div className="pb-6 pr-6 text-sm leading-[1.9] text-[var(--store-muted)]">
@@ -395,7 +407,9 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
 
                   <details className="visit-accordion group border-t border-[var(--store-control)]/70">
                     <summary className="flex cursor-pointer list-none items-center justify-between py-5 [&::-webkit-details-marker]:hidden">
-                      <span className="font-serif text-xl text-[var(--store-ink)] md:text-2xl">เวลาทำการ</span>
+                      <span className="font-serif text-xl text-[var(--store-ink)] md:text-2xl">
+                        {t('visit.hours')}
+                      </span>
                       <ChevronDown className="size-5 text-[var(--store-muted)] transition-transform duration-300 group-open:rotate-180" />
                     </summary>
                     <div className="pb-6 pr-6 text-sm leading-[1.9] text-[var(--store-muted)]">
@@ -407,7 +421,9 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
 
                   <details className="visit-accordion group border-y border-[var(--store-control)]/70">
                     <summary className="flex cursor-pointer list-none items-center justify-between py-5 [&::-webkit-details-marker]:hidden">
-                      <span className="font-serif text-xl text-[var(--store-ink)] md:text-2xl">ช่องทางติดต่อ</span>
+                      <span className="font-serif text-xl text-[var(--store-ink)] md:text-2xl">
+                        {t('visit.contact')}
+                      </span>
                       <ChevronDown className="size-5 text-[var(--store-muted)] transition-transform duration-300 group-open:rotate-180" />
                     </summary>
                     <div className="space-y-1.5 pb-6 pr-6 text-sm leading-[1.9] text-[var(--store-muted)]">
@@ -427,7 +443,7 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
                 {visitPhoto ? (
                   <Image
                     src={visitPhoto}
-                    alt={`หน้าคลินิก ${site.name}`}
+                    alt={t('visit.clinicImageAlt', { siteName: site.name })}
                     fill
                     sizes="(min-width: 768px) 45vw, 90vw"
                     className="object-cover"
@@ -435,7 +451,10 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
                 ) : (
                   <iframe
                     src={site.mapsEmbedUrl}
-                    title={`แผนที่ ${site.name} — ${site.addressFull}`}
+                    title={t('visit.mapTitle', {
+                      siteName: site.name,
+                      address: site.addressFull,
+                    })}
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
                     allowFullScreen

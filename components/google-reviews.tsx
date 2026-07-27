@@ -2,6 +2,7 @@ import { Star } from 'lucide-react';
 import { GoogleIcon } from '@/components/brand-icons';
 import type { GoogleReviewsData } from '@/lib/google-reviews';
 import { Reveal } from '@/components/reveal';
+import { getTranslations } from 'next-intl/server';
 
 /**
  * The "reviews from Google" section on /reviews. Renders up to 5 reviews returned by the Places API
@@ -9,7 +10,15 @@ import { Reveal } from '@/components/reveal';
  * the relative time, unmodified text, and a link back to the listing on Google. Kept visually
  * separate from the clinic's own consented before/after reviews.
  */
-export function GoogleReviews({ data, heading }: { data: GoogleReviewsData; heading: string }) {
+export async function GoogleReviews({
+  data,
+  heading,
+}: {
+  data: GoogleReviewsData;
+  heading: string;
+}) {
+  const t = await getTranslations('ReviewsPage');
+
   return (
     <section className="mb-16">
       <div className="flex flex-wrap items-end justify-between gap-4 border-b border-olive/15 pb-5">
@@ -23,7 +32,13 @@ export function GoogleReviews({ data, heading }: { data: GoogleReviewsData; head
                   <Star className="size-3.5 fill-current" />
                 </span>
                 <span className="font-medium text-ink/80">{data.rating.toFixed(1)}</span>
-                {data.total > 0 && <span>· จาก {data.total.toLocaleString('th-TH')} รีวิว</span>}
+                {data.total > 0 && (
+                  <span>
+                    {t('google.reviewCount', {
+                      count: data.total.toLocaleString('th-TH'),
+                    })}
+                  </span>
+                )}
               </p>
             )}
           </div>
@@ -35,7 +50,7 @@ export function GoogleReviews({ data, heading }: { data: GoogleReviewsData; head
             rel="noopener"
             className="text-sm font-medium text-forest hover:underline"
           >
-            ดูทั้งหมดบน Google
+            {t('google.viewAll')}
           </a>
         )}
       </div>
@@ -84,7 +99,7 @@ export function GoogleReviews({ data, heading }: { data: GoogleReviewsData; head
         ))}
       </div>
 
-      <p className="mt-4 text-xs text-ink/40">รีวิวจาก Google · แสดงตามที่ผู้ใช้โพสต์ ไม่มีการแก้ไข</p>
+      <p className="mt-4 text-xs text-ink/40">{t('google.disclaimer')}</p>
     </section>
   );
 }

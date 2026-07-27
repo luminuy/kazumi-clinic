@@ -22,6 +22,11 @@
     "social": "Follow Us",
     "license": "Clinic License No. {license}"
   },
+  "SiteLayout": {
+    "socialImageAlt": "{siteName}, a beauty clinic in Sukhumvit",
+    "defaultTitle": "{siteName} — Beauty Clinic, Sukhumvit, Bangkok",
+    "description": "{siteName} is a beauty clinic in Sukhumvit, Bangkok, offering dermal filler, botulinum toxin, IV vitamin drip, skin booster, and collagen booster treatments, with physician assessments and personalized care plans."
+  },
   "HomePage": {
     "metaTitle": "Sukhumvit Beauty Clinic, Bangkok",
     "metaDescription": "Kazumi Clinic, a beauty clinic in Sukhumvit, Bangkok. Providing Fillers, Botox, IV Drip, Skin Booster, and Collagen Booster with personalized assessment and care plans by our doctors.",
@@ -34,6 +39,7 @@
       "a3": "{siteName} is located at {addressFull}. Clinic License No. {license}",
       "q4": "Who performs the procedures?",
       "a4": "Procedures are performed by licensed medical doctors — {doctors}",
+      "doctorWithLicense": "{name} (Medical License No. {license})",
       "q5": "How can I book an appointment?",
       "a5": "Book an appointment via LINE Official Account or call {phone}"
     },
@@ -60,7 +66,8 @@
     "team": {
       "title": "Our Medical Team",
       "description": "Learn about the educational background, scope of care, and professional licenses of our clinic's physicians.",
-      "viewAll": "View All Doctors"
+      "viewAll": "View All Doctors",
+      "imageAlt": "{name}, {role}, at {siteName}"
     },
     "promotions": {
       "title": "Latest Promotions",
@@ -74,7 +81,9 @@
       "location": "Location",
       "hours": "Operating Hours",
       "contact": "Contact",
-      "line": "LINE Official"
+      "line": "LINE Official",
+      "clinicImageAlt": "Exterior of {siteName}",
+      "mapTitle": "Map of {siteName} — {address}"
     },
     "reviews": {
       "title": "Patient Reviews",
@@ -89,6 +98,7 @@
     "metaTitle": "About Us / Doctors",
     "metaDescription": "Get to know {siteName}, a beauty clinic in Sukhumvit, Bangkok, and {doctorName} {doctorRole}. Clinic License No. {license}",
     "breadcrumb": "About Us",
+    "doctorImageAlt": "{name}, {role}, at {siteName}",
     "hero": {
       "subtitle": "About Us / Our Doctors",
       "title": "About {siteName}"
@@ -158,12 +168,37 @@
     "assessment": {
       "subtitle": "Aesthetic Discipline",
       "title": "Doctor-led Assessment",
-      "desc": "At {siteName}, all procedures are supervised by licensed medical doctors, starting with a detailed assessment of facial structure and skin condition to recommend the best approach for each individual."
+      "desc": "At {siteName}, all procedures are supervised by licensed medical doctors, starting with a detailed assessment of facial structure and skin condition to recommend the best approach for each individual.",
+      "imageAlt": "{name}, {role}, at {siteName}"
     },
     "promotions": {
       "title": "Curated Programs",
       "desc": "These are curated programs by the clinic. Please confirm prices and validity periods with the {siteName} team before booking."
+    },
+    "visit": {
+      "title": "Visit Us",
+      "openMaps": "Open in Google Maps",
+      "description": "A beauty clinic in the heart of Sukhumvit, with a calm and private space for consultations and attentive care.",
+      "location": "Location",
+      "hours": "Operating hours",
+      "contact": "Contact",
+      "clinicImageAlt": "Exterior of {siteName}",
+      "mapTitle": "Map of {siteName} — {address}"
     }
+  },
+  "ServiceCategoryPage": {
+    "detailLabel": "Details",
+    "priceLabel": "Price",
+    "priceValue": "{price} baht",
+    "inquirePrice": "Ask for current price",
+    "priceCaveat": "Displayed prices may change. Please confirm current prices and terms with the clinic before receiving a treatment.",
+    "medicalDisclaimer": "*Treatments are not recommended for anyone under 18. Individual results vary and depend on a physician assessment.",
+    "breadcrumbHome": "Home",
+    "doctorAssessed": "Doctor-led assessment and care",
+    "clinicLicense": "Clinic License No. {license}",
+    "closingDescription": "Consult our medical team to assess whether {serviceTitle} is appropriate for you before deciding to receive treatment.",
+    "bookLine": "Book an appointment via LINE",
+    "viewOtherServices": "View other services"
   },
   "PromotionsPage": {
     "metaTitle": "Promotions / Packages",
@@ -180,6 +215,14 @@
     },
     "inquireLine": "Inquire via LINE"
   },
+  "Promotions": {
+    "filterAll": "All",
+    "price": "{price} baht",
+    "inquirePrice": "Ask for current price",
+    "validUntil": "Valid until {date}",
+    "filterEmpty": "No promotions in this category. Try another category.",
+    "carouselNote": "Ask the Kazumi team about promotion periods and eligibility."
+  },
   "ReviewsPage": {
     "metaTitle": "Reviews / Before & After",
     "metaDescription": "Reviews and before-after results of procedures at {siteName} in Sukhumvit, Bangkok.",
@@ -191,11 +234,20 @@
     },
     "before": "Before",
     "after": "After",
+    "beforeImageAlt": "Result before {procedure}",
+    "afterImageAlt": "Result after {procedure}",
+    "procedureFallback": "treatment",
     "disclaimer": "*Results depend on individual skin condition and specific issues. Published with client consent.",
     "empty": {
       "title": "Collecting reviews from clients",
       "desc": "Reviews and before-after photos from real clients are coming soon. In the meantime, you can view reviews on our Google Maps and Instagram, or inquire about individual results via LINE.",
       "disclaimer": "*Results depend on individual skin condition and specific issues."
+    },
+    "google": {
+      "heading": "Google Reviews",
+      "reviewCount": "· {count} reviews",
+      "viewAll": "View all on Google",
+      "disclaimer": "Google reviews · Shown as posted by users, without edits"
     },
     "viewGoogle": "View Reviews on Google Maps",
     "inquireLine": "Inquire Results via LINE"
@@ -268,6 +320,15 @@
       "lead": "Skincare knowledge and post-procedure care tips from the medical team at {siteName}."
     },
     "readMore": "Read more →",
+    "readMoreLabel": "Read more",
+    "filterAll": "All",
+    "filterEmpty": "No articles in this category. Try another category.",
+    "newsletter": {
+      "title": "Follow Our Latest Articles",
+      "description": "Sign up for news, promotions, and self-care guidance from our medical team.",
+      "emailPlaceholder": "Your email",
+      "subscribe": "Subscribe"
+    },
     "empty": {
       "title": "Preparing articles",
       "desc": "Articles and knowledge about skincare and procedures are coming soon."
@@ -557,9 +618,25 @@
     "resultCount": "{count} results",
     "browseHint": "Type to search, or browse the categories below.",
     "noResults": "No matches. Try a different keyword.",
+    "modalPlaceholder": "Search services...",
+    "quickLinksTitle": "Quick links",
+    "quickLinks": {
+      "laser": "Laser brightening program",
+      "acne": "Acne care",
+      "facialDesign": "Facial contouring",
+      "promotions": "Monthly promotions"
+    },
     "type": {
       "category": "Category"
     }
+  },
+  "ServiceCarousel": {
+    "startingFrom": "Starting from",
+    "price": "{price} baht",
+    "details": "View details"
+  },
+  "LanguageSwitcher": {
+    "thai": "Thai"
   },
   "A11y": {
     "promotionGallery": "Kazumi Clinic promotions gallery",
@@ -572,6 +649,7 @@
     "promotionFilter": "Filter promotions by category",
     "blogFilter": "Filter articles by category",
     "brandStrip": "Brands and technologies the clinic uses",
+    "brandStripHeading": "Brands and technologies we use",
     "serviceGallery": "Kazumi Clinic services gallery",
     "serviceList": "Our services",
     "servicePosition": "Service position",

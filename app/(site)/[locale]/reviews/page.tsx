@@ -52,7 +52,19 @@ export const revalidate = 3600;
 // (enforced in getPublishedReviews). No Review/AggregateRating JSON-LD is emitted — star ratings
 // are shown visually but not asserted as structured data until an audited, verifiable source exists.
 
-function BeforeAfterFigure({ review, beforeText, afterText }: { review: PublicReview; beforeText: string; afterText: string }) {
+function BeforeAfterFigure({
+  review,
+  beforeText,
+  afterText,
+  beforeImageAlt,
+  afterImageAlt,
+}: {
+  review: PublicReview;
+  beforeText: string;
+  afterText: string;
+  beforeImageAlt: string;
+  afterImageAlt: string;
+}) {
   const both = review.beforeImagePublicId && review.afterImagePublicId;
   if (!review.beforeImagePublicId && !review.afterImagePublicId) return null;
 
@@ -62,7 +74,7 @@ function BeforeAfterFigure({ review, beforeText, afterText }: { review: PublicRe
         <figure className="relative aspect-[3/4] overflow-hidden rounded-xl bg-sand">
           <Image
             src={review.beforeImagePublicId}
-            alt={`ผลลัพธ์ก่อนทำ${review.procedure ? review.procedure : 'หัตถการ'}`}
+            alt={beforeImageAlt}
             fill
             sizes="(max-width: 640px) 45vw, 220px"
             className="object-cover"
@@ -77,7 +89,7 @@ function BeforeAfterFigure({ review, beforeText, afterText }: { review: PublicRe
         <figure className="relative aspect-[3/4] overflow-hidden rounded-xl bg-sand">
           <Image
             src={review.afterImagePublicId}
-            alt={`ผลลัพธ์หลังทำ${review.procedure ? review.procedure : 'หัตถการ'}`}
+            alt={afterImageAlt}
             fill
             sizes="(max-width: 640px) 45vw, 220px"
             className="object-cover"
@@ -123,7 +135,7 @@ export default async function ReviewsPage({ params }: { params: Promise<{ locale
       />
 
       <section className="mx-auto max-w-6xl px-6 py-20">
-        {googleReviews && <GoogleReviews data={googleReviews} heading="รีวิวจาก Google" />}
+        {googleReviews && <GoogleReviews data={googleReviews} heading={t('google.heading')} />}
 
         {reviews.length > 0 ? (
           <>
@@ -131,7 +143,17 @@ export default async function ReviewsPage({ params }: { params: Promise<{ locale
               {reviews.map((review, i) => (
                 <Reveal key={review.id} delay={i * 50}>
                   <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-olive/15 bg-cream">
-                    <BeforeAfterFigure review={review} beforeText={t('before')} afterText={t('after')} />
+                    <BeforeAfterFigure
+                      review={review}
+                      beforeText={t('before')}
+                      afterText={t('after')}
+                      beforeImageAlt={t('beforeImageAlt', {
+                        procedure: review.procedure ?? t('procedureFallback'),
+                      })}
+                      afterImageAlt={t('afterImageAlt', {
+                        procedure: review.procedure ?? t('procedureFallback'),
+                      })}
+                    />
                     <div className="flex flex-1 flex-col p-5">
                       <div className="flex items-center justify-between gap-2">
                         <p className="font-serif text-lg text-olive-deep">{review.name}</p>

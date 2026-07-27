@@ -93,9 +93,11 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
       <section className="px-6 md:px-12 pt-16 md:pt-24 pb-8">
         <div className="space-y-2">
           <span className="text-sm font-medium tracking-widest text-clinical-blue uppercase opacity-80">Knowledge Hub</span>
-          <h1 className="text-4xl md:text-5xl font-bold text-charcoal tracking-tight leading-tight">บทความ / สาระความรู้</h1>
+          <h1 className="text-4xl md:text-5xl font-bold text-charcoal tracking-tight leading-tight">
+            {t('hero.title')}
+          </h1>
           <p className="text-base text-slate-gray mt-4 max-w-xl leading-relaxed">
-            สาระความรู้เรื่องผิวพรรณและการดูแลตัวเองหลังทำหัตถการ จากทีมแพทย์ของ&nbsp;<span className="whitespace-nowrap">Kazumi Clinic</span>
+            {t('hero.lead', { siteName: site.name })}
           </p>
         </div>
       </section>
@@ -132,7 +134,7 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
                 </p>
               )}
               <span className="inline-flex items-center text-sm font-medium text-pure-white border-b border-pure-white pb-1 group-hover:gap-2 transition-all">
-                อ่านต่อ <ArrowRight className="ml-1 size-4" />
+                {t('readMoreLabel')} <ArrowRight className="ml-1 size-4" />
               </span>
             </div>
           </Link>
@@ -152,7 +154,7 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
             posts={gridPosts}
             tabs={tabs}
             locale={locale}
-            emptyText="ไม่มีบทความในหมวดนี้ — ลองเลือกหมวดอื่น"
+            emptyText={t('filterEmpty')}
           />
         ) : null}
       </section>
@@ -160,18 +162,20 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
       {/* Newsletter Support */}
       <section className="px-6 md:px-12 mt-24 mb-16">
         <div className="bg-surface-container-low rounded-[2rem] p-8 md:p-14 text-center border border-outline-variant/10 max-w-4xl mx-auto shadow-sm">
-          <h3 className="text-2xl md:text-3xl font-bold text-charcoal mb-4">ติดตามสาระความรู้ใหม่ๆ</h3>
+          <h3 className="text-2xl md:text-3xl font-bold text-charcoal mb-4">
+            {t('newsletter.title')}
+          </h3>
           <p className="text-base text-slate-gray mb-10 max-w-md mx-auto leading-relaxed">
-            ลงทะเบียนเพื่อรับข่าวสาร โปรโมชั่น และเทคนิคการดูแลตัวเองจากแพทย์ผู้เชี่ยวชาญ
+            {t('newsletter.description')}
           </p>
           <div className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
             <input 
               className="flex-1 px-6 py-4 rounded-xl border border-outline-variant/20 bg-pure-white text-charcoal focus:ring-2 focus:ring-clinical-blue focus:outline-none transition-all placeholder:text-slate-gray/60" 
-              placeholder="อีเมลของคุณ" 
+              placeholder={t('newsletter.emailPlaceholder')}
               type="email" 
             />
             <button className="px-8 py-4 rounded-xl bg-clinical-blue text-pure-white text-sm font-medium hover:bg-clinical-blue/90 active:scale-95 transition-all">
-              ติดตามข่าวสาร
+              {t('newsletter.subscribe')}
             </button>
           </div>
           <div className="mt-12 pt-8 border-t border-outline-variant/20 flex justify-center gap-8">
