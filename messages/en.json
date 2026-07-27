@@ -440,6 +440,10 @@
       "subject": "Your appointment is confirmed — Kazumi Clinic",
       "body": "Hello {name},\n\nKazumi Clinic has confirmed your appointment.\nDate and time: {datetime}\nEstimated duration: {duration} minutes\nService of interest: {interest}\n\nTo cancel, use this link: {cancelUrl}\n\nIf you need help, call {phone}\n{address}\n\nKazumi Clinic"
     },
+    "reminderEmail": {
+      "subject": "Your appointment is coming up — Kazumi Clinic",
+      "body": "Hello {name},\n\nYour appointment with Kazumi Clinic is coming up soon.\nDate and time: {datetime}\nEstimated duration: {duration} minutes\nService of interest: {interest}\n\nIf you cannot attend, please cancel using this link: {cancelUrl}\n\nIf you need help, call {phone}\n{address}\n\nKazumi Clinic"
+    },
     "cancelledEmail": {
       "subject": "Your appointment was cancelled — Kazumi Clinic",
       "body": "Hello {name},\n\nYour appointment has been cancelled.\nDetails: {datetime}\n\nTo request another appointment or ask a question, call {phone}\n{address}\n\nKazumi Clinic"

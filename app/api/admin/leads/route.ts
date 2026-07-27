@@ -67,6 +67,7 @@ export async function PATCH(request: NextRequest) {
           const delivery = await sendAppointmentConfirmationEmail({
             to: lead.email,
             locale: lead.locale,
+            leadId: lead.id,
             name: lead.name,
             scheduledAt,
             durationMinutes,

@@ -3,8 +3,8 @@
 ระบบนัดหมายของ Kazumi Clinic ต่อจากตาราง `leads` เดิมโดยไม่ลบประวัติคำขอเก่า ลูกค้ายังคงส่ง
 “คำขอนัดหมาย” ให้พนักงานตรวจและยืนยัน ไม่ใช่ instant booking ที่ล็อกห้องหรือแพทย์อัตโนมัติ
 
-ทวนกับ implementation ใน branch นี้เมื่อ **2026-07-27** · ยังไม่ได้ทวนกับ D1/Worker จริง เพราะ
-sandbox ไม่มี network และเครื่องนี้รัน workerd ไม่ได้
+ทวนกับ implementation ใน branch นี้เมื่อ **2026-07-27** · Part A ทดสอบบน Worker จริงแล้ว ส่วน Part B
+ยังไม่ได้ deploy หรือทดสอบ runtime เพราะ sandbox ไม่มี network และเครื่องนี้รัน workerd ไม่ได้
 
 ---
 
@@ -18,15 +18,14 @@ sandbox ไม่มี network และเครื่องนี้รัน
 | อีเมลยืนยัน/ยกเลิกผ่าน Resend | ✅ รองรับ แต่ยังส่งจริงไม่ได้จนกว่าจะตั้งค่า Resend |
 | หน้านัดหมายของสมาชิก + ยกเลิกเอง | ✅ โค้ดพร้อม |
 | guest cancellation link แบบ opaque token | ✅ โค้ดพร้อม |
-| Migration `0013_appointments` บน remote D1 | ⏳ ต้องรันมือหนึ่งครั้งก่อนเผยแพร่โค้ด |
-| ทดสอบบน Cloudflare Worker จริง | ⏳ ยังไม่ได้รัน |
-| ไฟล์ปฏิทิน `.ics` | ❌ Part B ยังไม่ได้ทำ |
-| reminder ก่อนนัด 24 ชั่วโมง + hourly cron | ❌ Part B ยังไม่ได้ทำ |
-| เรียง admin dashboard ตามเวลานัดใกล้สุด | ❌ Part B ยังไม่ได้ทำ |
+| Migration `0013_appointments` บน remote D1 | ✅ รันก่อน merge Part A (PR #266) แล้ว |
+| ทดสอบบน Cloudflare Worker จริง | ✅ Part A · ⏳ Part B ยังไม่ได้ deploy/ทดสอบ runtime |
+| ไฟล์ปฏิทิน `.ics` | ✅ แนบกับอีเมลยืนยันนัด |
+| reminder ก่อนนัด 24 ชั่วโมง + hourly cron | ✅ โค้ดและ workflow พร้อม (รอตั้ง secret ก่อนใช้งานจริง) |
+| เรียง admin dashboard ตามเวลานัดใกล้สุด | ✅ โค้ดพร้อม |
 
-> 🔴 Migration ใช้ `ALTER TABLE ADD COLUMN` และห้ามผูกเข้า `cf:deploy` เพราะรอบที่สองจะ error
-> `duplicate column`. ก่อน merge ซึ่งทำให้ CD เผยแพร่ Worker ทันที ต้องรัน
-> `pnpm cf:migrate:appointments` ให้ remote D1 สำเร็จก่อน มิฉะนั้น route ใหม่จะ query คอลัมน์ที่ยังไม่มี
+> Migration ใช้ `ALTER TABLE ADD COLUMN` และรันบน remote D1 แล้วก่อน merge PR #266 ห้ามผูก
+> `pnpm cf:migrate:appointments` เข้า `cf:deploy` หรือรันซ้ำ เพราะจะ error `duplicate column`
 
 ---
 
@@ -62,10 +61,14 @@ sandbox ไม่มี network และเครื่องนี้รัน
 3. **พนักงานยืนยัน** — `/admin/leads` กำหนด epoch time และ duration; ระบบแสดง warning ถ้าทับนัดอื่น
    แต่ไม่ hard block เพราะคลินิกอาจมีหลายห้องหรือหลายแพทย์
 4. **ยืนยันทางอีเมล** — ถ้ามี email ระบบสร้างลิงก์จาก origin ของ request จริงและใส่ `/en` ตาม
-   `lead.locale`; ความล้มเหลวของ Resend ไม่ย้อน appointment ที่บันทึกแล้ว
+   `lead.locale`; อีเมลแนบ `.ics` ของเวลาที่พนักงานยืนยัน และความล้มเหลวของ Resend ไม่ย้อน
+   appointment ที่บันทึกแล้ว
 5. **ลูกค้าติดตาม/ยกเลิก** — สมาชิกดู `/account/appointments` และยกเลิกได้เฉพาะ lead ของตัวเอง;
    guest ใช้ `/appointments/cancel?token=...` หรือ `/en/appointments/cancel?token=...`
-6. **พนักงานได้รับแจ้ง** — การสร้างและยกเลิกเรียก `notifyStaffWebhook()` แบบ awaited แต่
+6. **เตือนก่อนนัด** — GitHub Actions เรียก `POST /api/internal/appointment-reminders` ทุกชั่วโมง;
+   route เลือกนัดในช่วง 23–25 ชั่วโมงข้างหน้า ส่งอีเมล reminder พร้อมลิงก์ยกเลิก และบันทึก
+   `reminder_sent_at` หลัง Resend ส่งสำเร็จ
+7. **พนักงานได้รับแจ้ง** — การสร้างและยกเลิกเรียก `notifyStaffWebhook()` แบบ awaited แต่
    failure-isolated เหมือน behavior เดิม: webhook ล้มไม่ทำให้ mutation หลักล้ม
 
 สถานะ `leads` คือ `new`, `contacted`, `booked`, `cancelled`, `closed` การยกเลิกเปลี่ยนสถานะและเก็บ
@@ -78,7 +81,7 @@ audit fields แทนการลบแถว
 [lib/appointments/notify.ts](../lib/appointments/notify.ts) ยิง Resend REST API โดยตรงและมี
 `import 'server-only'` เนื้อหาอยู่ใน `messages/{th,en}.json` ที่ namespace `Appointments`
 
-ต้องตั้ง secret สองตัว:
+ต้องตั้ง secret ของ Resend สองตัวบน Worker:
 
 ```bash
 wrangler secret put RESEND_API_KEY
@@ -88,6 +91,17 @@ wrangler secret put RESEND_FROM_EMAIL
 ถ้าไม่ตั้งครบ ฟังก์ชันคืน `not_configured` พร้อม warning และ appointment flow ยังสำเร็จตามปกติ
 การสมัคร provider, ยืนยันโดเมน และข้อจำกัดปัจจุบันใช้เงื่อนไขเดียวกับ password reset ดู
 [member-system.md](./member-system.md) — **ยังไม่มีการทดสอบ delivery จริง**
+
+reminder ใช้ [appointment-reminders.yml](../.github/workflows/appointment-reminders.yml) เป็นนาฬิกา
+รายชั่วโมงและตรวจ header `x-internal-secret` ที่ route ภายใน ต้องตั้งค่าเดียวกันทั้ง Worker และ GitHub:
+
+```bash
+wrangler secret put INTERNAL_TASK_SECRET
+gh secret set INTERNAL_TASK_SECRET
+```
+
+โค้ดไม่เก็บค่าจริงหรือ fallback ไว้ใน repo ถ้ายังไม่ตั้ง `INTERNAL_TASK_SECRET` route จะตอบ `401`
+และ workflow จะล้มให้เห็นชัดเจน ปัจจุบันยังไม่ได้ตั้งหรือทดสอบ secret นี้จาก sandbox
 
 `LEAD_WEBHOOK_URL` ยังเป็น var เสริมเหมือนระบบเดิม ไม่ตั้งแล้วไม่มีการแจ้งพนักงานทาง webhook แต่ข้อมูล
 ยังถูกบันทึกใน D1
@@ -104,6 +118,8 @@ wrangler secret put RESEND_FROM_EMAIL
 | `APPOINTMENT_DEFAULT_DURATION_MINUTES` | 60 นาที |
 | `APPOINTMENT_MAX_ADVANCE_DAYS` | 60 วัน |
 | `APPOINTMENT_MIN_LEAD_HOURS` | 2 ชั่วโมง |
+| Reminder query window | 23–25 ชั่วโมงก่อนนัด ใน `app/api/internal/appointment-reminders/route.ts` |
+| Reminder schedule | ทุกต้นชั่วโมง ใน `.github/workflows/appointment-reminders.yml` |
 
 เวลาทำการอ่านจาก `site.hours` ใน [lib/site.ts](../lib/site.ts) เท่านั้น เวลา appointment แปลงด้วย
 Asia/Bangkok (UTC+7 ไม่มี DST) และ format ไทยด้วย `Intl` จึงได้ปี พ.ศ. โดยไม่คำนวณเอง
@@ -140,5 +156,6 @@ pnpm build
 ไม่พิสูจน์ D1, cookies, WebCrypto หรือ Worker lifecycle ดูข้อจำกัดเดียวกันใน
 [member-system.md](./member-system.md)
 
-Part B ที่ยังเหลือคือ `.ics` attachment, `Appointments.reminderEmail`, internal reminder route,
-`INTERNAL_TASK_SECRET`, hourly GitHub Actions workflow และการเรียง admin list ตาม `scheduled_at`
+Part B มี `.ics` attachment, `Appointments.reminderEmail`, internal reminder route, hourly GitHub
+Actions workflow และการเรียง admin list ตาม `scheduled_at` แล้ว เหลืองานภายนอก repo คือการตั้ง
+`INTERNAL_TASK_SECRET` ทั้งสองฝั่งและทดสอบ endpoint/Resend บน Worker จริงหลัง deploy

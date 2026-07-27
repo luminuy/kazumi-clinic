@@ -101,6 +101,14 @@ export function LeadsDashboard({ leads }: { leads: AdminLead[] }) {
   }, [leads]);
 
   const visible = filter === 'all' ? leads : leads.filter((lead) => lead.status === filter);
+  const sorted = [...visible].sort((a, b) => {
+    if (a.scheduledAt !== null && b.scheduledAt !== null) {
+      return a.scheduledAt - b.scheduledAt;
+    }
+    if (a.scheduledAt !== null) return -1;
+    if (b.scheduledAt !== null) return 1;
+    return b.createdAt - a.createdAt;
+  });
 
   async function mutate(
     key: string,
@@ -228,7 +236,7 @@ export function LeadsDashboard({ leads }: { leads: AdminLead[] }) {
       )}
 
       <ul className="mt-6 space-y-3">
-        {visible.map((lead) => {
+        {sorted.map((lead) => {
           const rowBusy = busyId === 'status-' + lead.id || busyId === 'del-' + lead.id;
           return (
             <li key={lead.id} className={cn(card, 'p-4', rowBusy && 'opacity-60')}>
