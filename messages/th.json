@@ -440,6 +440,10 @@
       "subject": "ยืนยันนัดหมายของคุณ — Kazumi Clinic",
       "body": "เรียน {name}\n\nKazumi Clinic ยืนยันนัดหมายของคุณแล้ว\nวันและเวลา: {datetime}\nระยะเวลาโดยประมาณ: {duration} นาที\nบริการที่สนใจ: {interest}\n\nหากต้องการยกเลิกนัดหมาย กรุณาใช้ลิงก์นี้: {cancelUrl}\n\nหากมีคำถาม โทร {phone}\n{address}\n\nKazumi Clinic"
     },
+    "reminderEmail": {
+      "subject": "แจ้งเตือนนัดหมายที่กำลังจะถึง — Kazumi Clinic",
+      "body": "เรียน {name}\n\nนัดหมายของคุณกับ Kazumi Clinic ใกล้ถึงแล้ว\nวันและเวลา: {datetime}\nระยะเวลาโดยประมาณ: {duration} นาที\nบริการที่สนใจ: {interest}\n\nหากไม่สามารถมาตามนัด กรุณายกเลิกผ่านลิงก์นี้: {cancelUrl}\n\nหากมีคำถาม โทร {phone}\n{address}\n\nKazumi Clinic"
+    },
     "cancelledEmail": {
       "subject": "นัดหมายของคุณถูกยกเลิก — Kazumi Clinic",
       "body": "เรียน {name}\n\nรายการนัดหมายของคุณถูกยกเลิกเรียบร้อยแล้ว\nรายละเอียด: {datetime}\n\nหากต้องการนัดหมายใหม่หรือมีคำถาม โทร {phone}\n{address}\n\nKazumi Clinic"

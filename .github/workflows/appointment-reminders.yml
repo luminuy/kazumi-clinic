@@ -1,0 +1,21 @@
+name: Appointment Reminders
+
+# Sends a reminder email ~24h before each confirmed appointment. Runs hourly and asks the app's own
+# internal endpoint to do the work (query D1, send via Resend) — this workflow is just the clock;
+# see app/api/internal/appointment-reminders/route.ts for the actual logic.
+on:
+  schedule:
+    - cron: '0 * * * *' # every hour
+  workflow_dispatch: {}
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger reminder check
+        run: |
+          curl -sf -X POST "$BASE/api/internal/appointment-reminders" \
+            -H "x-internal-secret: $SECRET"
+        env:
+          BASE: https://kazumi-clinic.bankjack10452.workers.dev
+          SECRET: ${{ secrets.INTERNAL_TASK_SECRET }}
