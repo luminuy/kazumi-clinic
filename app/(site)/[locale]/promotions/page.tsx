@@ -56,7 +56,7 @@ export default async function PromotionsPage({ params }: { params: Promise<{ loc
   const t = await getTranslations('PromotionsPage');
   const tNav = await getTranslations('Navigation');
   
-  const promos = await getActivePromotions();
+  const promos = await getActivePromotions(locale);
 
   // Cards for the client grid, each carrying its category slug for filtering.
   const cards: PromoCard[] = promos.map((p, i) => ({

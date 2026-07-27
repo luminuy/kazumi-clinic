@@ -203,12 +203,8 @@ export default async function ServiceCategoryPage({ params }: Props) {
   const t = await getTranslations('ServiceCategoryPage');
   // Items resolved through the /admin override layer (edits, additions, removals). Category
   // structure itself stays in code — only the product list is editable.
-  const merged = await getMergedCategory(category);
-  if (!merged) notFound();
-  // English overlay on top of the merged (code + /admin) catalogue, so the page and everything it
-  // hands `service` to — including the bespoke per-category components — render one language.
-  // A product the clinic added through /admin has no translation yet and keeps its Thai name.
-  const service = localizeServiceCategory(merged, locale);
+  const service = await getMergedCategory(category, locale);
+  if (!service) notFound();
 
   // A hero the clinic replaced through /admin wins over the one compiled into lib/services.ts.
   const overrides = await getImageOverrides();

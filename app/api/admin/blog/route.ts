@@ -24,6 +24,7 @@ function slugify(value: string) {
 const upsertSchema = z.object({
   id: z.string().min(1).max(80).optional(),
   title: z.string().trim().min(1, 'ต้องมีหัวข้อบทความ').max(160),
+  titleEn: z.string().trim().max(160).nullish(),
   // Optional explicit slug; when present it must already be URL-safe.
   slug: z
     .string()
@@ -32,7 +33,9 @@ const upsertSchema = z.object({
     .regex(/^[a-z0-9ก-๙-]+$/, 'slug ใช้ได้เฉพาะ a-z 0-9 ไทย และ -')
     .optional(),
   excerpt: z.string().trim().max(300).nullish(),
+  excerptEn: z.string().trim().max(300).nullish(),
   body: z.string().trim().min(1, 'ต้องมีเนื้อหาบทความ').max(50_000),
+  bodyEn: z.string().trim().max(50_000).nullish(),
   author: z.string().trim().max(80).nullish(),
   published: z.boolean(),
   // A serviceCategories slug for the /blog filter, or null/absent for uncategorised.
@@ -67,8 +70,11 @@ export async function POST(request: NextRequest) {
     id,
     slug,
     title: data.title,
+    titleEn: data.titleEn ?? null,
     excerpt: data.excerpt ?? null,
+    excerptEn: data.excerptEn ?? null,
     body: data.body,
+    bodyEn: data.bodyEn ?? null,
     author: data.author ?? null,
     published: data.published,
     category: data.category ?? null,

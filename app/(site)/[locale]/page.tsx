@@ -114,7 +114,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     }),
   );
   // Merged so the carousel's "เริ่มต้น ฿x" reflects prices the clinic edits through /admin.
-  const mergedCategories = await getAllMergedCategories();
+  const mergedCategories = await getAllMergedCategories(locale);
 
   return (
     <>

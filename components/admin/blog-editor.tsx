@@ -22,8 +22,11 @@ export type AdminPost = {
   id: string;
   slug: string;
   title: string;
+  titleEn: string;
   excerpt: string;
+  excerptEn: string;
   body: string;
+  bodyEn: string;
   author: string;
   coverImagePublicId: string | null;
   published: boolean;
@@ -36,9 +39,12 @@ export type CategoryOption = { slug: string; title: string };
 
 type Draft = {
   title: string;
+  titleEn: string;
   slug: string;
   excerpt: string;
+  excerptEn: string;
   body: string;
+  bodyEn: string;
   author: string;
   published: boolean;
   category: string;
@@ -46,9 +52,12 @@ type Draft = {
 
 const emptyDraft: Draft = {
   title: '',
+  titleEn: '',
   slug: '',
   excerpt: '',
+  excerptEn: '',
   body: '',
+  bodyEn: '',
   author: '',
   published: false,
   category: '',
@@ -57,9 +66,12 @@ const emptyDraft: Draft = {
 function draftFrom(post: AdminPost): Draft {
   return {
     title: post.title,
+    titleEn: post.titleEn,
     slug: post.slug,
     excerpt: post.excerpt,
+    excerptEn: post.excerptEn,
     body: post.body,
+    bodyEn: post.bodyEn,
     author: post.author,
     published: post.published,
     category: post.category ?? '',
@@ -140,9 +152,12 @@ export function BlogEditor({
     const body = {
       ...(editing && editing !== 'new' ? { id: editing } : {}),
       title,
+      titleEn: draft.titleEn.trim() || null,
       slug: draft.slug.trim() || undefined,
       excerpt: draft.excerpt.trim() || null,
+      excerptEn: draft.excerptEn.trim() || null,
       body: draft.body,
+      bodyEn: draft.bodyEn.trim() || null,
       author: draft.author.trim() || null,
       published: draft.published,
       category: draft.category || null,
@@ -372,6 +387,14 @@ function Field({
   );
 }
 
+function EnglishFallbackNote() {
+  return (
+    <p className="mt-1.5 text-[0.68rem] text-ink/40">
+      ปล่อยว่างได้ ถ้าไม่กรอกหน้าอังกฤษจะแสดงภาษาไทย
+    </p>
+  );
+}
+
 function PostForm({
   draft,
   setDraft,
@@ -401,13 +424,22 @@ function PostForm({
       </div>
 
       <div className="mt-4 grid gap-4">
-        <Field label="หัวข้อบทความ">
+        <Field label="หัวข้อบทความ (ไทย)">
           <input
             className={inputClass}
             value={draft.title}
             onChange={(e) => set({ title: e.target.value })}
             placeholder="เช่น ฟิลเลอร์ใต้ตาดูแลตัวเองอย่างไร"
           />
+        </Field>
+        <Field label="หัวข้อบทความ (อังกฤษ)">
+          <input
+            className={inputClass}
+            value={draft.titleEn}
+            onChange={(e) => set({ titleEn: e.target.value })}
+            placeholder="เช่น How to care for under-eye filler"
+          />
+          <EnglishFallbackNote />
         </Field>
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="slug (URL)" hint="เว้นว่าง = สร้างจากหัวข้อ">
@@ -441,7 +473,7 @@ function PostForm({
             ))}
           </select>
         </Field>
-        <Field label="คำโปรย" hint="สรุปสั้น ๆ · แสดงในหน้ารายการและ SEO">
+        <Field label="คำโปรย (ไทย)" hint="สรุปสั้น ๆ · แสดงในหน้ารายการและ SEO">
           <textarea
             className={cn(inputClass, 'min-h-16 resize-y')}
             value={draft.excerpt}
@@ -449,8 +481,17 @@ function PostForm({
             placeholder="สรุปเนื้อหาบทความใน 1-2 ประโยค"
           />
         </Field>
+        <Field label="คำโปรย (อังกฤษ)">
+          <textarea
+            className={cn(inputClass, 'min-h-16 resize-y')}
+            value={draft.excerptEn}
+            onChange={(e) => set({ excerptEn: e.target.value })}
+            placeholder="สรุปเนื้อหาบทความภาษาอังกฤษใน 1-2 ประโยค"
+          />
+          <EnglishFallbackNote />
+        </Field>
         <Field
-          label="เนื้อหา"
+          label="เนื้อหา (ไทย)"
           hint="รองรับ ## หัวข้อ, - รายการ, **ตัวหนา**, [ลิงก์](https://…), > อ้างอิง"
         >
           <textarea
@@ -459,6 +500,18 @@ function PostForm({
             onChange={(e) => set({ body: e.target.value })}
             placeholder={'## หัวข้อย่อย\n\nย่อหน้าเนื้อหา...\n\n- ข้อที่หนึ่ง\n- ข้อที่สอง'}
           />
+        </Field>
+        <Field
+          label="เนื้อหา (อังกฤษ)"
+          hint="รองรับรูปแบบเดียวกับเนื้อหาภาษาไทย"
+        >
+          <textarea
+            className={cn(inputClass, 'min-h-64 resize-y font-mono text-[0.8rem] leading-relaxed')}
+            value={draft.bodyEn}
+            onChange={(e) => set({ bodyEn: e.target.value })}
+            placeholder={'## English heading\n\nArticle content...\n\n- First item\n- Second item'}
+          />
+          <EnglishFallbackNote />
         </Field>
       </div>
 

@@ -1,6 +1,8 @@
 import { getCloudflareContext } from '@opennextjs/cloudflare';
 import type { D1Database } from '@cloudflare/workers-types';
 import { cache } from 'react';
+import { localizePost } from '@/lib/content-locale';
+import type { Locale } from '@/lib/site';
 
 /**
  * The blog store. Drives /blog and /blog/[slug] entirely from the `posts` D1 table, with the same
@@ -12,8 +14,11 @@ export type PostRow = {
   id: string;
   slug: string;
   title: string;
+  title_en: string | null;
   excerpt: string | null;
+  excerpt_en: string | null;
   body: string;
+  body_en: string | null;
   cover_image_public_id: string | null;
   author: string | null;
   published: number;
@@ -29,8 +34,11 @@ export type PostInput = {
   id: string;
   slug: string;
   title: string;
+  titleEn?: string | null;
   excerpt?: string | null;
+  excerptEn?: string | null;
   body: string;
+  bodyEn?: string | null;
   author?: string | null;
   published: boolean;
   category?: string | null;
@@ -60,17 +68,22 @@ export const getPostRows = cache(async (): Promise<PostRow[]> => {
 });
 
 /** Published posts, newest published first — the /blog listing. */
-export async function getPublishedPosts(): Promise<PostRow[]> {
+export async function getPublishedPosts(locale: Locale | string = 'th'): Promise<PostRow[]> {
   const rows = await getPostRows();
   return rows
     .filter((row) => row.published === 1)
-    .sort((a, b) => (b.published_at ?? 0) - (a.published_at ?? 0));
+    .sort((a, b) => (b.published_at ?? 0) - (a.published_at ?? 0))
+    .map((row) => localizePost(row, locale));
 }
 
 /** A single published post by slug, or undefined — the /blog/[slug] page. */
-export async function getPublishedPostBySlug(slug: string): Promise<PostRow | undefined> {
+export async function getPublishedPostBySlug(
+  slug: string,
+  locale: Locale | string = 'th',
+): Promise<PostRow | undefined> {
   const rows = await getPostRows();
-  return rows.find((row) => row.slug === slug && row.published === 1);
+  const row = rows.find((candidate) => candidate.slug === slug && candidate.published === 1);
+  return row ? localizePost(row, locale) : undefined;
 }
 
 /** Every post, drafts included — what the admin list renders. */
@@ -113,24 +126,29 @@ export async function upsertPost(input: PostInput, updatedBy: string) {
     await binding
       .prepare(
         `INSERT INTO posts
-           (id, slug, title, excerpt, body, author, published, published_at, updated_at, updated_by, category)
-         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)
+           (id, slug, title, title_en, excerpt, excerpt_en, body, body_en, author, published,
+            published_at, updated_at, updated_by, category)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14)
          ON CONFLICT(id) DO UPDATE SET
-           slug = ?2, title = ?3, excerpt = ?4, body = ?5, author = ?6, published = ?7,
+           slug = ?2, title = ?3, title_en = ?4, excerpt = ?5, excerpt_en = ?6,
+           body = ?7, body_en = ?8, author = ?9, published = ?10,
            -- Keep the original publish date once set; only stamp it on the first publish.
            published_at = CASE
-             WHEN ?7 = 1 AND posts.published_at IS NOT NULL THEN posts.published_at
-             WHEN ?7 = 1 THEN ?9
+             WHEN ?10 = 1 AND posts.published_at IS NOT NULL THEN posts.published_at
+             WHEN ?10 = 1 THEN ?12
              ELSE NULL
            END,
-           updated_at = ?9, updated_by = ?10, category = ?11`,
+           updated_at = ?12, updated_by = ?13, category = ?14`,
       )
       .bind(
         input.id,
         input.slug,
         input.title,
+        input.titleEn ?? null,
         input.excerpt ?? null,
+        input.excerptEn ?? null,
         input.body,
+        input.bodyEn ?? null,
         input.author ?? null,
         input.published ? 1 : 0,
         publishedAt,

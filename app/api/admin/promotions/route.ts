@@ -33,10 +33,13 @@ const upsertSchema = z
     // Absent for a new promotion (the server mints an id); present when editing an existing one.
     id: z.string().min(1).max(80).optional(),
     name: z.string().trim().min(1, 'ต้องมีชื่อโปรโมชั่น').max(120),
+    nameEn: z.string().trim().max(120).nullish(),
     detail: z.string().trim().max(120).nullish(),
+    detailEn: z.string().trim().max(120).nullish(),
     price: z.number().int().positive('ราคาต้องเป็นจำนวนเต็มบวก').max(100_000_000).nullish(),
     originalPrice: z.number().int().positive().max(100_000_000).nullish(),
     note: z.string().trim().max(160).nullish(),
+    noteEn: z.string().trim().max(160).nullish(),
     // A calendar date the promo is valid through. YYYY-MM-DD so string compare == date compare.
     validUntil: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'วันหมดอายุไม่ถูกต้อง'),
     categorySlug: z.enum(categorySlugs).nullish(),
@@ -72,10 +75,13 @@ export async function POST(request: NextRequest) {
   const input: PromotionInput = {
     id,
     name: data.name,
+    nameEn: data.nameEn ?? null,
     detail: data.detail ?? null,
+    detailEn: data.detailEn ?? null,
     price: data.price ?? null,
     originalPrice: data.originalPrice ?? null,
     note: data.note ?? null,
+    noteEn: data.noteEn ?? null,
     validUntil: data.validUntil,
     categorySlug: data.categorySlug ?? null,
     imagePublicId: data.imagePublicId ?? null,

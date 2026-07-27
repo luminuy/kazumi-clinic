@@ -23,9 +23,13 @@ import { btn, card, inputClass, SectionHeading } from './ui';
 export type AdminProduct = {
   id: string;
   name: string;
+  nameEn: string;
   detail: string;
+  detailEn: string;
   tagline: string;
+  taglineEn: string;
   benefits: string[];
+  benefitsEn: string[];
   collection: string;
   priceFrom: number | null;
   unit: string;
@@ -38,33 +42,45 @@ export type AdminProduct = {
 
 type Draft = {
   name: string;
+  nameEn: string;
   detail: string;
+  detailEn: string;
   collection: string;
   tagline: string;
+  taglineEn: string;
   price: string;
   unit: string;
   benefits: string;
+  benefitsEn: string;
 };
 
 const emptyDraft: Draft = {
   name: '',
+  nameEn: '',
   detail: '',
+  detailEn: '',
   collection: '',
   tagline: '',
+  taglineEn: '',
   price: '',
   unit: 'ครั้ง',
   benefits: '',
+  benefitsEn: '',
 };
 
 function draftFrom(product: AdminProduct): Draft {
   return {
     name: product.name,
+    nameEn: product.nameEn,
     detail: product.detail,
+    detailEn: product.detailEn,
     collection: product.collection,
     tagline: product.tagline,
+    taglineEn: product.taglineEn,
     price: product.priceFrom === null ? '' : String(product.priceFrom),
     unit: product.unit || 'ครั้ง',
     benefits: product.benefits.join('\n'),
+    benefitsEn: product.benefitsEn.join('\n'),
   };
 }
 
@@ -157,15 +173,23 @@ export function ProductCategoryEditor({
       .split('\n')
       .map((line) => line.trim())
       .filter(Boolean);
+    const benefitsEn = draft.benefitsEn
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean);
 
     const body = {
       ...(editing && editing !== 'new' ? { id: editing } : {}),
       category: slug,
       name,
+      nameEn: draft.nameEn.trim() || null,
       detail: draft.detail.trim() || null,
+      detailEn: draft.detailEn.trim() || null,
       collection: draft.collection.trim() || null,
       tagline: draft.tagline.trim() || null,
+      taglineEn: draft.taglineEn.trim() || null,
       benefits: benefits.length > 0 ? benefits : null,
+      benefitsEn: benefitsEn.length > 0 ? benefitsEn : null,
       priceFrom,
       unit: draft.unit.trim() || 'ครั้ง',
     };
@@ -551,6 +575,14 @@ function Field({
   );
 }
 
+function EnglishFallbackNote() {
+  return (
+    <p className="mt-1.5 text-[0.68rem] text-ink/40">
+      ปล่อยว่างได้ ถ้าไม่กรอกหน้าอังกฤษจะแสดงภาษาไทย
+    </p>
+  );
+}
+
 function ProductForm({
   draft,
   setDraft,
@@ -585,7 +617,7 @@ function ProductForm({
 
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         <div className="sm:col-span-2">
-          <Field label="ชื่อสินค้า">
+          <Field label="ชื่อสินค้า (ไทย)">
             <input
               className={inputClass}
               value={draft.name}
@@ -594,13 +626,33 @@ function ProductForm({
             />
           </Field>
         </div>
-        <Field label="รายละเอียด" hint="เช่น ปริมาณ/รุ่น">
+        <div className="sm:col-span-2">
+          <Field label="ชื่อสินค้า (อังกฤษ)">
+            <input
+              className={inputClass}
+              value={draft.nameEn}
+              onChange={(e) => set({ nameEn: e.target.value })}
+              placeholder="เช่น Neura Deep"
+            />
+            <EnglishFallbackNote />
+          </Field>
+        </div>
+        <Field label="รายละเอียด (ไทย)" hint="เช่น ปริมาณ/รุ่น">
           <input
             className={inputClass}
             value={draft.detail}
             onChange={(e) => set({ detail: e.target.value })}
             placeholder="เช่น 1 CC"
           />
+        </Field>
+        <Field label="รายละเอียด (อังกฤษ)">
+          <input
+            className={inputClass}
+            value={draft.detailEn}
+            onChange={(e) => set({ detailEn: e.target.value })}
+            placeholder="เช่น 1 cc"
+          />
+          <EnglishFallbackNote />
         </Field>
         <Field label="กลุ่มย่อย" hint="ไม่บังคับ">
           <input
@@ -628,7 +680,7 @@ function ProductForm({
           />
         </Field>
         <div className="sm:col-span-2">
-          <Field label="คำโปรยภาษาอังกฤษ" hint="ไม่บังคับ">
+          <Field label="คำโปรย (ไทย)" hint="ไม่บังคับ">
             <input
               className={inputClass}
               value={draft.tagline}
@@ -638,13 +690,35 @@ function ProductForm({
           </Field>
         </div>
         <div className="sm:col-span-2">
-          <Field label="จุดเด่น" hint="บรรทัดละ 1 ข้อ · ไม่บังคับ">
+          <Field label="คำโปรย (อังกฤษ)">
+            <input
+              className={inputClass}
+              value={draft.taglineEn}
+              onChange={(e) => set({ taglineEn: e.target.value })}
+              placeholder="เช่น Rh Collagen"
+            />
+            <EnglishFallbackNote />
+          </Field>
+        </div>
+        <div className="sm:col-span-2">
+          <Field label="จุดเด่น (ไทย)" hint="บรรทัดละ 1 ข้อ · ไม่บังคับ">
             <textarea
               className={cn(inputClass, 'min-h-24 resize-y')}
               value={draft.benefits}
               onChange={(e) => set({ benefits: e.target.value })}
               placeholder={'ข้อดีข้อที่ 1\nข้อดีข้อที่ 2'}
             />
+          </Field>
+        </div>
+        <div className="sm:col-span-2">
+          <Field label="จุดเด่น (อังกฤษ)" hint="บรรทัดละ 1 ข้อ">
+            <textarea
+              className={cn(inputClass, 'min-h-24 resize-y')}
+              value={draft.benefitsEn}
+              onChange={(e) => set({ benefitsEn: e.target.value })}
+              placeholder={'First benefit\nSecond benefit'}
+            />
+            <EnglishFallbackNote />
           </Field>
         </div>
       </div>

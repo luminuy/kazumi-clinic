@@ -1,6 +1,10 @@
 import { getCloudflareContext } from '@opennextjs/cloudflare';
 import type { D1Database } from '@cloudflare/workers-types';
 import { cache } from 'react';
+import { localizeProduct } from '@/lib/content-locale';
+import type { Locale } from '@/lib/site';
+import { catalogueUnitsEn } from '@/lib/services-en';
+import { localizeServiceCategory, localizeServiceItem } from '@/lib/services-locale';
 import { getServiceBySlug, serviceCategories, type ServiceItem } from './services';
 
 /**
@@ -17,9 +21,13 @@ export type ProductRow = {
   id: string;
   category: string;
   name: string;
+  name_en: string | null;
   detail: string | null;
+  detail_en: string | null;
   tagline: string | null;
+  tagline_en: string | null;
   benefits: string | null;
+  benefits_en: string | null;
   collection: string | null;
   price_from: number | null;
   unit: string;
@@ -35,9 +43,13 @@ export type ProductInput = {
   id: string;
   category: string;
   name: string;
+  nameEn?: string | null;
   detail?: string | null;
+  detailEn?: string | null;
   tagline?: string | null;
+  taglineEn?: string | null;
   benefits?: string[] | null;
+  benefitsEn?: string[] | null;
   collection?: string | null;
   priceFrom?: number | null;
   unit?: string | null;
@@ -77,25 +89,46 @@ export const getProductRowsByCategory = cache(async (): Promise<Map<string, Prod
   }
 });
 
-function rowToItem(row: ProductRow): ServiceItem {
-  let benefits: string[] | undefined;
-  if (row.benefits) {
-    try {
-      const parsed = JSON.parse(row.benefits);
-      if (Array.isArray(parsed) && parsed.length > 0) benefits = parsed.map(String);
-    } catch {
-      // Malformed JSON in a column the admin writes as JSON — drop the benefits rather than throw.
+export type MergedServiceItem = ServiceItem & {
+  nameEn?: string | null;
+  detailEn?: string | null;
+  taglineEn?: string | null;
+  benefitsEn?: string[] | null;
+};
+
+function parseBenefits(value: string | null): string[] | undefined {
+  if (!value) return undefined;
+  try {
+    const parsed: unknown = JSON.parse(value);
+    if (Array.isArray(parsed)) {
+      const benefits = parsed.map(String).filter((item) => item.trim().length > 0);
+      if (benefits.length > 0) return benefits;
     }
+  } catch {
+    // Malformed JSON in a column the admin writes as JSON — drop the benefits rather than throw.
   }
+  return undefined;
+}
+
+function rowToItem(
+  source: ProductRow,
+  locale: Locale | string = 'th',
+): MergedServiceItem {
+  const row = localizeProduct(source, locale);
+  const benefits = parseBenefits(row.benefits);
   return {
     id: row.id,
     name: row.name,
+    nameEn: source.name_en,
     detail: row.detail ?? undefined,
+    detailEn: source.detail_en,
     tagline: row.tagline ?? undefined,
+    taglineEn: source.tagline_en,
     benefits,
+    benefitsEn: parseBenefits(source.benefits_en),
     collection: row.collection ?? undefined,
     priceFrom: row.price_from ?? undefined,
-    unit: row.unit,
+    unit: locale === 'en' ? (catalogueUnitsEn[row.unit] ?? row.unit) : row.unit,
     imagePublicId: row.image_public_id ?? undefined,
   };
 }
@@ -107,21 +140,27 @@ function rowToItem(row: ProductRow): ServiceItem {
  * carries its own `sort_order`, which the admin sets to that same index when it only edits
  * fields, and changes only on an explicit reorder — so editing a product never makes it jump.
  */
-export async function getCategoryItems(slug: string): Promise<ServiceItem[]> {
+export async function getCategoryItems(
+  slug: string,
+  locale: Locale | string = 'th',
+): Promise<MergedServiceItem[]> {
   const base = getServiceBySlug(slug)?.items ?? [];
   const rows = (await getProductRowsByCategory()).get(slug) ?? [];
   const rowById = new Map(rows.map((r) => [r.id, r]));
 
-  const merged: { item: ServiceItem; order: number }[] = [];
+  const merged: { item: MergedServiceItem; order: number }[] = [];
   base.forEach((item, index) => {
     const row = item.id ? rowById.get(item.id) : undefined;
     if (row?.deleted) return; // the clinic removed this shipped product
-    merged.push({ item: row ? rowToItem(row) : item, order: row ? row.sort_order : index });
+    merged.push({
+      item: row ? rowToItem(row, locale) : localizeServiceItem(item, locale),
+      order: row ? row.sort_order : index,
+    });
   });
   for (const row of rows) {
     if (row.deleted) continue;
     if (base.some((item) => item.id === row.id)) continue; // handled above as an edit
-    merged.push({ item: rowToItem(row), order: row.sort_order });
+    merged.push({ item: rowToItem(row, locale), order: row.sort_order });
   }
 
   merged.sort((a, b) => a.order - b.order);
@@ -129,17 +168,23 @@ export async function getCategoryItems(slug: string): Promise<ServiceItem[]> {
 }
 
 /** Shipped products the clinic hid, kept separately so the admin can restore them. */
-export async function getHiddenDefaultProducts(slug: string): Promise<ServiceItem[]> {
+export async function getHiddenDefaultProducts(slug: string): Promise<MergedServiceItem[]> {
   const defaultIds = new Set((getServiceBySlug(slug)?.items ?? []).map((item) => item.id));
   const rows = (await getProductRowsByCategory()).get(slug) ?? [];
-  return rows.filter((row) => row.deleted && defaultIds.has(row.id)).map(rowToItem);
+  return rows
+    .filter((row) => row.deleted && defaultIds.has(row.id))
+    .map((row) => rowToItem(row));
 }
 
 /** A category with its items resolved through the override layer — what pages/schema render. */
-export async function getMergedCategory(slug: string) {
+export async function getMergedCategory(
+  slug: string,
+  locale: Locale | string = 'th',
+) {
   const base = getServiceBySlug(slug);
   if (!base) return undefined;
-  return { ...base, items: await getCategoryItems(slug) };
+  const category = localizeServiceCategory(base, locale);
+  return { ...category, items: await getCategoryItems(slug, locale) };
 }
 
 // ── Writes (used by the /admin products API) ────────────────────────────────────────────────
@@ -160,20 +205,26 @@ export async function upsertProduct(input: ProductInput, updatedBy: string) {
   await binding
     .prepare(
       `INSERT INTO service_products
-         (id, category, name, detail, tagline, benefits, collection, price_from, unit,
-          image_public_id, sort_order, deleted, updated_at, updated_by)
-       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, 0, ?12, ?13)
+         (id, category, name, name_en, detail, detail_en, tagline, tagline_en, benefits,
+          benefits_en, collection, price_from, unit, image_public_id, sort_order, deleted,
+          updated_at, updated_by)
+       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, 0, ?16, ?17)
        ON CONFLICT(id) DO UPDATE SET
-         category = ?2, name = ?3, detail = ?4, tagline = ?5, benefits = ?6, collection = ?7,
-         price_from = ?8, unit = ?9, deleted = 0, updated_at = ?12, updated_by = ?13`,
+         category = ?2, name = ?3, name_en = ?4, detail = ?5, detail_en = ?6,
+         tagline = ?7, tagline_en = ?8, benefits = ?9, benefits_en = ?10, collection = ?11,
+         price_from = ?12, unit = ?13, deleted = 0, updated_at = ?16, updated_by = ?17`,
     )
     .bind(
       input.id,
       input.category,
       input.name,
+      input.nameEn ?? null,
       input.detail ?? null,
+      input.detailEn ?? null,
       input.tagline ?? null,
+      input.taglineEn ?? null,
       input.benefits && input.benefits.length > 0 ? JSON.stringify(input.benefits) : null,
+      input.benefitsEn && input.benefitsEn.length > 0 ? JSON.stringify(input.benefitsEn) : null,
       input.collection ?? null,
       input.priceFrom ?? null,
       input.unit ?? 'ครั้ง',
@@ -341,11 +392,14 @@ function nextSortOrder(category: string): number {
 }
 
 /** Every category with its merged items — the admin products page reads this. */
-export async function getAllMergedCategories() {
+export async function getAllMergedCategories(locale: Locale | string = 'th') {
   return Promise.all(
-    serviceCategories.map(async (category) => ({
-      ...category,
-      items: await getCategoryItems(category.slug),
-    })),
+    serviceCategories.map(async (category) => {
+      const localized = localizeServiceCategory(category, locale);
+      return {
+        ...localized,
+        items: await getCategoryItems(category.slug, locale),
+      };
+    }),
   );
 }
