@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import { ArrowRight, FlaskConical, ShieldCheck, Syringe } from 'lucide-react';
 import type { ServiceCategory } from '@/lib/services';
@@ -12,7 +13,7 @@ import { PhysicianPanel } from '@/components/physician-panel';
 import { ServiceIcon } from '@/components/service-icon';
 import { ServiceItemActions } from '@/components/service-item-actions';
 
-export function FillerServicePage({
+export async function FillerServicePage({
   service,
   heroImage,
   itemImages = {},
@@ -26,6 +27,9 @@ export function FillerServicePage({
   doctorImage?: string;
   eeshaImage?: string;
 }) {
+  const t = await getTranslations('FillerPage');
+  const tCommon = await getTranslations('ServiceCategoryPage');
+
   return (
     <div className="overflow-hidden bg-[var(--background)]">
       <section className="px-6 pb-20 pt-16 md:px-10 md:pb-24 md:pt-24">
@@ -99,7 +103,7 @@ export function FillerServicePage({
             “{site.taglineTh}”
           </h2>
           <p className="mx-auto mt-6 max-w-xl text-sm leading-[1.8] text-[var(--store-muted)]">
-            แพทย์ประเมินโครงหน้าและวางแผนการดูแลเฉพาะบุคคลก่อนรับบริการทุกครั้ง
+            {t('philosophyDescription')}
           </p>
         </Reveal>
       </section>
@@ -110,12 +114,11 @@ export function FillerServicePage({
             <div>
               <SectionLabel index={2}>Treatment selection</SectionLabel>
               <h2 className="mt-5 font-serif text-4xl leading-none text-[var(--store-ink)] md:text-6xl">
-                รายการฟิลเลอร์
+                {t('treatmentTitle')}
               </h2>
             </div>
             <p className="text-sm leading-[1.8] text-[var(--store-muted)] md:text-right">
-              รายการและขนาดผลิตภัณฑ์ที่คลินิกมีให้บริการ
-              แพทย์จะเป็นผู้ประเมินความเหมาะสมก่อนทำหัตถการ
+              {t('treatmentDescription')}
             </p>
           </Reveal>
 
@@ -163,18 +166,20 @@ export function FillerServicePage({
                       {/* §0.2: a promo price has to say it's a promo. The reference drops this
                           label and shows a bare number — that's the one thing we can't copy. */}
                       <span className="text-[0.62rem] uppercase tracking-[0.16em] text-[var(--store-muted)]">
-                        ราคาโปรโมชัน
+                        {t('promoPriceLabel')}
                       </span>
                       <p className="font-serif text-2xl text-[var(--store-ink)]">
                         {item.priceFrom !== undefined ? (
                           <>
                             {item.priceFrom.toLocaleString('th-TH')}
                             <span className="ml-1.5 font-sans text-[0.62rem] tracking-wide text-[var(--store-muted)]">
-                              บาท / {item.unit}
+                              {tCommon('priceUnit', { unit: item.unit })}
                             </span>
                           </>
                         ) : (
-                          <span className="font-sans text-sm text-[var(--store-muted)]">สอบถามราคา</span>
+                          <span className="font-sans text-sm text-[var(--store-muted)]">
+                            {tCommon('inquirePrice')}
+                          </span>
                         )}
                       </p>
                     </div>
@@ -187,8 +192,7 @@ export function FillerServicePage({
           </div>
 
           <p className="mt-14 rounded-[1.75rem] bg-[var(--store-surface)] px-6 py-5 text-center text-xs italic leading-relaxed text-[var(--store-muted)]">
-            *ราคาโปรโมชัน โปรดสอบถามช่วงเวลาและเงื่อนไขล่าสุดกับคลินิกก่อนรับบริการ ·
-            ทุกหัตถการไม่แนะนำสำหรับผู้มีอายุต่ำกว่า 18 ปี · ผลลัพธ์แตกต่างกันในแต่ละบุคคล
+            {t('pricingDisclaimer')}
           </p>
         </div>
       </section>
@@ -198,12 +202,10 @@ export function FillerServicePage({
           <div>
             <SectionLabel index={3}>Doctor-led assessment</SectionLabel>
             <h2 className="mt-5 font-serif text-4xl text-[var(--store-ink)] md:text-5xl">
-              ดูแลและประเมินโดยแพทย์
+              {t('doctorHeading')}
             </h2>
             <p className="mt-4 max-w-2xl text-sm leading-[1.8] text-[var(--store-muted)]">
-              ที่ {site.name} หัตถการทุกขั้นตอนดูแลโดยแพทย์ผู้มีใบประกอบวิชาชีพเวชกรรม
-              เริ่มจากการประเมินโครงสร้างใบหน้าและสภาพผิวอย่างละเอียด
-              เพื่อแนะนำแนวทางที่เหมาะกับแต่ละบุคคล
+              {t('doctorDescription', { siteName: site.name })}
             </p>
           </div>
         </Reveal>
@@ -220,7 +222,11 @@ export function FillerServicePage({
               expertise={doctors[0].expertise}
               languages={doctors[0].languages}
               imageSrc={doctorImage}
-              imageAlt={`${doctors[0].nameTh} ${doctors[0].role} ของ ${site.name}`}
+              imageAlt={t('doctorImageAlt', {
+                doctorName: doctors[0].nameTh,
+                doctorRole: doctors[0].role,
+                siteName: site.name,
+              })}
             />
             <PhysicianPanel
               label="Clinic Physician"
@@ -232,7 +238,11 @@ export function FillerServicePage({
               expertise={doctors[1].expertise}
               languages={doctors[1].languages}
               imageSrc={eeshaImage}
-              imageAlt={`${doctors[1].name} ${doctors[1].role} ของ ${site.name}`}
+              imageAlt={t('doctorImageAlt', {
+                doctorName: doctors[1].name,
+                doctorRole: doctors[1].role,
+                siteName: site.name,
+              })}
               delay={60}
             />
           </div>
@@ -252,8 +262,7 @@ export function FillerServicePage({
             Ready for your transformation?
           </h2>
           <p className="mt-7 max-w-xl text-sm leading-[1.9] text-white/60">
-            จองคิวเพื่อประเมินโครงหน้าและปรึกษาแพทย์ได้โดยตรงผ่าน LINE Official Account
-            ทีมงานของเราพร้อมดูแลคุณในทุกขั้นตอน
+            {t('consultationDescription')}
           </p>
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
             <Button
@@ -261,14 +270,14 @@ export function FillerServicePage({
               className="h-12 rounded-full bg-[#06C755] px-8 text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.97]"
             >
               <LineIcon className="size-4" />
-              จองคิว {service.title} ผ่าน LINE
+              {t('bookLine', { serviceTitle: service.title })}
             </Button>
             <Button
               render={<Link href="/services" />}
               variant="outline"
               className="h-12 rounded-full border-white/20 bg-transparent px-8 text-xs font-medium text-white transition-all duration-200 hover:border-white/40 hover:bg-white/5 active:scale-[0.97]"
             >
-              ดูบริการอื่น <ArrowRight className="size-4" />
+              {tCommon('viewOtherServices')} <ArrowRight className="size-4" />
             </Button>
           </div>
         </Reveal>

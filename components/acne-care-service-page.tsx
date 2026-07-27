@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import type { ServiceCategory, ServiceItem } from '@/lib/services';
 import { site } from '@/lib/site';
@@ -8,7 +9,17 @@ import { LineCtaButton } from '@/components/line-cta-button';
 import { ProductThumbnail } from '@/components/product-thumbnail';
 import { ServiceItemActions } from '@/components/service-item-actions';
 
-function MenuRow({ item, category }: { item: ServiceItem; category: string }) {
+function MenuRow({
+  item,
+  category,
+  priceUnit,
+  inquirePrice,
+}: {
+  item: ServiceItem;
+  category: string;
+  priceUnit: string;
+  inquirePrice: string;
+}) {
   return (
     <div className="flex items-end justify-between gap-6 border-b border-black/[0.08] pb-4">
       <div className="flex items-center gap-4">
@@ -25,8 +36,8 @@ function MenuRow({ item, category }: { item: ServiceItem; category: string }) {
           {/* The reference prints "สอบถามราคา"; lib/services.ts has no price for these programmes,
               so the two agree — no invented figure. */}
           {item.priceFrom !== undefined
-            ? `${item.priceFrom.toLocaleString('th-TH')} บาท / ${item.unit}`
-            : 'สอบถามราคา'}
+            ? `${item.priceFrom.toLocaleString('th-TH')} ${priceUnit}`
+            : inquirePrice}
         </p>
         <ServiceItemActions item={item} compact className="mt-2" />
       </div>
@@ -34,7 +45,7 @@ function MenuRow({ item, category }: { item: ServiceItem; category: string }) {
   );
 }
 
-export function AcneCareServicePage({
+export async function AcneCareServicePage({
   service,
   heroImage,
   interstitialImage,
@@ -44,6 +55,9 @@ export function AcneCareServicePage({
   heroImage?: string;
   interstitialImage?: string;
 }) {
+  const t = await getTranslations('AcneCarePage');
+  const tCommon = await getTranslations('ServiceCategoryPage');
+
   return (
     <div className="bg-[var(--background)]">
       {/* ── Hero: title above a tall editorial image with a licence badge ─────── */}
@@ -85,7 +99,7 @@ export function AcneCareServicePage({
               </span>
             )}
             <p className="absolute bottom-4 right-4 rounded-xl border border-black/[0.08] bg-[var(--background)]/85 px-4 py-2 text-[0.6rem] uppercase leading-tight tracking-wide text-[var(--store-ink)] backdrop-blur-md">
-              ใบอนุญาตสถานพยาบาลเลขที่ {site.license}
+              {tCommon('facilityLicense', { license: site.license })}
             </p>
           </div>
         </div>
@@ -104,8 +118,7 @@ export function AcneCareServicePage({
             “{site.tagline}”
           </p>
           <p className="mt-6 text-sm leading-[1.9] text-[var(--store-muted)]/65">
-            {service.description} หลักปรัชญา Ma หรือการใช้พื้นที่ว่างอย่างมีความหมาย
-            ถูกนำมาปรับใช้ในการออกแบบแผนการรักษา เพื่อผลลัพธ์ที่ดูเป็นธรรมชาติและสมดุล
+            {t('philosophyDescription', { serviceDescription: service.description })}
           </p>
         </Reveal>
       </section>
@@ -125,15 +138,19 @@ export function AcneCareServicePage({
           <div className="mt-12 space-y-10">
             {service.items.map((item, index) => (
               <Reveal key={item.id ?? `${item.name}-${index}`} delay={index * 60}>
-                <MenuRow item={item} category={service.slug} />
+                <MenuRow
+                  item={item}
+                  category={service.slug}
+                  priceUnit={tCommon('priceUnit', { unit: item.unit })}
+                  inquirePrice={tCommon('inquirePrice')}
+                />
               </Reveal>
             ))}
           </div>
 
           <Reveal>
             <p className="mt-10 text-[0.66rem] italic leading-[1.8] text-[var(--store-muted)]/45">
-              *ราคาและแผนการรักษาขึ้นอยู่กับการประเมินของแพทย์และความรุนแรงของปัญหาผิวรายบุคคล ·
-              ทุกหัตถการไม่แนะนำสำหรับผู้มีอายุต่ำกว่า 18 ปี · ผลลัพธ์แตกต่างกันในแต่ละบุคคล
+              {t('pricingDisclaimer')}
             </p>
           </Reveal>
         </div>
@@ -180,17 +197,17 @@ export function AcneCareServicePage({
             Ready for your transformation?
           </h2>
           <p className="mt-6 text-sm leading-[1.9] text-[var(--store-muted)]/65">
-            ปรึกษาทีมแพทย์เพื่อประเมินว่า{service.title}เหมาะกับคุณหรือไม่ ก่อนตัดสินใจเข้ารับบริการ
+            {tCommon('closingDescription', { serviceTitle: service.title })}
           </p>
           <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:justify-center">
             <LineCtaButton className="inline-flex items-center justify-center gap-2.5 rounded-full bg-[#06C755] px-8 py-3.5 text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.98]">
-              จองคิวผ่าน LINE
+              {tCommon('bookLine')}
             </LineCtaButton>
             <Link
               href="/services"
               className="inline-flex items-center justify-center gap-2 rounded-full border border-[var(--store-ink)]/30 bg-transparent px-8 py-3.5 text-xs font-medium text-[var(--store-ink)] transition-all duration-200 hover:border-[var(--store-ink)] hover:bg-[var(--store-surface)]/5 active:scale-[0.98]"
             >
-              ดูบริการอื่น
+              {tCommon('viewOtherServices')}
             </Link>
           </div>
         </Reveal>

@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import { BadgeCheck, Sparkles } from 'lucide-react';
 import type { ServiceCategory, ServiceItem } from '@/lib/services';
@@ -19,7 +20,17 @@ function splitBenefit(benefit: string) {
   return { label, description: rest.join(' — ') || undefined };
 }
 
-function TreatmentCard({ item, category }: { item: ServiceItem; category: string }) {
+function TreatmentCard({
+  item,
+  category,
+  priceUnit,
+  inquirePrice,
+}: {
+  item: ServiceItem;
+  category: string;
+  priceUnit: string;
+  inquirePrice: string;
+}) {
   return (
     <article className="rounded-3xl border border-black/[0.08] bg-[var(--store-card)] p-8 shadow-sm md:p-10">
       <div className="flex items-start justify-between gap-4">
@@ -67,8 +78,8 @@ function TreatmentCard({ item, category }: { item: ServiceItem; category: string
               so the two agree — nothing invented. */}
           <p className="mt-1 font-serif text-xl text-[var(--store-ink)]">
             {item.priceFrom !== undefined
-              ? `${item.priceFrom.toLocaleString('th-TH')} บาท / ${item.unit}`
-              : 'สอบถามราคา'}
+              ? `${item.priceFrom.toLocaleString('th-TH')} ${priceUnit}`
+              : inquirePrice}
           </p>
         </div>
         <ServiceItemActions item={item} className="shrink-0" />
@@ -77,7 +88,7 @@ function TreatmentCard({ item, category }: { item: ServiceItem; category: string
   );
 }
 
-export function SkinBoosterServicePage({
+export async function SkinBoosterServicePage({
   service,
   heroImage,
   disciplineImage,
@@ -87,6 +98,9 @@ export function SkinBoosterServicePage({
   heroImage?: string;
   disciplineImage?: string;
 }) {
+  const t = await getTranslations('SkinBoosterPage');
+  const tCommon = await getTranslations('ServiceCategoryPage');
+
   return (
     <div className="bg-[var(--background)]">
       {/* ── Hero: title, editorial image, then licence + intro ───────────────── */}
@@ -130,7 +144,7 @@ export function SkinBoosterServicePage({
 
           <div className="mt-8 max-w-xl">
             <p className="text-[0.64rem] uppercase tracking-[0.16em] text-[var(--store-muted)]">
-              ใบอนุญาตสถานพยาบาลเลขที่ {site.license}
+              {tCommon('facilityLicense', { license: site.license })}
             </p>
             <p className="mt-3 text-sm leading-[1.9] text-[var(--store-muted)] md:text-base">
               {service.description}
@@ -147,8 +161,7 @@ export function SkinBoosterServicePage({
             “Precision &amp; Refinement”
           </h2>
           <p className="mt-6 text-sm leading-[1.9] text-[var(--store-muted)] md:text-base">
-            หัวใจหลักของ {site.name} คือความแม่นยำในการรักษาและความประณีตในการวิเคราะห์ปัญหาผิว
-            เพราะเราเชื่อว่าทุกรายละเอียดสำคัญต่อผลลัพธ์
+            {t('philosophyDescription', { siteName: site.name })}
           </p>
         </Reveal>
       </section>
@@ -167,14 +180,18 @@ export function SkinBoosterServicePage({
           <div className="mt-12 space-y-8">
             {service.items.map((item, index) => (
               <Reveal key={item.id ?? `${item.name}-${index}`} delay={index * 60}>
-                <TreatmentCard item={item} category={service.slug} />
+                <TreatmentCard
+                  item={item}
+                  category={service.slug}
+                  priceUnit={tCommon('priceUnit', { unit: item.unit })}
+                  inquirePrice={tCommon('inquirePrice')}
+                />
               </Reveal>
             ))}
           </div>
           <Reveal>
             <p className="mt-8 text-[0.66rem] italic leading-[1.8] text-[var(--store-muted)]">
-              *ราคาและความเหมาะสมขึ้นอยู่กับการประเมินของแพทย์ ·
-              ทุกหัตถการไม่แนะนำสำหรับผู้มีอายุต่ำกว่า 18 ปี · ผลลัพธ์แตกต่างกันในแต่ละบุคคล
+              {t('pricingDisclaimer')}
             </p>
           </Reveal>
         </div>
@@ -212,17 +229,17 @@ export function SkinBoosterServicePage({
             Ready for your transformation?
           </h2>
           <p className="mx-auto mt-6 max-w-md text-sm leading-[1.9] text-white/75">
-            เริ่มต้นดูแลผิวพรรณของคุณกับทีมแพทย์ {site.name}
+            {t('closingDescription', { siteName: site.name })}
           </p>
           <div className="mt-10 flex flex-col items-center gap-4">
             <LineCtaButton className="inline-flex w-full max-w-xs items-center justify-center gap-2.5 rounded-full bg-[#06C755] px-8 py-3.5 text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.98]">
-              จองคิวผ่าน LINE
+              {tCommon('bookLine')}
             </LineCtaButton>
             <Link
               href="/services"
               className="border-b border-white/30 pb-1 text-[0.66rem] uppercase tracking-[0.18em] text-white/80 transition-colors hover:text-white"
             >
-              ดูบริการทั้งหมด
+              {tCommon('viewAllServices')}
             </Link>
           </div>
         </Reveal>

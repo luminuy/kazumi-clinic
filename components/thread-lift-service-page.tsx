@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import { ArrowUpRight, ShieldCheck, Stethoscope } from 'lucide-react';
 import type { ServiceCategory, ServiceItem } from '@/lib/services';
@@ -20,7 +21,21 @@ function splitQuantity(detail: string | undefined) {
   return match ? { count: match[1], unit: match[2] } : { count: detail, unit: '' };
 }
 
-function MenuRow({ item, last, category }: { item: ServiceItem; last: boolean; category: string }) {
+function MenuRow({
+  item,
+  last,
+  category,
+  priceLabel,
+  priceUnit,
+  inquirePrice,
+}: {
+  item: ServiceItem;
+  last: boolean;
+  category: string;
+  priceLabel: string;
+  priceUnit: string;
+  inquirePrice: string;
+}) {
   const quantity = splitQuantity(item.detail);
   return (
     <div
@@ -49,7 +64,9 @@ function MenuRow({ item, last, category }: { item: ServiceItem; last: boolean; c
       </div>
 
       <div className="text-right">
-        <p className="text-[0.62rem] uppercase tracking-[0.18em] text-[var(--store-muted)]">ราคา</p>
+        <p className="text-[0.62rem] uppercase tracking-[0.18em] text-[var(--store-muted)]">
+          {priceLabel}
+        </p>
         {/* The reference prints "Starting from 9,900.-" here. lib/services.ts has no price for
             thread lift, and inventing one for a medical procedure is exactly what §0.2 forbids —
             so the row says what's true until the clinic publishes a figure. */}
@@ -58,11 +75,11 @@ function MenuRow({ item, last, category }: { item: ServiceItem; last: boolean; c
             <>
               {item.priceFrom.toLocaleString('th-TH')}
               <span className="ml-1.5 font-sans text-[0.62rem] tracking-wide text-[var(--store-muted)]">
-                บาท / {item.unit}
+                {priceUnit}
               </span>
             </>
           ) : (
-            <span className="font-sans text-base text-[var(--store-muted)]">สอบถามราคา</span>
+            <span className="font-sans text-base text-[var(--store-muted)]">{inquirePrice}</span>
           )}
         </p>
         <ServiceItemActions item={item} compact className="mt-2" />
@@ -71,7 +88,7 @@ function MenuRow({ item, last, category }: { item: ServiceItem; last: boolean; c
   );
 }
 
-export function ThreadLiftServicePage({
+export async function ThreadLiftServicePage({
   service,
   heroImage,
   productImage,
@@ -81,6 +98,9 @@ export function ThreadLiftServicePage({
   heroImage?: string;
   productImage?: string;
 }) {
+  const t = await getTranslations('ThreadLiftPage');
+  const tCommon = await getTranslations('ServiceCategoryPage');
+
   // The rows below are the source of truth for the catalogue; keep this heading category-level
   // so adding a second product through /admin never makes one item look like the only option.
   const productName = service.title;
@@ -109,11 +129,11 @@ export function ThreadLiftServicePage({
               <div className="mt-8 space-y-3.5">
                 <p className="flex items-center gap-3 text-xs text-[var(--store-ink)]">
                   <Stethoscope aria-hidden="true" className="size-4 shrink-0 text-[var(--store-muted)]" />
-                  ประเมินและดูแลโดยแพทย์
+                  {tCommon('doctorAssessed')}
                 </p>
                 <p className="flex items-center gap-3 text-xs text-[var(--store-ink)]">
                   <ShieldCheck aria-hidden="true" className="size-4 shrink-0 text-[var(--store-muted)]" />
-                  ใบอนุญาตเลขที่ {site.license}
+                  {tCommon('clinicLicense', { license: site.license })}
                 </p>
               </div>
             </div>
@@ -197,12 +217,15 @@ export function ThreadLiftServicePage({
                   item={item}
                   last={index === service.items.length - 1}
                   category={service.slug}
+                  priceLabel={tCommon('priceLabel')}
+                  priceUnit={tCommon('priceUnit', { unit: item.unit })}
+                  inquirePrice={tCommon('inquirePrice')}
                 />
               ))}
             </div>
 
             <p className="mx-auto mt-12 max-w-xs text-center text-[0.66rem] italic leading-[1.8] text-[var(--store-muted)]">
-              *ราคาขึ้นอยู่กับการประเมินของแพทย์ จำนวนเส้น และโครงหน้าของแต่ละบุคคล
+              {t('pricingDisclaimer')}
             </p>
           </Reveal>
         </div>
@@ -253,17 +276,17 @@ export function ThreadLiftServicePage({
             Ready for your transformation?
           </h2>
           <p className="mt-7 max-w-2xl text-sm leading-[1.9] text-white/70">
-            ปรึกษาทีมแพทย์เพื่อประเมินว่า{service.title}เหมาะกับคุณหรือไม่ ก่อนตัดสินใจเข้ารับบริการ
+            {tCommon('closingDescription', { serviceTitle: service.title })}
           </p>
           <div className="mt-10 flex flex-col gap-4 sm:flex-row">
             <LineCtaButton className="inline-flex items-center justify-center gap-2.5 rounded-full bg-[#06C755] px-8 py-3.5 text-center text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.98]">
-              จองคิวผ่าน LINE
+              {tCommon('bookLine')}
             </LineCtaButton>
             <Link
               href="/services"
               className="group inline-flex items-center justify-center gap-2 rounded-full border border-white/40 bg-transparent px-8 py-3.5 text-center text-xs font-medium text-white transition-all duration-200 hover:border-white hover:bg-white/10 active:scale-[0.98]"
             >
-              ดูบริการอื่น
+              {tCommon('viewOtherServices')}
               <ArrowUpRight className="size-3.5 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
             </Link>
           </div>
