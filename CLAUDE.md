@@ -352,8 +352,8 @@ provider: { '@id': `${site.url}/#business` }   // ✓ ถูก
 
 ## 5. robots.ts — [app/robots.ts](app/robots.ts)
 
-- เมื่อ `SITE_ENV=preview` (workers.dev ปัจจุบัน) ต้อง `disallow: '/'` เพื่อไม่ให้ Google เก็บ hostname ชั่วคราวที่ canonical ชี้ไปอีกโดเมน
-- เมื่อมีโดเมนจริงและลบ `SITE_ENV` แล้ว ต้องคง `disallow: ['/admin', '/admin/', '/api/']` — ห้ามแก้ออก
+- **สถานะปัจจุบัน (2026-07-27): `SITE_ENV` ถูกลบแล้ว** เพราะโดเมนจริง `kazumiclinic.skin` ขึ้นแล้ว → robots.txt เปิดให้ crawl ตามปกติ และต้องคง `disallow: ['/admin', '/admin/', '/api/']` ไว้เสมอ — ห้ามแก้ออก
+- กลไก `SITE_ENV=preview` (บังคับ `disallow: '/'` ทั้งไซต์) ยังอยู่ในโค้ดเผื่อ environment ชั่วคราวในอนาคต — ใช้เมื่อ hostname ที่เสิร์ฟ **ไม่ตรงกับ** `site.url` เท่านั้น ไม่งั้น Google จะเก็บ hostname ที่ canonical ชี้ไปที่อื่น
 - **ห้ามใส่** `host` directive (Yandex-only)
 - **ห้ามใส่** `crawl-delay`
 
@@ -455,7 +455,7 @@ provider: { '@id': `${site.url}/#business` }   // ✓ ถูก
 - ❌ ใส่ `export const runtime = 'edge'` ในหน้า/route ใด ๆ (ขัดกับ `@opennextjs/cloudflare`, ดู §0.4.2)
 - ❌ ใช้ prop `asChild` กับ component ใน `components/ui/` — ต้องใช้ `render` (ดู §0.4.1)
 - ❌ **เอาไฟล์รูปใส่ `public/`** — จะถูก build ติดไปกับโค้ด ทำให้คลินิกเปลี่ยนเองผ่าน /admin ไม่ได้ · **เกิดมาแล้ว 2 รอบ** (รูปหมอ+โปสเตอร์ → PR #38, โลโก้ → PR #45) รอบหลังทำให้การ์ด "โลโก้" ใน /admin กลายเป็นของหลอกกดแล้วไม่มีอะไรเกิดขึ้น · รูปทุกใบต้องขึ้น Cloudinary (ดู [docs/images.md](docs/images.md)) · ถ้าจำเป็นต้อง baked-in จริง ๆ ต้องใส่ใน `bakedInImages` ให้ /admin บอก user ตรง ๆ ว่าแก้ไม่ได้
-- ❌ ลบ var `SITE_ENV` โดยยังไม่มีโดเมนจริง (robots.txt จะเปิดให้ Google เก็บ workers.dev ที่ canonical ชี้ไปโดเมนคนอื่น) — และ **ห้ามลืมลบมันตอนมีโดเมนจริง** (เว็บจริงจะห้ามเก็บ) ดู [docs/infrastructure.md](docs/infrastructure.md)
+- ❌ ตั้ง `SITE_ENV=preview` กลับมาโดยที่ hostname ที่เสิร์ฟตรงกับ `site.url` อยู่แล้ว (จะสั่ง `Disallow: /` ทั้งเว็บจริง = หายจาก Google) · ตัวแปรนี้ถูกลบไปแล้วตอนขึ้นโดเมนจริง 2026-07-27 ดู [docs/infrastructure.md](docs/infrastructure.md)
 - ❌ รัน `npx shadcn@latest init` ซ้ำ หรือสร้าง `tailwind.config.ts` กลับมา (Tailwind v4 ใช้ `@theme` ใน `app/globals.css`)
 - ❌ Hardcode ข้อความไทยใน component ใหม่ — ต้องผ่าน `messages/*.json` ทั้งสองภาษา (ดู §13)
 - ❌ Hardcode hex สีใน component — ใช้ token จาก `:root`/`@theme` (ดู §0.4)
@@ -479,7 +479,7 @@ provider: { '@id': `${site.url}/#business` }   // ✓ ถูก
 - `generateStaticParams` ต้อง cross product `routing.locales × slugs` ไม่งั้นหน้าอังกฤษหลุด prerender
 - แก้รูปใน /admin: `REVALIDATION_TARGETS` ใส่ path ไทยพอ — route handler mirror ไป `/en` ให้เอง
 
-> ⚠️ **ปมค้างที่รู้อยู่**: [app/sitemap.ts](app/sitemap.ts) ยังลิสต์เฉพาะ URL ภาษาไทย ทั้งที่ hreflang ชี้ไป `/en` — หน้าอังกฤษจึงไม่มีใน sitemap · ถ้าจะแก้ ให้ generate ทั้ง `routing.locales` แล้วทดสอบว่าไม่ชนกับ `SITE_ENV=preview` (robots ยัง `Disallow: /` อยู่)
+> ✅ **ปมนี้ปิดแล้ว (PR #251)**: [app/sitemap.ts](app/sitemap.ts) ประกาศ "หน้า" เป็น path ที่ไม่ผูกภาษา แล้ว `expand()` กระจายเป็นหนึ่ง entry ต่อ locale โดยดึง URL + hreflang จาก `localizedAlternates()` ตัวเดียวกับที่หน้าเว็บใช้ → sitemap ขัดกับ canonical ไม่ได้อีกโดยโครงสร้าง · ยืนยันบน production 2026-07-27: 72 URL (36 หน้า × 2 ภาษา) · **เพิ่มหน้าใหม่ให้เพิ่มใน `staticPages` เท่านั้น ห้ามต่อ `/en` เอง**
 
 ---
 

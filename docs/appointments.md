@@ -3,8 +3,8 @@
 ระบบนัดหมายของ Kazumi Clinic ต่อจากตาราง `leads` เดิมโดยไม่ลบประวัติคำขอเก่า ลูกค้ายังคงส่ง
 “คำขอนัดหมาย” ให้พนักงานตรวจและยืนยัน ไม่ใช่ instant booking ที่ล็อกห้องหรือแพทย์อัตโนมัติ
 
-ทวนกับ implementation ใน branch นี้เมื่อ **2026-07-27** · Part A ทดสอบบน Worker จริงแล้ว ส่วน Part B
-ยังไม่ได้ deploy หรือทดสอบ runtime เพราะ sandbox ไม่มี network และเครื่องนี้รัน workerd ไม่ได้
+ทวนกับ implementation บน `origin/main` เมื่อ **2026-07-27** · **Part A + Part B deploy ขึ้น production แล้ว**
+เหลือปมเดียวคือยังไม่มีใครยืนยันว่าอีเมล (ยืนยัน/ยกเลิก/เตือน) ถึงกล่องจดหมายจริง
 
 ---
 
@@ -15,13 +15,13 @@
 | ฟอร์มวันที่/เวลาแบบมีโครงสร้าง + email + locale | ✅ โค้ดพร้อม |
 | กติกาเวลาทำการ, 30 นาที/slot, ล่วงหน้า 2 ชั่วโมง, ไม่เกิน 60 วัน | ✅ pure logic + Node tests |
 | พนักงานยืนยันเวลา/ระยะเวลา + เตือนเวลาทับซ้อน | ✅ โค้ดพร้อม |
-| อีเมลยืนยัน/ยกเลิกผ่าน Resend | ✅ รองรับ แต่ยังส่งจริงไม่ได้จนกว่าจะตั้งค่า Resend |
+| อีเมลยืนยัน/ยกเลิกผ่าน Resend | ✅ ตั้งค่าครบแล้ว (2026-07-27) — ⏳ ยังไม่มีใครทดสอบ delivery จริง |
 | หน้านัดหมายของสมาชิก + ยกเลิกเอง | ✅ โค้ดพร้อม |
 | guest cancellation link แบบ opaque token | ✅ โค้ดพร้อม |
 | Migration `0013_appointments` บน remote D1 | ✅ รันก่อน merge Part A (PR #266) แล้ว |
-| ทดสอบบน Cloudflare Worker จริง | ✅ Part A · ⏳ Part B ยังไม่ได้ deploy/ทดสอบ runtime |
+| ทดสอบบน Cloudflare Worker จริง | ✅ Part A + Part B deploy แล้ว · ⏳ เหลือทดสอบ email delivery |
 | ไฟล์ปฏิทิน `.ics` | ✅ แนบกับอีเมลยืนยันนัด |
-| reminder ก่อนนัด 24 ชั่วโมง + hourly cron | ✅ โค้ดและ workflow พร้อม (รอตั้ง secret ก่อนใช้งานจริง) |
+| reminder ก่อนนัด 24 ชั่วโมง + hourly cron | ✅ ใช้งานจริงแล้ว — `INTERNAL_TASK_SECRET` ตั้งครบทั้ง Worker และ GitHub, ยิงจริงผ่าน (200 ด้วย secret ถูก / 401 ด้วย secret ผิด) |
 | เรียง admin dashboard ตามเวลานัดใกล้สุด | ✅ โค้ดพร้อม |
 
 > Migration ใช้ `ALTER TABLE ADD COLUMN` และรันบน remote D1 แล้วก่อน merge PR #266 ห้ามผูก
@@ -81,16 +81,15 @@ audit fields แทนการลบแถว
 [lib/appointments/notify.ts](../lib/appointments/notify.ts) ยิง Resend REST API โดยตรงและมี
 `import 'server-only'` เนื้อหาอยู่ใน `messages/{th,en}.json` ที่ namespace `Appointments`
 
-ต้องตั้ง secret ของ Resend สองตัวบน Worker:
+ต้องมีค่าของ Resend ครบสองตัว — **คนละชนิดกัน** (ตั้งครบแล้วตั้งแต่ 2026-07-27):
 
-```bash
-wrangler secret put RESEND_API_KEY
-wrangler secret put RESEND_FROM_EMAIL
-```
+| ค่า | ชนิด | ตั้งที่ไหน |
+| --- | --- | --- |
+| `RESEND_API_KEY` | Secret | `wrangler secret put RESEND_API_KEY` |
+| `RESEND_FROM_EMAIL` | Plaintext var | `vars` ใน [wrangler.jsonc](../wrangler.jsonc) — **ห้ามตั้งผ่าน dashboard** เพราะ `wrangler deploy` ลบทิ้ง (ดู [member-system.md](./member-system.md)) |
 
-ถ้าไม่ตั้งครบ ฟังก์ชันคืน `not_configured` พร้อม warning และ appointment flow ยังสำเร็จตามปกติ
-การสมัคร provider, ยืนยันโดเมน และข้อจำกัดปัจจุบันใช้เงื่อนไขเดียวกับ password reset ดู
-[member-system.md](./member-system.md) — **ยังไม่มีการทดสอบ delivery จริง**
+ถ้าไม่ครบ ฟังก์ชันคืน `not_configured` พร้อม warning และ appointment flow ยังสำเร็จตามปกติ
+เงื่อนไขเดียวกับ password reset ดู [member-system.md](./member-system.md) — **ยังไม่มีการทดสอบ delivery จริง**
 
 reminder ใช้ [appointment-reminders.yml](../.github/workflows/appointment-reminders.yml) เป็นนาฬิกา
 รายชั่วโมงและตรวจ header `x-internal-secret` ที่ route ภายใน ต้องตั้งค่าเดียวกันทั้ง Worker และ GitHub:
@@ -101,7 +100,7 @@ gh secret set INTERNAL_TASK_SECRET
 ```
 
 โค้ดไม่เก็บค่าจริงหรือ fallback ไว้ใน repo ถ้ายังไม่ตั้ง `INTERNAL_TASK_SECRET` route จะตอบ `401`
-และ workflow จะล้มให้เห็นชัดเจน ปัจจุบันยังไม่ได้ตั้งหรือทดสอบ secret นี้จาก sandbox
+และ workflow จะล้มให้เห็นชัดเจน · **ตั้งครบทั้งสองฝั่งแล้วและยิงทดสอบผ่านจริง** (200 ด้วย secret ถูก, 401 ด้วย secret ผิด/ไม่มี)
 
 `LEAD_WEBHOOK_URL` ยังเป็น var เสริมเหมือนระบบเดิม ไม่ตั้งแล้วไม่มีการแจ้งพนักงานทาง webhook แต่ข้อมูล
 ยังถูกบันทึกใน D1
@@ -156,6 +155,6 @@ pnpm build
 ไม่พิสูจน์ D1, cookies, WebCrypto หรือ Worker lifecycle ดูข้อจำกัดเดียวกันใน
 [member-system.md](./member-system.md)
 
-Part B มี `.ics` attachment, `Appointments.reminderEmail`, internal reminder route, hourly GitHub
-Actions workflow และการเรียง admin list ตาม `scheduled_at` แล้ว เหลืองานภายนอก repo คือการตั้ง
-`INTERNAL_TASK_SECRET` ทั้งสองฝั่งและทดสอบ endpoint/Resend บน Worker จริงหลัง deploy
+Part B (`.ics` attachment, `Appointments.reminderEmail`, internal reminder route, hourly GitHub Actions
+workflow, เรียง admin list ตาม `scheduled_at`) deploy แล้วและ `INTERNAL_TASK_SECRET` ตั้งครบทั้งสองฝั่ง
+พร้อมยิง endpoint ทดสอบผ่านแล้ว — **เหลืออย่างเดียวคือยืนยันว่าอีเมลจาก Resend ถึงกล่องจดหมายจริง**

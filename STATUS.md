@@ -5,7 +5,7 @@
 > อัปเดตไฟล์นี้เป็นส่วนหนึ่งของ workflow: หลัง **deploy** และตอน **เริ่ม/จบงานสำคัญ** (ดู CLAUDE.md §0)
 > งานที่ปิดไปแล้วย้ายไป [docs/changelog.md](docs/changelog.md) — ไฟล์นี้เก็บแค่ **ตอนนี้ · ต่อไป · ค้าง**
 
-**อัปเดตล่าสุด:** 2026-07-27 10:15 UTC · โดย: Claude Code
+**อัปเดตล่าสุด:** 2026-07-27 (หลัง PR #277) · โดย: Claude Code
 
 ---
 
@@ -14,9 +14,9 @@
 | | |
 |---|---|
 | **โดเมนจริง** (`kazumiclinic.skin`) | ✅ **ขึ้นแล้ว** — nameserver ชี้ Cloudflare สำเร็จ, Custom Domain ผูก Worker แล้ว, SSL Active · `site.url` เปลี่ยนแล้ว, `SITE_ENV=preview` ลบแล้ว → `robots.txt`/`sitemap.xml` ใช้โดเมนจริงและอนุญาต crawl (ไม่ block ทั้งเว็บอีกต่อไป) · Cloudflare Access เพิ่ม destination `kazumiclinic.skin/admin` แล้ว ยิงจริงตอบ 302 ไปหน้า login ของ Access ถูกต้อง (PR [#271](https://github.com/luminuy/kazumi-clinic/pull/271)) |
-| **workers.dev** | Version `7f7ef395` — deploy 2026-07-27 10:10 UTC ผ่าน CD ตรงกับ main `fa5b005` (PR [#272](https://github.com/luminuy/kazumi-clinic/pull/272) — คืนค่า `RESEND_FROM_EMAIL` ที่หายไปหลัง deploy ก่อนหน้า ดูบทเรียนใน CLAUDE.md §0.5) · ยังใช้งานได้คู่กับโดเมนจริง ไม่ได้ปิด |
+| **workers.dev** | ❌ **ปิดแล้ว** — `workers_dev: false` + `preview_urls: false` ใน [wrangler.jsonc](wrangler.jsonc) ตั้งแต่ PR [#277](https://github.com/luminuy/kazumi-clinic/pull/277) · ยิงจริง 2026-07-27: `https://kazumi-clinic.bankjack10452.workers.dev/` ตอบ **404** · เหลือทางเข้าเดียวคือโดเมนจริง |
 | **Resend (อีเมลระบบ)** | ✅ ยืนยันโดเมน `kazumiclinic.skin` กับ Resend สำเร็จแล้ว (auto-configure ผ่าน Cloudflare integration) · `RESEND_API_KEY` (secret) + `RESEND_FROM_EMAIL` (var ใน wrangler.jsonc) ตั้งครบ · ยิงจริง: ปุ่ม "ลืมรหัสผ่าน?" โผล่ที่ `/account/login` แล้ว (พิสูจน์ `isEmailConfigured()` = true) — **ยังไม่มีใครยืนยันว่าอีเมลจริงส่งถึงกล่องจดหมาย** (ทดสอบแค่ว่าโค้ดคิดว่าตั้งค่าครบ ไม่ใช่ delivery จริง) |
-| **URL ตรวจ** | https://kazumiclinic.skin (หลัก) · https://kazumi-clinic.bankjack10452.workers.dev (สำรอง) · ตรวจ 2026-07-27: ทั้งคู่ HTTP 200 |
+| **URL ตรวจ** | https://kazumiclinic.skin — ตรวจ 2026-07-27: HTTP 200 · **ไม่มี URL สำรองแล้ว** (workers.dev ปิด) |
 
 > วิธียืนยันว่าเว็บ = main: `git rev-parse origin/main` เทียบ commit ข้างบน · Version ID จริงเอาจาก `npx wrangler deployments list` หรือ log ของ workflow `Deploy`
 >

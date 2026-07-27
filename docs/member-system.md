@@ -45,7 +45,7 @@ npx wrangler tail   # อ่าน error จริงตอนยิง endpoint
 | Google Login | ✅ secret ตั้งแล้ว (`GOOGLE_CLIENT_ID`/`_SECRET`) |
 | LINE Login | ✅ secret ตั้งแล้ว (`LINE_CHANNEL_ID`/`_SECRET`) |
 | สมัคร/ล็อกอินด้วยรหัสผ่าน | ✅ ใช้งานได้ (หลังแก้ PBKDF2 · PR #247) |
-| ลืมรหัสผ่าน | ✅ โค้ดพร้อมส่งจริงแล้ว (Resend, PR #264) — **รอเจ้าของสมัคร + ยืนยันโดเมน** ก่อนตั้ง secret ถึงจะทำงาน ดูหัวข้อถัดไป · ลิงก์บนหน้า login **ซ่อนอยู่จนกว่าจะตั้ง secret** (ตั้งใจ) |
+| ลืมรหัสผ่าน | ✅ ตั้งค่าครบแล้ว (2026-07-27) — Resend ยืนยันโดเมน `kazumiclinic.skin` สำเร็จ, `RESEND_API_KEY` (secret) + `RESEND_FROM_EMAIL` (var) ตั้งครบ, ลิงก์ "ลืมรหัสผ่าน?" โผล่บนหน้า login จริงแล้ว (= `isEmailConfigured()` true) · ⏳ **ยังไม่มีใครทดสอบว่าอีเมลถึงกล่องจดหมายจริง** |
 | Payment gateway | ❌ ยังไม่เชื่อม — checkout รองรับ "จ่ายที่คลินิก" เต็มรูปแบบ, ชำระออนไลน์เป็น placeholder |
 | Account enumeration ที่ `/api/account/register` | ✅ ปิดที่ระดับ response แล้ว — ดูหัวข้อถัดไป |
 | ถอน session ทุกเครื่องตอนรีเซ็ตรหัส | ✅ ทดสอบบน Worker จริงแล้ว 2026-07-25 — `bash scripts/verify-reset-revocation.sh` |
@@ -60,28 +60,30 @@ npx wrangler tail   # อ่าน error จริงตอนยิง endpoint
 
 > ⚠️ **ยังเหลือช่องที่ปิดไม่ได้จนกว่าจะมีอีเมล**: คนที่สมัครอีเมลหนึ่งแล้ว**ล็อกอินด้วยรหัสที่เพิ่งตั้งสำเร็จ** ย่อมรู้ว่าอีเมลนั้นเดิมยังว่าง · ปิดสนิทต้อง verify-before-create ทางอีเมล — ตอนนี้ตัว provider (Resend) ต่อแล้ว แต่ verify-before-create เป็นงานคนละก้อน ยังไม่ได้ทำ
 
-### ส่งอีเมลด้วย Resend — โค้ดพร้อมแล้ว รอ 2 อย่างจากเจ้าของ
+### ส่งอีเมลด้วย Resend — ตั้งค่าครบแล้ว (2026-07-27)
 
 เลือก [Resend](https://resend.com) เพราะ **ฟรีและพอสำหรับปริมาณของคลินิกนี้**: 3,000 อีเมล/เดือน, 100/วัน — งานที่ยิงจริงมีแค่ "ลืมรหัสผ่าน" กับ "แจ้งว่ามีคนพยายามสมัครซ้ำ" ซึ่งวันนึงคงหลักหน่วย ไม่มีทางถึง 100 (ตรวจราคา/ลิมิตกับเอกสารทางการของ Resend ก่อนอ้างซ้ำ เผื่อเปลี่ยนหลังจากนี้)
 
 `lib/members/password-reset.ts` ยิง REST API ของ Resend ตรง ๆ ด้วย `fetch` (ไม่ใช้ SDK — แบบเดียวกับ [lib/cloudinary-upload.ts](../lib/cloudinary-upload.ts)) `import 'server-only'` กันคีย์หลุดไปฝั่ง client
 
-**ที่เหลือทำแทนไม่ได้ — agent ไม่ควรสมัครบริการแทนเจ้าของ**:
+**เจ้าของทำครบทั้งชุดแล้วเมื่อ 2026-07-27**: สมัคร Resend → เพิ่มโดเมน `kazumiclinic.skin` → ยืนยันด้วย DNS (auto-configure ผ่าน Cloudflare integration หลังโดเมนย้ายมา Cloudflare) → ตั้งค่าครบ
 
-1. สมัคร Resend (ฟรี) ที่ [resend.com](https://resend.com)
-2. เพิ่มโดเมนที่จะส่งอีเมล แล้วยืนยันด้วย DNS records (TXT/CNAME ที่ registrar) — **ติดปัญหาจริง**: [docs/infrastructure.md](./infrastructure.md) บันทึกไว้ว่า `kazumiclinic.com` "จดไปแล้วแต่คลินิกบอกว่าไม่ได้ซื้อ ยังไม่ยืนยันว่าเป็นของใคร" ถ้ายังเข้า DNS ของโดเมนนั้นไม่ได้ ให้ใช้โดเมนอื่นที่เจ้าของถืออยู่จริงสำหรับส่งอีเมลไปก่อน (ไม่จำเป็นต้องเป็นโดเมนเดียวกับเว็บ)
-3. คัดลอก API key จาก dashboard แล้วตั้ง secret:
-   ```bash
-   wrangler secret put RESEND_API_KEY
-   wrangler secret put RESEND_FROM_EMAIL   # เช่น "Kazumi Clinic <noreply@โดเมนที่ยืนยันแล้ว>"
-   ```
-4. deploy — `isEmailConfigured()` เช็ค 2 ตัวนี้พร้อมกัน ตั้งครบเมื่อไหร่ปุ่ม "ลืมรหัสผ่าน?" จะโผล่เอง (ไม่ต้องแก้โค้ด)
+ค่าที่ต้องมี **2 ตัว แต่คนละที่**:
 
-ยิงทดสอบจริงหลังตั้ง secret ด้วย `bash scripts/verify-reset-revocation.sh` (สร้าง token เองไม่ผ่านอีเมล จึงพิสูจน์แค่ revoke ไม่ใช่ delivery) แล้วลองกด "ลืมรหัสผ่าน" จริงที่หน้าเว็บดูว่าอีเมลถึงจริง — **ยังไม่มีใครยิงทดสอบ delivery จริงเพราะยังไม่มีคีย์**
+| ค่า | ชนิด | อยู่ที่ไหน |
+| --- | --- | --- |
+| `RESEND_API_KEY` | Secret | `wrangler secret put RESEND_API_KEY` |
+| `RESEND_FROM_EMAIL` | **Plaintext var** | `vars` ใน [wrangler.jsonc](../wrangler.jsonc) — ค่าปัจจุบัน `Kazumi Clinic <noreply@kazumiclinic.skin>` |
+
+> 🔴 **ห้ามตั้ง `RESEND_FROM_EMAIL` เป็น plaintext var ผ่าน Cloudflare dashboard** — `wrangler deploy` ถือว่า `vars` ใน config คือชุดที่สมบูรณ์ แล้วลบตัวที่ไม่อยู่ในนั้นทิ้งเงียบ ๆ · เกิดจริง 2026-07-27: ตั้งผ่าน dashboard สำเร็จ แล้ว deploy ของ PR คนละเรื่องลบทิ้ง → ปุ่ม "ลืมรหัสผ่าน?" หายไปเอง (CLAUDE.md §0.5 · [infrastructure.md](./infrastructure.md))
+
+`isEmailConfigured()` เช็ค 2 ตัวนี้พร้อมกัน — ครบเมื่อไหร่ปุ่ม "ลืมรหัสผ่าน?" โผล่เอง ไม่ต้องแก้โค้ด (ยืนยันบน production แล้วว่าโผล่จริง)
+
+⏳ **ที่ยังเหลือ: ทดสอบ delivery จริง** — `bash scripts/verify-reset-revocation.sh` สร้าง token เองไม่ผ่านอีเมล จึงพิสูจน์แค่ revoke ไม่ใช่ว่าอีเมลถึงกล่องจดหมาย · ต้องกด "ลืมรหัสผ่าน" จริงบนเว็บแล้วเช็คกล่องจดหมาย **ยังไม่มีใครทำ**
 
 **เนื้อหาอีเมล** อยู่ใน `messages/{th,en}.json` ที่ `Account.passwordResetEmail` และ `Account.accountExists` (คีย์เดียวกับที่ใช้ในหน้าเว็บ — ห้ามแก้ที่นี่โดยไม่แก้ทั้งสองภาษา ตาม §13) เลือกภาษาให้ตรงกับที่ผู้ใช้กำลังอ่านอยู่ ณ ตอนกดปุ่ม (ส่งมาจาก client ด้วย `useLocale()`)
 
-> ⚠️ **ลิงก์รีเซ็ตต้องใช้ origin ของ request ที่วิ่งเข้ามาจริง ไม่ใช่ `site.url`** — `site.url` (`kazumiclinic.com`) เป็นค่าที่ SEO/JSON-LD ตั้งใจให้ชี้ไปโดเมนจริงในอนาคต แต่ตอนนี้เว็บจริงยังอยู่ที่ workers.dev (`SITE_ENV=preview`) ลิงก์ที่สร้างจาก `site.url` วันนี้จะ 404 ทันที · แก้ด้วยวิธีเดียวกับ OAuth redirect URI ([lib/members/oauth.ts](../lib/members/oauth.ts)): อ่าน origin จาก `new URL(request.url).origin`
+> ⚠️ **ลิงก์รีเซ็ตใช้ origin ของ request ที่วิ่งเข้ามาจริง ไม่ใช่ `site.url`** — วันนี้ทั้งสองค่าตรงกันแล้ว (`site.url` = `https://kazumiclinic.skin` = โดเมนที่เสิร์ฟจริง) แต่ **ห้ามเปลี่ยนกลับไปใช้ `site.url`** เพราะตอนที่ทั้งสองไม่ตรงกัน (ยุค workers.dev + `SITE_ENV=preview`) ลิงก์ที่สร้างจาก `site.url` จะ 404 ทันที · ใช้วิธีเดียวกับ OAuth redirect URI ([lib/members/oauth.ts](../lib/members/oauth.ts)): อ่าน origin จาก `new URL(request.url).origin`
 
 ### ปุ่ม OAuth แสดงเมื่อไหร่
 
@@ -94,7 +96,7 @@ wrangler secret put GOOGLE_CLIENT_ID      # + GOOGLE_CLIENT_SECRET
 wrangler secret put LINE_CHANNEL_ID       # + LINE_CHANNEL_SECRET
 ```
 
-Redirect URI ต้องลงทะเบียนกับ provider **ตรงเป๊ะ** เป็น `${origin}/api/account/oauth/<provider>/callback` — ต้องเพิ่มทั้ง workers.dev และโดเมนจริงตอนขึ้นโดเมน · LINE ต้องเปิด scope `profile openid email`
+Redirect URI ต้องลงทะเบียนกับ provider **ตรงเป๊ะ** เป็น `${origin}/api/account/oauth/<provider>/callback` — ตอนนี้ origin ที่ใช้จริงมีตัวเดียวคือ `https://kazumiclinic.skin` (workers.dev ปิดแล้ว PR #277) · LINE ต้องเปิด scope `profile openid email`
 
 > ⚠️ **ห้ามเชื่อ email จาก LINE โดยไม่ verify** — LINE ส่ง email มาได้โดยที่ผู้ใช้ไม่ได้ยืนยัน การผูกบัญชีด้วย email ดิบ = ยึดบัญชีคนอื่นได้ (ปิดช่องนี้ใน PR #235)
 
