@@ -5,7 +5,7 @@
 > อัปเดตไฟล์นี้เป็นส่วนหนึ่งของ workflow: หลัง **deploy** และตอน **เริ่ม/จบงานสำคัญ** (ดู CLAUDE.md §0)
 > งานที่ปิดไปแล้วย้ายไป [docs/changelog.md](docs/changelog.md) — ไฟล์นี้เก็บแค่ **ตอนนี้ · ต่อไป · ค้าง**
 
-**อัปเดตล่าสุด:** 2026-07-27 09:00 UTC · โดย: Claude Code
+**อัปเดตล่าสุด:** 2026-07-27 10:15 UTC · โดย: Claude Code
 
 ---
 
@@ -13,9 +13,10 @@
 
 | | |
 |---|---|
-| **workers.dev** | Version `8dce1ff9` — code deploy 2026-07-27 08:55 UTC ผ่าน CD (run [30251716336](https://github.com/luminuy/kazumi-clinic/actions/runs/30251716336)) ตรงกับ main `301499a` (PR [#268](https://github.com/luminuy/kazumi-clinic/pull/268) — ระบบนัดหมาย Part B: .ics แนบอีเมล, reminder 24 ชม., เรียง admin ตามเวลานัด) ต่อด้วย secret-change redeploy ตอนตั้ง `INTERNAL_TASK_SECRET` (`wrangler secret put` + `gh secret set` ตั้งค่าเดียวกันทั้งคู่แล้ว) · ยิงจริงหลัง deploy: `POST /api/internal/appointment-reminders` ด้วย secret ถูกต้องตอบ `200 {"ok":true,"checked":0,"sent":0}`, ด้วย secret ผิด/ไม่มี header ตอบ `401` ตามที่ตั้งใจ · PR #266 (Part A) ก็ deploy+ยิงจริงแล้วก่อนหน้านี้เหมือนกัน (migration `0013_appointments` รันบน remote D1 ก่อน merge, `/api/leads` schema ใหม่, cancel flow ทั้ง guest/member ยิงจริงผ่านหมด) |
-| **โดเมนจริง** (`kazumiclinic.skin` — ไม่ใช่ `.com`) | ❌ ยังไม่ขึ้น — ซื้อแล้วแต่ DNS ยังอยู่ที่ name.com ยังไม่ชี้มา Cloudflare (ตรวจ `dig`/`whois` 2026-07-27) `SITE_ENV=preview`, robots `Disallow: /` (ตั้งใจ ห้ามลบจนกว่าโดเมนจะขึ้นจริง) |
-| **URL ตรวจ** | https://kazumi-clinic.bankjack10452.workers.dev · ตรวจ 2026-07-27: HTTP 200 |
+| **โดเมนจริง** (`kazumiclinic.skin`) | ✅ **ขึ้นแล้ว** — nameserver ชี้ Cloudflare สำเร็จ, Custom Domain ผูก Worker แล้ว, SSL Active · `site.url` เปลี่ยนแล้ว, `SITE_ENV=preview` ลบแล้ว → `robots.txt`/`sitemap.xml` ใช้โดเมนจริงและอนุญาต crawl (ไม่ block ทั้งเว็บอีกต่อไป) · Cloudflare Access เพิ่ม destination `kazumiclinic.skin/admin` แล้ว ยิงจริงตอบ 302 ไปหน้า login ของ Access ถูกต้อง (PR [#271](https://github.com/luminuy/kazumi-clinic/pull/271)) |
+| **workers.dev** | Version `7f7ef395` — deploy 2026-07-27 10:10 UTC ผ่าน CD ตรงกับ main `fa5b005` (PR [#272](https://github.com/luminuy/kazumi-clinic/pull/272) — คืนค่า `RESEND_FROM_EMAIL` ที่หายไปหลัง deploy ก่อนหน้า ดูบทเรียนใน CLAUDE.md §0.5) · ยังใช้งานได้คู่กับโดเมนจริง ไม่ได้ปิด |
+| **Resend (อีเมลระบบ)** | ✅ ยืนยันโดเมน `kazumiclinic.skin` กับ Resend สำเร็จแล้ว (auto-configure ผ่าน Cloudflare integration) · `RESEND_API_KEY` (secret) + `RESEND_FROM_EMAIL` (var ใน wrangler.jsonc) ตั้งครบ · ยิงจริง: ปุ่ม "ลืมรหัสผ่าน?" โผล่ที่ `/account/login` แล้ว (พิสูจน์ `isEmailConfigured()` = true) — **ยังไม่มีใครยืนยันว่าอีเมลจริงส่งถึงกล่องจดหมาย** (ทดสอบแค่ว่าโค้ดคิดว่าตั้งค่าครบ ไม่ใช่ delivery จริง) |
+| **URL ตรวจ** | https://kazumiclinic.skin (หลัก) · https://kazumi-clinic.bankjack10452.workers.dev (สำรอง) · ตรวจ 2026-07-27: ทั้งคู่ HTTP 200 |
 
 > วิธียืนยันว่าเว็บ = main: `git rev-parse origin/main` เทียบ commit ข้างบน · Version ID จริงเอาจาก `npx wrangler deployments list` หรือ log ของ workflow `Deploy`
 >
@@ -35,18 +36,19 @@
 
 | เรื่อง | รายละเอียด |
 |---|---|
-| **Password reset + อีเมลนัดหมาย ส่งจริงไม่ได้ — โค้ดเสร็จแล้ว รอเจ้าของ** | ต่อ [Resend](https://resend.com) แล้ว (ฟรี 3,000/เดือน พอสำหรับปริมาณคลินิกนี้) แต่ยังส่งจริงไม่ได้จนกว่าเจ้าของจะ (1) สมัคร Resend (2) ยืนยันโดเมนด้วย DNS TXT/CNAME — ใช้ `kazumiclinic.skin` (โดเมนจริงที่ซื้อแล้ว, ดู "ขึ้นโดเมนจริง" ด้านล่าง) เพียงตั้ง TXT record ก็พอ **ไม่ต้องรอ nameserver ชี้มา Cloudflare ก่อน** (3) `wrangler secret put RESEND_API_KEY` + `RESEND_FROM_EMAIL` — ตั้งครบเมื่อไหร่ปุ่ม "ลืมรหัสผ่าน?" และอีเมลนัดหมาย (ยืนยัน/ยกเลิก/เตือน) จะทำงานเอง ดู [docs/member-system.md](docs/member-system.md) + [docs/appointments.md](docs/appointments.md) |
+| **Password reset + อีเมลนัดหมาย — ตั้งค่าครบแล้ว ยังไม่มีใครทดสอบ delivery จริง** | Resend ยืนยันโดเมน `kazumiclinic.skin` แล้ว, `RESEND_API_KEY`/`RESEND_FROM_EMAIL` ตั้งครบ, `isEmailConfigured()` = true ยืนยันจาก production จริง (ปุ่ม "ลืมรหัสผ่าน?" โผล่แล้ว) — **สิ่งที่เหลือคือลองกดจริงแล้วเช็คว่าอีเมลถึงกล่องจดหมายจริงไหม** (ยังไม่มีใครทำ) ดู [docs/member-system.md](docs/member-system.md) + [docs/appointments.md](docs/appointments.md) |
 | **`blog/[slug]` ไม่ prerender ตอน build — ตั้งใจ ไม่ใช่ของค้าง** | slug อยู่ใน D1 ซึ่ง CI เข้าไม่ถึง · `generateStaticParams` คืน list ว่างเพื่อให้เข้า ISR ตอน on-demand (คนแรกที่เปิดจ่ายค่า render, ที่เหลือได้ cache) · จะ prerender จริงต้องให้ CI ถือ Cloudflare API token ไปอ่าน D1 ตอน build = เพิ่ม secret + ทำให้ build ล้มได้เมื่อ D1 ล่ม แลกกับ latency ของ request แรกเท่านั้น — **ไม่คุ้ม อย่าเปลี่ยนโดยไม่มีเหตุใหม่** |
 
 ---
 
 ## 📋 ต่อไป / TODO
 
-- [x] **ระบบนัดหมาย Part A + B เสร็จและ deploy แล้ว** (ดู [docs/appointments.md](docs/appointments.md)) — จอง/ยืนยัน/ยกเลิก, อีเมลยืนยัน/ยกเลิก/เตือน, แนบ `.ics`, reminder 24 ชม. ผ่าน `app/api/internal/appointment-reminders` + GitHub Actions cron รายชั่วโมง, เรียง `/admin/leads` ตามเวลานัดใกล้สุด · `INTERNAL_TASK_SECRET` ตั้งแล้วทั้ง `wrangler secret put`/`gh secret set` และยิงจริงผ่าน (200 ด้วย secret ถูก, 401 ด้วย secret ผิด/ไม่มี) · **ยังไม่มีใครทดสอบว่าอีเมล (ยืนยัน/ยกเลิก/เตือน) ส่งถึงจริง** — บล็อกเดียวกับแถวบนสุดของตาราง "ค้าง" (รอ Resend ยืนยันโดเมน)
+- [x] **ระบบนัดหมาย Part A + B เสร็จและ deploy แล้ว** (ดู [docs/appointments.md](docs/appointments.md)) — จอง/ยืนยัน/ยกเลิก, อีเมลยืนยัน/ยกเลิก/เตือน, แนบ `.ics`, reminder 24 ชม. ผ่าน `app/api/internal/appointment-reminders` + GitHub Actions cron รายชั่วโมง, เรียง `/admin/leads` ตามเวลานัดใกล้สุด · `INTERNAL_TASK_SECRET` ตั้งแล้วทั้ง `wrangler secret put`/`gh secret set` และยิงจริงผ่าน (200 ด้วย secret ถูก, 401 ด้วย secret ผิด/ไม่มี) · **ยังไม่มีใครทดสอบว่าอีเมล (ยืนยัน/ยกเลิก/เตือน) ส่งถึงกล่องจดหมายจริง** — ดูแถวบนสุดของตาราง "ค้าง"
+- [x] **ขึ้นโดเมนจริง `kazumiclinic.skin` เสร็จแล้ว** (2026-07-27) — nameserver ชี้ Cloudflare, Custom Domain ผูก Worker, SSL Active, `site.url` เปลี่ยนแล้ว, `SITE_ENV` ลบแล้ว, Cloudflare Access destination เพิ่มแล้ว, Resend ยืนยันโดเมนแล้ว — ดูตาราง "Deployed ตอนนี้" ด้านบน
+- [ ] **เพิ่ม Custom Domain สำหรับ `www.kazumiclinic.skin`** (ไม่เร่ง) — ตอนนี้ผูกแค่ root domain, `www` ยังไม่ resolve เลย ถ้าอยากให้ `www` ใช้งานได้ต้องเพิ่มอีก Custom Domain แยกใน Workers → Domains
 - [ ] **เชื่อม payment gateway**: แก้ `lib/members/payments.ts` (`initiatePayment`) — ตอนนี้จองก่อนจ่ายที่คลินิกได้เต็ม, ชำระออนไลน์เป็น placeholder (ดู [docs/member-system.md](docs/member-system.md))
 - [ ] **เจ้าของอัปรูปเข้า /admin/images** — ตรวจของจริง 2026-07-25: มี **36 slot** · มีรูปจริง **6** (`about-hero`, `brand-mark`, `collagen-booster-editorial`, `hero-collagen-booster`, `hero-contact`, `hero-home` — โหลดได้ 200 ทุกใบ) + `brand-logo` ที่ใช้ default `kazumi-clinic/logo` · **ที่เหลือว่าง** จึงขึ้นกล่องไอคอน (ไม่ใช่รูปแตก) · ที่ควรอัปก่อนเพราะเห็นบ่อยสุด: `doctor-pratch`, `og-about` (รูปตอนแชร์ลิงก์), `hero-filler`, `hero-botox`, `hero-iv-drip-2` (ใช้ทั้ง /services และการ์ดแชร์ /blog)
 - [ ] **เจ้าของทดสอบ**: เปลี่ยนรูปสักช่องใน /admin → รีเฟรชหน้านั้น ควรอัปเดตใน ~ไม่กี่วินาที (ยืนยัน on-demand revalidation หลังแก้ tag cache 2026-07-22)
-- [ ] **ขึ้นโดเมนจริง (`kazumiclinic.skin`)**: ซื้อแล้ว (เจ้าของแจ้ง + ตรวจซ้ำด้วย `dig`/`whois` แล้ว 2026-07-27 — name.com, nameserver ยังเป็นของ name.com ไม่ใช่ Cloudflare) ขั้นตอนที่เหลือ (ดู [docs/infrastructure.md](docs/infrastructure.md) หัวข้อโดเมนสำหรับรายละเอียดเต็ม): (1) เจ้าของ/คนถือบัญชี Cloudflare เพิ่ม zone ใหม่ + เปลี่ยน nameserver ที่ name.com — **agent ไม่ควรทำแทนเพราะกระทบ DNS ทั้งโดเมน** (2) รอ propagate (3) ผูก Worker เข้า zone ใหม่ (4) ค่อยเปลี่ยน `site.url` → ลบ `SITE_ENV` → เพิ่ม Cloudflare Access destination (5) ตั้ง TXT/CNAME ให้ Resend ยืนยันโดเมน (ทำคู่กับข้อ 1-2 ได้เลย ไม่ต้องรอ nameserver) · **`kazumiclinic.com` ไม่ใช่โดเมนของคลินิก** ยืนยันแล้วว่าเป็นของคนอื่น ห้ามอ้างถึงอีก
 - [ ] **เจ้าของลบ orphan บน Cloudinary** (ไม่เร่ง): `kazumi-clinic/promo-velvet-glow`, `kazumi-clinic/promo-karisma-collagen` — เก็บภาพสลับกันมาแต่ต้น ไม่มีโค้ดไหนอ้างถึงแล้ว · ลบที่ Media Library ของบัญชี `dvskwrapm` เท่านั้น (agent ไม่มีและไม่ควรถือคีย์ Master Admin ของบัญชีที่ใช้ร่วมกับ littlesmileflower)
 - [ ] **เปิด R2** (ตอนนี้ใช้ KV แทน) — ต้องกดเปิดใน Cloudflare dashboard เอง
 - [x] **`BACKUP_PASSPHRASE`** ตั้งแล้วตั้งแต่ 2026-07-23 — backup D1 รันจริงทุกวัน (ตรวจ 2026-07-25: `gh secret list` + 3 run ล่าสุด success · artifact ล่าสุด 43,932 bytes หมดอายุ 2026-08-23) · **เก็บ passphrase ไว้ให้ดี ถ้าหาย backup ทุกก้อนอ่านไม่ได้**
