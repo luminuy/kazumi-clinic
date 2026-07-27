@@ -5,7 +5,7 @@
 > อัปเดตไฟล์นี้เป็นส่วนหนึ่งของ workflow: หลัง **deploy** และตอน **เริ่ม/จบงานสำคัญ** (ดู CLAUDE.md §0)
 > งานที่ปิดไปแล้วย้ายไป [docs/changelog.md](docs/changelog.md) — ไฟล์นี้เก็บแค่ **ตอนนี้ · ต่อไป · ค้าง**
 
-**อัปเดตล่าสุด:** 2026-07-27 08:30 UTC · โดย: Claude Code
+**อัปเดตล่าสุด:** 2026-07-27 09:00 UTC · โดย: Claude Code
 
 ---
 
@@ -13,7 +13,7 @@
 
 | | |
 |---|---|
-| **workers.dev** | Version `7b582faa` — deploy 2026-07-27 08:26 UTC ผ่าน CD (run [30249844049](https://github.com/luminuy/kazumi-clinic/actions/runs/30249844049)) · ตรงกับ main `cd2489a` (PR [#266](https://github.com/luminuy/kazumi-clinic/pull/266) — ระบบนัดหมาย Part A) · migration `0013_appointments` รันบน remote D1 แล้ว**ก่อน** merge (คอลัมน์ใหม่ตรวจด้วย `PRAGMA table_info(leads)` แล้ว) · ยิงจริงหลัง deploy: `POST /api/leads` schema ใหม่ยอมรับ `email`/`requestedDate`/`requestedTime`/`locale` (`locale` ขาดแล้ว 400 ตามที่ตั้งใจ), `/appointments/cancel` และ `/en/appointments/cancel` ตอบ 200 ทั้งมี/ไม่มี token, `/api/appointments/cancel` ด้วย token ปลอมตอบ 400 ข้อความทั่วไป (ไม่ leak), `/account/appointments` redirect ไป login ให้ผู้ใช้ที่ยังไม่ล็อกอิน |
+| **workers.dev** | Version `8dce1ff9` — code deploy 2026-07-27 08:55 UTC ผ่าน CD (run [30251716336](https://github.com/luminuy/kazumi-clinic/actions/runs/30251716336)) ตรงกับ main `301499a` (PR [#268](https://github.com/luminuy/kazumi-clinic/pull/268) — ระบบนัดหมาย Part B: .ics แนบอีเมล, reminder 24 ชม., เรียง admin ตามเวลานัด) ต่อด้วย secret-change redeploy ตอนตั้ง `INTERNAL_TASK_SECRET` (`wrangler secret put` + `gh secret set` ตั้งค่าเดียวกันทั้งคู่แล้ว) · ยิงจริงหลัง deploy: `POST /api/internal/appointment-reminders` ด้วย secret ถูกต้องตอบ `200 {"ok":true,"checked":0,"sent":0}`, ด้วย secret ผิด/ไม่มี header ตอบ `401` ตามที่ตั้งใจ · PR #266 (Part A) ก็ deploy+ยิงจริงแล้วก่อนหน้านี้เหมือนกัน (migration `0013_appointments` รันบน remote D1 ก่อน merge, `/api/leads` schema ใหม่, cancel flow ทั้ง guest/member ยิงจริงผ่านหมด) |
 | **โดเมนจริง** (kazumiclinic.com) | ❌ ยังไม่ขึ้น — `SITE_ENV=preview`, robots `Disallow: /` (ตั้งใจ ห้ามลบจนกว่าโดเมนจะขึ้น) |
 | **URL ตรวจ** | https://kazumi-clinic.bankjack10452.workers.dev · ตรวจ 2026-07-27: HTTP 200 |
 
@@ -42,7 +42,7 @@
 
 ## 📋 ต่อไป / TODO
 
-- [ ] **ระบบนัดหมาย Part B** (ดู [docs/appointments.md](docs/appointments.md)): แนบไฟล์ `.ics` ในอีเมลยืนยัน, reminder ก่อนนัด 24 ชม. ผ่าน `app/api/internal/appointment-reminders` + GitHub Actions cron รายชั่วโมง (ต้องตั้ง secret `INTERNAL_TASK_SECRET` ทั้ง `wrangler secret put` และ `gh secret set`), เรียง `/admin/leads` ตามเวลานัดที่ใกล้ถึงก่อน — Part A (จอง/ยืนยัน/ยกเลิก/อีเมล) deploy แล้ว migration `0013_appointments` รันบน remote D1 แล้ว
+- [x] **ระบบนัดหมาย Part A + B เสร็จและ deploy แล้ว** (ดู [docs/appointments.md](docs/appointments.md)) — จอง/ยืนยัน/ยกเลิก, อีเมลยืนยัน/ยกเลิก/เตือน, แนบ `.ics`, reminder 24 ชม. ผ่าน `app/api/internal/appointment-reminders` + GitHub Actions cron รายชั่วโมง, เรียง `/admin/leads` ตามเวลานัดใกล้สุด · `INTERNAL_TASK_SECRET` ตั้งแล้วทั้ง `wrangler secret put`/`gh secret set` และยิงจริงผ่าน (200 ด้วย secret ถูก, 401 ด้วย secret ผิด/ไม่มี) · **ยังไม่มีใครทดสอบว่าอีเมล (ยืนยัน/ยกเลิก/เตือน) ส่งถึงจริง** — บล็อกเดียวกับแถวบนสุดของตาราง "ค้าง" (รอ Resend ยืนยันโดเมน)
 - [ ] **เชื่อม payment gateway**: แก้ `lib/members/payments.ts` (`initiatePayment`) — ตอนนี้จองก่อนจ่ายที่คลินิกได้เต็ม, ชำระออนไลน์เป็น placeholder (ดู [docs/member-system.md](docs/member-system.md))
 - [ ] **เจ้าของอัปรูปเข้า /admin/images** — ตรวจของจริง 2026-07-25: มี **36 slot** · มีรูปจริง **6** (`about-hero`, `brand-mark`, `collagen-booster-editorial`, `hero-collagen-booster`, `hero-contact`, `hero-home` — โหลดได้ 200 ทุกใบ) + `brand-logo` ที่ใช้ default `kazumi-clinic/logo` · **ที่เหลือว่าง** จึงขึ้นกล่องไอคอน (ไม่ใช่รูปแตก) · ที่ควรอัปก่อนเพราะเห็นบ่อยสุด: `doctor-pratch`, `og-about` (รูปตอนแชร์ลิงก์), `hero-filler`, `hero-botox`, `hero-iv-drip-2` (ใช้ทั้ง /services และการ์ดแชร์ /blog)
 - [ ] **เจ้าของทดสอบ**: เปลี่ยนรูปสักช่องใน /admin → รีเฟรชหน้านั้น ควรอัปเดตใน ~ไม่กี่วินาที (ยืนยัน on-demand revalidation หลังแก้ tag cache 2026-07-22)
