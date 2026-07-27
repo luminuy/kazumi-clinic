@@ -59,12 +59,11 @@ export async function POST(request: NextRequest) {
       // identical SUCCESS response further down exists to prevent.
       try {
         const token = await createPasswordResetToken(member.id);
-        // The site's canonical `site.url` (kazumiclinic.com) is what SEO tags point at, but it is
-        // NOT necessarily where this request is being served from today — SITE_ENV=preview means
-        // the live site is still the workers.dev URL (docs/infrastructure.md). A link built from
-        // site.url would 404 for every clinic member until the real domain goes live. Use the
-        // request's own origin instead, the same fix already applied to OAuth redirect URIs
-        // (lib/members/oauth.ts) for the identical reason.
+        // Use the request's own origin rather than `site.url` — the same fix already applied to
+        // OAuth redirect URIs (lib/members/oauth.ts). `site.url` now matches the live domain
+        // (kazumiclinic.skin, since 2026-07-27), but building links from the request's origin is
+        // still the more robust choice: it keeps working correctly if the Worker is ever reached
+        // through another hostname (e.g. workers.dev directly) rather than 404ing.
         const origin = new URL(request.url).origin;
         const localePrefix = locale === DEFAULT_LOCALE ? '' : `/${locale}`;
         const resetUrl = `${origin}${localePrefix}/account/reset-password?token=${encodeURIComponent(token)}`;

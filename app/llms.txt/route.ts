@@ -3,8 +3,8 @@ import { site, isPreviewDeploy } from '@/lib/site';
 // llms.txt (https://llmstxt.org) — a plain-text primer for AI assistants/crawlers that read a
 // site's own summary instead of (or alongside) crawling it. No Next.js file convention exists for
 // this, unlike robots.txt/sitemap.xml, so it's a plain route handler under a folder literally
-// named `llms.txt`. Mirrors app/robots.ts's preview gate: the workers.dev host must not describe
-// itself as kazumiclinic.com to any crawler while the real domain isn't confirmed ours yet.
+// named `llms.txt`. Mirrors app/robots.ts's preview gate (dead since SITE_ENV was removed
+// 2026-07-27, kept in case a future preview deploy needs it again).
 export const dynamic = 'force-static';
 
 export function GET() {

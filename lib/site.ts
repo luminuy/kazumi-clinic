@@ -1,5 +1,4 @@
 // Single source of truth for business info — import this everywhere instead of hardcoding.
-// TODO: replace `url` with the real production domain once it's registered.
 export const site = {
   name: 'Kazumi Clinic',
   nameTh: 'คาซึมิ คลินิก',
@@ -12,7 +11,7 @@ export const site = {
   taglineTh: 'Minimal Change. Maximum Confidence.',
   description:
     'Kazumi Clinic คลินิกความงามย่านสุขุมวิท กรุงเทพฯ ให้บริการฟิลเลอร์ โบท็อกซ์ IV Drip วิตามิน สกินบูสเตอร์ และคอลลาเจนบูสเตอร์ โดยแพทย์ประเมินและวางแผนการดูแลเฉพาะบุคคล',
-  url: 'https://kazumiclinic.com',
+  url: 'https://kazumiclinic.skin',
   phone: '081-712-7486',
   phoneIntl: '+66817127486',
   phoneUrl: 'tel:+66817127486',

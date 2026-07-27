@@ -15,12 +15,11 @@ const RESEND_ENDPOINT = 'https://api.resend.com/emails';
  * duplicate-signup notices only, likely single digits a day. `import 'server-only'` keeps the
  * API key out of any client bundle the same way lib/cloudinary-upload.ts does.
  *
- * Two env vars gate delivery — both must be set via `wrangler secret put`:
+ * Two env vars gate delivery — both set (2026-07-27):
  *   RESEND_API_KEY    — from the Resend dashboard after signup
- *   RESEND_FROM_EMAIL — e.g. "Kazumi Clinic <noreply@kazumiclinic.com>"; the domain in it must be
- *                        verified with Resend (DNS TXT/CNAME records at the registrar) before
- *                        Resend will send from it. See docs/member-system.md for the walkthrough
- *                        and why this is blocked on confirming who controls kazumiclinic.com's DNS.
+ *   RESEND_FROM_EMAIL — "Kazumi Clinic <noreply@kazumiclinic.skin>"; the domain is verified with
+ *                        Resend via DNS records on the kazumiclinic.skin zone. See
+ *                        docs/member-system.md for the walkthrough.
  *
  * Neither these functions nor their callers may log recipient addresses, tokens, reset URLs, or
  * Resend response bodies: the URL carries the same single-use credential as the raw token, and a
