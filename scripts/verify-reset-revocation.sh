@@ -7,7 +7,7 @@
 # sessions are gone. Cleans up after itself, including leftovers from an earlier aborted run.
 set -uo pipefail
 
-BASE="https://kazumi-clinic.bankjack10452.workers.dev"
+BASE="${BASE:-https://kazumiclinic.skin}"
 DB="kazumi-clinic-tag-cache"
 EMAIL="reset-probe-$(date +%s)@smoke.invalid"
 PASS_OLD="probe-old-password-1"

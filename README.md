@@ -10,13 +10,13 @@
 
 | รายการ                   | ค่า                                                                                                             |
 | :----------------------- | :-------------------------------------------------------------------------------------------------------------- |
-| URL ที่ใช้งาน            | `https://kazumi-clinic.bankjack10452.workers.dev`                                                               |
+| URL ที่ใช้งาน            | `https://kazumiclinic.skin` (โดเมนจริง) · `https://kazumi-clinic.bankjack10452.workers.dev` (สำรอง)             |
 | Production Worker        | `kazumi-clinic`                                                                                                 |
 | CI/CD                    | มี CI/CD สมบูรณ์ผ่าน GitHub Actions — `lint`, `typecheck`, `test`, `build` ทุก PR                               |
 | Deploy                   | อัตโนมัติเมื่อ merge เข้า `main` ผ่าน `pnpm cf:deploy` ใน workflow (รองรับ deploy ด้วยมือเมื่อจำเป็น)           |
 | ภาษา                     | ไทย (default, path เปล่า) + อังกฤษ (`/en`) ผ่าน next-intl                                                       |
-| Search indexing          | ปิดด้วย `SITE_ENV=preview` จนกว่าจะมีโดเมนจริง (`robots.txt` = `Disallow: /`)                                    |
-| โดเมน canonical ปัจจุบัน | `site.url` ยังเป็น `https://kazumiclinic.com`; ดูข้อควรระวังใน [docs/infrastructure.md](docs/infrastructure.md) |
+| Search indexing          | เปิดแล้ว (2026-07-27) — โดเมนจริงขึ้นแล้ว, `SITE_ENV=preview` ถูกลบ                                              |
+| โดเมน canonical ปัจจุบัน | `site.url` = `https://kazumiclinic.skin`; ดูรายละเอียดใน [docs/infrastructure.md](docs/infrastructure.md)       |
 
 ## Tech stack
 

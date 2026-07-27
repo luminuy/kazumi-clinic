@@ -3,11 +3,11 @@
 # A runtime-only crypto failure should become visible immediately after deploy, not days later.
 #
 # Usage:  bash scripts/smoke.sh
-#         BASE=https://kazumiclinic.com bash scripts/smoke.sh   # once the real domain is live
+#         BASE=https://kazumi-clinic.bankjack10452.workers.dev bash scripts/smoke.sh   # workers.dev instead
 # Exit:   0 = healthy, 1 = broken, 2 = inconclusive because an account endpoint rate-limited the run
 set -uo pipefail
 
-BASE="${BASE:-https://kazumi-clinic.bankjack10452.workers.dev}"
+BASE="${BASE:-https://kazumiclinic.skin}"
 EMAIL="smoke-$(date +%s)-$RANDOM@smoke.invalid"
 PASSWORD="worker-smoke-$RANDOM-$RANDOM"
 
