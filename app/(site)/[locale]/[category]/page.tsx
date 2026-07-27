@@ -12,6 +12,7 @@ import {
   getServiceBySlug,
   type ServiceItem,
 } from '@/lib/services';
+import { localizeServiceCategory } from '@/lib/services-locale';
 import { serviceItemListSchema, breadcrumbSchema } from '@/lib/schema';
 import { getMergedCategory } from '@/lib/service-products-store';
 import { getImage, getImageOverrides } from '@/lib/site-images-store';
@@ -70,8 +71,11 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { category, locale } = await params;
-  const service = getServiceBySlug(category);
-  if (!service) return {};
+  const base = getServiceBySlug(category);
+  if (!base) return {};
+  // Title/description ship into <title>, OG, Twitter and the canonical pair — all of which must be
+  // in the language of the page they describe, not the language the catalogue is authored in.
+  const service = localizeServiceCategory(base, locale);
 
   const imageKey = categoryImageKey[service.slug];
   const publicId = imageKey ? await getImage(imageKey) : service.heroImage;
@@ -199,8 +203,12 @@ export default async function ServiceCategoryPage({ params }: Props) {
   const t = await getTranslations('ServiceCategoryPage');
   // Items resolved through the /admin override layer (edits, additions, removals). Category
   // structure itself stays in code — only the product list is editable.
-  const service = await getMergedCategory(category);
-  if (!service) notFound();
+  const merged = await getMergedCategory(category);
+  if (!merged) notFound();
+  // English overlay on top of the merged (code + /admin) catalogue, so the page and everything it
+  // hands `service` to — including the bespoke per-category components — render one language.
+  // A product the clinic added through /admin has no translation yet and keeps its Thai name.
+  const service = localizeServiceCategory(merged, locale);
 
   // A hero the clinic replaced through /admin wins over the one compiled into lib/services.ts.
   const overrides = await getImageOverrides();

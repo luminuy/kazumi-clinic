@@ -26,7 +26,17 @@
 
 ## 🔨 กำลังทำ (in progress)
 
-- (ว่าง)
+- **แปลเว็บอังกฤษให้ครบและถูกหลักภาษา** (Claude วางแผน/ตรวจ · Codex แก้โค้ด · Gemini CLI แปล) — ทำเป็นเฟส:
+  | เฟส | สถานะ |
+  | --- | --- |
+  | 0 · ตัววัด+glossary (`pnpm i18n:check`, [docs/i18n-glossary.md](docs/i18n-glossary.md)) | ✅ merged (#279) |
+  | 1 · ถอนไทยที่ hardcode ออกจากหน้าสาธารณะ 15 ไฟล์ | ✅ merged (#280) — หนี้ 151 → 84 บรรทัด |
+  | 2 · catalogue สองภาษา ([lib/services-en.ts](lib/services-en.ts) + [lib/services-locale.ts](lib/services-locale.ts)) | 🔨 PR นี้ |
+  | 3 · `components/*-service-page.tsx` 9 ไฟล์ (83 บรรทัด) | ⏳ เนื้อหาการแพทย์ ต้องให้เจ้าของรีวิวก่อน (§0.2) |
+  | 4 · เนื้อหาใน D1 (20 บทความ · 17 สินค้า · 2 โปรฯ) | ⏳ **ยังไม่มีระบบ** — migration 0008 ไม่เคยรันและชื่อคอลัมน์ไม่ตรง schema จริง, ไม่มีโค้ดอ่าน `_en`, /admin ไม่มีช่องกรอก EN |
+  | 5 · `site.description` + `lib/nav.ts` ยังเป็นไทยบนทุก locale | ⏳ เศษที่เหลือหลังเฟส 2 (~12 คำบนหน้า generic) |
+
+  Gemini CLI: **login ด้วยบัญชี Google ส่วนตัวใช้ไม่ได้แล้ว** (Google ตัด free tier ออกจาก Code Assist → `UNSUPPORTED_CLIENT`) ใช้ API key จาก AI Studio ใน `~/.gemini/.env` แทน และต้องเรียกด้วย `--skip-trust` ไม่งั้น CLI ไม่โหลด `.env`
 
 > ก่อนเริ่มงานที่กินหลายไฟล์ ให้จดที่นี่: **อะไร · เครื่องมือไหน (Claude / Antigravity / Codex) · branch ไหน** — กันชนกันและกัน "งานหาย" (CLAUDE.md §0.5 · dual-agent)
 
