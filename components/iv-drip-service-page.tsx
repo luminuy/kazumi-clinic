@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import type { ServiceCategory, ServiceItem } from '@/lib/services';
 import { site } from '@/lib/site';
@@ -19,21 +20,43 @@ function groupByCollection(items: ServiceItem[]) {
   return groups;
 }
 
-function Price({ item, className }: { item: ServiceItem; className?: string }) {
+function Price({
+  item,
+  className,
+  currency,
+  inquirePrice,
+}: {
+  item: ServiceItem;
+  className?: string;
+  currency: string;
+  inquirePrice: string;
+}) {
   if (item.priceFrom === undefined) {
-    return <span className={className}>สอบถามราคา</span>;
+    return <span className={className}>{inquirePrice}</span>;
   }
   // IV Drip prices are the clinic's catalogue rates, not promo figures (see lib/services.ts), so
   // unlike filler/botox they carry no promo caveat.
   return (
     <span className={className}>
       {item.priceFrom.toLocaleString('th-TH')}
-      <span className="ml-1 text-[0.85em] opacity-70"> บาท</span>
+      <span className="ml-1 text-[0.85em] opacity-70">{currency}</span>
     </span>
   );
 }
 
-function VitaminCard({ item, index, category }: { item: ServiceItem; index: number; category: string }) {
+function VitaminCard({
+  item,
+  index,
+  category,
+  currency,
+  inquirePrice,
+}: {
+  item: ServiceItem;
+  index: number;
+  category: string;
+  currency: string;
+  inquirePrice: string;
+}) {
   return (
     <article className="flex flex-col justify-between rounded-3xl border border-black/[0.08] bg-[var(--store-card)] p-8 shadow-sm transition-colors duration-500 hover:bg-[var(--store-surface)]">
       <div>
@@ -42,7 +65,12 @@ function VitaminCard({ item, index, category }: { item: ServiceItem; index: numb
           <span aria-hidden="true" className="text-[0.64rem] tracking-[0.18em] text-[var(--store-muted)]">
             {String(index).padStart(2, '0')}
           </span>
-          <Price item={item} className="text-[0.72rem] font-medium text-[var(--store-ink)]" />
+          <Price
+            item={item}
+            className="text-[0.72rem] font-medium text-[var(--store-ink)]"
+            currency={currency}
+            inquirePrice={inquirePrice}
+          />
         </div>
         <h4 className="mt-4 font-serif text-2xl text-[var(--store-ink)]">{item.name}</h4>
         {item.detail && <p className="mt-2 text-sm leading-[1.9] text-[var(--store-muted)]">{item.detail}</p>}
@@ -52,7 +80,7 @@ function VitaminCard({ item, index, category }: { item: ServiceItem; index: numb
   );
 }
 
-export function IvDripServicePage({
+export async function IvDripServicePage({
   service,
   heroImage,
   treatmentImage,
@@ -62,6 +90,9 @@ export function IvDripServicePage({
   /** Undefined until the clinic uploads one — the slot shows a tonal icon panel meanwhile. */
   treatmentImage?: string;
 }) {
+  const t = await getTranslations('IvDripPage');
+  const tCommon = await getTranslations('ServiceCategoryPage');
+
   const groups = groupByCollection(service.items);
   // The reference closes on the premium collection as a dark panel. Our collections are ordered
   // Essential → Recovery → Signature, i.e. ascending, so the flagship is the last group.
@@ -168,7 +199,12 @@ export function IvDripServicePage({
                                 {item.detail}
                               </p>
                             )}
-                            <Price item={item} className="mt-4 block font-serif text-2xl" />
+                            <Price
+                              item={item}
+                              className="mt-4 block font-serif text-2xl"
+                              currency={t('currency')}
+                              inquirePrice={tCommon('inquirePrice')}
+                            />
                             <ServiceItemActions item={item} className="mt-5" />
                           </div>
                         ))}
@@ -204,6 +240,8 @@ export function IvDripServicePage({
                           item={item}
                           category={service.slug}
                           index={cardOffsets[groupIndex] + itemIndex + 1}
+                          currency={t('currency')}
+                          inquirePrice={tCommon('inquirePrice')}
                         />
                       ))}
                     </div>
@@ -251,18 +289,17 @@ export function IvDripServicePage({
               Begin Your Journey to Radiance
             </h2>
             <p className="mt-6 text-sm leading-[1.9] text-[var(--store-muted)] md:text-base">
-              ปรึกษาทีมแพทย์เพื่อประเมินว่า{service.title}เหมาะกับคุณหรือไม่
-              ก่อนตัดสินใจเข้ารับบริการ
+              {tCommon('closingDescription', { serviceTitle: service.title })}
             </p>
             <div className="mt-10 flex flex-col gap-4 sm:flex-row">
               <LineCtaButton className="inline-flex items-center justify-center gap-2.5 rounded-full bg-[#06C755] px-8 py-3.5 text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.98]">
-                จองคิวผ่าน LINE
+                {tCommon('bookLine')}
               </LineCtaButton>
               <Link
                 href="/services"
                 className="inline-flex items-center justify-center gap-2 rounded-full border border-black/[0.08] bg-transparent px-8 py-3.5 text-xs font-medium text-[var(--store-ink)] transition-all duration-200 hover:border-[var(--store-ink)] hover:bg-black/5 active:scale-[0.98]"
               >
-                ดูบริการทั้งหมด
+                {tCommon('viewAllServices')}
               </Link>
             </div>
           </Reveal>
@@ -272,9 +309,7 @@ export function IvDripServicePage({
       {/* ── Medical disclaimer ───────────────────────────────── */}
       <section className="border-t border-black/[0.08] px-6 py-12 sm:px-10 md:px-14 lg:px-20">
         <p className="mx-auto max-w-4xl text-[0.62rem] leading-[2] text-[var(--store-muted)]">
-          ผลลัพธ์แตกต่างกันไปในแต่ละบุคคล และควรได้รับคำแนะนำจากแพทย์ก่อนเข้ารับบริการ ·
-          ทุกหัตถการไม่แนะนำสำหรับผู้มีอายุต่ำกว่า 18 ปี · ราคาและเงื่อนไขอาจเปลี่ยนแปลงได้
-          กรุณาสอบถามกับคลินิกก่อนเข้ารับบริการ
+          {t('medicalDisclaimer')}
         </p>
       </section>
     </div>

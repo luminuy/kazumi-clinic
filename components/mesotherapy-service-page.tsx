@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { getTranslations } from 'next-intl/server';
 import { MapPin, Phone, Sparkles } from 'lucide-react';
 import type { ServiceCategory, ServiceItem } from '@/lib/services';
 import { site } from '@/lib/site';
@@ -21,7 +22,17 @@ function itemCopy(item: ServiceItem) {
     : { chip: undefined, description: item.detail };
 }
 
-function TreatmentCard({ item, category }: { item: ServiceItem; category: string }) {
+function TreatmentCard({
+  item,
+  category,
+  priceUnit,
+  inquirePrice,
+}: {
+  item: ServiceItem;
+  category: string;
+  priceUnit: string;
+  inquirePrice: string;
+}) {
   const { chip, description } = itemCopy(item);
   return (
     <article className="group flex flex-col justify-between rounded-3xl border border-black/[0.08] bg-[var(--store-card)] p-6 pb-8 shadow-sm transition-colors duration-500 hover:bg-[var(--store-surface)]">
@@ -46,11 +57,11 @@ function TreatmentCard({ item, category }: { item: ServiceItem; category: string
             <>
               {item.priceFrom.toLocaleString('th-TH')}
               <span className="ml-1.5 font-sans text-[0.62rem] not-italic tracking-wide text-[var(--store-muted)]">
-                บาท / {item.unit}
+                {priceUnit}
               </span>
             </>
           ) : (
-            'สอบถามราคา'
+            inquirePrice
           )}
         </span>
         <ServiceItemActions item={item} className="mt-4" />
@@ -59,7 +70,7 @@ function TreatmentCard({ item, category }: { item: ServiceItem; category: string
   );
 }
 
-export function MesotherapyServicePage({
+export async function MesotherapyServicePage({
   service,
   heroImage,
   treatmentImage,
@@ -69,6 +80,9 @@ export function MesotherapyServicePage({
   heroImage?: string;
   treatmentImage?: string;
 }) {
+  const t = await getTranslations('MesotherapyPage');
+  const tCommon = await getTranslations('ServiceCategoryPage');
+
   return (
     <div className="overflow-x-hidden bg-[var(--background)]">
       {/* ── Hero: the reference overlaps the copy block onto the image ─────────── */}
@@ -87,7 +101,7 @@ export function MesotherapyServicePage({
                   {service.description}
                 </p>
                 <p className="mt-8 text-[0.66rem] tracking-wide text-[var(--store-muted)]">
-                  ใบอนุญาตเลขที่ {site.license}
+                  {tCommon('clinicLicense', { license: site.license })}
                 </p>
               </div>
             </div>
@@ -151,14 +165,18 @@ export function MesotherapyServicePage({
           <div className="mt-12 grid gap-x-8 gap-y-8 md:grid-cols-2">
             {service.items.map((item, index) => (
               <Reveal key={item.id ?? `${item.name}-${index}`} delay={(index % 2) * 60}>
-                <TreatmentCard item={item} category={service.slug} />
+                <TreatmentCard
+                  item={item}
+                  category={service.slug}
+                  priceUnit={tCommon('priceUnit', { unit: item.unit })}
+                  inquirePrice={tCommon('inquirePrice')}
+                />
               </Reveal>
             ))}
           </div>
           <Reveal>
             <p className="mt-12 text-[0.66rem] leading-[1.8] text-[var(--store-muted)]">
-              *ราคาและความเหมาะสมของแต่ละสูตรขึ้นอยู่กับการประเมินของแพทย์ ·
-              ทุกหัตถการไม่แนะนำสำหรับผู้มีอายุต่ำกว่า 18 ปี · ผลลัพธ์แตกต่างกันในแต่ละบุคคล
+              {t('pricingDisclaimer')}
             </p>
           </Reveal>
         </div>
@@ -200,7 +218,7 @@ export function MesotherapyServicePage({
               Ready for your transformation?
             </h2>
             <p className="mt-6 text-sm leading-[1.9] text-[var(--store-muted)] md:text-base">
-              ปรึกษาแพทย์เพื่อประเมินสภาพผิวและวางแผนการดูแลที่เหมาะสมกับคุณ
+              {t('consultationDescription')}
             </p>
             <div className="mt-10 flex flex-col gap-4">
               <a
@@ -208,7 +226,7 @@ export function MesotherapyServicePage({
                 className="inline-flex items-center justify-center gap-2 rounded-full border border-black/[0.08] bg-transparent px-8 py-3.5 text-xs font-medium text-[var(--store-ink)] transition-all duration-200 hover:border-black/[0.08] hover:bg-black/5"
               >
                 <Phone aria-hidden="true" className="size-3.5" />
-                โทร {site.phone}
+                {tCommon('callPhone', { phone: site.phone })}
               </a>
               <a
                 href={site.mapsUrl}
@@ -217,7 +235,7 @@ export function MesotherapyServicePage({
                 className="inline-flex items-center justify-center gap-2 rounded-full border border-black/[0.08] bg-[var(--store-surface)] px-8 py-3.5 text-xs font-medium text-[var(--store-ink)] transition-all duration-200 hover:border-black/[0.08] hover:bg-black/5"
               >
                 <MapPin aria-hidden="true" className="size-3.5" />
-                นำทางไปยัง {site.name}
+                {t('directionsTo', { siteName: site.name })}
               </a>
             </div>
           </Reveal>

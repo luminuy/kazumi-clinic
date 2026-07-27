@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { getTranslations } from 'next-intl/server';
 import { BadgeCheck, Dna, Phone, Sparkles, Target } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { ServiceCategory } from '@/lib/services';
@@ -22,7 +23,7 @@ function splitBenefit(benefit: string) {
 // One icon per benefit card, in the order the benefits are declared in lib/services.ts.
 const BENEFIT_ICONS: LucideIcon[] = [Dna, BadgeCheck, Sparkles, Target];
 
-export function CollagenBoosterServicePage({
+export async function CollagenBoosterServicePage({
   service,
   heroImage,
   editorialImage,
@@ -32,6 +33,9 @@ export function CollagenBoosterServicePage({
   heroImage?: string;
   editorialImage?: string;
 }) {
+  const t = await getTranslations('CollagenBoosterPage');
+  const tCommon = await getTranslations('ServiceCategoryPage');
+
   return (
     <div className="bg-[var(--background)]">
       {/* ── Hero: asymmetric image + intro, with a tactile "Ma" overlap ──────── */}
@@ -74,8 +78,7 @@ export function CollagenBoosterServicePage({
                   Philosophy
                 </p>
                 <p className="text-sm italic leading-[1.8] text-[var(--store-muted)]">
-                  “Ma” — ศาสตร์แห่งการเว้นที่ว่างอย่างตั้งใจ
-                  เพื่อสร้างสมดุลและความหมายในความงามที่แม่นยำ
+                  {t('philosophyDescription')}
                 </p>
               </div>
             </Reveal>
@@ -93,7 +96,7 @@ export function CollagenBoosterServicePage({
                   {service.description}
                 </p>
                 <p className="mt-6 text-[0.64rem] uppercase tracking-[0.16em] text-[var(--store-muted)]">
-                  ใบอนุญาตสถานพยาบาลเลขที่ {site.license}
+                  {tCommon('facilityLicense', { license: site.license })}
                 </p>
               </Reveal>
             </div>
@@ -121,7 +124,7 @@ export function CollagenBoosterServicePage({
                 <p className="font-serif text-2xl text-[var(--store-ink)]">
                   {item.priceFrom.toLocaleString('th-TH')}
                   <span className="ml-1.5 font-sans text-[0.62rem] tracking-wide text-[var(--store-muted)]">
-                    บาท / {item.unit}
+                    {tCommon('priceUnit', { unit: item.unit })}
                   </span>
                 </p>
               </div>
@@ -207,21 +210,21 @@ export function CollagenBoosterServicePage({
       <section className="bg-[var(--store-ink)] px-6 py-24 text-center text-[var(--background)] sm:px-10 md:py-28">
         <Reveal className="mx-auto max-w-2xl">
           <h2 className="font-serif text-3xl leading-snug md:text-4xl">
-            สัมผัสประสบการณ์ความงามที่ออกแบบมาเพื่อคุณ
+            {t('closingTitle')}
           </h2>
           <p className="mx-auto mt-6 max-w-md text-sm leading-[1.9] text-white/75 md:text-base">
-            เริ่มต้นดูแลผิวพรรณของคุณกับทีมแพทย์ {site.name} ปรึกษาและประเมินความเหมาะสมก่อนเข้ารับบริการ
+            {t('closingDescription', { siteName: site.name })}
           </p>
           <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
             <LineCtaButton className="inline-flex items-center justify-center gap-2 rounded-full bg-[#06C755] px-8 py-3.5 text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.98]">
-              ปรึกษาฟรีผ่าน LINE
+              {t('freeLineConsultation')}
             </LineCtaButton>
             <a
               href={`tel:${site.phone.replace(/\s+/g, '')}`}
               className="inline-flex items-center justify-center gap-2 rounded-full border border-white/30 bg-transparent px-8 py-3.5 text-xs font-medium text-white transition-all duration-200 hover:border-white hover:bg-white/10 active:scale-[0.98]"
             >
               <Phone aria-hidden="true" className="size-4" />
-              โทร {site.phone}
+              {tCommon('callPhone', { phone: site.phone })}
             </a>
           </div>
         </Reveal>

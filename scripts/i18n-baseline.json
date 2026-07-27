@@ -1,15 +1,11 @@
 {
   "note": "Thai lines still hardcoded in shipped source. Only allowed to go down — pnpm i18n:check --update after burning some off.",
-  "total": 84,
+  "total": 6,
   "files": {
-    "components/acne-care-service-page.tsx": 10,
+    "components/acne-care-service-page.tsx": 1,
     "components/booking-form.tsx": 1,
-    "components/collagen-booster-service-page.tsx": 8,
-    "components/filler-service-page.tsx": 20,
-    "components/iv-drip-service-page.tsx": 9,
-    "components/laser-hifu-service-page.tsx": 11,
-    "components/mesotherapy-service-page.tsx": 7,
-    "components/skin-booster-service-page.tsx": 10,
-    "components/thread-lift-service-page.tsx": 8
+    "components/filler-service-page.tsx": 2,
+    "components/laser-hifu-service-page.tsx": 1,
+    "components/skin-booster-service-page.tsx": 1
   }
 }

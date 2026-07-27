@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import { ShieldCheck, Stethoscope } from 'lucide-react';
 import type { ServiceCategory, ServiceItem } from '@/lib/services';
@@ -9,7 +10,21 @@ import { LineCtaButton } from '@/components/line-cta-button';
 import { ProductThumbnail } from '@/components/product-thumbnail';
 import { ServiceItemActions } from '@/components/service-item-actions';
 
-function RecommendedSession({ item, category }: { item: ServiceItem; category: string }) {
+function RecommendedSession({
+  item,
+  category,
+  priceUnit,
+  inquirePrice,
+  standardEquipment,
+  physicianCare,
+}: {
+  item: ServiceItem;
+  category: string;
+  priceUnit: string;
+  inquirePrice: string;
+  standardEquipment: string;
+  physicianCare: string;
+}) {
   return (
     <div className="rounded-3xl border border-black/[0.08] bg-[var(--store-surface)] p-8 shadow-sm md:p-10">
       <div className="flex items-start justify-between gap-6">
@@ -30,10 +45,10 @@ function RecommendedSession({ item, category }: { item: ServiceItem; category: s
             {item.priceFrom !== undefined ? (
               <>
                 {item.priceFrom.toLocaleString('th-TH')}
-                <span className="ml-1 text-xs text-[var(--store-muted)]"> บาท / {item.unit}</span>
+                <span className="ml-1 text-xs text-[var(--store-muted)]">{priceUnit}</span>
               </>
             ) : (
-              'สอบถามราคา'
+              inquirePrice
             )}
           </p>
         </div>
@@ -43,12 +58,14 @@ function RecommendedSession({ item, category }: { item: ServiceItem; category: s
         <div className="flex items-center gap-3 rounded-2xl border border-black/[0.08] bg-[var(--store-card)] p-4 shadow-sm">
           <ShieldCheck aria-hidden="true" className="size-4 shrink-0 text-[#06C755]" />
           <p className="text-[0.62rem] uppercase tracking-[0.1em] text-[var(--store-ink)]">
-            เครื่องมือมาตรฐาน
+            {standardEquipment}
           </p>
         </div>
         <div className="flex items-center gap-3 rounded-2xl border border-black/[0.08] bg-[var(--store-card)] p-4 shadow-sm">
           <Stethoscope aria-hidden="true" className="size-4 shrink-0 text-[#06C755]" />
-          <p className="text-[0.62rem] uppercase tracking-[0.1em] text-[var(--store-ink)]">ดูแลโดยแพทย์</p>
+          <p className="text-[0.62rem] uppercase tracking-[0.1em] text-[var(--store-ink)]">
+            {physicianCare}
+          </p>
         </div>
       </div>
 
@@ -57,7 +74,7 @@ function RecommendedSession({ item, category }: { item: ServiceItem; category: s
   );
 }
 
-export function LaserHifuServicePage({
+export async function LaserHifuServicePage({
   service,
   heroImage,
   editorialImage,
@@ -69,6 +86,9 @@ export function LaserHifuServicePage({
   editorialImage?: string;
   interiorImage?: string;
 }) {
+  const t = await getTranslations('LaserHifuPage');
+  const tCommon = await getTranslations('ServiceCategoryPage');
+
   return (
     <div className="bg-[var(--background)]">
       {/* ── Hero: centred, over a full-bleed image when one exists ───────────── */}
@@ -153,13 +173,20 @@ export function LaserHifuServicePage({
 
             <div className="mt-10 space-y-5">
               {service.items.map((item) => (
-                <RecommendedSession key={item.id ?? item.name} item={item} category={service.slug} />
+                <RecommendedSession
+                  key={item.id ?? item.name}
+                  item={item}
+                  category={service.slug}
+                  priceUnit={tCommon('priceUnit', { unit: item.unit })}
+                  inquirePrice={tCommon('inquirePrice')}
+                  standardEquipment={t('standardEquipment')}
+                  physicianCare={t('physicianCare')}
+                />
               ))}
             </div>
 
             <p className="mt-6 text-[0.66rem] italic leading-[1.8] text-[var(--store-muted)]">
-              *ทุกหัตถการไม่แนะนำสำหรับผู้มีอายุต่ำกว่า 18 ปี · ผลลัพธ์แตกต่างกันในแต่ละบุคคล
-              ขึ้นอยู่กับการประเมินของแพทย์
+              {tCommon('medicalDisclaimer')}
             </p>
           </Reveal>
         </div>
@@ -186,18 +213,17 @@ export function LaserHifuServicePage({
               Ready for your transformation?
             </h2>
             <p className="mt-6 text-sm leading-[1.9] text-[var(--store-muted)] md:text-base">
-              ปรึกษาทีมแพทย์เพื่อประเมินว่า{service.title}เหมาะกับคุณหรือไม่
-              ก่อนตัดสินใจเข้ารับบริการ
+              {tCommon('closingDescription', { serviceTitle: service.title })}
             </p>
             <div className="mt-10 flex flex-col gap-4 sm:flex-row">
               <LineCtaButton className="inline-flex flex-1 items-center justify-center gap-2.5 rounded-full bg-[#06C755] px-8 py-3.5 text-xs font-medium text-white transition-all duration-200 hover:bg-[#05b34c] hover:shadow-sm active:scale-[0.98]">
-                จองคิวผ่าน LINE
+                {tCommon('bookLine')}
               </LineCtaButton>
               <Link
                 href="/services"
                 className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-black/[0.08] bg-transparent px-8 py-3.5 text-xs font-medium text-[var(--store-ink)] transition-all duration-200 hover:border-[var(--store-ink)] hover:bg-black/5 active:scale-[0.98]"
               >
-                ดูบริการอื่น
+                {tCommon('viewOtherServices')}
               </Link>
             </div>
           </Reveal>
@@ -233,7 +259,7 @@ export function LaserHifuServicePage({
       {/* ── Medical disclaimer band ──────────────────────────── */}
       <div className="bg-[var(--store-card)] px-6 py-4 text-center sm:px-10">
         <p className="text-[0.66rem] tracking-wide text-[var(--store-muted)]">
-          ประเมินและดูแลโดยแพทย์ · ใบอนุญาตสถานพยาบาลเลขที่ {site.license}
+          {tCommon('doctorAssessed')} · {tCommon('facilityLicense', { license: site.license })}
         </p>
       </div>
     </div>
