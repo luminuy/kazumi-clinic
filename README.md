@@ -10,7 +10,7 @@
 
 | รายการ                   | ค่า                                                                                                             |
 | :----------------------- | :-------------------------------------------------------------------------------------------------------------- |
-| URL ที่ใช้งาน            | `https://kazumiclinic.skin` (โดเมนจริง) · `https://kazumi-clinic.bankjack10452.workers.dev` (สำรอง)             |
+| URL ที่ใช้งาน            | `https://kazumiclinic.skin` (โดเมนจริง — ทางเข้าเดียว; workers.dev ปิดแล้วตั้งแต่ PR #277)                      |
 | Production Worker        | `kazumi-clinic`                                                                                                 |
 | CI/CD                    | มี CI/CD สมบูรณ์ผ่าน GitHub Actions — `lint`, `typecheck`, `test`, `build` ทุก PR                               |
 | Deploy                   | อัตโนมัติเมื่อ merge เข้า `main` ผ่าน `pnpm cf:deploy` ใน workflow (รองรับ deploy ด้วยมือเมื่อจำเป็น)           |

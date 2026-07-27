@@ -17,7 +17,7 @@
 
 | | ค่า |
 | --- | --- |
-| URL ที่ใช้งานจริงตอนนี้ | **https://kazumiclinic.skin** (โดเมนจริง, ขึ้นแล้ว 2026-07-27) · `https://kazumi-clinic.bankjack10452.workers.dev` ยังใช้งานได้เป็น URL สำรอง |
+| URL ที่ใช้งานจริงตอนนี้ | **https://kazumiclinic.skin** (โดเมนจริง, ขึ้นแล้ว 2026-07-27) — **ทางเข้าเดียว** · `workers.dev` ถูกปิดใน PR #277 (`workers_dev: false` + `preview_urls: false`) ยิงจริงได้ 404 |
 | Worker name | `kazumi-clinic` |
 | บัญชี Cloudflare | `bankjack10452@gmail.com` (account id `f5af6f66302ba6872d8f51aebf43d3fe`) |
 | Deploy ครั้งแรก | 2026-07-17 (ก่อนหน้านั้น**ไม่เคย deploy เลย** ทั้งที่เอกสารเก่าบอกว่า deploy อัตโนมัติ) |
@@ -31,33 +31,25 @@
 - ห้ามรายงานว่า deploy สำเร็จจน workflow `Deploy` สำเร็จและ Wrangler แสดง `Current Version ID`; จากนั้นยิง URL จริงอย่างน้อย 2 ครั้งพร้อมดู `x-nextjs-cache` เพราะครั้งแรกอาจได้ ISR cache เก่า
 - `Current Version ID` เปลี่ยนทุก deploy จึงห้ามบันทึกเลขล่าสุดแบบถาวรในเอกสารนี้ ให้รายงานจาก output ของงานนั้นเท่านั้น
 
-### โดเมนจริง — ซื้อแล้ว แต่ยังไม่ได้ชี้มา Cloudflare
+### โดเมนจริง — `kazumiclinic.skin` ขึ้นแล้ว (2026-07-27)
 
 **`kazumiclinic.com` ไม่ใช่โดเมนของคลินิก** — ถูกคนอื่นจดไปก่อนแล้ว (ตรวจ 2026-07-17: Namecheap,
-name servers ชี้ Cloudflare อยู่แล้วแต่ origin ตาย) เป็นแค่บันทึกไว้กันสับสน **ห้ามใช้โดเมนนี้อ้างอิงอะไรอีก**
+name servers ชี้ Cloudflare อยู่แล้วแต่ origin ตาย) เก็บไว้กันสับสนเท่านั้น **ห้ามใช้โดเมนนี้อ้างอิงอะไรอีก**
 
-**โดเมนจริงของคลินิกคือ `kazumiclinic.skin`** — เจ้าของแจ้งด้วยวาจา 2026-07-27 ว่าซื้อแล้ว ตรวจซ้ำด้วย
-`dig`/`whois` วันเดียวกัน:
+**โดเมนจริงของคลินิกคือ `kazumiclinic.skin`** (registrar: name.com) — ขึ้นใช้งานจริงแล้วเมื่อ 2026-07-27:
 
-| ตรวจ | ผล (2026-07-27) |
+| ขั้นตอน | สถานะ |
 | --- | --- |
-| Registrar | name.com |
-| Name servers | `ns1djs.name.com` / `ns2jrt.name.com` / `ns3cpr.name.com` / `ns4dls.name.com` — **ยังไม่ใช่ของ Cloudflare** |
-| A record ปัจจุบัน | `91.195.240.94` (หน้า parking ของ registrar ตามปกติ ไม่ใช่ Cloudflare) |
-| MX / TXT | ว่างเปล่า — ยังไม่ได้ตั้งอะไรเลย รวมถึงที่ Resend ต้องการ (ดู [member-system.md](./member-system.md)) |
+| zone ใน Cloudflare + nameserver ที่ name.com | ✅ ชี้มา Cloudflare แล้ว |
+| Custom Domain ผูก Worker `kazumi-clinic` + SSL | ✅ Active — ยิง `https://kazumiclinic.skin/` ได้ **200** |
+| `site.url` ใน [lib/site.ts](../lib/site.ts) | ✅ เปลี่ยนเป็น `https://kazumiclinic.skin` แล้ว (PR #271) |
+| var `SITE_ENV=preview` | ✅ **ลบแล้ว** → robots.txt เลิก `Disallow: /` ทั้งไซต์ (คง `/admin`, `/api/` ไว้) |
+| Cloudflare Access destination `kazumiclinic.skin/admin` | ✅ เพิ่มแล้ว — ยิงจริงได้ 302 ไปหน้า login ของ Access |
+| DNS ที่ Resend ต้องการ (ยืนยันโดเมนส่งอีเมล) | ✅ ยืนยันสำเร็จผ่าน Cloudflare integration — ดู [member-system.md](./member-system.md) |
+| workers.dev | ❌ ปิดแล้ว (PR #277) — ไม่มี URL สำรองอีกต่อไป |
 
-`site.url` ใน [lib/site.ts](../lib/site.ts) **ยังชี้ `https://kazumiclinic.com`** (ค่าเก่า ผิด) — **ห้ามแก้เป็น
-`kazumiclinic.skin` จนกว่าโดเมนจะชี้มา Cloudflare จริงและเสิร์ฟเว็บได้แล้ว** เปลี่ยนตอนนี้จะทำให้
-canonical/sitemap/JSON-LD `@id` ชี้ไปโดเมนที่ยังไม่เสิร์ฟอะไรเลย แย่กว่าสถานะปัจจุบัน
-
-**เพราะงั้น `SITE_ENV=preview` จึงบังคับ `robots.txt` เป็น `Disallow: /` ทั้งหมด** ([app/robots.ts](../app/robots.ts)) — ไม่งั้น Google จะเก็บ workers.dev แล้วอ่านว่าเนื้อหาเป็นของโดเมนที่เราไม่ได้คุม
-
-> 🔴 **ลำดับงานที่เหลือก่อนขึ้นโดเมนจริงได้**:
-> 1. **เจ้าของ/ผู้ถือบัญชี Cloudflare ต้องเพิ่ม `kazumiclinic.skin` เป็น zone ใหม่ในบัญชี Cloudflare** (ผ่าน dashboard) แล้วเอา nameserver คู่ที่ Cloudflare ให้มา ไปตั้งที่ name.com (เปลี่ยน nameserver ระดับ registrar — action ที่กระทบ DNS ทั้งโดเมน ต้องทำโดยเจ้าของ/คนที่ถือบัญชี name.com เท่านั้น ไม่ใช่สิ่งที่ agent ควรทำแทน)
-> 2. รอ nameserver propagate (มักไม่กี่ชั่วโมง)
-> 3. เพิ่ม Worker route/custom domain ให้ zone ใหม่ใน `wrangler.jsonc` หรือ dashboard
-> 4. เปลี่ยน `site.url`, **ลบ var `SITE_ENV`**, เพิ่ม destination ของ Cloudflare Access ให้ครอบโดเมนใหม่ — ทำได้เฉพาะ**หลัง**ข้อ 1-3 เสร็จและยิง `https://kazumiclinic.skin` ตอบ 200 จริงแล้วเท่านั้น
-> 5. ตั้ง DNS TXT/CNAME ที่ Resend ต้องการเพื่อยืนยันโดเมนสำหรับส่งอีเมล (ดู [member-system.md](./member-system.md)) — ทำพร้อมกับข้อ 1-2 ได้เลยเพราะเป็นแค่ TXT record ไม่ต้องรอ nameserver เปลี่ยน
+> ยังไม่ได้ทำ (ไม่เร่ง): **Custom Domain ของ `www.kazumiclinic.skin`** — ตอนนี้ผูกแค่ root domain
+> `www` จึง resolve ไม่ได้เลย ถ้าจะให้ใช้งานได้ต้องเพิ่มอีก Custom Domain แยกใน Workers → Domains
 
 ---
 
@@ -120,12 +112,12 @@ canonical/sitemap/JSON-LD `@id` ชี้ไปโดเมนที่ยัง
 
 **ชั้นที่ 1 — Cloudflare Access (ที่ edge)**
 Zero Trust → Access → Applications → app ชื่อ `kazumi-clinic-admin`
-- Destinations (สูงสุด 5 ต่อ app, ตอนนี้ใช้ 2): `kazumi-clinic.bankjack10452.workers.dev/admin`, `kazumiclinic.skin/admin` (เพิ่ม 2026-07-27 หลังโดเมนจริงขึ้น)
+- Destinations (สูงสุด 5 ต่อ app, ตอนนี้ใช้ 2): `kazumiclinic.skin/admin` (เพิ่ม 2026-07-27 หลังโดเมนจริงขึ้น — **ตัวที่ใช้จริง**), `kazumi-clinic.bankjack10452.workers.dev/admin` (ค้างไว้เฉย ๆ ตั้งแต่ workers.dev ถูกปิดใน PR #277 · ลบทิ้งได้ แต่ไม่มีผลอะไรถ้าปล่อยไว้)
 - Policy: `Admin only` (ใช้ร่วมกับ littlesmileflower)
 - Session: 24 ชม.
 
 **ชั้นที่ 2 — โค้ดเรา verify เอง** ([middleware.ts](../middleware.ts) + [lib/auth.ts](../lib/auth.ts))
-Access ส่ง JWT มาใน header `cf-access-jwt-assertion` · เรา **verify ลายเซ็นเอง ไม่เชื่อ header** เพราะ request ที่เข้า Worker โดยไม่ผ่าน Access (เช่นยิงตรงมา workers.dev) ปลอม header อะไรก็ได้
+Access ส่ง JWT มาใน header `cf-access-jwt-assertion` · เรา **verify ลายเซ็นเอง ไม่เชื่อ header** เพราะ request ที่เข้า Worker โดยไม่ผ่าน Access (เช่นยิงตรงเข้า origin ของ Worker) ปลอม header อะไรก็ได้
 
 **Fail closed** — ไม่มี env Access = ทุก route ตอบ **404** · deploy ที่ยังไม่ตั้งค่า = *ไม่มี admin* ไม่ใช่ *admin เปิดโล่ง* · ใช้ 404 ไม่ใช่ 401 เพราะคนแปลกหน้าไม่ควรรู้ว่ามี admin
 
