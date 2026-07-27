@@ -34,7 +34,9 @@
   | 2 · catalogue สองภาษา ([lib/services-en.ts](lib/services-en.ts) + [lib/services-locale.ts](lib/services-locale.ts)) | 🔨 PR นี้ |
   | 3 · `components/*-service-page.tsx` 9 ไฟล์ (83 บรรทัด) | ⏳ เนื้อหาการแพทย์ ต้องให้เจ้าของรีวิวก่อน (§0.2) |
   | 4 · เนื้อหาใน D1 (20 บทความ · 17 สินค้า · 2 โปรฯ) | ⏳ **ยังไม่มีระบบ** — migration 0008 ไม่เคยรันและชื่อคอลัมน์ไม่ตรง schema จริง, ไม่มีโค้ดอ่าน `_en`, /admin ไม่มีช่องกรอก EN |
-  | 5 · `site.description` + `lib/nav.ts` ยังเป็นไทยบนทุก locale | ⏳ เศษที่เหลือหลังเฟส 2 (~12 คำบนหน้า generic) |
+  | 5 · ข้อมูลคลินิก/แพทย์ + JSON-LD เลือกตาม locale | ✅ merged (#283) — `/en` เหลือไทยเฉพาะชื่อแพทย์ เลขใบอนุญาต และที่อยู่ ซึ่ง**ตั้งใจคงไว้** |
+
+  วัดจากเว็บจริงหลังเฟส 1-3 ขึ้น: `/en/services` 286 → 39 คำ · `/en/filler` 272 → 31 · `/en/about` 217 → 52 · `/en/blog` 343 → 82 (ที่เหลือของ blog คือเนื้อหาใน D1 = เฟส 4)
 
   Gemini CLI: **login ด้วยบัญชี Google ส่วนตัวใช้ไม่ได้แล้ว** (Google ตัด free tier ออกจาก Code Assist → `UNSUPPORTED_CLIENT`) ใช้ API key จาก AI Studio ใน `~/.gemini/.env` แทน และต้องเรียกด้วย `--skip-trust` ไม่งั้น CLI ไม่โหลด `.env`
 

@@ -5,7 +5,7 @@ import { Link } from '@/i18n/routing';
 import Image from 'next/image';
 import { ArrowUpRight, BadgeCheck, ChevronDown, Clock, MapPin, Stethoscope } from 'lucide-react';
 import { site, localizedAlternates } from '@/lib/site';
-import { doctor, doctorEesha } from '@/lib/doctor';
+import { doctor, doctorEesha, localizeDoctor } from '@/lib/doctor';
 import { serviceCategories } from '@/lib/services';
 import { faqSchema, homePageSchema } from '@/lib/schema';
 
@@ -58,6 +58,14 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations('HomePage');
+  const isEnglish = locale === 'en';
+  const localizedDoctor = localizeDoctor(doctor, locale);
+  const localizedDoctorEesha = localizeDoctor(doctorEesha, locale);
+  const hoursDisplay = {
+    weekdays: isEnglish ? site.hoursDisplay.weekdaysEn : site.hoursDisplay.weekdays,
+    sunday: isEnglish ? site.hoursDisplay.sundayEn : site.hoursDisplay.sunday,
+    short: isEnglish ? site.hoursDisplay.shortEn : site.hoursDisplay.short,
+  };
 
   const faqs = [
     {
@@ -66,7 +74,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     },
     {
       question: t('faq.q2'),
-      answer: t('faq.a2', { weekdays: site.hoursDisplay.weekdays, sunday: site.hoursDisplay.sunday }),
+      answer: t('faq.a2', { weekdays: hoursDisplay.weekdays, sunday: hoursDisplay.sunday }),
     },
     {
       question: t('faq.q3'),
@@ -118,7 +126,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: jsonLdHtml(homePageSchema(heroSrc)) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(homePageSchema(heroSrc, locale)) }}
       />
 
       {/* ── Hero: full-bleed portrait with overlaid copy ─────── */}
@@ -191,7 +199,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             { icon: Stethoscope, label: t('trust.doctor'), sub: t('trust.doctorSub') },
             { icon: BadgeCheck, label: t('trust.license'), sub: site.license },
             { icon: MapPin, label: t('trust.location'), sub: t('trust.locationSub') },
-            { icon: Clock, label: t('trust.openDaily'), sub: site.hoursDisplay.short },
+            { icon: Clock, label: t('trust.openDaily'), sub: hoursDisplay.short },
           ].map(({ icon: Icon, label, sub }) => (
             <li key={label} className="flex items-center gap-3">
               <Icon className="size-5 shrink-0 text-[#06C755]" strokeWidth={1.5} aria-hidden="true" />
@@ -255,15 +263,15 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               label="The Lead Physician"
               name={doctor.nameTh}
               nameSecondary={doctor.name}
-              role={doctor.role}
+              role={localizedDoctor.role}
               licenseNo={doctor.licenseNo}
-              summary={doctor.summary}
+              summary={localizedDoctor.summary}
               expertise={doctor.expertise}
-              languages={doctor.languages}
+              languages={localizedDoctor.languages}
               imageSrc={doctorSrc}
               imageAlt={t('team.imageAlt', {
                 name: doctor.nameTh,
-                role: doctor.role,
+                role: localizedDoctor.role,
                 siteName: site.name,
               })}
             />
@@ -273,15 +281,15 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               label="Clinic Physician"
               name={doctorEesha.name}
               nameSecondary={doctorEesha.nameTh}
-              role={doctorEesha.role}
+              role={localizedDoctorEesha.role}
               licenseNo={doctorEesha.licenseNo}
-              summary={doctorEesha.summary}
+              summary={localizedDoctorEesha.summary}
               expertise={doctorEesha.expertise}
-              languages={doctorEesha.languages}
+              languages={localizedDoctorEesha.languages}
               imageSrc={eeshaSrc}
               imageAlt={t('team.imageAlt', {
                 name: doctorEesha.name,
-                role: doctorEesha.role,
+                role: localizedDoctorEesha.role,
                 siteName: site.name,
               })}
               delay={80}
@@ -359,9 +367,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                       <ChevronDown className="size-5 text-[var(--store-muted)] transition-transform duration-300 group-open:rotate-180" />
                     </summary>
                     <div className="pb-6 pr-6 text-sm leading-[1.9] text-[var(--store-muted)]">
-                      {site.hoursDisplay.weekdays}
+                      {hoursDisplay.weekdays}
                       <br />
-                      {site.hoursDisplay.sunday}
+                      {hoursDisplay.sunday}
                     </div>
                   </details>
 

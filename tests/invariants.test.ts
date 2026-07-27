@@ -7,8 +7,11 @@ import { serviceCategories } from '@/lib/services';
 import { catalogueCategoriesEn, catalogueItemsEn, catalogueUnitsEn } from '@/lib/services-en';
 import { localizeServiceCategory } from '@/lib/services-locale';
 import { site } from '@/lib/site';
+import { doctor } from '@/lib/doctor';
 import {
   clinicSchema,
+  doctorSchema,
+  homePageSchema,
   serviceItemListSchema,
   serviceCategoryListSchema,
   breadcrumbSchema,
@@ -45,7 +48,7 @@ describe('URL conventions — no trailing slash (CLAUDE.md §1)', () => {
 
   it('generated JSON-LD contains no URL with a stray trailing slash', () => {
     const schemas: unknown[] = [
-      clinicSchema(),
+      clinicSchema({ locale: 'th' }),
       serviceCategoryListSchema(serviceCategories),
       breadcrumbSchema([
         { name: 'หน้าหลัก', path: '/' },
@@ -58,6 +61,34 @@ describe('URL conventions — no trailing slash (CLAUDE.md §1)', () => {
       .filter(isInternal)
       .filter((u) => !cleanPath(u));
     expect(bad, `URLs with a trailing slash: ${bad.join(', ')}`).toEqual([]);
+  });
+});
+
+describe('locale-aware clinic and physician data', () => {
+  it('uses English business copy and physician roles for the English schema', () => {
+    const schema = clinicSchema({ locale: 'en' });
+
+    expect(schema.description).toBe(site.descriptionEn);
+    expect(schema.employee.map((employee) => employee.jobTitle)).toEqual(
+      site.doctors.map((profile) => profile.roleEn),
+    );
+  });
+
+  it('uses English copy, language metadata, and localized URLs for page schemas', () => {
+    const home = homePageSchema('', 'en');
+    const physician = doctorSchema(doctor, undefined, 'en');
+
+    expect(home).toMatchObject({
+      name: `${site.name} — Aesthetic Clinic in Sukhumvit, Bangkok`,
+      url: `${site.url}/en`,
+      description: site.descriptionEn,
+      inLanguage: 'en',
+    });
+    expect(physician).toMatchObject({
+      jobTitle: doctor.roleEn,
+      knowsLanguage: doctor.languagesEn,
+      url: `${site.url}/en/about`,
+    });
   });
 });
 

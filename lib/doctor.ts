@@ -7,8 +7,11 @@ export const doctor = {
   givenName: 'Pratch',
   familyName: 'Achawanitkun',
   role: 'แพทย์ด้านเวชศาสตร์ความงาม',
+  roleEn: 'Aesthetic medicine physician',
   summary:
     'ให้คำปรึกษา วางแผนการดูแลเฉพาะบุคคล และให้คำแนะนำก่อน–หลังหัตถการ โดยคำนึงถึงประวัติสุขภาพและเป้าหมายของผู้รับบริการ',
+  summaryEn:
+    'Provides consultations, develops individual care plans, and offers guidance before and after procedures, taking each client’s health history and goals into account.',
   education: [
     {
       degree: 'MSc in Aesthetic Medicine',
@@ -31,6 +34,11 @@ export const doctor = {
     'มีประสบการณ์ให้คำปรึกษาและดูแลหัตถการด้านเวชศาสตร์ความงาม',
     'ประเมินผู้รับบริการและวางแผนการดูแลเฉพาะบุคคล',
     'ให้คำแนะนำการเตรียมตัวและการดูแลหลังหัตถการ',
+  ],
+  experienceEn: [
+    'Experience in aesthetic medicine consultations and procedures',
+    'Assesses clients and develops individual care plans',
+    'Provides guidance on preparation and aftercare',
   ],
   // Continuing-education workshops & certificates, transcribed from the clinic's supplied
   // "Training Certificate" document. `title` is the course, `provider` the organiser · location.
@@ -76,6 +84,7 @@ export const doctor = {
     'IV Therapy Consultation',
   ],
   languages: ['ไทย', 'English', '中文'],
+  languagesEn: ['Thai', 'English', 'Chinese'],
 } as const;
 
 // Second physician — transcribed from the clinic's supplied profile posters. English name kept
@@ -91,9 +100,12 @@ export const doctorEesha = {
   givenName: 'Eesha',
   familyName: 'Patel',
   role: 'แพทย์ผิวหนังและเวชศาสตร์ความงาม',
+  roleEn: 'Physician in dermatology and aesthetic medicine',
   credentials: 'MBBS · MSc Internal Medicine (Dermatology) · Anti-Aging Medicine',
   summary:
     'ดูแลด้านสุขภาพผิวและเวชศาสตร์ความงาม ให้คำปรึกษาและประเมินก่อนหัตถการ ครอบคลุมหัตถการเลเซอร์ อัลตราซาวด์ แสงบำบัด หัตถการฉีด และการฟื้นฟูผิว',
+  summaryEn:
+    'Provides skin health and aesthetic medicine care, including consultation and assessment before procedures involving laser, ultrasound, light-based, injectable, and skin rejuvenation treatments.',
   education: [
     {
       degree: 'Board Certification in Anti-Aging Medicine',
@@ -113,6 +125,11 @@ export const doctorEesha = {
     'Fellowship Training — Cutaneous & Laser Surgery, Institute of Dermatology, Ministry of Public Health (2019)',
     'Senior Manager, Health Ideation & Innovation — Prudential Thailand (2020–2021)',
   ],
+  experienceEn: [
+    'Aesthetic & Skin Physician — Bangkok, Thailand (2022–present)',
+    'Fellowship Training — Cutaneous & Laser Surgery, Institute of Dermatology, Ministry of Public Health (2019)',
+    'Senior Manager, Health Ideation & Innovation — Prudential Thailand (2020–2021)',
+  ],
   training: [
     'Integrative Toxin & Filler Training (2022)',
     'Current Issues in Dermatology — Chulalongkorn University (2021)',
@@ -120,6 +137,10 @@ export const doctorEesha = {
   ],
   memberships: [
     'Member, Dermatological Society of Thailand (2016–ปัจจุบัน)',
+    'Review of melasma treatment options (2017–2018)',
+  ],
+  membershipsEn: [
+    'Member, Dermatological Society of Thailand (2016–present)',
     'Review of melasma treatment options (2017–2018)',
   ],
   expertise: [
@@ -144,8 +165,25 @@ export const doctorEesha = {
     'Pico',
   ],
   languages: ['ไทย', 'English', 'Hindi', 'Gujarati'],
+  languagesEn: ['Thai', 'English', 'Hindi', 'Gujarati'],
 } as const;
 
 // Dr. Pratch is the clinic director (featured across the site); Dr. Eesha is a clinic physician
 // shown on /about. Both appear as licensed employees in the MedicalBusiness JSON-LD.
 export const doctors = [doctor, doctorEesha] as const;
+
+type DoctorProfile = (typeof doctors)[number];
+
+/** Resolves the bilingual profile fields before a server component passes them to its UI. */
+export function localizeDoctor<T extends DoctorProfile>(profile: T, locale: string) {
+  if (locale !== 'en') return profile;
+
+  return {
+    ...profile,
+    role: profile.roleEn,
+    summary: profile.summaryEn,
+    experience: profile.experienceEn,
+    languages: profile.languagesEn,
+    ...('membershipsEn' in profile ? { memberships: profile.membershipsEn } : {}),
+  };
+}

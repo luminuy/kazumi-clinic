@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Link } from '@/i18n/routing';
 import { ArrowUpRight, ChevronDown } from 'lucide-react';
 import { site, localizedAlternates } from '@/lib/site';
-import { doctor, doctorEesha } from '@/lib/doctor';
+import { doctor, doctorEesha, localizeDoctor } from '@/lib/doctor';
 import { getImage, getImageOverrides } from '@/lib/site-images-store';
 import { categoryImageKey } from '@/lib/site-images';
 import { socialImage } from '@/lib/metadata-images';
@@ -142,6 +142,13 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
   setRequestLocale(locale);
   const t = await getTranslations('ServicesPage');
   const tNav = await getTranslations('Navigation');
+  const isEnglish = locale === 'en';
+  const localizedDoctor = localizeDoctor(doctor, locale);
+  const localizedDoctorEesha = localizeDoctor(doctorEesha, locale);
+  const hoursDisplay = {
+    weekdays: isEnglish ? site.hoursDisplay.weekdaysEn : site.hoursDisplay.weekdays,
+    sunday: isEnglish ? site.hoursDisplay.sundayEn : site.hoursDisplay.sunday,
+  };
   
   const breadcrumb = breadcrumbSchema([
     { name: tNav('home'), path: '/' },
@@ -317,15 +324,15 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
               label="The Lead Physician"
               name={doctor.nameTh}
               nameSecondary={doctor.name}
-              role={doctor.role}
+              role={localizedDoctor.role}
               licenseNo={doctor.licenseNo}
-              summary={doctor.summary}
+              summary={localizedDoctor.summary}
               expertise={doctor.expertise}
-              languages={doctor.languages}
+              languages={localizedDoctor.languages}
               imageSrc={overrides.get('doctor-pratch')?.public_id}
               imageAlt={t('assessment.imageAlt', {
                 name: doctor.nameTh,
-                role: doctor.role,
+                role: localizedDoctor.role,
                 siteName: site.name,
               })}
             />
@@ -335,15 +342,15 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
               label="Clinic Physician"
               name={doctorEesha.name}
               nameSecondary={doctorEesha.nameTh}
-              role={doctorEesha.role}
+              role={localizedDoctorEesha.role}
               licenseNo={doctorEesha.licenseNo}
-              summary={doctorEesha.summary}
+              summary={localizedDoctorEesha.summary}
               expertise={doctorEesha.expertise}
-              languages={doctorEesha.languages}
+              languages={localizedDoctorEesha.languages}
               imageSrc={overrides.get('doctor-eesha')?.public_id}
               imageAlt={t('assessment.imageAlt', {
                 name: doctorEesha.name,
-                role: doctorEesha.role,
+                role: localizedDoctorEesha.role,
                 siteName: site.name,
               })}
               delay={80}
@@ -425,9 +432,9 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
                       <ChevronDown className="size-5 text-[var(--store-muted)] transition-transform duration-300 group-open:rotate-180" />
                     </summary>
                     <div className="pb-6 pr-6 text-sm leading-[1.9] text-[var(--store-muted)]">
-                      {site.hoursDisplay.weekdays}
+                      {hoursDisplay.weekdays}
                       <br />
-                      {site.hoursDisplay.sunday}
+                      {hoursDisplay.sunday}
                     </div>
                   </details>
 
