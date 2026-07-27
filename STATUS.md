@@ -5,7 +5,7 @@
 > อัปเดตไฟล์นี้เป็นส่วนหนึ่งของ workflow: หลัง **deploy** และตอน **เริ่ม/จบงานสำคัญ** (ดู CLAUDE.md §0)
 > งานที่ปิดไปแล้วย้ายไป [docs/changelog.md](docs/changelog.md) — ไฟล์นี้เก็บแค่ **ตอนนี้ · ต่อไป · ค้าง**
 
-**อัปเดตล่าสุด:** 2026-07-25 13:25 UTC · โดย: Claude Code
+**อัปเดตล่าสุด:** 2026-07-27 08:30 UTC · โดย: Claude Code
 
 ---
 
@@ -13,9 +13,9 @@
 
 | | |
 |---|---|
-| **workers.dev** | Version `c9cdab1f` — deploy 2026-07-25 13:20 UTC ผ่าน CD (run [30159515215](https://github.com/luminuy/kazumi-clinic/actions/runs/30159515215)) · ตรงกับ main `d9f8e0d` (PR [#264](https://github.com/luminuy/kazumi-clinic/pull/264) — ต่อ Resend) · `pnpm health` + `pnpm smoke` เขียว · ยิง `/api/account/forgot-password` จริง: ยังตอบ 200 ปกติแม้ยังไม่ตั้ง secret |
+| **workers.dev** | Version `7b582faa` — deploy 2026-07-27 08:26 UTC ผ่าน CD (run [30249844049](https://github.com/luminuy/kazumi-clinic/actions/runs/30249844049)) · ตรงกับ main `cd2489a` (PR [#266](https://github.com/luminuy/kazumi-clinic/pull/266) — ระบบนัดหมาย Part A) · migration `0013_appointments` รันบน remote D1 แล้ว**ก่อน** merge (คอลัมน์ใหม่ตรวจด้วย `PRAGMA table_info(leads)` แล้ว) · ยิงจริงหลัง deploy: `POST /api/leads` schema ใหม่ยอมรับ `email`/`requestedDate`/`requestedTime`/`locale` (`locale` ขาดแล้ว 400 ตามที่ตั้งใจ), `/appointments/cancel` และ `/en/appointments/cancel` ตอบ 200 ทั้งมี/ไม่มี token, `/api/appointments/cancel` ด้วย token ปลอมตอบ 400 ข้อความทั่วไป (ไม่ leak), `/account/appointments` redirect ไป login ให้ผู้ใช้ที่ยังไม่ล็อกอิน |
 | **โดเมนจริง** (kazumiclinic.com) | ❌ ยังไม่ขึ้น — `SITE_ENV=preview`, robots `Disallow: /` (ตั้งใจ ห้ามลบจนกว่าโดเมนจะขึ้น) |
-| **URL ตรวจ** | https://kazumi-clinic.bankjack10452.workers.dev · ตรวจ 2026-07-25: HTTP 200 |
+| **URL ตรวจ** | https://kazumi-clinic.bankjack10452.workers.dev · ตรวจ 2026-07-27: HTTP 200 |
 
 > วิธียืนยันว่าเว็บ = main: `git rev-parse origin/main` เทียบ commit ข้างบน · Version ID จริงเอาจาก `npx wrangler deployments list` หรือ log ของ workflow `Deploy`
 >
