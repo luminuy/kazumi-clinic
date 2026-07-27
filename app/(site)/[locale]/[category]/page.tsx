@@ -253,7 +253,14 @@ export default async function ServiceCategoryPage({ params }: Props) {
   // generic template when a category image is unavailable.
   const pageContent =
     service.slug === 'filler' ? (
-      <FillerServicePage service={service} heroImage={heroImage} itemImages={itemImages} doctorImage={doctorImage} eeshaImage={eeshaImage} />
+      <FillerServicePage
+        service={service}
+        heroImage={heroImage}
+        itemImages={itemImages}
+        doctorImage={doctorImage}
+        eeshaImage={eeshaImage}
+        locale={locale}
+      />
     ) : service.slug === 'thread-lift' ? (
       <ThreadLiftServicePage
         service={service}

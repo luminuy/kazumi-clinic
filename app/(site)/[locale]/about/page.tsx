@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Link } from '@/i18n/routing';
 import { ArrowRight, MapPin, ShieldCheck, Sparkles } from 'lucide-react';
 import { site, localizedAlternates } from '@/lib/site';
-import { doctor, doctorEesha } from '@/lib/doctor';
+import { doctor, doctorEesha, localizeDoctor } from '@/lib/doctor';
 import { breadcrumbSchema, doctorSchema } from '@/lib/schema';
 import { getImageOverrides } from '@/lib/site-images-store';
 import { siteSocialImage } from '@/lib/metadata-images';
@@ -16,8 +16,14 @@ import { LineIcon } from '@/components/brand-icons';
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'AboutPage' });
+  const localizedDoctor = localizeDoctor(doctor, locale);
   const pageTitle = t('metaTitle');
-  const pageDescription = t('metaDescription', { siteName: site.name, doctorName: doctor.name, doctorRole: doctor.role, license: site.license });
+  const pageDescription = t('metaDescription', {
+    siteName: site.name,
+    doctorName: doctor.name,
+    doctorRole: localizedDoctor.role,
+    license: site.license,
+  });
   const socialImage = await siteSocialImage('og-about', `${pageTitle} — ${site.name}`);
   const alternates = localizedAlternates(locale, '/about');
 
@@ -55,6 +61,10 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
   setRequestLocale(locale);
   const t = await getTranslations('AboutPage');
   const tNav = await getTranslations('Navigation');
+  const isEnglish = locale === 'en';
+  const localizedDoctor = localizeDoctor(doctor, locale);
+  const localizedDoctorEesha = localizeDoctor(doctorEesha, locale);
+  const description = isEnglish ? site.descriptionEn : site.description;
 
   const overrides = await getImageOverrides();
   const doctorSrc = overrides.get('doctor-pratch')?.public_id;
@@ -78,12 +88,12 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: jsonLdHtml(doctorSchema(doctor, doctorSrc)) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(doctorSchema(doctor, doctorSrc, locale)) }}
       />
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: jsonLdHtml(doctorSchema(doctorEesha, eeshaSrc)) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(doctorSchema(doctorEesha, eeshaSrc, locale)) }}
       />
 
       {/* ── Hero ─────────────────────────────────────────────── */}
@@ -105,7 +115,7 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
                 </span>
               </p>
               <p className="mt-6 max-w-lg text-sm leading-[1.9] text-[var(--store-muted)] md:text-base">
-                {site.description}
+                {description}
               </p>
               <p className="mt-8 inline-block border-t border-black/10 pt-4 text-[0.66rem] uppercase tracking-[0.22em] text-[var(--store-ink)]">
                 Sukhumvit · Bangkok
@@ -177,7 +187,7 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
                     src={doctorSrc}
                     alt={t('doctorImageAlt', {
                       name: doctor.nameTh,
-                      role: doctor.role,
+                      role: localizedDoctor.role,
                       siteName: site.name,
                     })}
                     fill
@@ -190,7 +200,7 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
                     {t('director.license', { license: doctor.licenseNo })}
                   </p>
                   <p className="text-[0.66rem] tracking-wide text-[var(--store-muted)]">
-                    {t('director.languages', { languages: doctor.languages.join(' · ') })}
+                    {t('director.languages', { languages: localizedDoctor.languages.join(' · ') })}
                   </p>
                 </div>
               </Reveal>
@@ -207,7 +217,7 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
                     {doctor.name}
                   </p>
                   <p className="mt-6 max-w-xl text-sm leading-[1.9] text-[var(--store-muted)]">
-                    {doctor.summary}
+                    {localizedDoctor.summary}
                   </p>
                 </div>
 
@@ -243,7 +253,7 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
                     {t('director.experience')}
                   </h3>
                   <ul className="mt-6 space-y-3">
-                    {doctor.experience.map((item) => (
+                    {localizedDoctor.experience.map((item) => (
                       <li key={item} className="flex gap-3 text-xs leading-[1.7] text-[var(--store-muted)]">
                         <span aria-hidden="true" className="mt-2 h-px w-3 shrink-0 bg-black/10" />
                         <span>{item}</span>
@@ -317,7 +327,7 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
                       src={eeshaSrc}
                       alt={t('doctorImageAlt', {
                         name: doctorEesha.name,
-                        role: doctorEesha.role,
+                        role: localizedDoctorEesha.role,
                         siteName: site.name,
                       })}
                       fill
@@ -333,7 +343,9 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
                     {t('physician.license', { license: doctorEesha.licenseNo })}
                   </p>
                   <p className="text-[0.66rem] tracking-wide text-[var(--store-muted)]">
-                    {t('physician.languages', { languages: doctorEesha.languages.join(' · ') })}
+                    {t('physician.languages', {
+                      languages: localizedDoctorEesha.languages.join(' · '),
+                    })}
                   </p>
                 </div>
               </Reveal>
@@ -353,9 +365,11 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
                   >
                     {doctorEesha.credentials}
                   </p>
-                  <p className="mt-3 text-sm text-[var(--store-muted)]">{doctorEesha.role}</p>
+                  <p className="mt-3 text-sm text-[var(--store-muted)]">
+                    {localizedDoctorEesha.role}
+                  </p>
                   <p className="mt-6 max-w-xl text-sm leading-[1.9] text-[var(--store-muted)]">
-                    {doctorEesha.summary}
+                    {localizedDoctorEesha.summary}
                   </p>
                 </div>
 
@@ -391,7 +405,7 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
                     {t('physician.experience')}
                   </h3>
                   <ul className="mt-5 space-y-3">
-                    {doctorEesha.experience.map((item) => (
+                    {localizedDoctorEesha.experience.map((item) => (
                       <li key={item} className="flex gap-3 text-xs leading-[1.7] text-[var(--store-muted)]">
                         <span aria-hidden="true" className="mt-2 h-px w-3 shrink-0 bg-black/10" />
                         <span>{item}</span>
@@ -425,7 +439,7 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
                       {t('physician.research')}
                     </h3>
                     <ul className="mt-5 space-y-3">
-                      {doctorEesha.memberships.map((item) => (
+                      {localizedDoctorEesha.memberships.map((item) => (
                         <li key={item} className="flex gap-3 text-xs leading-[1.7] text-[var(--store-muted)]">
                           <span aria-hidden="true" className="mt-2 h-px w-3 shrink-0 bg-black/10" />
                           <span>{item}</span>

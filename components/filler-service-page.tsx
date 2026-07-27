@@ -3,7 +3,7 @@ import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import { ArrowRight, FlaskConical, ShieldCheck, Syringe } from 'lucide-react';
 import type { ServiceCategory } from '@/lib/services';
-import { doctors } from '@/lib/doctor';
+import { doctors, localizeDoctor } from '@/lib/doctor';
 import { site } from '@/lib/site';
 import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/reveal';
@@ -19,6 +19,7 @@ export async function FillerServicePage({
   itemImages = {},
   doctorImage,
   eeshaImage,
+  locale,
 }: {
   service: ServiceCategory;
   heroImage?: string;
@@ -26,9 +27,11 @@ export async function FillerServicePage({
   itemImages?: Record<string, string>;
   doctorImage?: string;
   eeshaImage?: string;
+  locale: string;
 }) {
   const t = await getTranslations('FillerPage');
   const tCommon = await getTranslations('ServiceCategoryPage');
+  const localizedDoctors = doctors.map((profile) => localizeDoctor(profile, locale));
 
   return (
     <div className="overflow-hidden bg-[var(--background)]">
@@ -216,15 +219,15 @@ export async function FillerServicePage({
               label="The Lead Physician"
               name={doctors[0].nameTh}
               nameSecondary={doctors[0].name}
-              role={doctors[0].role}
+              role={localizedDoctors[0].role}
               licenseNo={doctors[0].licenseNo}
-              summary={doctors[0].summary}
+              summary={localizedDoctors[0].summary}
               expertise={doctors[0].expertise}
-              languages={doctors[0].languages}
+              languages={localizedDoctors[0].languages}
               imageSrc={doctorImage}
               imageAlt={t('doctorImageAlt', {
                 doctorName: doctors[0].nameTh,
-                doctorRole: doctors[0].role,
+                doctorRole: localizedDoctors[0].role,
                 siteName: site.name,
               })}
             />
@@ -232,15 +235,15 @@ export async function FillerServicePage({
               label="Clinic Physician"
               name={doctors[1].name}
               nameSecondary={doctors[1].nameTh}
-              role={doctors[1].role}
+              role={localizedDoctors[1].role}
               licenseNo={doctors[1].licenseNo}
-              summary={doctors[1].summary}
+              summary={localizedDoctors[1].summary}
               expertise={doctors[1].expertise}
-              languages={doctors[1].languages}
+              languages={localizedDoctors[1].languages}
               imageSrc={eeshaImage}
               imageAlt={t('doctorImageAlt', {
                 doctorName: doctors[1].name,
-                doctorRole: doctors[1].role,
+                doctorRole: localizedDoctors[1].role,
                 siteName: site.name,
               })}
               delay={60}

@@ -5,7 +5,13 @@ import { navItems } from '@/lib/nav';
 import { FacebookIcon, InstagramIcon, LineIcon } from '@/components/brand-icons';
 import { useTranslations } from 'next-intl';
 
-export default function Footer({ logoMark }: { logoMark: string }) {
+export default function Footer({
+  logoMark,
+  description,
+}: {
+  logoMark: string;
+  description: string;
+}) {
   const tNav = useTranslations('Navigation');
   const tFooter = useTranslations('Footer');
   return (
@@ -30,7 +36,7 @@ export default function Footer({ logoMark }: { logoMark: string }) {
               )}
               <span className="font-serif text-lg">Kazumi Clinic</span>
             </Link>
-            <p className="mt-5 text-xs leading-[1.75] text-ink/60">{site.description}</p>
+            <p className="mt-5 text-xs leading-[1.75] text-ink/60">{description}</p>
             <div className="mt-5 flex items-center gap-4">
               <a
                 href={site.lineUrl}

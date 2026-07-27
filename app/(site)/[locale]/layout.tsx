@@ -107,7 +107,9 @@ export default async function SiteLayout({
   const businessSchema = clinicSchema({
     imagePublicId: heroImage,
     logoPublicId: brandLogo,
+    locale,
   });
+  const siteDescription = locale === 'en' ? site.descriptionEn : site.description;
 
   const messages = await getMessages();
 
@@ -132,7 +134,7 @@ export default async function SiteLayout({
           />
           <Header logoMark={brandMark} oauthProviders={configuredProviders()} />
           <main>{children}</main>
-          <Footer logoMark={brandMark} />
+          <Footer logoMark={brandMark} description={siteDescription} />
           <MobileContactBar />
         </NextIntlClientProvider>
       </body>

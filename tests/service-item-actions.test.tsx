@@ -5,6 +5,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import type { ReactElement, ReactNode } from 'react';
 import thMessages from '@/messages/th.json';
 import { serviceCategories, type ServiceItem } from '@/lib/services';
+import { site } from '@/lib/site';
 import { ServiceItemActions } from '@/components/service-item-actions';
 
 /**
@@ -188,7 +189,7 @@ describe('brand chrome survives an empty logo slot', () => {
 
   it('Footer renders the wordmark and no image when the mark is empty', async () => {
     const { default: Footer } = await import('@/components/Footer');
-    renderWithIntl(<Footer logoMark="" />);
+    renderWithIntl(<Footer logoMark="" description={site.description} />);
 
     expect(screen.queryByRole('img')).toBeNull();
     expect(screen.getByText('Kazumi Clinic')).toBeTruthy();

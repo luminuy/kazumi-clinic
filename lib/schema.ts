@@ -1,7 +1,7 @@
 // JSON-LD builders. `clinicSchema` is injected once in the root layout with @id
 // `${site.url}/#business` — every other page must reference it via that @id instead of
 // repeating the MedicalBusiness block (see CLAUDE.md §3.1).
-import { site } from './site';
+import { localizedAlternates, site } from './site';
 import { ServiceCategory, serviceCategories } from './services';
 import { doctor } from './doctor';
 import { cld } from './cloud';
@@ -21,17 +21,21 @@ export function clinicSchema({
   // and `image` is dropped below rather than pointing Google at an asset that isn't there.
   imagePublicId = '',
   logoPublicId = site.logo,
+  locale = 'th',
 }: {
   imagePublicId?: string;
   logoPublicId?: string;
+  locale?: string;
 } = {}) {
+  const isEnglish = locale === 'en';
+
   return {
     '@context': 'https://schema.org',
     '@type': ['MedicalBusiness', 'HealthAndBeautyBusiness'],
     '@id': `${site.url}/#business`,
     name: site.name,
     alternateName: site.nameTh,
-    description: site.description,
+    description: isEnglish ? site.descriptionEn : site.description,
     url: site.url,
     telephone: site.phoneIntl,
     priceRange: '$$',
@@ -68,7 +72,7 @@ export function clinicSchema({
     employee: site.doctors.map((doctor) => ({
       '@type': 'Physician',
       name: doctor.name,
-      jobTitle: doctor.role,
+      jobTitle: isEnglish ? doctor.roleEn : doctor.role,
       identifier: doctor.licenseNo,
     })),
     // The service range as procedures the clinic offers, linking the business entity to each
@@ -92,15 +96,20 @@ export const websiteSchema = {
   publisher: { '@id': `${site.url}/#business` },
 };
 
-export function homePageSchema(imagePublicId: string = '') {
+export function homePageSchema(imagePublicId: string = '', locale: string = 'th') {
+  const isEnglish = locale === 'en';
+  const pageUrl = localizedAlternates(locale).canonical;
+
   return {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
-    '@id': `${site.url}/#webpage`,
-    name: `${site.name} — คลินิกความงามสุขุมวิท กรุงเทพฯ`,
-    url: site.url,
-    description: site.description,
-    inLanguage: 'th-TH',
+    '@id': `${pageUrl}#webpage`,
+    name: isEnglish
+      ? `${site.name} — Aesthetic Clinic in Sukhumvit, Bangkok`
+      : `${site.name} — คลินิกความงามสุขุมวิท กรุงเทพฯ`,
+    url: pageUrl,
+    description: isEnglish ? site.descriptionEn : site.description,
+    inLanguage: isEnglish ? 'en' : 'th-TH',
     isPartOf: { '@id': `${site.url}/#website` },
     about: { '@id': `${site.url}/#business` },
     // Omitted rather than faked when the home hero slot is empty — an ImageObject whose url 404s
@@ -123,20 +132,28 @@ type DoctorForSchema = {
   givenName: string;
   familyName: string;
   role: string;
+  roleEn: string;
   nameTh?: string;
   licenseNo: string;
   education: readonly { degree: string; institution: string }[];
   languages: readonly string[];
+  languagesEn: readonly string[];
 };
 
-export function doctorSchema(doc: DoctorForSchema = doctor, imagePublicId?: string) {
+export function doctorSchema(
+  doc: DoctorForSchema = doctor,
+  imagePublicId?: string,
+  locale: string = 'th',
+) {
+  const isEnglish = locale === 'en';
+
   return {
     '@context': 'https://schema.org',
     '@type': 'Person',
     name: doc.name,
     givenName: doc.givenName,
     familyName: doc.familyName,
-    jobTitle: doc.role,
+    jobTitle: isEnglish ? doc.roleEn : doc.role,
     ...(doc.nameTh && { alternateName: doc.nameTh }),
     identifier: doc.licenseNo,
     ...(imagePublicId && { image: cld(imagePublicId, { width: 800, crop: 'fit' }) }),
@@ -145,8 +162,8 @@ export function doctorSchema(doc: DoctorForSchema = doctor, imagePublicId?: stri
       '@type': 'EducationalOrganization',
       name: item.institution,
     })),
-    knowsLanguage: doc.languages,
-    url: `${site.url}/about`,
+    knowsLanguage: isEnglish ? doc.languagesEn : doc.languages,
+    url: localizedAlternates(locale, '/about').canonical,
   };
 }
 

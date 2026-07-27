@@ -11,6 +11,8 @@ export const site = {
   taglineTh: 'Minimal Change. Maximum Confidence.',
   description:
     'Kazumi Clinic คลินิกความงามย่านสุขุมวิท กรุงเทพฯ ให้บริการฟิลเลอร์ โบท็อกซ์ IV Drip วิตามิน สกินบูสเตอร์ และคอลลาเจนบูสเตอร์ โดยแพทย์ประเมินและวางแผนการดูแลเฉพาะบุคคล',
+  descriptionEn:
+    'Kazumi Clinic is an aesthetic clinic in Sukhumvit, Bangkok, offering dermal filler, botulinum toxin, IV vitamin drip, skin booster, and collagen booster treatments, with individual assessment and care planning by physicians.',
   url: 'https://kazumiclinic.skin',
   phone: '081-712-7486',
   phoneIntl: '+66817127486',
@@ -44,11 +46,13 @@ export const site = {
       nickname: 'คุณหมอโอ๊ต',
       licenseNo: 'ว.75302',
       role: 'ผู้ออกแบบโปรแกรมฟิลเลอร์ปรับรูปหน้า',
+      roleEn: 'Developer of facial contouring dermal filler programmes',
     },
     {
       name: 'Dr. Eesha Patel',
       licenseNo: '69180',
       role: 'แพทย์ผิวหนังและเวชศาสตร์ความงาม',
+      roleEn: 'Physician in dermatology and aesthetic medicine',
     },
   ],
   hours: [
@@ -64,6 +68,9 @@ export const site = {
     weekdays: 'จันทร์–เสาร์ 9:00–22:00',
     sunday: 'อาทิตย์ 9:00–17:00',
     short: 'ทุกวัน 9:00–22:00 (อาทิตย์ 9:00–17:00)',
+    weekdaysEn: 'Monday–Saturday 9:00–22:00',
+    sundayEn: 'Sunday 9:00–17:00',
+    shortEn: 'Daily 9:00–22:00 (Sunday 9:00–17:00)',
   },
 } as const;
 
