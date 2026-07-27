@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { ShoppingBag, User as UserIcon } from 'lucide-react';
+import { Calendar, ShoppingBag, User as UserIcon } from 'lucide-react';
 import { redirect, Link } from '@/i18n/routing';
 import { getCurrentMember } from '@/lib/members/session';
 import { LogoutButton } from '@/components/account/logout-button';
@@ -40,7 +40,7 @@ export default async function AccountPage({ params }: { params: Promise<{ locale
           <LogoutButton />
         </div>
 
-        <div className="mt-12 grid gap-6 sm:grid-cols-2">
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           <div className="rounded-[2rem] bg-[var(--store-card)] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
             <div className="flex size-12 items-center justify-center rounded-full bg-black/[0.03] text-[var(--store-ink)]">
               <UserIcon strokeWidth={1.25} className="size-5" />
@@ -72,6 +72,21 @@ export default async function AccountPage({ params }: { params: Promise<{ locale
             </h2>
             <p className="mt-3 text-sm leading-[1.7] text-[var(--store-muted)]">
               {t('dashboard.ordersDesc')}
+            </p>
+          </Link>
+
+          <Link
+            href="/account/appointments"
+            className="group rounded-[2rem] bg-[var(--store-card)] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all hover:-translate-y-1 hover:shadow-[0_12px_40px_rgb(0,0,0,0.06)]"
+          >
+            <div className="flex size-12 items-center justify-center rounded-full bg-black/[0.03] text-[var(--store-ink)]">
+              <Calendar strokeWidth={1.25} className="size-5" />
+            </div>
+            <h2 className="mt-5 font-serif text-xl text-[var(--store-ink)]">
+              {t('dashboard.appointments')}
+            </h2>
+            <p className="mt-3 text-sm leading-[1.7] text-[var(--store-muted)]">
+              {t('dashboard.appointmentsDesc')}
             </p>
           </Link>
         </div>

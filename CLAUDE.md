@@ -17,6 +17,7 @@
 | รูป: /admin → Cloudinary → D1 → หน้า/OG/JSON-LD | [docs/images.md](docs/images.md) | docs/images.md |
 | สี, ตัวอักษร, layout, โครงหน้า Services, a11y | [docs/design.md](docs/design.md) (ค่าจริง = [app/globals.css](app/globals.css)) | docs/design.md |
 | สมาชิก, ตะกร้า, checkout, OAuth, payment | [docs/member-system.md](docs/member-system.md) | docs/member-system.md |
+| ระบบนัดหมาย (leads), จอง/ยืนยัน/ยกเลิก, อีเมลนัดหมาย | [docs/appointments.md](docs/appointments.md) | docs/appointments.md |
 | ภาพรวมโปรเจกต์สำหรับคนนอก | [README.md](README.md) | README.md |
 
 **ถ้าเอกสารขัดกับโค้ด ให้เชื่อโค้ดบน `origin/main` แล้วแก้เอกสารใน PR เดียวกัน** — เอกสารบอกว่า*ตั้งใจให้เป็นยังไง* ไม่ใช่*ความจริงตอนนี้*

@@ -1,27 +1,48 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Check, Loader2, TriangleAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+import {
+  APPOINTMENT_MAX_ADVANCE_DAYS,
+  generateTimeSlots,
+} from '@/lib/appointments/schedule';
 
 type State = { kind: 'idle' | 'sending' | 'sent' } | { kind: 'error'; message: string };
 
 const fieldClass =
   'w-full rounded-2xl border-none bg-background px-5 py-4 text-[0.95rem] text-foreground ring-1 ring-border/50 outline-none transition-all placeholder:text-muted-foreground/60 focus:ring-2 focus:ring-foreground';
 
+function bookingDateRange() {
+  const bangkokNow = new Date();
+  bangkokNow.setTime(bangkokNow.getTime() + 7 * 60 * 60 * 1000);
+  const minDate = bangkokNow.toISOString().slice(0, 10);
+  bangkokNow.setUTCDate(bangkokNow.getUTCDate() + APPOINTMENT_MAX_ADVANCE_DAYS);
+  return { minDate, maxDate: bangkokNow.toISOString().slice(0, 10) };
+}
+
 export function BookingForm({ interests }: { interests: string[] }) {
   const t = useTranslations('BookingForm');
+  const locale = useLocale() as 'th' | 'en';
   const [state, setState] = useState<State>({ kind: 'idle' });
   const [form, setForm] = useState({
     name: '',
     phone: '',
+    email: '',
     interest: '',
     preferredTime: '',
+    requestedDate: '',
+    requestedTime: '',
     message: '',
     website: '', // honeypot — kept empty by real users
   });
   const sending = state.kind === 'sending';
+  const [{ minDate, maxDate }] = useState(bookingDateRange);
+  const timeSlots = useMemo(
+    () => (form.requestedDate ? generateTimeSlots({ dateIso: form.requestedDate }) : []),
+    [form.requestedDate],
+  );
 
   const set = (patch: Partial<typeof form>) => setForm((prev) => ({ ...prev, ...patch }));
 
@@ -30,6 +51,12 @@ export function BookingForm({ interests }: { interests: string[] }) {
     if (!form.name.trim()) return setState({ kind: 'error', message: t('error.name') });
     if ((form.phone.match(/\d/g)?.length ?? 0) < 8) {
       return setState({ kind: 'error', message: t('error.phone') });
+    }
+    if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+      return setState({ kind: 'error', message: t('error.email') });
+    }
+    if (form.requestedDate && !form.requestedTime) {
+      return setState({ kind: 'error', message: t('form.timeSlotPlaceholder') });
     }
 
     setState({ kind: 'sending' });
@@ -40,8 +67,12 @@ export function BookingForm({ interests }: { interests: string[] }) {
         body: JSON.stringify({
           name: form.name.trim(),
           phone: form.phone.trim(),
+          email: form.email.trim(),
           interest: form.interest || null,
           preferredTime: form.preferredTime.trim() || null,
+          requestedDate: form.requestedDate || undefined,
+          requestedTime: form.requestedTime || undefined,
+          locale,
           message: form.message.trim() || null,
           website: form.website,
         }),
@@ -59,7 +90,17 @@ export function BookingForm({ interests }: { interests: string[] }) {
         throw new Error(t('error.submitStatus', { status: res.status }));
       }
       setState({ kind: 'sent' });
-      setForm({ name: '', phone: '', interest: '', preferredTime: '', message: '', website: '' });
+      setForm({
+        name: '',
+        phone: '',
+        email: '',
+        interest: '',
+        preferredTime: '',
+        requestedDate: '',
+        requestedTime: '',
+        message: '',
+        website: '',
+      });
     } catch (err) {
       setState({ kind: 'error', message: err instanceof Error ? err.message : t('error.submit') });
     }
@@ -88,7 +129,7 @@ export function BookingForm({ interests }: { interests: string[] }) {
 
   return (
     <form onSubmit={submit} className="space-y-6" noValidate>
-      <div className="grid gap-6 sm:grid-cols-2">
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         <label className="block">
           <span className="text-xs font-medium text-ink/65">{t('form.nameLabel')}</span>
           <input
@@ -112,6 +153,17 @@ export function BookingForm({ interests }: { interests: string[] }) {
             required
           />
         </label>
+        <label className="block sm:col-span-2 lg:col-span-1">
+          <span className="text-xs font-medium text-ink/65">{t('form.emailLabel')}</span>
+          <input
+            type="email"
+            className={`mt-1.5 ${fieldClass}`}
+            value={form.email}
+            onChange={(e) => set({ email: e.target.value })}
+            placeholder={t('form.emailPlaceholder')}
+            autoComplete="email"
+          />
+        </label>
       </div>
 
       <div className="grid gap-6 sm:grid-cols-2">
@@ -131,6 +183,46 @@ export function BookingForm({ interests }: { interests: string[] }) {
             <option value="อื่น ๆ / ปรึกษาแพทย์">{t('form.interestOther')}</option>
           </select>
         </label>
+        <label className="block">
+          <span className="text-xs font-medium text-ink/65">{t('form.dateLabel')}</span>
+          <input
+            type="date"
+            className={`mt-1.5 ${fieldClass}`}
+            value={form.requestedDate}
+            min={minDate}
+            max={maxDate}
+            onChange={(e) => set({ requestedDate: e.target.value, requestedTime: '' })}
+          />
+        </label>
+      </div>
+
+      <div className="grid gap-6 sm:grid-cols-2">
+        <div>
+          <span className="text-xs font-medium text-ink/65">{t('form.timeSlotLabel')}</span>
+          {form.requestedDate && timeSlots.length === 0 ? (
+            <p className="mt-1.5 rounded-2xl bg-amber-50 px-5 py-4 text-sm text-amber-700">
+              {t('form.timeSlotEmpty')}
+            </p>
+          ) : (
+            <select
+              className={`mt-1.5 ${fieldClass}`}
+              value={form.requestedTime}
+              disabled={!form.requestedDate}
+              onChange={(e) => set({ requestedTime: e.target.value })}
+            >
+              <option value="">
+                {form.requestedDate
+                  ? t('form.timeSlotPlaceholder')
+                  : t('form.timeSlotChooseDateFirst')}
+              </option>
+              {timeSlots.map((time) => (
+                <option key={time} value={time}>
+                  {time}
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
         <label className="block">
           <span className="text-xs font-medium text-ink/65">{t('form.timeLabel')}</span>
           <input

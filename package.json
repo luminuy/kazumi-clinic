@@ -18,6 +18,7 @@
     "cf:tagcache": "wrangler d1 execute kazumi-clinic-tag-cache --remote -y --file migrations/0007_tag_cache_revalidations.sql",
     "cf:migrate:members": "wrangler d1 execute kazumi-clinic-tag-cache --remote -y --file migrations/0009_member_system.sql",
     "cf:migrate:ratelimit": "wrangler d1 execute kazumi-clinic-tag-cache --remote -y --file migrations/0010_rate_limits.sql",
+    "cf:migrate:appointments": "wrangler d1 execute kazumi-clinic-tag-cache --remote -y --file migrations/0013_appointments.sql",
     "cf:deploy": "opennextjs-cloudflare build && pnpm cf:tagcache && pnpm cf:migrate:members && pnpm cf:migrate:ratelimit && OPEN_NEXT_DEPLOY=true wrangler deploy"
   },
   "dependencies": {

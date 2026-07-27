@@ -42,6 +42,7 @@
 
 ## 📋 ต่อไป / TODO
 
+- [ ] **ระบบนัดหมาย Part B** (ดู [docs/appointments.md](docs/appointments.md)): แนบไฟล์ `.ics` ในอีเมลยืนยัน, reminder ก่อนนัด 24 ชม. ผ่าน `app/api/internal/appointment-reminders` + GitHub Actions cron รายชั่วโมง (ต้องตั้ง secret `INTERNAL_TASK_SECRET` ทั้ง `wrangler secret put` และ `gh secret set`), เรียง `/admin/leads` ตามเวลานัดที่ใกล้ถึงก่อน — Part A (จอง/ยืนยัน/ยกเลิก/อีเมล) deploy แล้ว migration `0013_appointments` รันบน remote D1 แล้ว
 - [ ] **เชื่อม payment gateway**: แก้ `lib/members/payments.ts` (`initiatePayment`) — ตอนนี้จองก่อนจ่ายที่คลินิกได้เต็ม, ชำระออนไลน์เป็น placeholder (ดู [docs/member-system.md](docs/member-system.md))
 - [ ] **เจ้าของอัปรูปเข้า /admin/images** — ตรวจของจริง 2026-07-25: มี **36 slot** · มีรูปจริง **6** (`about-hero`, `brand-mark`, `collagen-booster-editorial`, `hero-collagen-booster`, `hero-contact`, `hero-home` — โหลดได้ 200 ทุกใบ) + `brand-logo` ที่ใช้ default `kazumi-clinic/logo` · **ที่เหลือว่าง** จึงขึ้นกล่องไอคอน (ไม่ใช่รูปแตก) · ที่ควรอัปก่อนเพราะเห็นบ่อยสุด: `doctor-pratch`, `og-about` (รูปตอนแชร์ลิงก์), `hero-filler`, `hero-botox`, `hero-iv-drip-2` (ใช้ทั้ง /services และการ์ดแชร์ /blog)
 - [ ] **เจ้าของทดสอบ**: เปลี่ยนรูปสักช่องใน /admin → รีเฟรชหน้านั้น ควรอัปเดตใน ~ไม่กี่วินาที (ยืนยัน on-demand revalidation หลังแก้ tag cache 2026-07-22)
