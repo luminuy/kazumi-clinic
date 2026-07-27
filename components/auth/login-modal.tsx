@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Dialog } from '@base-ui/react/dialog';
 import { useLocale, useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
+import { Link } from '@/i18n/routing';
 import { Loader2, XIcon } from 'lucide-react';
 import { LineIcon } from '@/components/brand-icons';
 import type { OAuthProvider } from '@/lib/members/oauth';
@@ -17,10 +18,12 @@ export function LoginModal({
   open,
   onOpenChange,
   providers = [],
+  emailConfigured = false,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   providers?: OAuthProvider[];
+  emailConfigured?: boolean;
 }) {
   const t = useTranslations('Account');
   const locale = useLocale();
@@ -201,6 +204,15 @@ export function LoginModal({
                 className={inputClass}
                 aria-label={t('field.password')}
               />
+              {/* Promising an email that cannot arrive is worse than offering no recovery link. */}
+              {!isSignup && emailConfigured && (
+                <Link
+                  href="/account/forgot-password"
+                  className="-mt-1 self-end text-xs font-medium text-primary hover:underline"
+                >
+                  {t('forgot.link')}
+                </Link>
+              )}
 
               {notice && (
                 <p
