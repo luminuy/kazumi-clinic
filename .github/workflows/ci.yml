@@ -39,6 +39,12 @@ jobs:
       - name: Test
         run: pnpm test
 
+      # Bilingual guardrail (docs/i18n-glossary.md). Key parity lives in the test suite; this catches
+      # what parity cannot see — Thai surviving in en.json, dropped {placeholders}, forbidden medical
+      # claims, and hardcoded Thai in shipped source growing past the baseline.
+      - name: i18n check
+        run: pnpm i18n:check
+
       # next build (not the Cloudflare/OpenNext build) — verifies the app compiles and
       # every /[category] static param generates. No Cloudflare bindings needed: the D1
       # image store degrades to shipped defaults when the binding is absent (lib/site-images-store.ts).

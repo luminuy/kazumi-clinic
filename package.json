@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "i18n:check": "node scripts/i18n-check.mjs",
     "health": "bash scripts/healthcheck.sh",
     "smoke": "bash scripts/smoke.sh",
     "setup:hooks": "git config core.hooksPath .githooks",
