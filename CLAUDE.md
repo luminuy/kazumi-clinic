@@ -159,6 +159,7 @@ Stack: Next.js 16 App Router (React 19) + TypeScript + Tailwind CSS v4 + shadcn/
 
 | กำลังจะทำ | บทเรียนที่เกี่ยวโดยตรง |
 | --- | --- |
+| เพิ่ม env var ผ่าน Cloudflare dashboard, หรือแก้ `wrangler.jsonc` แล้ว deploy | 2026-07-27 (dashboard-only plaintext var หายหลัง deploy ครั้งถัดไปที่ไม่เกี่ยวกันเลย) |
 | แตะ auth / crypto / D1 / binding | 2026-07-25 (PBKDF2 100k · เทสต์ไม่ใช่หลักฐาน · smoke test ที่ปลุกผิด) |
 | เขียน/ผูก migration | 2026-07-24 (table-rebuild ลบรูปทุก deploy) |
 | deploy หรือรายงานผลหลัง deploy | 2026-07-17 ×3 (dev server ปน `.next` · ISR เสิร์ฟของเก่า · `Current Version ID` ไม่พอ), 2026-07-16 (ห้ามรายงานสิ่งที่ไม่ได้ตรวจ) |
@@ -183,6 +184,10 @@ Stack: Next.js 16 App Router (React 19) + TypeScript + Tailwind CSS v4 + shadcn/
    ```
 
 <!-- รูปแบบ: - YYYY-MM-DD — สิ่งที่พลาด → กฎใหม่ -->
+
+- 2026-07-27 — **เพิ่ม plaintext env var ผ่าน Cloudflare dashboard (ไม่ใช่ commit ใน `wrangler.jsonc`) แล้วมันหายไปเงียบ ๆ หลัง deploy ครั้งถัดไปที่ไม่เกี่ยวกันเลย** · ตอนขึ้นโดเมนจริง `kazumiclinic.skin` เจ้าของตั้ง `RESEND_FROM_EMAIL` เป็น var type "Plaintext" ผ่านหน้า Cloudflare dashboard โดยตรง (ไม่ผ่าน `wrangler.jsonc`) ยืนยันว่าใช้งานได้จริง (ปุ่ม "ลืมรหัสผ่าน?" โผล่) — แต่ PR ถัดไป (แก้ `site.url`/`SITE_ENV` คนละเรื่องเลย) ทำให้ CD รัน `wrangler deploy` อีกรอบ ซึ่งไปลบ `RESEND_FROM_EMAIL` ทิ้งทันที เพราะ `wrangler deploy` ถือว่า `vars` block ใน config คือชุด plaintext var ที่สมบูรณ์ทั้งหมด ตัวไหนไม่อยู่ในนั้นแม้จะเพิ่งเพิ่มผ่าน dashboard ก็โดนลบ · `RESEND_API_KEY` (type "Secret") ไม่โดนกระทบเพราะ secret เป็นคนละ binding จาก `vars` ไม่ถูก sync ทับ · จับได้เพราะ user ถามว่าปุ่มลืมรหัสผ่านหายไปไหน ตรวจแล้วพบว่า `wrangler secret list` ไม่มี `RESEND_FROM_EMAIL` เหลืออยู่เลย
+  → **กฎ: plaintext var ที่ไม่ใช่ความลับ ต้อง commit ใน `wrangler.jsonc`'s `vars` เสมอ ห้ามเพิ่มผ่าน Cloudflare dashboard เป็น "Plaintext" type ลอย ๆ** — ถ้าเพิ่มผ่าน dashboard ต้องเลือก type "Secret" แทน (secret ไม่โดน `wrangler deploy` sync ทับ) **หรือ**เอาค่ากลับมาใส่ใน `wrangler.jsonc` แล้ว commit ทันที · ตรวจสอบได้ด้วยการเทียบ `npx wrangler secret list` (secrets) + `vars` ใน `wrangler.jsonc` (plaintext) กับสิ่งที่โค้ดต้องการจริง (`grep -rhoE "process\.env\.[A-Z_]+"`) หลังแตะ config หรือ dashboard vars ทุกครั้ง
+  → **กฎ: หลังตั้งค่าอะไรผ่าน Cloudflare dashboard ที่ต้อง "อยู่รอด" ข้าม deploy — verify อีกทีหลัง deploy ถัดไปเสมอ** ไม่ใช่แค่ตอนตั้งเสร็จใหม่ ๆ เพราะ deploy คนละเรื่องก็ทำให้มันหายได้แบบไม่มีใครคาดคิด
 
 - 2026-07-25 — **แตก branch จาก `origin/main` ที่ไม่ได้ fetch สด แล้วทำงานทับของที่ merge ไปแล้ว** · หลัง merge PR #258 ผมรัน `git switch -c <ใหม่> origin/main` ทันทีโดยไม่ `git fetch` ก่อน — `origin/main` ในเครื่องยังชี้ commit ก่อน #258 · งานรอบใหม่จึงเริ่มจากฐานที่ขาดงานตัวเองไปทั้งชุด · **จับได้เพราะบังเอิญ** grep แล้วเจอ aria-label ที่เพิ่งแก้ไปเมื่อ 10 นาทีก่อนกลับมาโผล่อีก ถ้าไม่เจอตอนนั้น PR ถัดไปจะ revert งานของ #258 ทิ้งเงียบ ๆ ตอน merge
   → **กฎ: ก่อน `git switch -c <branch> origin/main` ต้อง `git fetch origin` เสมอ** — `origin/main` เป็น ref ในเครื่อง ไม่ใช่ของจริงบน GitHub · ยิ่งเพิ่ง merge เองยิ่งต้อง fetch เพราะ ref ในเครื่องไม่ขยับตามการ merge ฝั่ง server
