@@ -11,7 +11,13 @@
     // key set — knowing these two values gets an attacker nothing, so they belong in git where
     // they're reviewable, not in `wrangler secret`.
     "CF_ACCESS_TEAM_DOMAIN": "https://mute-wind-2c05.cloudflareaccess.com",
-    "CF_ACCESS_AUD": "e2a3d26d5b575e1290b4e5db4c438bab437e59e35d386c1a87e11242dffd6b35"
+    "CF_ACCESS_AUD": "e2a3d26d5b575e1290b4e5db4c438bab437e59e35d386c1a87e11242dffd6b35",
+    // Not a secret — just a display "from" address string. Committed here (rather than added as a
+    // dashboard-only plaintext var) because `wrangler deploy` treats this `vars` block as the full
+    // authoritative set of plaintext vars: anything added out-of-band via the dashboard that isn't
+    // declared here gets silently wiped on the next deploy. Learned the hard way 2026-07-27 — this
+    // var disappeared after an unrelated deploy and broke Resend delivery until re-added here.
+    "RESEND_FROM_EMAIL": "Kazumi Clinic <noreply@kazumiclinic.skin>"
   },
   "assets": {
     "directory": ".open-next/assets",
