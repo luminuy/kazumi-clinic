@@ -4,11 +4,7 @@
   "main": ".open-next/worker.js",
   "compatibility_date": "2025-01-01",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
-  // Served from *.workers.dev until a real domain is pointed here — app/robots.ts reads this to
-  // block all crawling, because every canonical/sitemap/JSON-LD URL still says kazumiclinic.com.
-  // DELETE this var the moment a real domain is live, or the real site ships uncrawlable.
   "vars": {
-    "SITE_ENV": "preview",
     // Cloudflare Access, guarding /admin (app "kazumi-clinic-admin", policy "Admin only").
     // Not secrets: the AUD is a public application identifier and the team domain is a public
     // hostname. Security comes from lib/auth.ts verifying the JWT signature against Cloudflare's

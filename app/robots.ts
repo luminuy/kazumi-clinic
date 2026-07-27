@@ -2,11 +2,10 @@ import type { MetadataRoute } from 'next';
 import { site, isPreviewDeploy } from '@/lib/site';
 
 export default function robots(): MetadataRoute.Robots {
-  // The workers.dev deploy is a temporary home until the real domain is sorted, and it must not
-  // be crawled at all: it serves the clinic's entire site while every canonical, sitemap URL and
-  // JSON-LD @id still points at kazumiclinic.com. Left crawlable, Google would index a throwaway
-  // hostname whose content claims to belong to a domain nobody has confirmed we control.
-  // Driven by SITE_ENV in wrangler.jsonc — drop that var once a real domain points here.
+  // Historically this blocked crawling of the workers.dev preview while canonical/sitemap/JSON-LD
+  // still pointed at kazumiclinic.skin before it was live. The real domain now serves the site
+  // directly (SITE_ENV removed from wrangler.jsonc, 2026-07-27) so this branch is effectively dead
+  // unless SITE_ENV=preview is deliberately reintroduced for a future preview deploy.
   if (isPreviewDeploy()) {
     return { rules: { userAgent: '*', disallow: '/' } };
   }
