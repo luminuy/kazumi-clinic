@@ -4,6 +4,12 @@
   "main": ".open-next/worker.js",
   "compatibility_date": "2025-01-01",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  // Explicitly off — the real domain (kazumiclinic.skin) is live and everything that used to target
+  // workers.dev (GitHub Actions, scripts) has been repointed at it. Neither of these is declared by
+  // default, so `wrangler deploy` silently re-enables both on every deploy if left unset — learned
+  // the hard way 2026-07-27 right after manually turning them off via the dashboard.
+  "workers_dev": false,
+  "preview_urls": false,
   "vars": {
     // Cloudflare Access, guarding /admin (app "kazumi-clinic-admin", policy "Admin only").
     // Not secrets: the AUD is a public application identifier and the team domain is a public
