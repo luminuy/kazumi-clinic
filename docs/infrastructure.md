@@ -31,22 +31,33 @@
 - ห้ามรายงานว่า deploy สำเร็จจน workflow `Deploy` สำเร็จและ Wrangler แสดง `Current Version ID`; จากนั้นยิง URL จริงอย่างน้อย 2 ครั้งพร้อมดู `x-nextjs-cache` เพราะครั้งแรกอาจได้ ISR cache เก่า
 - `Current Version ID` เปลี่ยนทุก deploy จึงห้ามบันทึกเลขล่าสุดแบบถาวรในเอกสารนี้ ให้รายงานจาก output ของงานนั้นเท่านั้น
 
-### โดเมนจริง — ยังไม่ได้ใช้
+### โดเมนจริง — ซื้อแล้ว แต่ยังไม่ได้ชี้มา Cloudflare
 
-`kazumiclinic.com` **ถูกจดไปแล้ว** แต่คลินิกบอกว่าไม่ได้ซื้อ — ยังไม่ยืนยันว่าเป็นของใคร
+**`kazumiclinic.com` ไม่ใช่โดเมนของคลินิก** — ถูกคนอื่นจดไปก่อนแล้ว (ตรวจ 2026-07-17: Namecheap,
+name servers ชี้ Cloudflare อยู่แล้วแต่ origin ตาย) เป็นแค่บันทึกไว้กันสับสน **ห้ามใช้โดเมนนี้อ้างอิงอะไรอีก**
 
-| ตรวจ | ผล (2026-07-17) |
+**โดเมนจริงของคลินิกคือ `kazumiclinic.skin`** — เจ้าของแจ้งด้วยวาจา 2026-07-27 ว่าซื้อแล้ว ตรวจซ้ำด้วย
+`dig`/`whois` วันเดียวกัน:
+
+| ตรวจ | ผล (2026-07-27) |
 | --- | --- |
-| Registrar | Namecheap |
-| จดเมื่อ | 2025-06-24 · หมดอายุ 2027-06-24 |
-| Name servers | `dale.ns.cloudflare.com` / `kia.ns.cloudflare.com` |
-| ยิง https | ต่อไม่ติด (มี A record ชี้ Cloudflare แต่ origin ตาย) |
+| Registrar | name.com |
+| Name servers | `ns1djs.name.com` / `ns2jrt.name.com` / `ns3cpr.name.com` / `ns4dls.name.com` — **ยังไม่ใช่ของ Cloudflare** |
+| A record ปัจจุบัน | `91.195.240.94` (หน้า parking ของ registrar ตามปกติ ไม่ใช่ Cloudflare) |
+| MX / TXT | ว่างเปล่า — ยังไม่ได้ตั้งอะไรเลย รวมถึงที่ Resend ต้องการ (ดู [member-system.md](./member-system.md)) |
 
-`site.url` ใน [lib/site.ts](../lib/site.ts) **ยังชี้ `https://kazumiclinic.com`** → canonical / sitemap / JSON-LD `@id` ทุกตัวชี้ไปโดเมนนี้ ทั้งที่เว็บเสิร์ฟจาก workers.dev
+`site.url` ใน [lib/site.ts](../lib/site.ts) **ยังชี้ `https://kazumiclinic.com`** (ค่าเก่า ผิด) — **ห้ามแก้เป็น
+`kazumiclinic.skin` จนกว่าโดเมนจะชี้มา Cloudflare จริงและเสิร์ฟเว็บได้แล้ว** เปลี่ยนตอนนี้จะทำให้
+canonical/sitemap/JSON-LD `@id` ชี้ไปโดเมนที่ยังไม่เสิร์ฟอะไรเลย แย่กว่าสถานะปัจจุบัน
 
 **เพราะงั้น `SITE_ENV=preview` จึงบังคับ `robots.txt` เป็น `Disallow: /` ทั้งหมด** ([app/robots.ts](../app/robots.ts)) — ไม่งั้น Google จะเก็บ workers.dev แล้วอ่านว่าเนื้อหาเป็นของโดเมนที่เราไม่ได้คุม
 
-> 🔴 **ตอนชี้โดเมนจริงมาแล้ว ต้องทำ 3 อย่าง**: เปลี่ยน `site.url`, **ลบ var `SITE_ENV`** (ไม่งั้นเว็บจริงห้าม Google เก็บ), เพิ่ม destination ของ Cloudflare Access ให้ครอบโดเมนใหม่
+> 🔴 **ลำดับงานที่เหลือก่อนขึ้นโดเมนจริงได้**:
+> 1. **เจ้าของ/ผู้ถือบัญชี Cloudflare ต้องเพิ่ม `kazumiclinic.skin` เป็น zone ใหม่ในบัญชี Cloudflare** (ผ่าน dashboard) แล้วเอา nameserver คู่ที่ Cloudflare ให้มา ไปตั้งที่ name.com (เปลี่ยน nameserver ระดับ registrar — action ที่กระทบ DNS ทั้งโดเมน ต้องทำโดยเจ้าของ/คนที่ถือบัญชี name.com เท่านั้น ไม่ใช่สิ่งที่ agent ควรทำแทน)
+> 2. รอ nameserver propagate (มักไม่กี่ชั่วโมง)
+> 3. เพิ่ม Worker route/custom domain ให้ zone ใหม่ใน `wrangler.jsonc` หรือ dashboard
+> 4. เปลี่ยน `site.url`, **ลบ var `SITE_ENV`**, เพิ่ม destination ของ Cloudflare Access ให้ครอบโดเมนใหม่ — ทำได้เฉพาะ**หลัง**ข้อ 1-3 เสร็จและยิง `https://kazumiclinic.skin` ตอบ 200 จริงแล้วเท่านั้น
+> 5. ตั้ง DNS TXT/CNAME ที่ Resend ต้องการเพื่อยืนยันโดเมนสำหรับส่งอีเมล (ดู [member-system.md](./member-system.md)) — ทำพร้อมกับข้อ 1-2 ได้เลยเพราะเป็นแค่ TXT record ไม่ต้องรอ nameserver เปลี่ยน
 
 ---
 
