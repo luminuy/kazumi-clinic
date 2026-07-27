@@ -1,6 +1,8 @@
 import { getCloudflareContext } from '@opennextjs/cloudflare';
 import type { D1Database } from '@cloudflare/workers-types';
 import { cache } from 'react';
+import { localizePromotion } from '@/lib/content-locale';
+import type { Locale } from '@/lib/site';
 import { activePromotions as codeActivePromotions, type Promotion } from './promotions';
 
 /**
@@ -19,10 +21,13 @@ import { activePromotions as codeActivePromotions, type Promotion } from './prom
 export type PromotionRow = {
   id: string;
   name: string;
+  name_en: string | null;
   detail: string | null;
+  detail_en: string | null;
   price: number | null;
   original_price: number | null;
   note: string | null;
+  note_en: string | null;
   valid_until: string;
   category_slug: string | null;
   sort_order: number;
@@ -35,10 +40,13 @@ export type PromotionRow = {
 export type PromotionInput = {
   id: string;
   name: string;
+  nameEn?: string | null;
   detail?: string | null;
+  detailEn?: string | null;
   price?: number | null;
   originalPrice?: number | null;
   note?: string | null;
+  noteEn?: string | null;
   validUntil: string;
   categorySlug?: string | null;
   sortOrder: number;
@@ -89,11 +97,16 @@ function rowToPromotion(row: PromotionRow): Promotion {
  * inclusive of `validUntil`, matching the code fallback. Falls back to lib/promotions.ts when D1
  * is unavailable so `next dev` and a momentary DB outage still render.
  */
-export async function getActivePromotions(now: Date = new Date()): Promise<Promotion[]> {
+export async function getActivePromotions(
+  locale: Locale | string = 'th',
+  now: Date = new Date(),
+): Promise<Promotion[]> {
   const rows = await getPromotionRows();
   if (rows === null) return codeActivePromotions(now);
   const today = now.toISOString().slice(0, 10);
-  return rows.filter((row) => row.valid_until >= today).map(rowToPromotion);
+  return rows
+    .filter((row) => row.valid_until >= today)
+    .map((row) => rowToPromotion(localizePromotion(row, locale)));
 }
 
 /** Every promotion, expired ones included — what the admin list renders. Empty when D1 is down. */
@@ -120,20 +133,24 @@ export async function upsertPromotion(input: PromotionInput, updatedBy: string) 
   await binding
     .prepare(
       `INSERT INTO promotions
-         (id, name, detail, price, original_price, note, valid_until, category_slug,
-          sort_order, updated_at, updated_by, image_public_id)
-       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)
+         (id, name, name_en, detail, detail_en, price, original_price, note, note_en, valid_until,
+          category_slug, sort_order, updated_at, updated_by, image_public_id)
+       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15)
        ON CONFLICT(id) DO UPDATE SET
-         name = ?2, detail = ?3, price = ?4, original_price = ?5, note = ?6, valid_until = ?7,
-         category_slug = ?8, updated_at = ?10, updated_by = ?11`,
+         name = ?2, name_en = ?3, detail = ?4, detail_en = ?5, price = ?6,
+         original_price = ?7, note = ?8, note_en = ?9, valid_until = ?10,
+         category_slug = ?11, updated_at = ?13, updated_by = ?14`,
     )
     .bind(
       input.id,
       input.name,
+      input.nameEn ?? null,
       input.detail ?? null,
+      input.detailEn ?? null,
       input.price ?? null,
       input.originalPrice ?? null,
       input.note ?? null,
+      input.noteEn ?? null,
       input.validUntil,
       input.categorySlug ?? null,
       input.sortOrder,

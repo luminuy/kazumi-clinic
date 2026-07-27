@@ -23,10 +23,13 @@ import { btn, card, inputClass, SectionHeading } from './ui';
 export type AdminPromotion = {
   id: string;
   name: string;
+  nameEn: string;
   detail: string;
+  detailEn: string;
   price: number | null;
   originalPrice: number | null;
   note: string;
+  noteEn: string;
   /** Inclusive ISO date (YYYY-MM-DD) the promo is valid through. */
   validUntil: string;
   categorySlug: string;
@@ -38,10 +41,13 @@ export type CategoryOption = { slug: string; title: string };
 
 type Draft = {
   name: string;
+  nameEn: string;
   detail: string;
+  detailEn: string;
   price: string;
   originalPrice: string;
   note: string;
+  noteEn: string;
   validUntil: string;
   categorySlug: string;
   imagePublicId: string | null;
@@ -50,10 +56,13 @@ type Draft = {
 
 const emptyDraft: Draft = {
   name: '',
+  nameEn: '',
   detail: '',
+  detailEn: '',
   price: '',
   originalPrice: '',
   note: '',
+  noteEn: '',
   validUntil: '',
   categorySlug: '',
   imagePublicId: null,
@@ -62,10 +71,13 @@ const emptyDraft: Draft = {
 function draftFrom(promo: AdminPromotion): Draft {
   return {
     name: promo.name,
+    nameEn: promo.nameEn,
     detail: promo.detail,
+    detailEn: promo.detailEn,
     price: String(promo.price),
     originalPrice: promo.originalPrice === null ? '' : String(promo.originalPrice),
     note: promo.note,
+    noteEn: promo.noteEn,
     validUntil: promo.validUntil,
     categorySlug: promo.categorySlug,
     imagePublicId: promo.imagePublicId,
@@ -169,10 +181,13 @@ export function PromotionEditor({
     const body = {
       ...(editing && editing !== 'new' ? { id: editing } : {}),
       name,
+      nameEn: draft.nameEn.trim() || null,
       detail: draft.detail.trim() || null,
+      detailEn: draft.detailEn.trim() || null,
       price,
       originalPrice,
       note: draft.note.trim() || null,
+      noteEn: draft.noteEn.trim() || null,
       validUntil: draft.validUntil,
       categorySlug: draft.categorySlug || null,
       imagePublicId: draft.imagePublicId,
@@ -477,6 +492,14 @@ function Field({
   );
 }
 
+function EnglishFallbackNote() {
+  return (
+    <p className="mt-1.5 text-[0.68rem] text-ink/40">
+      ปล่อยว่างได้ ถ้าไม่กรอกหน้าอังกฤษจะแสดงภาษาไทย
+    </p>
+  );
+}
+
 function PromotionForm({
   draft,
   setDraft,
@@ -513,7 +536,7 @@ function PromotionForm({
 
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         <div className="sm:col-span-2">
-          <Field label="ชื่อโปรโมชั่น">
+          <Field label="ชื่อโปรโมชั่น (ไทย)">
             <input
               className={inputClass}
               value={draft.name}
@@ -522,13 +545,33 @@ function PromotionForm({
             />
           </Field>
         </div>
-        <Field label="รายละเอียด" hint="เช่น ปริมาณ · ไม่บังคับ">
+        <div className="sm:col-span-2">
+          <Field label="ชื่อโปรโมชั่น (อังกฤษ)">
+            <input
+              className={inputClass}
+              value={draft.nameEn}
+              onChange={(e) => set({ nameEn: e.target.value })}
+              placeholder="เช่น Neura Deep Filler"
+            />
+            <EnglishFallbackNote />
+          </Field>
+        </div>
+        <Field label="รายละเอียด (ไทย)" hint="เช่น ปริมาณ · ไม่บังคับ">
           <input
             className={inputClass}
             value={draft.detail}
             onChange={(e) => set({ detail: e.target.value })}
             placeholder="เช่น 1 CC"
           />
+        </Field>
+        <Field label="รายละเอียด (อังกฤษ)">
+          <input
+            className={inputClass}
+            value={draft.detailEn}
+            onChange={(e) => set({ detailEn: e.target.value })}
+            placeholder="เช่น 1 cc"
+          />
+          <EnglishFallbackNote />
         </Field>
         <Field label="หมวดบริการ" hint="ไม่บังคับ">
           <select
@@ -570,13 +613,22 @@ function PromotionForm({
             onChange={(e) => set({ validUntil: e.target.value })}
           />
         </Field>
-        <Field label="หมายเหตุ" hint="เช่น เงื่อนไข · ไม่บังคับ">
+        <Field label="หมายเหตุ (ไทย)" hint="เช่น เงื่อนไข · ไม่บังคับ">
           <input
             className={inputClass}
             value={draft.note}
             onChange={(e) => set({ note: e.target.value })}
             placeholder="เช่น ซื้อ 1 แถม 1"
           />
+        </Field>
+        <Field label="หมายเหตุ (อังกฤษ)">
+          <input
+            className={inputClass}
+            value={draft.noteEn}
+            onChange={(e) => set({ noteEn: e.target.value })}
+            placeholder="เช่น Buy 1 get 1 free"
+          />
+          <EnglishFallbackNote />
         </Field>
         <Field label="รูปภาพโปรโมชั่น" hint="JPG/PNG/WebP/AVIF · ไม่บังคับ">
           <div className="flex items-center gap-2">

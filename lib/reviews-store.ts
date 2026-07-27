@@ -1,6 +1,8 @@
 import { getCloudflareContext } from '@opennextjs/cloudflare';
 import type { D1Database } from '@cloudflare/workers-types';
 import { cache } from 'react';
+import { localizeReview } from '@/lib/content-locale';
+import type { Locale } from '@/lib/site';
 
 /**
  * The reviews store. Same D1 access and degrade-to-safe philosophy as the other stores. /reviews
@@ -19,7 +21,9 @@ export type ReviewRow = {
   name: string;
   rating: number | null;
   quote: string | null;
+  quote_en: string | null;
   procedure: string | null;
+  procedure_en: string | null;
   category_slug: string | null;
   before_image_public_id: string | null;
   after_image_public_id: string | null;
@@ -47,7 +51,9 @@ export type ReviewInput = {
   name: string;
   rating?: number | null;
   quote?: string | null;
+  quoteEn?: string | null;
   procedure?: string | null;
+  procedureEn?: string | null;
   categorySlug?: string | null;
   consent: boolean;
   published: boolean;
@@ -84,20 +90,25 @@ export const getReviewRows = cache(async (): Promise<ReviewRow[]> => {
  * are stripped when consent is missing — belt and braces, since a non-consented row never reaches
  * here anyway, this keeps the rule local to the mapping too.
  */
-export async function getPublishedReviews(): Promise<PublicReview[]> {
+export async function getPublishedReviews(
+  locale: Locale | string = 'th',
+): Promise<PublicReview[]> {
   const rows = await getReviewRows();
   return rows
     .filter((row) => row.published === 1 && row.consent === 1)
-    .map((row) => ({
-      id: row.id,
-      name: row.name,
-      rating: row.rating,
-      quote: row.quote,
-      procedure: row.procedure,
-      categorySlug: row.category_slug,
-      beforeImagePublicId: row.consent === 1 ? row.before_image_public_id : null,
-      afterImagePublicId: row.consent === 1 ? row.after_image_public_id : null,
-    }));
+    .map((row) => localizeReview(row, locale))
+    .map((row) => {
+      return {
+        id: row.id,
+        name: row.name,
+        rating: row.rating,
+        quote: row.quote,
+        procedure: row.procedure,
+        categorySlug: row.category_slug,
+        beforeImagePublicId: row.consent === 1 ? row.before_image_public_id : null,
+        afterImagePublicId: row.consent === 1 ? row.after_image_public_id : null,
+      };
+    });
 }
 
 /** Every review, unpublished included — what the admin list renders. Empty when D1 is down. */
@@ -121,21 +132,25 @@ export async function upsertReview(input: ReviewInput, updatedBy: string) {
   await binding
     .prepare(
       `INSERT INTO reviews
-         (id, name, rating, quote, procedure, category_slug, consent, published,
-          sort_order, updated_at, updated_by, before_image_public_id, after_image_public_id)
-       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13)
+         (id, name, rating, quote, quote_en, procedure, procedure_en, category_slug, consent,
+          published, sort_order, updated_at, updated_by, before_image_public_id,
+          after_image_public_id)
+       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15)
        ON CONFLICT(id) DO UPDATE SET
-         name = ?2, rating = ?3, quote = ?4, procedure = ?5, category_slug = ?6,
-         consent = ?7, published = ?8, updated_at = ?10, updated_by = ?11,
-         before_image_public_id = CASE WHEN ?14 THEN ?12 ELSE before_image_public_id END,
-         after_image_public_id = CASE WHEN ?15 THEN ?13 ELSE after_image_public_id END`,
+         name = ?2, rating = ?3, quote = ?4, quote_en = ?5, procedure = ?6,
+         procedure_en = ?7, category_slug = ?8, consent = ?9, published = ?10,
+         updated_at = ?12, updated_by = ?13,
+         before_image_public_id = CASE WHEN ?16 THEN ?14 ELSE before_image_public_id END,
+         after_image_public_id = CASE WHEN ?17 THEN ?15 ELSE after_image_public_id END`,
     )
     .bind(
       input.id,
       input.name,
       input.rating ?? null,
       input.quote ?? null,
+      input.quoteEn ?? null,
       input.procedure ?? null,
+      input.procedureEn ?? null,
       input.categorySlug ?? null,
       input.consent ? 1 : 0,
       input.published ? 1 : 0,

@@ -159,8 +159,8 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
   const pick = (key: string, fallback: string) => overrides.get(key)?.public_id ?? fallback;
 
   // Merged so a product the clinic renamed/added through /admin shows in each card's program list,
-  // then localized so the English page describes the same catalogue in English.
-  const categories = localizeServiceCategories(await getAllMergedCategories(), locale);
+  // with locale applied inside the store so D1 translations win over the shipped catalogue copy.
+  const categories = await getAllMergedCategories(locale);
 
   // Posters resolve here, in the server component, so the client carousel stays free of the
   // override layer and the D1 read happens once per render.

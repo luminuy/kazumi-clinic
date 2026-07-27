@@ -111,7 +111,7 @@ export default async function ReviewsPage({ params }: { params: Promise<{ locale
   const tNav = await getTranslations('Navigation');
   
   const [reviews, googleReviews] = await Promise.all([
-    getPublishedReviews(),
+    getPublishedReviews(locale),
     getGoogleReviews(locale),
   ]);
 

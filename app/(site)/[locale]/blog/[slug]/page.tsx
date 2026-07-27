@@ -26,7 +26,7 @@ type Params = { params: Promise<{ slug: string; locale: string }> };
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug, locale } = await params;
   const t = await getTranslations({ locale, namespace: 'BlogPostPage' });
-  const post = await getPublishedPostBySlug(slug);
+  const post = await getPublishedPostBySlug(slug, locale);
   if (!post) return { title: t('notFound'), robots: { index: false, follow: false } };
 
   const description = post.excerpt ?? `${post.title} — ${site.name}`;
@@ -67,7 +67,7 @@ export default async function BlogPostPage({ params }: Params) {
   setRequestLocale(locale);
   const t = await getTranslations('BlogPostPage');
   
-  const post = await getPublishedPostBySlug(slug);
+  const post = await getPublishedPostBySlug(slug, locale);
   if (!post) notFound();
 
   const published = post.published_at ? new Date(post.published_at).toISOString() : undefined;

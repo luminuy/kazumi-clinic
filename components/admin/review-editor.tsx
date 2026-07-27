@@ -26,7 +26,9 @@ export type AdminReview = {
   name: string;
   rating: number | null;
   quote: string;
+  quoteEn: string;
   procedure: string;
+  procedureEn: string;
   categorySlug: string;
   beforeImagePublicId: string | null;
   afterImagePublicId: string | null;
@@ -41,7 +43,9 @@ type Draft = {
   name: string;
   rating: string;
   quote: string;
+  quoteEn: string;
   procedure: string;
+  procedureEn: string;
   categorySlug: string;
   consent: boolean;
   published: boolean;
@@ -54,7 +58,9 @@ const emptyDraft: Draft = {
   name: '',
   rating: '',
   quote: '',
+  quoteEn: '',
   procedure: '',
+  procedureEn: '',
   categorySlug: '',
   consent: false,
   published: false,
@@ -68,7 +74,9 @@ function draftFrom(review: AdminReview): Draft {
     name: review.name,
     rating: review.rating === null ? '' : String(review.rating),
     quote: review.quote,
+    quoteEn: review.quoteEn,
     procedure: review.procedure,
+    procedureEn: review.procedureEn,
     categorySlug: review.categorySlug,
     consent: review.consent,
     published: review.published,
@@ -153,7 +161,9 @@ export function ReviewEditor({
       name,
       rating,
       quote: draft.quote.trim() || null,
+      quoteEn: draft.quoteEn.trim() || null,
       procedure: draft.procedure.trim() || null,
+      procedureEn: draft.procedureEn.trim() || null,
       categorySlug: draft.categorySlug || null,
       consent: draft.consent,
       published: draft.published,
@@ -524,6 +534,14 @@ function Field({
   );
 }
 
+function EnglishFallbackNote() {
+  return (
+    <p className="mt-1.5 text-[0.68rem] text-ink/40">
+      ปล่อยว่างได้ ถ้าไม่กรอกหน้าอังกฤษจะแสดงภาษาไทย
+    </p>
+  );
+}
+
 function ReviewForm({
   draft,
   setDraft,
@@ -603,13 +621,22 @@ function ReviewForm({
               ))}
             </select>
           </Field>
-          <Field label="หัตถการ" hint="ไม่บังคับ">
+          <Field label="หัตถการ (ไทย)" hint="ไม่บังคับ">
             <input
               className={inputClass}
               value={draft.procedure}
               onChange={(e) => set({ procedure: e.target.value })}
               placeholder="เช่น ฟิลเลอร์ใต้ตา"
             />
+          </Field>
+          <Field label="หัตถการ (อังกฤษ)">
+            <input
+              className={inputClass}
+              value={draft.procedureEn}
+              onChange={(e) => set({ procedureEn: e.target.value })}
+              placeholder="เช่น Under-eye filler"
+            />
+            <EnglishFallbackNote />
           </Field>
           <Field label="หมวดบริการ" hint="ไม่บังคับ">
             <select
@@ -626,13 +653,24 @@ function ReviewForm({
             </select>
           </Field>
           <div className="sm:col-span-2">
-            <Field label="ข้อความรีวิว" hint="ไม่บังคับ">
+            <Field label="ข้อความรีวิว (ไทย)" hint="ไม่บังคับ">
               <textarea
                 className={cn(inputClass, 'min-h-24 resize-y')}
                 value={draft.quote}
                 onChange={(e) => set({ quote: e.target.value })}
                 placeholder="คำรีวิวจากลูกค้า"
               />
+            </Field>
+          </div>
+          <div className="sm:col-span-2">
+            <Field label="ข้อความรีวิว (อังกฤษ)">
+              <textarea
+                className={cn(inputClass, 'min-h-24 resize-y')}
+                value={draft.quoteEn}
+                onChange={(e) => set({ quoteEn: e.target.value })}
+                placeholder="คำรีวิวจากลูกค้าภาษาอังกฤษ"
+              />
+              <EnglishFallbackNote />
             </Field>
           </div>
         </div>

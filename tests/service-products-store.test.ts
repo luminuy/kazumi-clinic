@@ -35,9 +35,13 @@ function productRow(overrides: Partial<ProductRow> = {}): ProductRow {
     id: shippedItem.id!,
     category: category.slug,
     name: shippedItem.name,
+    name_en: null,
     detail: shippedItem.detail ?? null,
+    detail_en: null,
     tagline: shippedItem.tagline ?? null,
+    tagline_en: null,
     benefits: shippedItem.benefits ? JSON.stringify(shippedItem.benefits) : null,
+    benefits_en: null,
     collection: shippedItem.collection ?? null,
     price_from: shippedItem.priceFrom ?? null,
     unit: shippedItem.unit,
@@ -84,6 +88,36 @@ describe('service product override merge', () => {
     expect(item?.name, 'D1 name must override the shipped name').toBe('Neura Deep — edited by clinic');
     expect(item?.priceFrom, 'D1 price must override the shipped price').toBe(4321);
     expect(item?.detail).toBe('clinic-specific detail');
+  });
+
+  it('uses D1 English per field and falls back to the edited Thai value when blank', async () => {
+    fakeRows.set(
+      category.slug,
+      [
+        productRow({
+          name: 'ชื่อที่คลินิกแก้',
+          name_en: 'Clinic-edited name',
+          detail: 'รายละเอียดที่คลินิกแก้',
+          detail_en: '   ',
+          benefits: '["จุดเด่นภาษาไทย"]',
+          benefits_en: 'not-json',
+        }),
+      ],
+    );
+
+    const item = (await getCategoryItems(category.slug, 'en')).find(
+      (candidate) => candidate.id === shippedItem.id,
+    );
+
+    expect(item?.name, 'D1 English must win over the shipped catalogue translation').toBe(
+      'Clinic-edited name',
+    );
+    expect(item?.detail, 'blank English must fall back to the edited Thai field').toBe(
+      'รายละเอียดที่คลินิกแก้',
+    );
+    expect(item?.benefits, 'invalid English JSON must fall back to Thai benefits').toEqual([
+      'จุดเด่นภาษาไทย',
+    ]);
   });
 
   it('includes an active clinic-added product that is absent from the shipped catalogue', async () => {

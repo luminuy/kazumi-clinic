@@ -55,7 +55,7 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
   setRequestLocale(locale);
   const t = await getTranslations('BlogPage');
   const tNav = await getTranslations('Navigation');
-  const posts = await getPublishedPosts();
+  const posts = await getPublishedPosts(locale);
 
   const breadcrumb = breadcrumbSchema([
     { name: tNav('home'), path: '/' },

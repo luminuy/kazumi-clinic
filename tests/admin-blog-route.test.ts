@@ -49,8 +49,10 @@ function adminRequest(method: 'POST' | 'DELETE', body: unknown): NextRequest {
 
 const post = {
   title: 'ดูแลผิวหลังทำเลเซอร์',
+  titleEn: 'Post-laser skin care',
   slug: 'laser-aftercare',
   body: 'เนื้อหาบทความ',
+  bodyEn: 'Article content',
   published: true,
 };
 
@@ -67,6 +69,13 @@ describe('POST /api/admin/blog — publishing refreshes both languages', () => {
   it('purges the listing, the article and the sitemap in Thai and English', async () => {
     const response = await POST(adminRequest('POST', post));
     expect(response.status).toBe(200);
+    expect(upsertPostMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        titleEn: 'Post-laser skin care',
+        bodyEn: 'Article content',
+      }),
+      'admin@example.test',
+    );
 
     const purged = revalidatePathMock.mock.calls.map(([path]) => path);
     expect(purged).toEqual(

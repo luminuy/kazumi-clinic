@@ -1,6 +1,10 @@
 import type { Metadata } from 'next';
 import { serviceCategories, type ServiceItem } from '@/lib/services';
-import { getCategoryItems, getHiddenDefaultProducts } from '@/lib/service-products-store';
+import {
+  getCategoryItems,
+  getHiddenDefaultProducts,
+  type MergedServiceItem,
+} from '@/lib/service-products-store';
 import { ProductCategoryEditor, type AdminProduct } from '@/components/admin/product-category-editor';
 import { PageHeading } from '@/components/admin/ui';
 import { SectionNav } from '@/components/admin/nav';
@@ -15,7 +19,7 @@ export const dynamic = 'force-dynamic';
  * content, not by "has a D1 row" — reordering writes rows for every product in a category, and a
  * product that only moved shouldn't read as "แก้ไขแล้ว".
  */
-function isContentEdited(base: ServiceItem, live: ServiceItem): boolean {
+function isContentEdited(base: ServiceItem, live: MergedServiceItem): boolean {
   if (live.imagePublicId) return true;
   const norm = (v: string | number | undefined) => v ?? '';
   return (
@@ -25,17 +29,25 @@ function isContentEdited(base: ServiceItem, live: ServiceItem): boolean {
     norm(base.collection) !== norm(live.collection) ||
     norm(base.priceFrom) !== norm(live.priceFrom) ||
     norm(base.unit) !== norm(live.unit) ||
+    norm(live.nameEn ?? undefined) !== '' ||
+    norm(live.detailEn ?? undefined) !== '' ||
+    norm(live.taglineEn ?? undefined) !== '' ||
+    JSON.stringify(live.benefitsEn ?? []) !== '[]' ||
     JSON.stringify(base.benefits ?? []) !== JSON.stringify(live.benefits ?? [])
   );
 }
 
-function toAdminProduct(item: ServiceItem, base?: ServiceItem): AdminProduct {
+function toAdminProduct(item: MergedServiceItem, base?: ServiceItem): AdminProduct {
   return {
     id: item.id ?? '',
     name: item.name,
+    nameEn: item.nameEn ?? '',
     detail: item.detail ?? '',
+    detailEn: item.detailEn ?? '',
     tagline: item.tagline ?? '',
+    taglineEn: item.taglineEn ?? '',
     benefits: item.benefits ?? [],
+    benefitsEn: item.benefitsEn ?? [],
     collection: item.collection ?? '',
     priceFrom: item.priceFrom ?? null,
     unit: item.unit,

@@ -18,10 +18,13 @@ export default async function AdminPromotionsPage() {
   const promotions: AdminPromotion[] = rows.map((row) => ({
     id: row.id,
     name: row.name,
+    nameEn: row.name_en ?? '',
     detail: row.detail ?? '',
+    detailEn: row.detail_en ?? '',
     price: row.price,
     originalPrice: row.original_price,
     note: row.note ?? '',
+    noteEn: row.note_en ?? '',
     validUntil: row.valid_until,
     categorySlug: row.category_slug ?? '',
     imagePublicId: row.image_public_id,
