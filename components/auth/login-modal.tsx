@@ -204,10 +204,14 @@ export function LoginModal({
                 className={inputClass}
                 aria-label={t('field.password')}
               />
-              {/* Promising an email that cannot arrive is worse than offering no recovery link. */}
+              {/* Promising an email that cannot arrive is worse than offering no recovery link.
+                  Must close the dialog on click — Header/HeaderActions mount it outside the routed
+                  page tree, so a client-side navigation alone leaves it open, stacked over
+                  whatever page loads underneath. */}
               {!isSignup && emailConfigured && (
                 <Link
                   href="/account/forgot-password"
+                  onClick={() => handleOpenChange(false)}
                   className="-mt-1 self-end text-xs font-medium text-primary hover:underline"
                 >
                   {t('forgot.link')}
