@@ -11,6 +11,7 @@ import { categoryImageKey } from '@/lib/site-images';
 import { socialImage } from '@/lib/metadata-images';
 import { resolvePromotionPosters } from '@/lib/promotions';
 import { serviceCategories, type ServiceCategory } from '@/lib/services';
+import { localizeServiceCategories } from '@/lib/services-locale';
 import { getAllMergedCategories } from '@/lib/service-products-store';
 import { serviceCategoryListSchema, breadcrumbSchema } from '@/lib/schema';
 import { Reveal } from '@/components/reveal';
@@ -111,7 +112,12 @@ function TreatmentCard({
             <h3 className="mt-2 font-serif text-[1.65rem] leading-none text-[var(--store-ink)]">
               {category.titleEn}
             </h3>
-            <p className="mt-2 text-xs tracking-[0.04em] text-[var(--store-muted)]">{category.title}</p>
+            {/* The Thai name sits under the English one as a second line. On /en the category is
+                localized, so `title` already *is* `titleEn` — printing it again would repeat the
+                heading, hence the equality guard rather than a locale check here. */}
+            {category.title !== category.titleEn && (
+              <p className="mt-2 text-xs tracking-[0.04em] text-[var(--store-muted)]">{category.title}</p>
+            )}
             <p className="mt-3 text-[0.82rem] leading-[1.75] text-[var(--store-muted)]">{category.shortDescription}</p>
 
             <p className="mt-4 text-[0.68rem] leading-[1.7] text-[var(--store-muted)]/70">
@@ -145,8 +151,9 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
   const overrides = await getImageOverrides();
   const pick = (key: string, fallback: string) => overrides.get(key)?.public_id ?? fallback;
 
-  // Merged so a product the clinic renamed/added through /admin shows in each card's program list.
-  const categories = await getAllMergedCategories();
+  // Merged so a product the clinic renamed/added through /admin shows in each card's program list,
+  // then localized so the English page describes the same catalogue in English.
+  const categories = localizeServiceCategories(await getAllMergedCategories(), locale);
 
   // Posters resolve here, in the server component, so the client carousel stays free of the
   // override layer and the D1 read happens once per render.
@@ -160,7 +167,12 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{
-          __html: jsonLdHtml(serviceCategoryListSchema(serviceCategories)),
+          // Localized so the /en page describes the catalogue to Google in the language of the
+          // page it sits on. Still the hardcoded list rather than the merged one, so the schema
+          // stays the stable reviewed set (CLAUDE.md §3.3).
+          __html: jsonLdHtml(
+            serviceCategoryListSchema(localizeServiceCategories(serviceCategories, locale)),
+          ),
         }}
       />
       <script

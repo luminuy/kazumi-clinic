@@ -4,6 +4,8 @@ import thMessages from '@/messages/th.json';
 import enMessages from '@/messages/en.json';
 import { navItems } from '@/lib/nav';
 import { serviceCategories } from '@/lib/services';
+import { catalogueCategoriesEn, catalogueItemsEn, catalogueUnitsEn } from '@/lib/services-en';
+import { localizeServiceCategory } from '@/lib/services-locale';
 import { site } from '@/lib/site';
 import {
   clinicSchema,
@@ -105,6 +107,46 @@ describe('messages (CLAUDE.md §13)', () => {
         expect(typeof value, `${label}: ${path} is not a string`).toBe('string');
         expect((value as string).trim().length, `${label}: ${path} is empty`).toBeGreaterThan(0);
       }
+    }
+  });
+
+  // The catalogue is the one place where English does not come from messages/*.json, so the key
+  // parity test above cannot see it. Without these, adding a Thai treatment ships a page that is
+  // English everywhere except the part describing what the clinic actually does.
+  it('every category and item in the Thai catalogue has English', () => {
+    for (const category of serviceCategories) {
+      expect(catalogueCategoriesEn[category.slug], `no English for category ${category.slug}`)
+        .toBeDefined();
+      for (const item of category.items) {
+        expect(item.id, `${category.slug}: item "${item.name}" has no id to key English off`)
+          .toBeTruthy();
+        expect(catalogueItemsEn[item.id!], `no English for item ${item.id}`).toBeDefined();
+      }
+      expect(catalogueUnitsEn[category.items[0]?.unit ?? 'ครั้ง'], 'unit has no English').toBeTruthy();
+    }
+  });
+
+  it('localizing a category leaves no Thai behind in the fields it owns', () => {
+    const thai = /[฀-๿]/;
+    for (const category of serviceCategories) {
+      const en = localizeServiceCategory(category, 'en');
+      expect(thai.test(en.title), `${category.slug}: title still Thai`).toBe(false);
+      expect(thai.test(en.shortDescription), `${category.slug}: shortDescription still Thai`)
+        .toBe(false);
+      expect(thai.test(en.description), `${category.slug}: description still Thai`).toBe(false);
+      for (const item of en.items) {
+        expect(thai.test(item.name), `${item.id}: name still Thai`).toBe(false);
+        expect(thai.test(item.detail ?? ''), `${item.id}: detail still Thai`).toBe(false);
+        expect(thai.test(item.unit), `${item.id}: unit still Thai`).toBe(false);
+        expect(thai.test((item.benefits ?? []).join(' ')), `${item.id}: benefits still Thai`)
+          .toBe(false);
+      }
+    }
+  });
+
+  it('localizing for Thai returns the source untouched', () => {
+    for (const category of serviceCategories) {
+      expect(localizeServiceCategory(category, 'th')).toBe(category);
     }
   });
 
