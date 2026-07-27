@@ -17,7 +17,7 @@
 
 | | ค่า |
 | --- | --- |
-| URL ที่ใช้งานจริงตอนนี้ | **https://kazumi-clinic.bankjack10452.workers.dev** |
+| URL ที่ใช้งานจริงตอนนี้ | **https://kazumiclinic.skin** (โดเมนจริง, ขึ้นแล้ว 2026-07-27) · `https://kazumi-clinic.bankjack10452.workers.dev` ยังใช้งานได้เป็น URL สำรอง |
 | Worker name | `kazumi-clinic` |
 | บัญชี Cloudflare | `bankjack10452@gmail.com` (account id `f5af6f66302ba6872d8f51aebf43d3fe`) |
 | Deploy ครั้งแรก | 2026-07-17 (ก่อนหน้านั้น**ไม่เคย deploy เลย** ทั้งที่เอกสารเก่าบอกว่า deploy อัตโนมัติ) |
@@ -120,7 +120,7 @@ canonical/sitemap/JSON-LD `@id` ชี้ไปโดเมนที่ยัง
 
 **ชั้นที่ 1 — Cloudflare Access (ที่ edge)**
 Zero Trust → Access → Applications → app ชื่อ `kazumi-clinic-admin`
-- Destination: `kazumi-clinic.bankjack10452.workers.dev/admin`
+- Destinations (สูงสุด 5 ต่อ app, ตอนนี้ใช้ 2): `kazumi-clinic.bankjack10452.workers.dev/admin`, `kazumiclinic.skin/admin` (เพิ่ม 2026-07-27 หลังโดเมนจริงขึ้น)
 - Policy: `Admin only` (ใช้ร่วมกับ littlesmileflower)
 - Session: 24 ชม.
 

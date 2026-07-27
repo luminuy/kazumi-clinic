@@ -34,5 +34,5 @@ echo "8. Deploying to Cloudflare"
 pnpm cf:deploy
 
 echo "9. Verification"
-curl -I https://kazumiclinic.com
+curl -I https://kazumiclinic.skin
 curl -I https://kazumi-clinic.bankjack10452.workers.dev

@@ -135,8 +135,8 @@ Current Version ID: 12ab34cd-...
 **ชั้น 1 — หน้าเว็บ (ยิงอย่างน้อย 2 ครั้ง)**
 
 ```bash
-curl -sI https://kazumi-clinic.bankjack10452.workers.dev/ | grep -iE "^http/|x-nextjs-cache"
-curl -sI https://kazumi-clinic.bankjack10452.workers.dev/ | grep -iE "^http/|x-nextjs-cache"
+curl -sI https://kazumiclinic.skin/ | grep -iE "^http/|x-nextjs-cache"
+curl -sI https://kazumiclinic.skin/ | grep -iE "^http/|x-nextjs-cache"
 ```
 
 หน้าเว็บเป็น **ISR + stale-while-revalidate** · request แรกหลัง deploy เสิร์ฟ HTML เก่าจาก KV (`x-nextjs-cache: HIT`) แล้วค่อย regenerate เบื้องหลัง · **ยิงครั้งเดียวแล้วอ่านผล = อ่านของเก่า** แล้วจะนึกว่า deploy ไม่ขึ้นทั้งที่ขึ้นแล้ว (บทเรียน 2026-07-17)
@@ -201,8 +201,8 @@ npx wrangler d1 execute kazumi-clinic-tag-cache --remote --file migrations/000X_
 pnpm cf:deploy                                         # รอ "Current Version ID: ..."
 
 # ── 6. verify ปลายทาง ──
-curl -sI https://kazumi-clinic.bankjack10452.workers.dev/ | grep -iE "^http/|x-nextjs-cache"
-curl -sI https://kazumi-clinic.bankjack10452.workers.dev/ | grep -iE "^http/|x-nextjs-cache"
+curl -sI https://kazumiclinic.skin/ | grep -iE "^http/|x-nextjs-cache"
+curl -sI https://kazumiclinic.skin/ | grep -iE "^http/|x-nextjs-cache"
 pnpm health
 pnpm smoke                                             # ถ้าแตะ auth/D1/crypto
 npx wrangler deployments list | tail -6
@@ -239,7 +239,7 @@ npx wrangler deployments list | tail -6
 3. **"เห็น Current Version ID = เว็บใช้งานได้" — ผิด** · ต้องยิง URL ตรวจ (§4)
 4. **"curl ได้ 200 = โค้ดใหม่ขึ้นแล้ว" — ผิด** · 200 มาจาก ISR cache ของเก่าได้ ต้องยิง 2 ครั้ง + ดู `x-nextjs-cache`
 5. **"เทสต์ผ่าน = ใช้งานได้บน Worker" — ผิด** · vitest รันบน Node ไม่ใช่ workerd (§4 ชั้น 3)
-6. **โดเมนจริง `kazumiclinic.com` ยังไม่ขึ้น** · ใช้งานจริงที่ `kazumi-clinic.bankjack10452.workers.dev` เท่านั้น · `SITE_ENV=preview` ยังต้องอยู่ (robots.txt = `Disallow: /`)
+6. **โดเมนจริงคือ `kazumiclinic.skin` ขึ้นแล้ว (2026-07-27)** · `kazumiclinic.com` ไม่ใช่ของคลินิก ห้ามอ้างถึงอีก · `SITE_ENV=preview` ถูกลบแล้ว (robots.txt เปิด crawl ตามปกติ)
 
 ---
 

@@ -17,5 +17,5 @@ jobs:
           curl -sf -X POST "$BASE/api/internal/appointment-reminders" \
             -H "x-internal-secret: $SECRET"
         env:
-          BASE: https://kazumi-clinic.bankjack10452.workers.dev
+          BASE: https://kazumiclinic.skin
           SECRET: ${{ secrets.INTERNAL_TASK_SECRET }}

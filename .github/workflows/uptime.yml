@@ -13,9 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # BASE points at workers.dev for now; switch it to the real domain when it goes live
-      # (or set a repo variable BASE and reference ${{ vars.BASE }} here).
       - name: Health check
         run: bash scripts/healthcheck.sh
         env:
-          BASE: https://kazumi-clinic.bankjack10452.workers.dev
+          BASE: https://kazumiclinic.skin

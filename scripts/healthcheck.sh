@@ -3,10 +3,10 @@
 # Makes silent breakage loud: run after a deploy, or on a schedule (see .github/workflows/uptime.yml).
 #
 # Usage:  bash scripts/healthcheck.sh
-#         BASE=https://kazumiclinic.com bash scripts/healthcheck.sh   # once the real domain is live
+#         BASE=https://kazumi-clinic.bankjack10452.workers.dev bash scripts/healthcheck.sh   # workers.dev instead
 set -uo pipefail
 
-BASE="${BASE:-https://kazumi-clinic.bankjack10452.workers.dev}"
+BASE="${BASE:-https://kazumiclinic.skin}"
 PAGES=(
   / /services /about /contact /reviews /blog /promotions
   /filler /botox /skin-booster /collagen-booster /thread-lift
