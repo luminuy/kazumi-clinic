@@ -17,6 +17,7 @@ import {
 import { useTranslations, useLocale } from 'next-intl';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { HeaderActions } from '@/components/header-actions';
+import { isEmailConfigured } from '@/lib/members/password-reset';
 import type { OAuthProvider } from '@/lib/members/oauth';
 
 export default function Header({
@@ -29,6 +30,7 @@ export default function Header({
   const t = useTranslations('Navigation');
   const isEn = useLocale() === 'en';
   const serviceGroups = resolvedServiceNavGroups();
+  const emailConfigured = isEmailConfigured();
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/70 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
@@ -124,7 +126,7 @@ export default function Header({
 
         <div className="flex items-center gap-1">
           <LanguageSwitcher />
-          <HeaderActions oauthProviders={oauthProviders} />
+          <HeaderActions oauthProviders={oauthProviders} emailConfigured={emailConfigured} />
 
           <Sheet>
             <SheetTrigger

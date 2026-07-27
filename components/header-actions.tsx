@@ -20,8 +20,10 @@ const SearchModal = dynamic(() => import('@/components/search-modal').then((m) =
 
 export function HeaderActions({
   oauthProviders = [],
+  emailConfigured = false,
 }: {
   oauthProviders?: OAuthProvider[];
+  emailConfigured?: boolean;
 }) {
   const t = useTranslations('Navigation');
   const [loginModalOpen, setLoginModalOpen] = useState(false);
@@ -108,7 +110,12 @@ export function HeaderActions({
         </Button>
       </div>
       
-      <LoginModal open={loginModalOpen} onOpenChange={setLoginModalOpen} providers={oauthProviders} />
+      <LoginModal
+        open={loginModalOpen}
+        onOpenChange={setLoginModalOpen}
+        providers={oauthProviders}
+        emailConfigured={emailConfigured}
+      />
       <SearchModal open={searchModalOpen} onOpenChange={setSearchModalOpen} />
     </>
   );
