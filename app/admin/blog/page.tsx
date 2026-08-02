@@ -7,13 +7,15 @@ import {
   type CategoryOption,
 } from '@/components/admin/blog-editor';
 import { PageHeading } from '@/components/admin/ui';
+import { getEntityImages } from '@/lib/entity-images-store';
 
 export const metadata: Metadata = { title: 'บทความ' };
 
 // The clinic's posts are per-request state, not build output.
 export const dynamic = 'force-dynamic';
 
-function toAdminPost(row: PostRow): AdminPost {
+async function toAdminPost(row: PostRow): Promise<AdminPost> {
+  const gallery = await getEntityImages('post', row.id);
   return {
     id: row.id,
     slug: row.slug,
@@ -28,13 +30,16 @@ function toAdminPost(row: PostRow): AdminPost {
     published: row.published === 1,
     publishedAt: row.published_at,
     category: row.category,
+    galleryImages: gallery.map((r) => ({ id: r.id, publicId: r.public_id })),
   };
 }
 
 export default async function AdminBlogPage() {
   const [rows, hiddenRows] = await Promise.all([getAllPosts(), getHiddenPosts()]);
-  const posts = rows.map(toAdminPost);
-  const hiddenPosts = hiddenRows.map(toAdminPost);
+  const [posts, hiddenPosts] = await Promise.all([
+    Promise.all(rows.map(toAdminPost)),
+    Promise.all(hiddenRows.map(toAdminPost)),
+  ]);
 
   const categories: CategoryOption[] = serviceCategories.map((category) => ({
     slug: category.slug,
