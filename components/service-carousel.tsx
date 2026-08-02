@@ -23,7 +23,6 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
   const t = useTranslations('A11y');
   const tCopy = useTranslations('ServiceCarousel');
   const railRef = useRef<HTMLDivElement>(null);
-  const pickerRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<number | null>(null);
   const settleRef = useRef<number | null>(null);
   const isTransitioningRef = useRef(false);
@@ -49,29 +48,15 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
     return Math.max(0, card.offsetLeft - (rail.clientWidth - card.clientWidth) / 2);
   }, []);
 
-  const pickerTargetFor = useCallback((position: number) => {
-    const picker = pickerRef.current;
-    const card = picker?.querySelector<HTMLElement>(`[data-service-picker-index="${position}"]`);
-    if (!picker || !card) return null;
-
-    return Math.max(0, card.offsetLeft - picker.clientWidth * 0.12);
-  }, []);
-
   const scrollToPosition = useCallback((position: number, behavior: ScrollBehavior) => {
     const railTarget = targetFor(position);
-    const pickerTarget = pickerTargetFor(position);
     const rail = railRef.current;
-    const picker = pickerRef.current;
 
     if (rail && railTarget !== null) {
       if (behavior === 'auto') rail.scrollLeft = railTarget;
       else rail.scrollTo({ left: railTarget, behavior });
     }
-    if (picker && pickerTarget !== null) {
-      if (behavior === 'auto') picker.scrollLeft = pickerTarget;
-      else picker.scrollTo({ left: pickerTarget, behavior });
-    }
-  }, [pickerTargetFor, targetFor]);
+  }, [targetFor]);
 
   const normaliseIndex = useCallback((index: number) => (
     ((index % categories.length) + categories.length) % categories.length
@@ -228,36 +213,6 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
             );
           })}
         </div>
-      </div>
-
-      <div ref={pickerRef} className="service-stream-picker" aria-label={t('serviceList')}>
-        {orderedItems.map(({ category, categoryIndex, position }) => {
-          const imageSrc = heroOverrides[category.slug] ?? category.heroImage;
-          return (
-            <Link
-              key={category.slug}
-              data-service-picker-index={position}
-              href={`/${category.slug}`}
-              aria-current={activeIndex === categoryIndex ? 'true' : undefined}
-              className="service-stream-picker__item"
-            >
-              {imageSrc ? (
-                <Image
-                  src={imageSrc}
-                  alt=""
-                  aria-hidden="true"
-                  fill
-                  sizes="(min-width: 768px) 24vw, 58vw"
-                  className="object-cover"
-                />
-              ) : (
-                <ServiceIcon slug={category.slug} className="size-7" strokeWidth={1.1} aria-hidden="true" />
-              )}
-              <span className="service-stream-picker__title">{category.title}</span>
-              <span className="service-stream-picker__action">{tCopy('details')}</span>
-            </Link>
-          );
-        })}
       </div>
 
       <div className="service-stream-footer">
