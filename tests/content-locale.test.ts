@@ -24,6 +24,7 @@ const post: PostRow = {
   updated_at: 1,
   updated_by: 'test-admin',
   category: null,
+  sort_order: 0,
 };
 
 const promotion: PromotionRow = {

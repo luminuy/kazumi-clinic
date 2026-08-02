@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils';
 import { btn, card, inputClass, SectionHeading, Field, EnglishFallbackNote } from './ui';
 import { useEntityEditor } from './use-entity-editor';
 import { EditorDrawer } from './editor-drawer';
+import { ReorderButtons } from './reorder-buttons';
 
 export type AdminPost = {
   id: string;
@@ -143,6 +144,20 @@ export function BlogEditor({
     );
   }
 
+  async function move(index: number, direction: -1 | 1) {
+    const next = index + direction;
+    if (next < 0 || next >= posts.length) return;
+    const orderedIds = posts.map((p) => p.id);
+    [orderedIds[index], orderedIds[next]] = [orderedIds[next], orderedIds[index]];
+    await mutate('order', () =>
+      fetch('/api/admin/blog', {
+        method: 'PATCH',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ orderedIds }),
+      }),
+    );
+  }
+
   const heading =
     editing === 'new'
       ? 'บทความใหม่'
@@ -176,15 +191,19 @@ export function BlogEditor({
       </EditorDrawer>
 
       <ul className="mt-6 space-y-3">
-        {posts.map((post) => (
+        {posts.map((post, index) => (
           <li key={post.id}>
             <PostRow
               post={post}
+              first={index === 0}
+              last={index === posts.length - 1}
               busy={busy}
               busyId={busyId}
               onEdit={() => openEdit(post)}
               onDelete={() => remove(post)}
               onUpload={(file) => uploadImage(post, file)}
+              onMoveUp={() => move(index, -1)}
+              onMoveDown={() => move(index, 1)}
             />
           </li>
         ))}
@@ -200,18 +219,26 @@ export function BlogEditor({
 
 function PostRow({
   post,
+  first,
+  last,
   busy,
   busyId,
   onEdit,
   onDelete,
   onUpload,
+  onMoveUp,
+  onMoveDown,
 }: {
   post: AdminPost;
+  first: boolean;
+  last: boolean;
   busy: boolean;
   busyId: string | null;
   onEdit: () => void;
   onDelete: () => void;
   onUpload: (file: File) => void;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const rowBusy = busyId === 'img-' + post.id || busyId === 'del-' + post.id;
@@ -295,10 +322,13 @@ function PostRow({
               ดู
             </a>
           )}
-          <button type="button" disabled={busy} onClick={onDelete} className={cn(btn.danger, 'ml-auto')}>
+          <button type="button" disabled={busy} onClick={onDelete} className={btn.danger}>
             {busyId === 'del-' + post.id ? <Loader2 className="size-3.5 animate-spin" /> : <Trash2 className="size-3.5" />}
             ลบ
           </button>
+          <span className="ml-auto">
+            <ReorderButtons disabled={busy} first={first} last={last} onMoveUp={onMoveUp} onMoveDown={onMoveDown} />
+          </span>
         </div>
       </div>
     </div>
