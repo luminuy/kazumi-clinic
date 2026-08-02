@@ -27,6 +27,8 @@ export type PostRow = {
   updated_by: string;
   /** A serviceCategories slug (lib/services.ts) or null — drives the /blog category filter. */
   category: string | null;
+  /** Manual order for /admin/blog — see migrations/0015_posts_sort_order.sql. */
+  sort_order: number;
 };
 
 /** Everything the admin form can set on a post. `id` identifies an existing row. */
@@ -42,6 +44,8 @@ export type PostInput = {
   author?: string | null;
   published: boolean;
   category?: string | null;
+  /** Only used on a fresh INSERT — upsert keeps an existing row's order (see upsertPost). */
+  sortOrder?: number;
 };
 
 async function db() {
@@ -53,13 +57,18 @@ async function db() {
   }
 }
 
-/** Every post, newest edit first. Empty when D1 is unavailable. React cache dedupes the read. */
+/**
+ * Every post in admin order. Empty when D1 is unavailable. React cache dedupes the read.
+ * `sort_order` leads (manual arrangement from /admin/blog); `updated_at DESC` breaks ties, which
+ * is every row until the first reorder — so this is a no-op change in ordering right after the
+ * migration runs, not a visible reshuffle.
+ */
 export const getPostRows = cache(async (): Promise<PostRow[]> => {
   const binding = await db();
   if (!binding) return [];
   try {
     const { results } = await binding
-      .prepare('SELECT * FROM posts ORDER BY updated_at DESC')
+      .prepare('SELECT * FROM posts ORDER BY sort_order ASC, updated_at DESC')
       .all<PostRow>();
     return results;
   } catch {
@@ -127,8 +136,8 @@ export async function upsertPost(input: PostInput, updatedBy: string) {
       .prepare(
         `INSERT INTO posts
            (id, slug, title, title_en, excerpt, excerpt_en, body, body_en, author, published,
-            published_at, updated_at, updated_by, category)
-         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14)
+            published_at, updated_at, updated_by, category, sort_order)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15)
          ON CONFLICT(id) DO UPDATE SET
            slug = ?2, title = ?3, title_en = ?4, excerpt = ?5, excerpt_en = ?6,
            body = ?7, body_en = ?8, author = ?9, published = ?10,
@@ -138,6 +147,7 @@ export async function upsertPost(input: PostInput, updatedBy: string) {
              WHEN ?10 = 1 THEN ?12
              ELSE NULL
            END,
+           -- sort_order is deliberately absent here: an edit never moves a post, only reorderPosts() does.
            updated_at = ?12, updated_by = ?13, category = ?14`,
       )
       .bind(
@@ -155,6 +165,7 @@ export async function upsertPost(input: PostInput, updatedBy: string) {
         now,
         updatedBy,
         input.category ?? null,
+        input.sortOrder ?? 0,
       )
       .run();
   } catch (error) {
@@ -167,6 +178,25 @@ export async function upsertPost(input: PostInput, updatedBy: string) {
     }
     throw error;
   }
+}
+
+/** Persists a new manual order for /admin/blog — mirrors reorderPromotions/reorderReviews. */
+export async function reorderPosts(orderedIds: string[], updatedBy: string) {
+  const binding = await db();
+  requireDb(binding);
+  const now = Date.now();
+  const statements = orderedIds.map((id, index) =>
+    binding
+      .prepare('UPDATE posts SET sort_order = ?1, updated_at = ?2, updated_by = ?3 WHERE id = ?4')
+      .bind(index, now, updatedBy, id),
+  );
+  if (statements.length > 0) await binding.batch(statements);
+}
+
+/** One past the last row — where a brand-new post goes by default, same as promotions/reviews. */
+export async function nextSortOrder(): Promise<number> {
+  const rows = await getPostRows();
+  return rows.length;
 }
 
 /** Sets a post's cover photo, leaving every other field untouched. */

@@ -1,7 +1,14 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { upsertPost, deletePost, slugTaken, type PostInput } from '@/lib/blog-store';
+import {
+  upsertPost,
+  deletePost,
+  slugTaken,
+  reorderPosts,
+  nextSortOrder,
+  type PostInput,
+} from '@/lib/blog-store';
 import { serviceCategories } from '@/lib/services';
 import { rateLimit, clientIp } from '@/lib/rate-limit';
 
@@ -40,9 +47,14 @@ const upsertSchema = z.object({
   published: z.boolean(),
   // A serviceCategories slug for the /blog filter, or null/absent for uncategorised.
   category: z.enum(categorySlugs).nullish(),
+  sortOrder: z.number().int().min(0).max(9999).optional(),
 });
 
 const deleteSchema = z.object({ id: z.string().min(1).max(80) });
+
+const reorderSchema = z.object({
+  orderedIds: z.array(z.string().min(1).max(80)).min(1).max(500),
+});
 
 export async function POST(request: NextRequest) {
   const email = adminEmail(request);
@@ -78,6 +90,8 @@ export async function POST(request: NextRequest) {
     author: data.author ?? null,
     published: data.published,
     category: data.category ?? null,
+    // Only used on a fresh INSERT (upsert keeps an existing row's order): a new post lands last.
+    sortOrder: data.sortOrder ?? (data.id ? 0 : await nextSortOrder()),
   };
 
   try {
@@ -128,6 +142,30 @@ export async function DELETE(request: NextRequest) {
     console.error(error);
     return NextResponse.json(
       { error: 'ลบไม่สำเร็จ' },
+      { status: 502 },
+    );
+  }
+}
+
+export async function PATCH(request: NextRequest) {
+  const email = adminEmail(request);
+  if (!email) return NextResponse.json({ error: 'ไม่ได้รับอนุญาต' }, { status: 401 });
+  if (!(await rateLimit('admin-write', clientIp(request), { limit: 60, windowSec: 300 }))) {
+    return NextResponse.json({ error: 'ทำรายการบ่อยเกินไป กรุณาลองใหม่ภายหลัง' }, { status: 429 });
+  }
+
+  const parsed = reorderSchema.safeParse(await request.json().catch(() => null));
+  if (!parsed.success) return NextResponse.json({ error: 'ข้อมูลไม่ถูกต้อง' }, { status: 400 });
+
+  try {
+    await reorderPosts(parsed.data.orderedIds, email);
+    revalidatePath('/blog');
+    revalidatePath('/en/blog');
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: 'จัดลำดับไม่สำเร็จ' },
       { status: 502 },
     );
   }

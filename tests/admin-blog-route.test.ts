@@ -14,14 +14,18 @@ import type { NextRequest } from 'next/server';
 const {
   clientIpMock,
   deletePostMock,
+  nextSortOrderMock,
   rateLimitMock,
+  reorderPostsMock,
   revalidatePathMock,
   slugTakenMock,
   upsertPostMock,
 } = vi.hoisted(() => ({
   clientIpMock: vi.fn(),
   deletePostMock: vi.fn(),
+  nextSortOrderMock: vi.fn(),
   rateLimitMock: vi.fn(),
+  reorderPostsMock: vi.fn(),
   revalidatePathMock: vi.fn(),
   slugTakenMock: vi.fn(),
   upsertPostMock: vi.fn(),
@@ -35,11 +39,13 @@ vi.mock('@/lib/blog-store', () => ({
   upsertPost: upsertPostMock,
   deletePost: deletePostMock,
   slugTaken: slugTakenMock,
+  nextSortOrder: nextSortOrderMock,
+  reorderPosts: reorderPostsMock,
 }));
 
-const { POST, DELETE } = await import('@/app/api/admin/blog/route');
+const { POST, DELETE, PATCH } = await import('@/app/api/admin/blog/route');
 
-function adminRequest(method: 'POST' | 'DELETE', body: unknown): NextRequest {
+function adminRequest(method: 'POST' | 'DELETE' | 'PATCH', body: unknown): NextRequest {
   return new Request('https://example.test/api/admin/blog', {
     method,
     headers: { 'content-type': 'application/json', 'x-admin-email': 'admin@example.test' },
@@ -63,6 +69,8 @@ beforeEach(() => {
   slugTakenMock.mockResolvedValue(false);
   upsertPostMock.mockResolvedValue(undefined);
   deletePostMock.mockResolvedValue('laser-aftercare');
+  nextSortOrderMock.mockResolvedValue(3);
+  reorderPostsMock.mockResolvedValue(undefined);
 });
 
 describe('POST /api/admin/blog — publishing refreshes both languages', () => {
@@ -113,5 +121,22 @@ describe('DELETE /api/admin/blog — a deleted post must stop being served', () 
     expect(purged).toEqual(expect.arrayContaining(['/blog', '/en/blog', '/sitemap.xml']));
     // Nothing to target — it must not invent a path like "/blog/null".
     expect(purged.some((path) => path.includes('null'))).toBe(false);
+  });
+});
+
+describe('PATCH /api/admin/blog — manual reorder (migrations/0015_posts_sort_order.sql)', () => {
+  it('persists the new order and refreshes the listing in both languages', async () => {
+    const response = await PATCH(adminRequest('PATCH', { orderedIds: ['post-2', 'post-1'] }));
+    expect(response.status).toBe(200);
+    expect(reorderPostsMock).toHaveBeenCalledWith(['post-2', 'post-1'], 'admin@example.test');
+
+    const purged = revalidatePathMock.mock.calls.map(([path]) => path);
+    expect(purged).toEqual(expect.arrayContaining(['/blog', '/en/blog']));
+  });
+
+  it('rejects an empty order', async () => {
+    const response = await PATCH(adminRequest('PATCH', { orderedIds: [] }));
+    expect(response.status).toBe(400);
+    expect(reorderPostsMock).not.toHaveBeenCalled();
   });
 });
