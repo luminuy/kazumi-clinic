@@ -347,6 +347,10 @@ export default async function ServiceCategoryPage({ params }: Props) {
                   <ShieldCheck aria-hidden="true" className="size-4 shrink-0 text-[var(--store-muted)]" />
                   {t('clinicLicense', { license: site.license })}
                 </span>
+                <span className="flex items-center gap-2 text-xs text-[var(--store-muted)]">
+                  <ShieldCheck aria-hidden="true" className="size-4 shrink-0 text-[var(--store-muted)]" />
+                  {t('physicianLicense', { license: site.doctors[0].licenseNo })}
+                </span>
               </div>
             </Reveal>
 

@@ -101,7 +101,8 @@ export async function MesotherapyServicePage({
                   {service.description}
                 </p>
                 <p className="mt-8 text-[0.66rem] tracking-wide text-[var(--store-muted)]">
-                  {tCommon('clinicLicense', { license: site.license })}
+                  {tCommon('clinicLicense', { license: site.license })} ·{' '}
+                  {tCommon('physicianLicense', { license: site.doctors[0].licenseNo })}
                 </p>
               </div>
             </div>

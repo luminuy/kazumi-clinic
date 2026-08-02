@@ -199,6 +199,7 @@
     "doctorAssessed": "Doctor-led assessment and care",
     "clinicLicense": "Clinic License No. {license}",
     "facilityLicense": "Clinic License No. {license}",
+    "physicianLicense": "Physician License No. {license}",
     "closingDescription": "Consult our medical team to assess whether {serviceTitle} is appropriate for you before deciding to receive treatment.",
     "bookLine": "Book an appointment via LINE",
     "viewOtherServices": "View other services",

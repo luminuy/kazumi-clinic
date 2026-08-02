@@ -199,6 +199,7 @@
     "doctorAssessed": "ประเมินและดูแลโดยแพทย์",
     "clinicLicense": "ใบอนุญาตเลขที่ {license}",
     "facilityLicense": "ใบอนุญาตสถานพยาบาลเลขที่ {license}",
+    "physicianLicense": "แพทย์ผู้ดูแลใบอนุญาตเลขที่ {license}",
     "closingDescription": "ปรึกษาทีมแพทย์เพื่อประเมินว่า{serviceTitle}เหมาะกับคุณหรือไม่ ก่อนตัดสินใจเข้ารับบริการ",
     "bookLine": "จองคิวผ่าน LINE",
     "viewOtherServices": "ดูบริการอื่น",

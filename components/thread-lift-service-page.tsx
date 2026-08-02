@@ -133,7 +133,8 @@ export async function ThreadLiftServicePage({
                 </p>
                 <p className="flex items-center gap-3 text-xs text-[var(--store-ink)]">
                   <ShieldCheck aria-hidden="true" className="size-4 shrink-0 text-[var(--store-muted)]" />
-                  {tCommon('clinicLicense', { license: site.license })}
+                  {tCommon('clinicLicense', { license: site.license })} ·{' '}
+                  {tCommon('physicianLicense', { license: site.doctors[0].licenseNo })}
                 </p>
               </div>
             </div>

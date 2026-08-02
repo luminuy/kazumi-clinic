@@ -96,7 +96,8 @@ export async function CollagenBoosterServicePage({
                   {service.description}
                 </p>
                 <p className="mt-6 text-[0.64rem] uppercase tracking-[0.16em] text-[var(--store-muted)]">
-                  {tCommon('facilityLicense', { license: site.license })}
+                  {tCommon('facilityLicense', { license: site.license })} ·{' '}
+                  {tCommon('physicianLicense', { license: site.doctors[0].licenseNo })}
                 </p>
               </Reveal>
             </div>

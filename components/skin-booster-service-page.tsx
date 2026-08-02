@@ -144,7 +144,8 @@ export async function SkinBoosterServicePage({
 
           <div className="mt-8 max-w-xl">
             <p className="text-[0.64rem] uppercase tracking-[0.16em] text-[var(--store-muted)]">
-              {tCommon('facilityLicense', { license: site.license })}
+              {tCommon('facilityLicense', { license: site.license })} ·{' '}
+              {tCommon('physicianLicense', { license: site.doctors[0].licenseNo })}
             </p>
             <p className="mt-3 text-sm leading-[1.9] text-[var(--store-muted)] md:text-base">
               {service.description}
