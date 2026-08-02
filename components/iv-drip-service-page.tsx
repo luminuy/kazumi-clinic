@@ -8,6 +8,7 @@ import { ServiceIcon } from '@/components/service-icon';
 import { LineCtaButton } from '@/components/line-cta-button';
 import { ProductThumbnail } from '@/components/product-thumbnail';
 import { ServiceItemActions } from '@/components/service-item-actions';
+import { ServiceAftercareSection } from '@/components/service-aftercare-section';
 
 /** Groups items by their `collection`, preserving declaration order. */
 function groupByCollection(items: ServiceItem[]) {
@@ -252,6 +253,8 @@ export async function IvDripServicePage({
           </div>
         </div>
       </section>
+
+      <ServiceAftercareSection service={service} />
 
       {/* ── Booking ──────────────────────────────────────────── */}
       <section className="px-6 py-24 sm:px-10 md:px-14 md:py-32 lg:px-20">

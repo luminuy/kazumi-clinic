@@ -15,6 +15,9 @@
 export type CatalogueCategoryEn = {
   shortDescription: string;
   description: string;
+  aftercare?: string[];
+  contraindications?: string[];
+  downtime?: string;
 };
 
 export type CatalogueItemEn = {
@@ -25,40 +28,157 @@ export type CatalogueItemEn = {
 
 export const catalogueCategoriesEn: Record<string, CatalogueCategoryEn> = {
   "filler": {
-    shortDescription: "Fills deep folds, adjusts facial shape and lips to look natural, assessed by a doctor",
-    description: "Hyaluronic acid dermal filler treatment from quality brands, caring for nasolabial folds, marionette lines, under-eye area, and lips. Kazumi Clinic's doctors assess facial structure and design the customized volume for each individual before the treatment.",
+    shortDescription: "Fills deep folds, contours the face and lips for a natural look, assessed by a doctor",
+    description: "Hyaluronic acid dermal filler injection services using quality brands to treat nasolabial folds, marionette lines, under-eye area, and lips. Kazumi Clinic's doctors assess the facial structure and customize the volume for each individual before the treatment.",
+    aftercare: [
+      "Avoid massaging, pressing, or rubbing the treated area for at least 24–48 hours.",
+      "Avoid strenuous exercise, saunas, steam rooms, and alcohol consumption on the day of the treatment.",
+      "Avoid extreme heat on the face, such as strong sunlight or tanning beds, for at least 1 week.",
+      "If there is unusual swelling, bruising, or pain lasting longer than 3–5 days, please contact the clinic.",
+    ],
+    contraindications: [
+      "Pregnant or breastfeeding.",
+      "Infections or inflammatory rashes in the treatment area.",
+      "History of allergy to hyaluronic acid or dermal filler ingredients.",
+      "Bleeding disorders or taking blood thinners; please inform the doctor before assessment.",
+    ],
+    downtime: "Mild swelling, redness, or bruising at the injection site may occur for 2–5 days; makeup can be applied to cover it after 24 hours if there are no open wounds.",
   },
   "botox": {
-    shortDescription: "Reduces wrinkles, shapes the face and jawline, and reduces sweat, injected by a doctor",
-    description: "Botulinum toxin injections by a doctor to reduce forehead wrinkles, crow's feet, and frown lines, slim the jawline, lift eyebrows, and reduce sweat. The dosage is customized for each individual based on a physician's assessment.",
+    shortDescription: "Reduces wrinkles, contours the face, slims the jawline, and reduces sweat, injected by a doctor",
+    description: "Botulinum toxin injections by a doctor to reduce wrinkles on the forehead, crow's feet, and frown lines, slim the jawline, lift the outer eyebrows, and reduce sweat. Dosage is customized for each individual based on the physician's assessment.",
+    aftercare: [
+      "Avoid massaging or sleeping on the treated area for at least 4–6 hours.",
+      "Avoid bending your head down or strenuous exercise on the day of injection.",
+      "Avoid saunas, steam rooms, and alcohol consumption for at least 24 hours.",
+      "Results begin to appear within 3–14 days. If they are not as assessed, a follow-up appointment with the doctor should be scheduled.",
+    ],
+    contraindications: [
+      "Pregnant or breastfeeding.",
+      "Myasthenia gravis or neuromuscular disorders affecting muscle function.",
+      "History of allergy to botulinum toxin.",
+      "Infections in the injection area.",
+    ],
+    downtime: "Mild redness or swelling from needle marks may occur for a few hours up to 1 day; daily activities can be resumed immediately.",
   },
   "thread-lift": {
-    shortDescription: "Skin tightening for the jawline and cheeks with dissolvable PDO threads, assessed by a doctor",
-    description: "Thread lift program for facial skin tightening using dissolvable PDO threads, helping to tighten the skin of cheeks, jawline, and under-chin area. The doctor assesses the number of threads and placement according to each individual's facial structure before the procedure.",
+    shortDescription: "Skin tightening of the jawline and cheeks with dissolvable PDO threads, assessed by a doctor",
+    description: "A facial thread lift program using dissolvable PDO threads to help with skin tightening of the cheeks, jawline, and under the chin. The doctor assesses the number of threads and placement according to each individual's facial structure before the treatment.",
+    aftercare: [
+      "Avoid facial massages, rubbing, or other facial treatments in the treated area for at least 2 weeks.",
+      "Avoid opening the mouth wide, chewing hard food, or excessive facial movement during the first 3–5 days.",
+      "Sleep on your back and avoid sleeping face down or pressing on your face during the first week.",
+      "Avoid strenuous exercise and saunas for about 1–2 weeks.",
+    ],
+    contraindications: [
+      "Pregnant or breastfeeding.",
+      "Infections or open wounds on the face where threads will be inserted.",
+      "Bleeding disorders or taking blood thinners.",
+      "Active chronic skin diseases on the face; please inform the doctor before assessment.",
+    ],
+    downtime: "Swelling, tightness, or bruising along the thread lines may occur for 3–7 days; some individuals may feel tightness or a pulling sensation on the face for up to 2 weeks.",
   },
   "collagen-booster": {
-    shortDescription: "Replenishes fresh collagen, reduces the appearance of wrinkles, and restores skin structure for a youthful appearance",
-    description: "Karisma Rh Collagen replenishing program that helps restore skin structure, reduces nasolabial folds, marionette lines, and under-eye bags while stimulating new collagen production, supervised and assessed by a doctor.",
+    shortDescription: "Infuses fresh collagen, reduces wrinkles, and restores skin structure for a youthful appearance",
+    description: "A fresh collagen infusion program using Karisma Rh Collagen to help restore skin structure, reduce nasolabial folds, marionette lines, and under-eye bags, while stimulating new collagen production, supervised and assessed by a doctor.",
+    aftercare: [
+      "Avoid massaging or rubbing the treated area for at least 24–48 hours.",
+      "Avoid strenuous exercise, saunas, and alcohol consumption on the day of the treatment.",
+      "Apply sunscreen and avoid strong sunlight on the face during recovery.",
+      "If there is unusual swelling or redness lasting longer than 5 days, please contact the clinic.",
+    ],
+    contraindications: [
+      "Pregnant or breastfeeding.",
+      "History of allergy to collagen or product ingredients.",
+      "Infections or inflammatory rashes in the injection area.",
+      "Autoimmune disorders; please inform the doctor before assessment.",
+    ],
+    downtime: "Mild swelling and redness at the injection site may occur for 2–4 days; makeup can be applied to cover it after 24 hours.",
   },
   "skin-booster": {
-    shortDescription: "Provides deep hydration, restoring tired skin to be soft, smooth, and plump",
-    description: "Premium grade skin booster that hydrates and restores skin cells from within, stimulating new collagen production. Suitable for tired skin, dehydrated skin, and enlarged pores, with suitability assessed by a doctor.",
+    shortDescription: "Provides deep hydration, restoring tired skin to be smooth, soft, and plump",
+    description: "Premium-grade skin booster to provide hydration and restore skin cells from within, stimulating new collagen production. Suitable for tired, dehydrated skin and enlarged pores, assessed by a doctor for suitability.",
+    aftercare: [
+      "Avoid touching, massaging, or rubbing the face for at least 24 hours.",
+      "Avoid heavy makeup and facial scrubs during the first 24 hours.",
+      "Apply sunscreen regularly and avoid strong sunlight after the treatment.",
+      "Avoid saunas, steam rooms, and alcohol consumption on the day of the treatment.",
+    ],
+    contraindications: [
+      "Pregnant or breastfeeding.",
+      "Infections or inflammatory rashes on the skin where the treatment is to be performed.",
+      "History of allergy to skin booster product ingredients.",
+      "Open wounds or severe skin inflammation on the face.",
+    ],
+    downtime: "Mild redness or small bumps from needle marks may occur for 1–2 days; makeup can be applied to cover it after 24 hours.",
   },
   "iv-drip": {
-    shortDescription: "IV vitamin drip to restore skin from within for brighter skin",
-    description: "Kazumi Clinic's signature IV vitamin drip program that helps adjust skin tone for brighter skin, reduces pigmentation, stimulates collagen, and restores skin fatigued from sunlight and pollution, supervised by a doctor.",
+    shortDescription: "IV vitamin drip to restore the skin from within for a brighter skin appearance",
+    description: "An IV vitamin drip program with Kazumi Clinic's exclusive formulas to help adjust skin tone for brighter skin, reduce pigmentation, stimulate collagen, and restore tired skin from sunlight and pollution, supervised by a doctor.",
+    aftercare: [
+      "Drink plenty of water after the IV vitamin drip to aid absorption.",
+      "Rest at the IV station for 5–10 minutes before walking if you feel dizzy.",
+      "Inform a nurse or doctor immediately if you experience itching, rashes, or chest tightness during or after the IV drip.",
+      "Avoid bending the arm at the injection site forcefully on the day of the treatment.",
+    ],
+    contraindications: [
+      "History of allergy to vitamins or ingredients in the selected formula.",
+      "Kidney or heart diseases that limit fluid intake; please inform the doctor before assessment.",
+      "Pregnant or breastfeeding; please consult a doctor beforehand.",
+      "G6PD deficiency for formulas containing high-dose vitamin C; please inform the doctor.",
+    ],
+    downtime: "No downtime; daily activities can be resumed immediately after the IV drip. Mild bruising may occur at the injection site.",
   },
   "mesotherapy": {
     shortDescription: "Mesotherapy and localized fat-dissolving mesotherapy, with formulas selected by a doctor",
-    description: "Kazumi Clinic's mesotherapy programs include both mesotherapy for brighter skin and localized fat-dissolving mesotherapy for areas such as the cheeks and double chin. Doctors select the formula and assess suitability before the treatment.",
+    description: "Kazumi Clinic's mesotherapy programs include both mesotherapy for brighter skin and localized fat-dissolving mesotherapy for areas such as cheeks and double chin. The doctor selects the formula and assesses suitability before the service.",
+    aftercare: [
+      "Avoid massaging or rubbing the treated area for at least 24 hours.",
+      "Avoid strong sunlight and apply sunscreen regularly after the treatment.",
+      "Avoid strenuous exercise and saunas on the day of the treatment.",
+      "For localized fat-dissolving mesotherapy, swelling may occur for several days; please inform the doctor if there is unusual swelling.",
+    ],
+    contraindications: [
+      "Pregnant or breastfeeding.",
+      "Infections or inflammatory rashes in the treatment area.",
+      "History of allergy to ingredients in the selected formula.",
+      "Bleeding disorders or taking blood thinners; please inform the doctor before assessment.",
+    ],
+    downtime: "Mild swelling, redness, or needle marks may occur for 1–3 days. Localized fat-dissolving mesotherapy may cause swelling that lasts longer, typically 3–5 days.",
   },
   "acne-care": {
-    shortDescription: "Acne treatment and acne scar restoration, with personalized care planned by a doctor",
-    description: "Kazumi Clinic's acne and acne scar programs are categorized by severity, ranging from inflammatory acne to acne scars, with doctors assessing and designing a personalized treatment plan.",
+    shortDescription: "Acne treatment and acne scar restoration, with a customized care plan designed by a doctor",
+    description: "Kazumi Clinic's acne and acne scar care program is categorized by the severity of the condition, ranging from inflammatory acne to acne scars. The doctor assesses and designs a customized treatment plan.",
+    aftercare: [
+      "Apply skincare products and medications consistently as prescribed by the doctor.",
+      "Avoid picking, scratching, or squeezing acne by yourself.",
+      "Apply sunscreen daily and avoid strong sunlight during the treatment.",
+      "Inform the doctor if you experience unusual irritation, redness, or excessive peeling.",
+    ],
+    contraindications: [
+      "Pregnant or breastfeeding — some treatments or topical medications may not be suitable; please inform the doctor.",
+      "Open wounds or severe skin infections in the treatment area.",
+      "History of allergy to ingredients in medications or products used in the program.",
+      "Highly sensitive skin or currently using high-dose retinoids; please inform the doctor before assessment.",
+    ],
+    downtime: "Depends on the selected treatment; some programs may cause skin redness or peeling for 1–3 days. The doctor will inform you of the specific recovery period for each program before starting.",
   },
   "laser-hifu": {
     shortDescription: "Facial skin tightening with laser and HIFU, with energy levels adjusted by a doctor",
-    description: "Facial skin tightening program using medical HIFU and laser devices, helping to tighten sagging skin and smooth the skin. The doctor assesses the appropriate energy levels and target areas for each individual.",
+    description: "A facial skin tightening program using medical HIFU and laser devices to help tighten sagging skin and promote smooth skin. The doctor assesses the appropriate energy levels and target areas for each individual.",
+    aftercare: [
+      "Apply sunscreen regularly and avoid strong sunlight after the treatment.",
+      "Avoid saunas, steam rooms, and strenuous exercise on the day of the treatment.",
+      "Avoid irritating products, such as retinol or exfoliating acids, during the first 2–3 days.",
+      "Inform the doctor if there is unusual swelling, redness, or pain lasting longer than 3 days.",
+    ],
+    contraindications: [
+      "Pregnant or breastfeeding.",
+      "Metal implants or medical devices embedded in the treatment area (including certain types of undissolved dermal fillers); please inform the doctor.",
+      "Infections or open wounds on the skin where the treatment is to be performed.",
+      "Active chronic inflammatory skin diseases; please inform the doctor before assessment.",
+    ],
+    downtime: "Skin may be red or feel tight for 1–2 days; some individuals may feel tenderness under the skin from HIFU for up to 1 week.",
   },
 };
 
@@ -107,10 +227,10 @@ export const catalogueItemsEn: Record<string, CatalogueItemEn> = {
     name: "Karisma Rh Collagen",
     detail: "Made in Italy",
     benefits: [
-      "Human Collagen Type 1 — Collagen with a structure 100% replicated from Collagen Type 1 in human skin",
-      "99.99% Compatibility — Highly compatible with the body up to 99.99%, reducing the risk of allergic reactions",
+      "Human Collagen Type 1 — Collagen structure 100% replicated from Collagen Type 1 in human skin",
+      "99.99% Compatibility — Up to 99.99% biocompatible, reducing the risk of allergy",
       "Restoration — Replenishes collagen while stimulating new collagen production",
-      "Targeted Solution — Reduces the appearance of wrinkles, nasolabial folds, marionette lines, and under-eye bags",
+      "Targeted Solution — Reduces wrinkles, nasolabial folds, marionette lines, and under-eye bags",
     ],
   },
   "skin-booster-oxelle": {
@@ -118,34 +238,34 @@ export const catalogueItemsEn: Record<string, CatalogueItemEn> = {
     detail: "Product from Italy",
     benefits: [
       "Revitalizing — Stimulates collagen production for plump and elastic skin",
-      "Bio-Stimulating — Accelerates new skin cell generation, blurs pores, and smooths the skin",
+      "Bio-Stimulating — Accelerates new skin cell generation, blurs pores, and smooths skin",
       "Antioxidant — Protects skin from pollution and delays the appearance of wrinkles",
-      "Whitening — Reduces melasma, freckles, and dark spots, promoting an even and brighter skin tone",
+      "Whitening — Reduces melasma, freckles, dark spots, and adjusts skin tone to be evenly brighter",
     ],
   },
   "iv-aura-bright-express": {
     name: "Aura Bright Express",
-    detail: "IV Vitamin Drip",
+    detail: "IV vitamin drip",
   },
   "iv-snow-white-intensive": {
     name: "Snow White Intensive",
-    detail: "IV Vitamin Drip",
+    detail: "IV vitamin drip",
   },
   "iv-detox-restore": {
     name: "Detox Restore",
-    detail: "IV Vitamin Drip",
+    detail: "IV vitamin drip",
   },
   "iv-energy-reset": {
     name: "Energy Reset",
-    detail: "IV Vitamin Drip",
+    detail: "IV vitamin drip",
   },
   "iv-ala-metabolic-glow": {
     name: "ALA Metabolic Glow",
-    detail: "IV Vitamin Drip",
+    detail: "IV vitamin drip",
   },
   "iv-super-max-signature": {
     name: "Super Max Signature",
-    detail: "IV Vitamin Drip",
+    detail: "IV vitamin drip",
   },
   "iv-premium-bespoke": {
     name: "Premium Bespoke",
@@ -153,7 +273,7 @@ export const catalogueItemsEn: Record<string, CatalogueItemEn> = {
   },
   "meso-nctf-oxelle": {
     name: "NCTF 135 HA + Oxelle",
-    detail: "Dual program",
+    detail: "Combined program",
   },
   "meso-white-complex": {
     name: "White Complex",
@@ -164,7 +284,7 @@ export const catalogueItemsEn: Record<string, CatalogueItemEn> = {
   },
   "meso-nourish": {
     name: "Mesotherapy",
-    detail: "Formula selected according to skin condition",
+    detail: "Formulas selected according to skin conditions",
   },
   "meso-fat-dissolve": {
     name: "Localized fat-dissolving mesotherapy",

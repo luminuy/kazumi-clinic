@@ -8,6 +8,7 @@ import { ServiceIcon } from '@/components/service-icon';
 import { LineCtaButton } from '@/components/line-cta-button';
 import { ProductThumbnail } from '@/components/product-thumbnail';
 import { ServiceItemActions } from '@/components/service-item-actions';
+import { ServiceAftercareSection } from '@/components/service-aftercare-section';
 
 function MenuRow({
   item,
@@ -189,6 +190,8 @@ export async function AcneCareServicePage({
           </div>
         </Reveal>
       </section>
+
+      <ServiceAftercareSection service={service} />
 
       {/* ── CTA ──────────────────────────────────────────────── */}
       <section className="px-6 pb-28 text-center sm:px-10 md:px-14 lg:px-20">

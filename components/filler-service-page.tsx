@@ -12,6 +12,7 @@ import { LineIcon } from '@/components/brand-icons';
 import { PhysicianPanel } from '@/components/physician-panel';
 import { ServiceIcon } from '@/components/service-icon';
 import { ServiceItemActions } from '@/components/service-item-actions';
+import { ServiceAftercareSection } from '@/components/service-aftercare-section';
 
 export async function FillerServicePage({
   service,
@@ -251,6 +252,8 @@ export async function FillerServicePage({
           </div>
         </div>
       </section>
+
+      <ServiceAftercareSection service={service} />
 
       <section className="bg-[var(--store-ink)] px-6 py-24 text-[var(--background)] md:px-10 md:py-32">
         <Reveal className="mx-auto max-w-6xl">

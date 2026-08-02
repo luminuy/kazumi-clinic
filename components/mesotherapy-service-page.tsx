@@ -7,6 +7,7 @@ import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
 import { ProductThumbnail } from '@/components/product-thumbnail';
 import { ServiceItemActions } from '@/components/service-item-actions';
+import { ServiceAftercareSection } from '@/components/service-aftercare-section';
 
 /**
  * The reference gives every card a one-line description. Our data carries that in two shapes:
@@ -181,6 +182,8 @@ export async function MesotherapyServicePage({
           </Reveal>
         </div>
       </section>
+
+      <ServiceAftercareSection service={service} />
 
       {/* ── Transformation ───────────────────────────────────── */}
       <section className="px-6 pb-24 sm:px-10 md:px-14 md:pb-32 lg:px-20">
