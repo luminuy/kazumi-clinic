@@ -31,6 +31,7 @@ import { SkinBoosterServicePage } from '@/components/skin-booster-service-page';
 import { CollagenBoosterServicePage } from '@/components/collagen-booster-service-page';
 import { ProductThumbnail } from '@/components/product-thumbnail';
 import { ServiceItemActions } from '@/components/service-item-actions';
+import { ServiceAftercareSection } from '@/components/service-aftercare-section';
 
 type Props = { params: Promise<{ locale: string; category: string }> };
 
@@ -495,6 +496,8 @@ export default async function ServiceCategoryPage({ params }: Props) {
             </Reveal>
           </div>
         </section>
+
+        <ServiceAftercareSection service={service} />
 
         {/* ── Closing CTA ──────────────────────────────────────── */}
         <section className="px-6 py-24 sm:px-10 md:px-14 lg:px-20">

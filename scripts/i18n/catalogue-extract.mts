@@ -18,6 +18,9 @@ const payload = {
       {
         shortDescription: category.shortDescription,
         description: category.description,
+        ...(category.aftercare ? { aftercare: category.aftercare } : {}),
+        ...(category.contraindications ? { contraindications: category.contraindications } : {}),
+        ...(category.downtime ? { downtime: category.downtime } : {}),
       },
     ]),
   ),

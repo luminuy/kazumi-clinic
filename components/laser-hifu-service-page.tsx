@@ -9,6 +9,7 @@ import { ServiceIcon } from '@/components/service-icon';
 import { LineCtaButton } from '@/components/line-cta-button';
 import { ProductThumbnail } from '@/components/product-thumbnail';
 import { ServiceItemActions } from '@/components/service-item-actions';
+import { ServiceAftercareSection } from '@/components/service-aftercare-section';
 
 function RecommendedSession({
   item,
@@ -204,6 +205,8 @@ export async function LaserHifuServicePage({
           </p>
         </Reveal>
       </section>
+
+      <ServiceAftercareSection service={service} />
 
       {/* ── Ready for transformation ─────────────────────────── */}
       <section className="px-6 py-24 sm:px-10 md:px-14 md:py-28 lg:px-20">

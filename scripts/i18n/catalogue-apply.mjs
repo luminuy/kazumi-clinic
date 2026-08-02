@@ -25,13 +25,24 @@ const entries = (record, indent, render) =>
     .map(([key, value]) => `${indent}${quote(key)}: ${render(value, `${indent}  `)},`)
     .join('\n');
 
-const category = (value, indent) =>
-  [
-    '{',
+const category = (value, indent) => {
+  const lines = [
     `${indent}shortDescription: ${quote(value.shortDescription)},`,
     `${indent}description: ${quote(value.description)},`,
-    `${indent.slice(2)}}`,
-  ].join('\n');
+  ];
+  if (value.aftercare !== undefined) {
+    lines.push(`${indent}aftercare: [`);
+    for (const note of value.aftercare) lines.push(`${indent}  ${quote(note)},`);
+    lines.push(`${indent}],`);
+  }
+  if (value.contraindications !== undefined) {
+    lines.push(`${indent}contraindications: [`);
+    for (const note of value.contraindications) lines.push(`${indent}  ${quote(note)},`);
+    lines.push(`${indent}],`);
+  }
+  if (value.downtime !== undefined) lines.push(`${indent}downtime: ${quote(value.downtime)},`);
+  return ['{', ...lines, `${indent.slice(2)}}`].join('\n');
+};
 
 const item = (value, indent) => {
   const lines = [`${indent}name: ${quote(value.name)},`];
@@ -61,6 +72,9 @@ const file = `// GENERATED — do not edit by hand.
 export type CatalogueCategoryEn = {
   shortDescription: string;
   description: string;
+  aftercare?: string[];
+  contraindications?: string[];
+  downtime?: string;
 };
 
 export type CatalogueItemEn = {

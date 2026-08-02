@@ -9,6 +9,7 @@ import { ServiceIcon } from '@/components/service-icon';
 import { LineCtaButton } from '@/components/line-cta-button';
 import { ProductThumbnail } from '@/components/product-thumbnail';
 import { ServiceItemActions } from '@/components/service-item-actions';
+import { ServiceAftercareSection } from '@/components/service-aftercare-section';
 
 /**
  * "4 เส้น" → { count: '4', unit: 'เส้น' } so the count can be set large with its unit small
@@ -258,6 +259,8 @@ export async function ThreadLiftServicePage({
           </div>
         </Reveal>
       </section>
+
+      <ServiceAftercareSection service={service} />
 
       {/* ── Closing CTA ──────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-[var(--store-ink)] px-6 py-24 text-[var(--background)] sm:px-10 md:px-14 md:py-32 lg:px-20">

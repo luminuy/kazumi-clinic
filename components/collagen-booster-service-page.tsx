@@ -9,6 +9,7 @@ import { ServiceIcon } from '@/components/service-icon';
 import { LineCtaButton } from '@/components/line-cta-button';
 import { ProductThumbnail } from '@/components/product-thumbnail';
 import { ServiceItemActions } from '@/components/service-item-actions';
+import { ServiceAftercareSection } from '@/components/service-aftercare-section';
 
 /**
  * Our benefits are "English title — Thai description" (e.g. "Restoration — เติมเต็ม…"). The
@@ -206,6 +207,8 @@ export async function CollagenBoosterServicePage({
           </Reveal>
         </div>
       </section>
+
+      <ServiceAftercareSection service={service} />
 
       {/* ── CTA ──────────────────────────────────────────────── */}
       <section className="bg-[var(--store-ink)] px-6 py-24 text-center text-[var(--background)] sm:px-10 md:py-28">

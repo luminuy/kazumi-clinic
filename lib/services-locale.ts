@@ -50,6 +50,9 @@ export function localizeServiceCategory(
     title: category.titleEn,
     shortDescription: en?.shortDescription ?? category.shortDescription,
     description: en?.description ?? category.description,
+    aftercare: en?.aftercare ?? category.aftercare,
+    contraindications: en?.contraindications ?? category.contraindications,
+    downtime: en?.downtime ?? category.downtime,
     items: category.items.map((item) => localizeServiceItem(item, locale)),
   };
 }

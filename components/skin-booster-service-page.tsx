@@ -9,6 +9,7 @@ import { ServiceIcon } from '@/components/service-icon';
 import { LineCtaButton } from '@/components/line-cta-button';
 import { ProductThumbnail } from '@/components/product-thumbnail';
 import { ServiceItemActions } from '@/components/service-item-actions';
+import { ServiceAftercareSection } from '@/components/service-aftercare-section';
 
 /**
  * Our benefits are "Label — Thai description" (e.g. "Revitalizing — กระตุ้น…"). The reference
@@ -222,6 +223,8 @@ export async function SkinBoosterServicePage({
           </p>
         </Reveal>
       </section>
+
+      <ServiceAftercareSection service={service} />
 
       {/* ── CTA ──────────────────────────────────────────────── */}
       <section className="bg-[var(--store-ink)] px-6 py-24 text-center text-[var(--background)] sm:px-10 md:py-28">
