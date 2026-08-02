@@ -99,7 +99,8 @@ export async function AcneCareServicePage({
               </span>
             )}
             <p className="absolute bottom-4 right-4 rounded-xl border border-black/[0.08] bg-[var(--background)]/85 px-4 py-2 text-[0.6rem] uppercase leading-tight tracking-wide text-[var(--store-ink)] backdrop-blur-md">
-              {tCommon('facilityLicense', { license: site.license })}
+              {tCommon('facilityLicense', { license: site.license })} ·{' '}
+              {tCommon('physicianLicense', { license: site.doctors[0].licenseNo })}
             </p>
           </div>
         </div>

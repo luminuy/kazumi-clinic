@@ -259,7 +259,8 @@ export async function LaserHifuServicePage({
       {/* ── Medical disclaimer band ──────────────────────────── */}
       <div className="bg-[var(--store-card)] px-6 py-4 text-center sm:px-10">
         <p className="text-[0.66rem] tracking-wide text-[var(--store-muted)]">
-          {tCommon('doctorAssessed')} · {tCommon('facilityLicense', { license: site.license })}
+          {tCommon('doctorAssessed')} · {tCommon('facilityLicense', { license: site.license })} ·{' '}
+          {tCommon('physicianLicense', { license: site.doctors[0].licenseNo })}
         </p>
       </div>
     </div>

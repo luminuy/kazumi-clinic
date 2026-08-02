@@ -127,7 +127,8 @@ export async function IvDripServicePage({
               </p>
               <div className="mt-10">
                 <p className="text-[0.64rem] uppercase tracking-[0.16em] text-[var(--store-muted)]">
-                  Medical License No. {site.license}
+                  {tCommon('facilityLicense', { license: site.license })} ·{' '}
+                  {tCommon('physicianLicense', { license: site.doctors[0].licenseNo })}
                 </p>
                 <span aria-hidden="true" className="mt-4 block h-px w-24 bg-black/10" />
               </div>
