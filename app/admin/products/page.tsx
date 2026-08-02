@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { serviceCategories, type ServiceItem } from '@/lib/services';
 import {
   getCategoryItems,
-  getHiddenDefaultProducts,
+  getHiddenProducts,
   type MergedServiceItem,
 } from '@/lib/service-products-store';
 import { ProductCategoryEditor, type AdminProduct } from '@/components/admin/product-category-editor';
@@ -63,7 +63,7 @@ export default async function AdminProductsPage() {
       const baseById = new Map(category.items.map((item) => [item.id, item]));
       const [items, hiddenItems] = await Promise.all([
         getCategoryItems(category.slug),
-        getHiddenDefaultProducts(category.slug),
+        getHiddenProducts(category.slug),
       ]);
       const products = items.map((item) => toAdminProduct(item, baseById.get(item.id)));
       const hiddenProducts = hiddenItems.map((item) => toAdminProduct(item, baseById.get(item.id)));

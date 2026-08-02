@@ -4,6 +4,7 @@ import { z } from 'zod';
 import {
   upsertPost,
   deletePost,
+  restorePost,
   slugTaken,
   reorderPosts,
   nextSortOrder,
@@ -127,9 +128,9 @@ export async function DELETE(request: NextRequest) {
   if (!parsed.success) return NextResponse.json({ error: 'ข้อมูลไม่ถูกต้อง' }, { status: 400 });
 
   try {
-    const slug = await deletePost(parsed.data.id);
-    // Same four paths the publish branch refreshes — a delete that only purged the Thai listing
-    // left the English listing and the article's own URL serving the post for up to an hour.
+    const slug = await deletePost(parsed.data.id, email);
+    // Same four paths the publish branch refreshes — hiding a post that only purged the Thai
+    // listing left the English listing and the article's own URL serving it for up to an hour.
     revalidatePath('/blog');
     revalidatePath('/en/blog');
     if (slug) {
@@ -142,6 +143,35 @@ export async function DELETE(request: NextRequest) {
     console.error(error);
     return NextResponse.json(
       { error: 'ลบไม่สำเร็จ' },
+      { status: 502 },
+    );
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  const email = adminEmail(request);
+  if (!email) return NextResponse.json({ error: 'ไม่ได้รับอนุญาต' }, { status: 401 });
+  if (!(await rateLimit('admin-write', clientIp(request), { limit: 60, windowSec: 300 }))) {
+    return NextResponse.json({ error: 'ทำรายการบ่อยเกินไป กรุณาลองใหม่ภายหลัง' }, { status: 429 });
+  }
+
+  const parsed = deleteSchema.safeParse(await request.json().catch(() => null));
+  if (!parsed.success) return NextResponse.json({ error: 'ข้อมูลไม่ถูกต้อง' }, { status: 400 });
+
+  try {
+    const slug = await restorePost(parsed.data.id, email);
+    revalidatePath('/blog');
+    revalidatePath('/en/blog');
+    if (slug) {
+      revalidatePath(`/blog/${slug}`);
+      revalidatePath(`/en/blog/${slug}`);
+    }
+    revalidatePath('/sitemap.xml');
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: 'กู้คืนไม่สำเร็จ' },
       { status: 502 },
     );
   }

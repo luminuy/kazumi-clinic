@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { serviceCategories } from '@/lib/services';
-import { getAllPosts } from '@/lib/blog-store';
+import { getAllPosts, getHiddenPosts, type PostRow } from '@/lib/blog-store';
 import {
   BlogEditor,
   type AdminPost,
@@ -13,9 +13,8 @@ export const metadata: Metadata = { title: 'บทความ' };
 // The clinic's posts are per-request state, not build output.
 export const dynamic = 'force-dynamic';
 
-export default async function AdminBlogPage() {
-  const rows = await getAllPosts();
-  const posts: AdminPost[] = rows.map((row) => ({
+function toAdminPost(row: PostRow): AdminPost {
+  return {
     id: row.id,
     slug: row.slug,
     title: row.title,
@@ -29,7 +28,13 @@ export default async function AdminBlogPage() {
     published: row.published === 1,
     publishedAt: row.published_at,
     category: row.category,
-  }));
+  };
+}
+
+export default async function AdminBlogPage() {
+  const [rows, hiddenRows] = await Promise.all([getAllPosts(), getHiddenPosts()]);
+  const posts = rows.map(toAdminPost);
+  const hiddenPosts = hiddenRows.map(toAdminPost);
 
   const categories: CategoryOption[] = serviceCategories.map((category) => ({
     slug: category.slug,
@@ -51,7 +56,7 @@ export default async function AdminBlogPage() {
         }
       />
 
-      <BlogEditor posts={posts} categories={categories} />
+      <BlogEditor posts={posts} hiddenPosts={hiddenPosts} categories={categories} />
     </>
   );
 }

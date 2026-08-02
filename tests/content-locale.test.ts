@@ -25,6 +25,7 @@ const post: PostRow = {
   updated_by: 'test-admin',
   category: null,
   sort_order: 0,
+  deleted: 0,
 };
 
 const promotion: PromotionRow = {
@@ -43,6 +44,7 @@ const promotion: PromotionRow = {
   updated_at: 1,
   updated_by: 'test-admin',
   image_public_id: null,
+  deleted: 0,
 };
 
 const review: ReviewRow = {
@@ -61,6 +63,7 @@ const review: ReviewRow = {
   sort_order: 0,
   updated_at: 1,
   updated_by: 'test-admin',
+  deleted: 0,
 };
 
 describe('D1 content locale overlays', () => {

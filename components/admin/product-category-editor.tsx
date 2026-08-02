@@ -141,8 +141,7 @@ export function ProductCategoryEditor({
   }
 
   async function remove(product: AdminProduct) {
-    const label = product.isDefault ? 'ซ่อนสินค้าเริ่มต้นนี้จากเว็บ?' : 'ลบสินค้านี้?';
-    if (!window.confirm(`${label}\n\n${product.name}`)) return;
+    if (!window.confirm(`ซ่อนสินค้านี้จากเว็บ?\n\n${product.name}`)) return;
     await mutate('del-' + product.id, () =>
       fetch('/api/admin/products', {
         method: 'DELETE',
@@ -453,7 +452,7 @@ function ProductRow({
           </button>
           <button type="button" disabled={busy} onClick={onDelete} className={btn.danger}>
             <Trash2 className="size-3.5" />
-            {product.isDefault ? 'ซ่อน' : 'ลบ'}
+            ซ่อน
           </button>
 
           <span className="ml-auto">

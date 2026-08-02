@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { serviceCategories } from '@/lib/services';
-import { getAllReviews } from '@/lib/reviews-store';
+import { getAllReviews, getHiddenReviews, type ReviewRow } from '@/lib/reviews-store';
 import {
   ReviewEditor,
   type AdminReview,
@@ -13,9 +13,8 @@ export const metadata: Metadata = { title: 'รีวิว' };
 // The clinic's reviews are per-request state, not build output.
 export const dynamic = 'force-dynamic';
 
-export default async function AdminReviewsPage() {
-  const rows = await getAllReviews();
-  const reviews: AdminReview[] = rows.map((row) => ({
+function toAdminReview(row: ReviewRow): AdminReview {
+  return {
     id: row.id,
     name: row.name,
     rating: row.rating,
@@ -28,7 +27,13 @@ export default async function AdminReviewsPage() {
     afterImagePublicId: row.after_image_public_id,
     consent: row.consent === 1,
     published: row.published === 1,
-  }));
+  };
+}
+
+export default async function AdminReviewsPage() {
+  const [rows, hiddenRows] = await Promise.all([getAllReviews(), getHiddenReviews()]);
+  const reviews = rows.map(toAdminReview);
+  const hiddenReviews = hiddenRows.map(toAdminReview);
 
   const categories: CategoryOption[] = serviceCategories.map((category) => ({
     slug: category.slug,
@@ -50,7 +55,7 @@ export default async function AdminReviewsPage() {
         }
       />
 
-      <ReviewEditor reviews={reviews} categories={categories} />
+      <ReviewEditor reviews={reviews} hiddenReviews={hiddenReviews} categories={categories} />
     </>
   );
 }

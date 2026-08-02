@@ -32,6 +32,8 @@ export type ReviewRow = {
   sort_order: number;
   updated_at: number;
   updated_by: string;
+  /** Soft-delete flag — see migrations/0018_reviews_deleted.sql. */
+  deleted: number;
 };
 
 /** A review resolved for public rendering — before/after already gated on consent. */
@@ -95,7 +97,7 @@ export async function getPublishedReviews(
 ): Promise<PublicReview[]> {
   const rows = await getReviewRows();
   return rows
-    .filter((row) => row.published === 1 && row.consent === 1)
+    .filter((row) => row.published === 1 && row.consent === 1 && row.deleted === 0)
     .map((row) => localizeReview(row, locale))
     .map((row) => {
       return {
@@ -111,9 +113,19 @@ export async function getPublishedReviews(
     });
 }
 
-/** Every review, unpublished included — what the admin list renders. Empty when D1 is down. */
+/**
+ * Every non-hidden review, unpublished included — what the main /admin/reviews list renders.
+ * Empty when D1 is down. Hidden (soft-deleted) reviews live in getHiddenReviews instead.
+ */
 export async function getAllReviews(): Promise<ReviewRow[]> {
-  return getReviewRows();
+  const rows = await getReviewRows();
+  return rows.filter((row) => row.deleted === 0);
+}
+
+/** Reviews the clinic hid, kept separately so the admin can restore them. */
+export async function getHiddenReviews(): Promise<ReviewRow[]> {
+  const rows = await getReviewRows();
+  return rows.filter((row) => row.deleted === 1);
 }
 
 // ── Writes (used by the /admin reviews API) ─────────────────────────────────────────────────
@@ -181,11 +193,24 @@ export async function setReviewImage(
     .run();
 }
 
-/** Remove a review outright — there is no code default for it to fall back to. */
-export async function deleteReview(id: string) {
+/** Hide a review — a tombstone (deleted = 1), never a hard delete, so it stays restorable. */
+export async function deleteReview(id: string, updatedBy: string) {
   const binding = await db();
   requireDb(binding);
-  await binding.prepare('DELETE FROM reviews WHERE id = ?1').bind(id).run();
+  await binding
+    .prepare('UPDATE reviews SET deleted = 1, updated_at = ?1, updated_by = ?2 WHERE id = ?3')
+    .bind(Date.now(), updatedBy, id)
+    .run();
+}
+
+/** Restore a review that was previously hidden with a tombstone. */
+export async function restoreReview(id: string, updatedBy: string) {
+  const binding = await db();
+  requireDb(binding);
+  await binding
+    .prepare('UPDATE reviews SET deleted = 0, updated_at = ?1, updated_by = ?2 WHERE id = ?3')
+    .bind(Date.now(), updatedBy, id)
+    .run();
 }
 
 /** Persist a new order. Every id is expected to already have a row; unknown ids are ignored. */

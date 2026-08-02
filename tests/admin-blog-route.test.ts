@@ -17,6 +17,7 @@ const {
   nextSortOrderMock,
   rateLimitMock,
   reorderPostsMock,
+  restorePostMock,
   revalidatePathMock,
   slugTakenMock,
   upsertPostMock,
@@ -26,6 +27,7 @@ const {
   nextSortOrderMock: vi.fn(),
   rateLimitMock: vi.fn(),
   reorderPostsMock: vi.fn(),
+  restorePostMock: vi.fn(),
   revalidatePathMock: vi.fn(),
   slugTakenMock: vi.fn(),
   upsertPostMock: vi.fn(),
@@ -38,14 +40,15 @@ vi.mock('@/lib/rate-limit', () => ({ clientIp: clientIpMock, rateLimit: rateLimi
 vi.mock('@/lib/blog-store', () => ({
   upsertPost: upsertPostMock,
   deletePost: deletePostMock,
+  restorePost: restorePostMock,
   slugTaken: slugTakenMock,
   nextSortOrder: nextSortOrderMock,
   reorderPosts: reorderPostsMock,
 }));
 
-const { POST, DELETE, PATCH } = await import('@/app/api/admin/blog/route');
+const { POST, DELETE, PATCH, PUT } = await import('@/app/api/admin/blog/route');
 
-function adminRequest(method: 'POST' | 'DELETE' | 'PATCH', body: unknown): NextRequest {
+function adminRequest(method: 'POST' | 'DELETE' | 'PATCH' | 'PUT', body: unknown): NextRequest {
   return new Request('https://example.test/api/admin/blog', {
     method,
     headers: { 'content-type': 'application/json', 'x-admin-email': 'admin@example.test' },
@@ -71,6 +74,7 @@ beforeEach(() => {
   deletePostMock.mockResolvedValue('laser-aftercare');
   nextSortOrderMock.mockResolvedValue(3);
   reorderPostsMock.mockResolvedValue(undefined);
+  restorePostMock.mockResolvedValue('laser-aftercare');
 });
 
 describe('POST /api/admin/blog — publishing refreshes both languages', () => {
@@ -138,5 +142,18 @@ describe('PATCH /api/admin/blog — manual reorder (migrations/0015_posts_sort_o
     const response = await PATCH(adminRequest('PATCH', { orderedIds: [] }));
     expect(response.status).toBe(400);
     expect(reorderPostsMock).not.toHaveBeenCalled();
+  });
+});
+
+describe('PUT /api/admin/blog — restoring a hidden post (migrations/0017_posts_deleted.sql)', () => {
+  it('un-hides the post and refreshes its URL in both languages', async () => {
+    const response = await PUT(adminRequest('PUT', { id: 'post_1' }));
+    expect(response.status).toBe(200);
+    expect(restorePostMock).toHaveBeenCalledWith('post_1', 'admin@example.test');
+
+    const purged = revalidatePathMock.mock.calls.map(([path]) => path);
+    expect(purged).toEqual(
+      expect.arrayContaining(['/blog', '/en/blog', '/blog/laser-aftercare', '/en/blog/laser-aftercare']),
+    );
   });
 });

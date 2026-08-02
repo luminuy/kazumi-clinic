@@ -6,6 +6,7 @@ import { rateLimit, clientIp } from '@/lib/rate-limit';
 import {
   upsertPromotion,
   deletePromotion,
+  restorePromotion,
   reorderPromotions,
   nextSortOrder,
   type PromotionInput,
@@ -114,7 +115,7 @@ export async function DELETE(request: NextRequest) {
   if (!parsed.success) return NextResponse.json({ error: 'ข้อมูลไม่ถูกต้อง' }, { status: 400 });
 
   try {
-    await deletePromotion(parsed.data.id);
+    await deletePromotion(parsed.data.id, email);
     revalidatePath('/promotions');
     revalidatePath('/en/promotions');
     return NextResponse.json({ ok: true });
@@ -122,6 +123,30 @@ export async function DELETE(request: NextRequest) {
     console.error(error);
     return NextResponse.json(
       { error: 'ลบไม่สำเร็จ' },
+      { status: 502 },
+    );
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  const email = adminEmail(request);
+  if (!email) return NextResponse.json({ error: 'ไม่ได้รับอนุญาต' }, { status: 401 });
+  if (!(await rateLimit('admin-write', clientIp(request), { limit: 60, windowSec: 300 }))) {
+    return NextResponse.json({ error: 'ทำรายการบ่อยเกินไป กรุณาลองใหม่ภายหลัง' }, { status: 429 });
+  }
+
+  const parsed = deleteSchema.safeParse(await request.json().catch(() => null));
+  if (!parsed.success) return NextResponse.json({ error: 'ข้อมูลไม่ถูกต้อง' }, { status: 400 });
+
+  try {
+    await restorePromotion(parsed.data.id, email);
+    revalidatePath('/promotions');
+    revalidatePath('/en/promotions');
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: 'กู้คืนไม่สำเร็จ' },
       { status: 502 },
     );
   }
