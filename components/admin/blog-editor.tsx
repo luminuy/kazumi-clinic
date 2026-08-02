@@ -8,6 +8,7 @@ import {
   Loader2,
   Pencil,
   Plus,
+  RotateCcw,
   Trash2,
   Upload,
 } from 'lucide-react';
@@ -84,9 +85,11 @@ function formatThaiDate(ms: number | null) {
 
 export function BlogEditor({
   posts,
+  hiddenPosts,
   categories,
 }: {
   posts: AdminPost[];
+  hiddenPosts: AdminPost[];
   categories: CategoryOption[];
 }) {
   const { editing, draft, setDraft, busyId, busy, error, setError, openAdd, openEdit, close, mutate } =
@@ -124,10 +127,20 @@ export function BlogEditor({
   }
 
   async function remove(post: AdminPost) {
-    if (!window.confirm(`ลบบทความนี้?\n\n${post.title}`)) return;
+    if (!window.confirm(`ซ่อนบทความนี้จากเว็บ?\n\n${post.title}`)) return;
     await mutate('del-' + post.id, () =>
       fetch('/api/admin/blog', {
         method: 'DELETE',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ id: post.id }),
+      }),
+    );
+  }
+
+  async function restore(post: AdminPost) {
+    await mutate('restore-' + post.id, () =>
+      fetch('/api/admin/blog', {
+        method: 'PUT',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ id: post.id }),
       }),
@@ -213,7 +226,76 @@ export function BlogEditor({
           </li>
         )}
       </ul>
+
+      {hiddenPosts.length > 0 && (
+        <div className="mt-8 border-t border-black/[0.07] pt-8">
+          <SectionHeading title="บทความที่ซ่อนอยู่" count={`${hiddenPosts.length} รายการ`} />
+          <ul className="mt-6 space-y-3">
+            {hiddenPosts.map((post) => (
+              <li key={post.id}>
+                <HiddenPostRow post={post} busy={busy} busyId={busyId} onRestore={() => restore(post)} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </section>
+  );
+}
+
+function HiddenPostRow({
+  post,
+  busy,
+  busyId,
+  onRestore,
+}: {
+  post: AdminPost;
+  busy: boolean;
+  busyId: string | null;
+  onRestore: () => void;
+}) {
+  const rowBusy = busyId === 'restore-' + post.id;
+
+  return (
+    <div className={cn(card, 'flex gap-4 p-4 opacity-75')}>
+      <div className="relative size-20 shrink-0 overflow-hidden rounded-xl bg-sand ring-1 ring-black/[0.05]">
+        {post.coverImagePublicId ? (
+          <Image
+            src={post.coverImagePublicId}
+            alt=""
+            aria-hidden="true"
+            fill
+            sizes="80px"
+            className={cn('object-cover', rowBusy && 'opacity-40')}
+          />
+        ) : (
+          <span className="absolute inset-0 grid place-items-center">
+            <ImageOff className="size-5 text-ink/25" aria-hidden="true" />
+          </span>
+        )}
+        {rowBusy && (
+          <span className="absolute inset-0 grid place-items-center bg-cream/30">
+            <Loader2 className="size-5 animate-spin text-forest" />
+          </span>
+        )}
+      </div>
+
+      <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex items-start justify-between gap-2">
+          <h4 className="truncate font-serif text-lg leading-tight text-ink">{post.title}</h4>
+          <span className="shrink-0 rounded-full bg-black/[0.05] px-2 py-0.5 text-[0.62rem] font-medium text-ink/45">
+            ซ่อนอยู่
+          </span>
+        </div>
+        <p className="mt-0.5 truncate text-xs text-ink/45">/blog/{post.slug}</p>
+        <div className="mt-auto pt-3">
+          <button type="button" disabled={busy} onClick={onRestore} className={btn.secondary}>
+            <RotateCcw className="size-3.5" />
+            กู้คืน
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 

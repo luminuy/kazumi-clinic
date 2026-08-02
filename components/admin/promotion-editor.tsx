@@ -8,6 +8,7 @@ import {
   Loader2,
   Pencil,
   Plus,
+  RotateCcw,
   Trash2,
   Upload,
 } from 'lucide-react';
@@ -93,10 +94,12 @@ function formatThaiDate(iso: string) {
 
 export function PromotionEditor({
   promotions,
+  hiddenPromotions,
   categories,
   today,
 }: {
   promotions: AdminPromotion[];
+  hiddenPromotions: AdminPromotion[];
   categories: CategoryOption[];
   /** Server-computed YYYY-MM-DD so "expired" is judged against the server clock, not the browser. */
   today: string;
@@ -166,10 +169,20 @@ export function PromotionEditor({
   }
 
   async function remove(promo: AdminPromotion) {
-    if (!window.confirm(`ลบโปรโมชั่นนี้?\n\n${promo.name}`)) return;
+    if (!window.confirm(`ซ่อนโปรโมชั่นนี้จากเว็บ?\n\n${promo.name}`)) return;
     await mutate('del-' + promo.id, () =>
       fetch('/api/admin/promotions', {
         method: 'DELETE',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ id: promo.id }),
+      }),
+    );
+  }
+
+  async function restore(promo: AdminPromotion) {
+    await mutate('restore-' + promo.id, () =>
+      fetch('/api/admin/promotions', {
+        method: 'PUT',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ id: promo.id }),
       }),
@@ -255,7 +268,89 @@ export function PromotionEditor({
           </li>
         )}
       </ul>
+
+      {hiddenPromotions.length > 0 && (
+        <div className="mt-8 border-t border-black/[0.07] pt-8">
+          <SectionHeading title="โปรโมชั่นที่ซ่อนอยู่" count={`${hiddenPromotions.length} รายการ`} />
+          <ul className="mt-6 space-y-3">
+            {hiddenPromotions.map((promo) => (
+              <li key={promo.id}>
+                <HiddenPromotionRow
+                  promo={promo}
+                  busy={busy}
+                  busyId={busyId}
+                  onRestore={() => restore(promo)}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </section>
+  );
+}
+
+function HiddenPromotionRow({
+  promo,
+  busy,
+  busyId,
+  onRestore,
+}: {
+  promo: AdminPromotion;
+  busy: boolean;
+  busyId: string | null;
+  onRestore: () => void;
+}) {
+  const rowBusy = busyId === 'restore-' + promo.id;
+
+  return (
+    <div className={cn(card, 'flex gap-4 p-4 opacity-75')}>
+      <div className="relative size-20 shrink-0 overflow-hidden rounded-xl bg-sand ring-1 ring-black/[0.05]">
+        {promo.imagePublicId ? (
+          <Image
+            src={promo.imagePublicId}
+            alt=""
+            aria-hidden="true"
+            fill
+            sizes="80px"
+            className={cn('object-cover', rowBusy && 'opacity-40')}
+          />
+        ) : (
+          <span className="absolute inset-0 grid place-items-center">
+            <ImageOff className="size-5 text-ink/25" aria-hidden="true" />
+          </span>
+        )}
+        {rowBusy && (
+          <span className="absolute inset-0 grid place-items-center bg-cream/30">
+            <Loader2 className="size-5 animate-spin text-forest" />
+          </span>
+        )}
+      </div>
+
+      <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex items-start justify-between gap-2">
+          <h4 className="truncate font-serif text-lg leading-tight text-ink">{promo.name}</h4>
+          <span className="shrink-0 rounded-full bg-black/[0.05] px-2 py-0.5 text-[0.62rem] font-medium text-ink/45">
+            ซ่อนอยู่
+          </span>
+        </div>
+        <p className="mt-1 text-sm font-medium text-ink">
+          {promo.price !== null ? (
+            <>
+              {promo.price.toLocaleString('th-TH')} <span className="text-xs font-normal text-ink/45">บาท</span>
+            </>
+          ) : (
+            <span className="text-xs font-normal text-ink/45">ไม่ระบุราคา</span>
+          )}
+        </p>
+        <div className="mt-auto pt-3">
+          <button type="button" disabled={busy} onClick={onRestore} className={btn.secondary}>
+            <RotateCcw className="size-3.5" />
+            กู้คืน
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -379,7 +474,7 @@ function PromotionRow({
         </button>
         <button type="button" disabled={busy} onClick={onDelete} className={btn.danger}>
           {busyId === 'del-' + promo.id ? <Loader2 className="size-3.5 animate-spin" /> : <Trash2 className="size-3.5" />}
-          ลบ
+          ซ่อน
         </button>
         <span className="ml-auto">
           <ReorderButtons disabled={busy} first={first} last={last} onMoveUp={onMoveUp} onMoveDown={onMoveDown} />

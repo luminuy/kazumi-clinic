@@ -24,7 +24,7 @@ vi.mock('@/lib/service-products-store', async (importOriginal) => {
   };
 });
 
-const { getCategoryItems, getHiddenDefaultProducts } = await import('@/lib/service-products-store');
+const { getCategoryItems, getHiddenProducts } = await import('@/lib/service-products-store');
 const { serviceCategories } = await import('@/lib/services');
 
 const category = serviceCategories.find((item) => item.slug === 'filler')!;
@@ -71,7 +71,7 @@ describe('service product override merge', () => {
     fakeRows.set(category.slug, [productRow({ deleted: 1 })]);
 
     const items = await getCategoryItems(category.slug);
-    const hidden = await getHiddenDefaultProducts(category.slug);
+    const hidden = await getHiddenProducts(category.slug);
 
     expect(items.some((item) => item.id === shippedItem.id), 'tombstone must remove product from the site').toBe(false);
     expect(hidden.map((item) => item.id), 'tombstone must remain available to restore').toContain(shippedItem.id);
@@ -146,13 +146,14 @@ describe('service product override merge', () => {
     });
   });
 
-  it('does not expose a deleted clinic-added row in the shipped-product restore list', async () => {
+  it('exposes a deleted clinic-added row in the restore list, same as a tombstoned default', async () => {
+    // deleteProduct() soft-deletes both kinds now (see lib/service-products-store.ts) — a
+    // clinic-added product used to be hard-DELETEd with no way back; getHiddenProducts must
+    // surface it here or the /admin restore button never appears for it.
     fakeRows.set(category.slug, [productRow({ id: 'clinic-added-deleted-test', deleted: 1 })]);
 
-    const hidden = await getHiddenDefaultProducts(category.slug);
+    const hidden = await getHiddenProducts(category.slug);
 
-    expect(hidden.map((item) => item.id), 'only shipped-product tombstones are restorable').not.toContain(
-      'clinic-added-deleted-test',
-    );
+    expect(hidden.map((item) => item.id)).toContain('clinic-added-deleted-test');
   });
 });

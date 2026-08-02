@@ -7,6 +7,7 @@ import {
   Loader2,
   Pencil,
   Plus,
+  RotateCcw,
   ShieldCheck,
   Star,
   Trash2,
@@ -85,9 +86,11 @@ function draftFrom(review: AdminReview): Draft {
 
 export function ReviewEditor({
   reviews,
+  hiddenReviews,
   categories,
 }: {
   reviews: AdminReview[];
+  hiddenReviews: AdminReview[];
   categories: CategoryOption[];
 }) {
   const { editing, draft, setDraft, busyId, busy, error, setError, openAdd, openEdit, close, mutate } =
@@ -135,10 +138,20 @@ export function ReviewEditor({
   }
 
   async function remove(review: AdminReview) {
-    if (!window.confirm(`ลบรีวิวนี้?\n\n${review.name}`)) return;
+    if (!window.confirm(`ซ่อนรีวิวนี้จากเว็บ?\n\n${review.name}`)) return;
     await mutate('del-' + review.id, () =>
       fetch('/api/admin/reviews', {
         method: 'DELETE',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ id: review.id }),
+      }),
+    );
+  }
+
+  async function restore(review: AdminReview) {
+    await mutate('restore-' + review.id, () =>
+      fetch('/api/admin/reviews', {
+        method: 'PUT',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ id: review.id }),
       }),
@@ -253,6 +266,24 @@ export function ReviewEditor({
           </li>
         )}
       </ul>
+
+      {hiddenReviews.length > 0 && (
+        <div className="mt-8 border-t border-black/[0.07] pt-8">
+          <SectionHeading title="รีวิวที่ซ่อนอยู่" count={`${hiddenReviews.length} รายการ`} />
+          <ul className="mt-6 space-y-3">
+            {hiddenReviews.map((review) => (
+              <li key={review.id}>
+                <HiddenReviewRow
+                  review={review}
+                  busy={busy}
+                  busyId={busyId}
+                  onRestore={() => restore(review)}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </section>
   );
 }
@@ -328,6 +359,52 @@ function BeforeAfter({
           }}
         />
       )}
+    </div>
+  );
+}
+
+function HiddenReviewRow({
+  review,
+  busy,
+  busyId,
+  onRestore,
+}: {
+  review: AdminReview;
+  busy: boolean;
+  busyId: string | null;
+  onRestore: () => void;
+}) {
+  const rowBusy = busyId === 'restore-' + review.id;
+
+  return (
+    <div className={cn(card, 'flex gap-4 p-4 opacity-75')}>
+      <div className="flex shrink-0 gap-2">
+        <BeforeAfter label="ก่อน" publicId={review.beforeImagePublicId} busy={false} loading={false} />
+        <BeforeAfter label="หลัง" publicId={review.afterImagePublicId} busy={false} loading={false} />
+      </div>
+
+      <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex items-start justify-between gap-2">
+          <h4 className="truncate font-serif text-lg leading-tight text-ink">{review.name}</h4>
+          <span className="shrink-0 rounded-full bg-black/[0.05] px-2 py-0.5 text-[0.62rem] font-medium text-ink/45">
+            ซ่อนอยู่
+          </span>
+        </div>
+        {review.quote && (
+          <p className="mt-1 line-clamp-2 text-xs text-ink/55">“{review.quote}”</p>
+        )}
+        <div className="mt-auto pt-3">
+          <button
+            type="button"
+            disabled={busy}
+            onClick={onRestore}
+            className={btn.secondary}
+          >
+            {rowBusy ? <Loader2 className="size-3.5 animate-spin" /> : <RotateCcw className="size-3.5" />}
+            กู้คืน
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -425,7 +502,7 @@ function ReviewRow({
             ) : (
               <Trash2 className="size-3.5" />
             )}
-            ลบ
+            ซ่อน
           </button>
           <span className="ml-auto">
             <ReorderButtons disabled={busy} first={first} last={last} onMoveUp={onMoveUp} onMoveDown={onMoveDown} />

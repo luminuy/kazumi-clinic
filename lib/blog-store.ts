@@ -29,6 +29,8 @@ export type PostRow = {
   category: string | null;
   /** Manual order for /admin/blog — see migrations/0015_posts_sort_order.sql. */
   sort_order: number;
+  /** Soft-delete flag — see migrations/0017_posts_deleted.sql. */
+  deleted: number;
 };
 
 /** Everything the admin form can set on a post. `id` identifies an existing row. */
@@ -80,7 +82,7 @@ export const getPostRows = cache(async (): Promise<PostRow[]> => {
 export async function getPublishedPosts(locale: Locale | string = 'th'): Promise<PostRow[]> {
   const rows = await getPostRows();
   return rows
-    .filter((row) => row.published === 1)
+    .filter((row) => row.published === 1 && row.deleted === 0)
     .sort((a, b) => (b.published_at ?? 0) - (a.published_at ?? 0))
     .map((row) => localizePost(row, locale));
 }
@@ -91,13 +93,25 @@ export async function getPublishedPostBySlug(
   locale: Locale | string = 'th',
 ): Promise<PostRow | undefined> {
   const rows = await getPostRows();
-  const row = rows.find((candidate) => candidate.slug === slug && candidate.published === 1);
+  const row = rows.find(
+    (candidate) => candidate.slug === slug && candidate.published === 1 && candidate.deleted === 0,
+  );
   return row ? localizePost(row, locale) : undefined;
 }
 
-/** Every post, drafts included — what the admin list renders. */
+/**
+ * Every non-hidden post, drafts included — what the main /admin/blog list renders. Hidden
+ * (soft-deleted) posts live in getHiddenPosts instead.
+ */
 export async function getAllPosts(): Promise<PostRow[]> {
-  return getPostRows();
+  const rows = await getPostRows();
+  return rows.filter((row) => row.deleted === 0);
+}
+
+/** Posts the clinic hid, kept separately so the admin can restore them. */
+export async function getHiddenPosts(): Promise<PostRow[]> {
+  const rows = await getPostRows();
+  return rows.filter((row) => row.deleted === 1);
 }
 
 // ── Writes (used by the /admin blog API) ────────────────────────────────────────────────────
@@ -211,19 +225,35 @@ export async function setPostImage(id: string, imagePublicId: string, updatedBy:
     .run();
 }
 
-/** Remove a post outright. */
 /**
- * Removes a post and reports the slug it had. The caller needs that slug to purge the article's own
- * cached URL: without it a deleted post keeps being served from the ISR cache for up to an hour —
- * which for clinic content (a wrong price, an unreviewed medical claim) is exactly the case where
- * "deleted" has to mean gone now. Returns null when the id matched nothing.
+ * Hides a post (tombstone, not a hard delete — see migrations/0017_posts_deleted.sql) and reports
+ * the slug it had. The caller needs that slug to purge the article's own cached URL: without it a
+ * hidden post keeps being served from the ISR cache for up to an hour — which for clinic content
+ * (a wrong price, an unreviewed medical claim) is exactly the case where "hidden" has to mean gone
+ * now, even though the row itself is still there for restorePost(). Returns null when the id
+ * matched nothing.
  */
-export async function deletePost(id: string): Promise<string | null> {
+export async function deletePost(id: string, updatedBy: string): Promise<string | null> {
   const binding = await db();
   requireDb(binding);
   const row = await binding
-    .prepare('DELETE FROM posts WHERE id = ?1 RETURNING slug')
-    .bind(id)
+    .prepare(
+      'UPDATE posts SET deleted = 1, updated_at = ?1, updated_by = ?2 WHERE id = ?3 RETURNING slug',
+    )
+    .bind(Date.now(), updatedBy, id)
+    .first<{ slug: string }>();
+  return row?.slug ?? null;
+}
+
+/** Restores a post that was previously hidden with a tombstone. */
+export async function restorePost(id: string, updatedBy: string): Promise<string | null> {
+  const binding = await db();
+  requireDb(binding);
+  const row = await binding
+    .prepare(
+      'UPDATE posts SET deleted = 0, updated_at = ?1, updated_by = ?2 WHERE id = ?3 RETURNING slug',
+    )
+    .bind(Date.now(), updatedBy, id)
     .first<{ slug: string }>();
   return row?.slug ?? null;
 }

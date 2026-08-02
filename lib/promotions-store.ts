@@ -34,6 +34,8 @@ export type PromotionRow = {
   updated_at: number;
   updated_by: string;
   image_public_id: string | null;
+  /** Soft-delete flag — see migrations/0016_promotions_deleted.sql. */
+  deleted: number;
 };
 
 /** Everything the admin form can set on a promotion. `id` identifies an existing row. */
@@ -105,13 +107,23 @@ export async function getActivePromotions(
   if (rows === null) return codeActivePromotions(now);
   const today = now.toISOString().slice(0, 10);
   return rows
-    .filter((row) => row.valid_until >= today)
+    .filter((row) => row.deleted === 0 && row.valid_until >= today)
     .map((row) => rowToPromotion(localizePromotion(row, locale)));
 }
 
-/** Every promotion, expired ones included — what the admin list renders. Empty when D1 is down. */
+/**
+ * Every non-hidden promotion, expired ones included — what the main /admin/promotions list
+ * renders. Empty when D1 is down. Hidden (soft-deleted) rows live in getHiddenPromotions instead.
+ */
 export async function getAllPromotions(): Promise<PromotionRow[]> {
-  return (await getPromotionRows()) ?? [];
+  const rows = (await getPromotionRows()) ?? [];
+  return rows.filter((row) => row.deleted === 0);
+}
+
+/** Promotions the clinic hid, kept separately so the admin can restore them. */
+export async function getHiddenPromotions(): Promise<PromotionRow[]> {
+  const rows = (await getPromotionRows()) ?? [];
+  return rows.filter((row) => row.deleted === 1);
 }
 
 // ── Writes (used by the /admin promotions API) ──────────────────────────────────────────────
@@ -161,11 +173,24 @@ export async function upsertPromotion(input: PromotionInput, updatedBy: string) 
     .run();
 }
 
-/** Remove a promotion outright — there is no code default for it to fall back to. */
-export async function deletePromotion(id: string) {
+/** Hide a promotion — a tombstone (deleted = 1), never a hard delete, so it stays restorable. */
+export async function deletePromotion(id: string, updatedBy: string) {
   const binding = await db();
   requireDb(binding);
-  await binding.prepare('DELETE FROM promotions WHERE id = ?1').bind(id).run();
+  await binding
+    .prepare('UPDATE promotions SET deleted = 1, updated_at = ?1, updated_by = ?2 WHERE id = ?3')
+    .bind(Date.now(), updatedBy, id)
+    .run();
+}
+
+/** Restore a promotion that was previously hidden with a tombstone. */
+export async function restorePromotion(id: string, updatedBy: string) {
+  const binding = await db();
+  requireDb(binding);
+  await binding
+    .prepare('UPDATE promotions SET deleted = 0, updated_at = ?1, updated_by = ?2 WHERE id = ?3')
+    .bind(Date.now(), updatedBy, id)
+    .run();
 }
 
 /** Updates just the image_public_id for an existing promotion. */

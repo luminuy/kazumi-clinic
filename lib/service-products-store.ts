@@ -167,13 +167,13 @@ export async function getCategoryItems(
   return merged.map((m) => m.item);
 }
 
-/** Shipped products the clinic hid, kept separately so the admin can restore them. */
-export async function getHiddenDefaultProducts(slug: string): Promise<MergedServiceItem[]> {
-  const defaultIds = new Set((getServiceBySlug(slug)?.items ?? []).map((item) => item.id));
+/**
+ * Every hidden product in a category — shipped ones the clinic tombstoned and clinic-added ones
+ * it soft-deleted, kept separately so the admin can restore either kind.
+ */
+export async function getHiddenProducts(slug: string): Promise<MergedServiceItem[]> {
   const rows = (await getProductRowsByCategory()).get(slug) ?? [];
-  return rows
-    .filter((row) => row.deleted && defaultIds.has(row.id))
-    .map((row) => rowToItem(row));
+  return rows.filter((row) => row.deleted).map((row) => rowToItem(row));
 }
 
 /** A category with its items resolved through the override layer — what pages/schema render. */
@@ -275,8 +275,9 @@ export async function setProductImage(
 }
 
 /**
- * Remove a product. A hardcoded one leaves a tombstone (deleted = 1) so the merge drops it; a
- * clinic-added one is deleted outright, since there's no default for it to fall back to.
+ * Hide a product — always a tombstone (deleted = 1), never a hard delete, so every product is
+ * restorable the same way. A hardcoded one has no row yet the first time it's hidden, so it's
+ * seeded from its code defaults; a clinic-added one already has a row and just gets flagged.
  */
 export async function deleteProduct(id: string, category: string, updatedBy: string) {
   const binding = await db();
@@ -308,7 +309,10 @@ export async function deleteProduct(id: string, category: string, updatedBy: str
       )
       .run();
   } else {
-    await binding.prepare('DELETE FROM service_products WHERE id = ?1').bind(id).run();
+    await binding
+      .prepare('UPDATE service_products SET deleted = 1, updated_at = ?1, updated_by = ?2 WHERE id = ?3')
+      .bind(Date.now(), updatedBy, id)
+      .run();
   }
 }
 

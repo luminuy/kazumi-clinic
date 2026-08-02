@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { serviceCategories } from '@/lib/services';
-import { getAllPromotions } from '@/lib/promotions-store';
+import { getAllPromotions, getHiddenPromotions, type PromotionRow } from '@/lib/promotions-store';
 import {
   PromotionEditor,
   type AdminPromotion,
@@ -13,9 +13,8 @@ export const metadata: Metadata = { title: 'โปรโมชั่น' };
 // The clinic's promotions are per-request state, not build output.
 export const dynamic = 'force-dynamic';
 
-export default async function AdminPromotionsPage() {
-  const rows = await getAllPromotions();
-  const promotions: AdminPromotion[] = rows.map((row) => ({
+function toAdminPromotion(row: PromotionRow): AdminPromotion {
+  return {
     id: row.id,
     name: row.name,
     nameEn: row.name_en ?? '',
@@ -28,7 +27,13 @@ export default async function AdminPromotionsPage() {
     validUntil: row.valid_until,
     categorySlug: row.category_slug ?? '',
     imagePublicId: row.image_public_id,
-  }));
+  };
+}
+
+export default async function AdminPromotionsPage() {
+  const [rows, hiddenRows] = await Promise.all([getAllPromotions(), getHiddenPromotions()]);
+  const promotions = rows.map(toAdminPromotion);
+  const hiddenPromotions = hiddenRows.map(toAdminPromotion);
 
   const categories: CategoryOption[] = serviceCategories.map((category) => ({
     slug: category.slug,
@@ -43,7 +48,7 @@ export default async function AdminPromotionsPage() {
       <PageHeading
         eyebrow="Promotions"
         title="โปรโมชั่น"
-        description="เพิ่ม แก้ไข หรือลบโปรโมชั่นที่แสดงในหน้า /promotions — โปรฯ ที่เลยวันหมดอายุจะถูกซ่อนจากเว็บโดยอัตโนมัติ"
+        description="เพิ่ม แก้ไข หรือซ่อนโปรโมชั่นที่แสดงในหน้า /promotions — โปรฯ ที่เลยวันหมดอายุจะถูกซ่อนจากเว็บโดยอัตโนมัติ"
         stat={
           <span>
             ทั้งหมด {promotions.length} · ใช้ได้ <span className="text-forest">{active}</span>
@@ -51,7 +56,12 @@ export default async function AdminPromotionsPage() {
         }
       />
 
-      <PromotionEditor promotions={promotions} categories={categories} today={today} />
+      <PromotionEditor
+        promotions={promotions}
+        hiddenPromotions={hiddenPromotions}
+        categories={categories}
+        today={today}
+      />
     </>
   );
 }
