@@ -8,6 +8,7 @@ import {
 import { ProductCategoryEditor, type AdminProduct } from '@/components/admin/product-category-editor';
 import { PageHeading } from '@/components/admin/ui';
 import { SectionNav } from '@/components/admin/nav';
+import { getEntityImages } from '@/lib/entity-images-store';
 
 export const metadata: Metadata = { title: 'สินค้า' };
 
@@ -37,7 +38,8 @@ function isContentEdited(base: ServiceItem, live: MergedServiceItem): boolean {
   );
 }
 
-function toAdminProduct(item: MergedServiceItem, base?: ServiceItem): AdminProduct {
+async function toAdminProduct(item: MergedServiceItem, base?: ServiceItem): Promise<AdminProduct> {
+  const gallery = item.id ? await getEntityImages('product', item.id) : [];
   return {
     id: item.id ?? '',
     name: item.name,
@@ -54,6 +56,7 @@ function toAdminProduct(item: MergedServiceItem, base?: ServiceItem): AdminProdu
     imagePublicId: item.imagePublicId ?? null,
     isDefault: Boolean(base),
     isEdited: base ? isContentEdited(base, item) : false,
+    galleryImages: gallery.map((row) => ({ id: row.id, publicId: row.public_id })),
   };
 }
 
@@ -65,8 +68,10 @@ export default async function AdminProductsPage() {
         getCategoryItems(category.slug),
         getHiddenProducts(category.slug),
       ]);
-      const products = items.map((item) => toAdminProduct(item, baseById.get(item.id)));
-      const hiddenProducts = hiddenItems.map((item) => toAdminProduct(item, baseById.get(item.id)));
+      const [products, hiddenProducts] = await Promise.all([
+        Promise.all(items.map((item) => toAdminProduct(item, baseById.get(item.id)))),
+        Promise.all(hiddenItems.map((item) => toAdminProduct(item, baseById.get(item.id)))),
+      ]);
       return { slug: category.slug, title: category.title, products, hiddenProducts };
     }),
   );

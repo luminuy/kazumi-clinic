@@ -7,13 +7,15 @@ import {
   type CategoryOption,
 } from '@/components/admin/promotion-editor';
 import { PageHeading } from '@/components/admin/ui';
+import { getEntityImages } from '@/lib/entity-images-store';
 
 export const metadata: Metadata = { title: 'โปรโมชั่น' };
 
 // The clinic's promotions are per-request state, not build output.
 export const dynamic = 'force-dynamic';
 
-function toAdminPromotion(row: PromotionRow): AdminPromotion {
+async function toAdminPromotion(row: PromotionRow): Promise<AdminPromotion> {
+  const gallery = await getEntityImages('promotion', row.id);
   return {
     id: row.id,
     name: row.name,
@@ -27,13 +29,16 @@ function toAdminPromotion(row: PromotionRow): AdminPromotion {
     validUntil: row.valid_until,
     categorySlug: row.category_slug ?? '',
     imagePublicId: row.image_public_id,
+    galleryImages: gallery.map((r) => ({ id: r.id, publicId: r.public_id })),
   };
 }
 
 export default async function AdminPromotionsPage() {
   const [rows, hiddenRows] = await Promise.all([getAllPromotions(), getHiddenPromotions()]);
-  const promotions = rows.map(toAdminPromotion);
-  const hiddenPromotions = hiddenRows.map(toAdminPromotion);
+  const [promotions, hiddenPromotions] = await Promise.all([
+    Promise.all(rows.map(toAdminPromotion)),
+    Promise.all(hiddenRows.map(toAdminPromotion)),
+  ]);
 
   const categories: CategoryOption[] = serviceCategories.map((category) => ({
     slug: category.slug,

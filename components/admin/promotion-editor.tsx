@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import Image from 'next/image';
 import {
   Clock,
@@ -17,6 +17,7 @@ import { btn, card, inputClass, SectionHeading, Field, EnglishFallbackNote } fro
 import { useEntityEditor } from './use-entity-editor';
 import { EditorDrawer } from './editor-drawer';
 import { ReorderButtons } from './reorder-buttons';
+import { ImageGallery, type GalleryImage } from './image-gallery';
 
 export type AdminPromotion = {
   id: string;
@@ -32,6 +33,8 @@ export type AdminPromotion = {
   validUntil: string;
   categorySlug: string;
   imagePublicId: string | null;
+  /** Additional photos beyond the single cover image — see components/admin/image-gallery.tsx. */
+  galleryImages: GalleryImage[];
 };
 
 /** Category options for the dropdown — passed from the server so the list stays in one place. */
@@ -106,6 +109,14 @@ export function PromotionEditor({
 }) {
   const { editing, draft, setDraft, busyId, busy, error, setError, openAdd, openEdit, close, mutate } =
     useEntityEditor<AdminPromotion, Draft>({ emptyDraft, draftFrom });
+  // The gallery persists each change immediately via its own API calls (see image-gallery.tsx),
+  // so it lives outside `draft`/save() — this just mirrors whichever promotion is open for editing.
+  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
+
+  function startEdit(promo: AdminPromotion) {
+    openEdit(promo);
+    setGalleryImages(promo.galleryImages);
+  }
 
   async function save() {
     const name = draft.name.trim();
@@ -241,7 +252,18 @@ export function PromotionEditor({
         onSave={save}
         onCancel={close}
       >
-        <PromotionForm draft={draft} setDraft={setDraft} categories={categories} />
+        <div className="flex flex-col gap-6">
+          <PromotionForm draft={draft} setDraft={setDraft} categories={categories} />
+          {editing && editing !== 'new' && (
+            <ImageGallery
+              entityType="promotion"
+              entityId={editing}
+              images={galleryImages}
+              onChange={setGalleryImages}
+              disabled={busy}
+            />
+          )}
+        </div>
       </EditorDrawer>
 
       <ul className="mt-6 space-y-3">
@@ -254,7 +276,7 @@ export function PromotionEditor({
               last={index === promotions.length - 1}
               busy={busy}
               busyId={busyId}
-              onEdit={() => openEdit(promo)}
+              onEdit={() => startEdit(promo)}
               onDelete={() => remove(promo)}
               onMoveUp={() => move(index, -1)}
               onMoveDown={() => move(index, 1)}

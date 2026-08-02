@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import Image from 'next/image';
 import {
   ExternalLink,
@@ -17,6 +17,7 @@ import { btn, card, inputClass, SectionHeading, Field, EnglishFallbackNote } fro
 import { useEntityEditor } from './use-entity-editor';
 import { EditorDrawer } from './editor-drawer';
 import { ReorderButtons } from './reorder-buttons';
+import { ImageGallery, type GalleryImage } from './image-gallery';
 
 export type AdminPost = {
   id: string;
@@ -32,6 +33,8 @@ export type AdminPost = {
   published: boolean;
   publishedAt: number | null;
   category: string | null;
+  /** Additional photos beyond the single cover image — see components/admin/image-gallery.tsx. */
+  galleryImages: GalleryImage[];
 };
 
 /** Options for the category select — the site's service categories. */
@@ -94,6 +97,14 @@ export function BlogEditor({
 }) {
   const { editing, draft, setDraft, busyId, busy, error, setError, openAdd, openEdit, close, mutate } =
     useEntityEditor<AdminPost, Draft>({ emptyDraft, draftFrom });
+  // The gallery persists each change immediately via its own API calls (see image-gallery.tsx),
+  // so it lives outside `draft`/save() — this just mirrors whichever post is open for editing.
+  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
+
+  function startEdit(post: AdminPost) {
+    openEdit(post);
+    setGalleryImages(post.galleryImages);
+  }
 
   async function save() {
     const title = draft.title.trim();
@@ -200,7 +211,18 @@ export function BlogEditor({
         onSave={save}
         onCancel={close}
       >
-        <PostForm draft={draft} setDraft={setDraft} categories={categories} isNew={editing === 'new'} />
+        <div className="flex flex-col gap-6">
+          <PostForm draft={draft} setDraft={setDraft} categories={categories} isNew={editing === 'new'} />
+          {editing && editing !== 'new' && (
+            <ImageGallery
+              entityType="post"
+              entityId={editing}
+              images={galleryImages}
+              onChange={setGalleryImages}
+              disabled={busy}
+            />
+          )}
+        </div>
       </EditorDrawer>
 
       <ul className="mt-6 space-y-3">
@@ -212,7 +234,7 @@ export function BlogEditor({
               last={index === posts.length - 1}
               busy={busy}
               busyId={busyId}
-              onEdit={() => openEdit(post)}
+              onEdit={() => startEdit(post)}
               onDelete={() => remove(post)}
               onUpload={(file) => uploadImage(post, file)}
               onMoveUp={() => move(index, -1)}

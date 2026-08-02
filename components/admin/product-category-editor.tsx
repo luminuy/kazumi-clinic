@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import Image from 'next/image';
 import {
   ImageOff,
@@ -16,6 +16,7 @@ import { btn, card, inputClass, SectionHeading, Field, EnglishFallbackNote } fro
 import { useEntityEditor } from './use-entity-editor';
 import { EditorDrawer } from './editor-drawer';
 import { ReorderButtons } from './reorder-buttons';
+import { ImageGallery, type GalleryImage } from './image-gallery';
 
 export type AdminProduct = {
   id: string;
@@ -35,6 +36,8 @@ export type AdminProduct = {
   isDefault: boolean;
   /** Has a saved override row in D1. */
   isEdited: boolean;
+  /** Additional photos beyond the single cover image — see components/admin/image-gallery.tsx. */
+  galleryImages: GalleryImage[];
 };
 
 type Draft = {
@@ -94,6 +97,14 @@ export function ProductCategoryEditor({
 }) {
   const { editing, draft, setDraft, busyId, busy, error, setError, openAdd, openEdit, close, mutate } =
     useEntityEditor<AdminProduct, Draft>({ emptyDraft, draftFrom });
+  // The gallery persists each change immediately via its own API calls (see image-gallery.tsx),
+  // so it lives outside `draft`/save() — this just mirrors whichever product is open for editing.
+  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
+
+  function startEdit(product: AdminProduct) {
+    openEdit(product);
+    setGalleryImages(product.galleryImages);
+  }
 
   async function save() {
     const name = draft.name.trim();
@@ -214,7 +225,18 @@ export function ProductCategoryEditor({
         onSave={save}
         onCancel={close}
       >
-        <ProductForm draft={draft} setDraft={setDraft} />
+        <div className="flex flex-col gap-6">
+          <ProductForm draft={draft} setDraft={setDraft} />
+          {editing && editing !== 'new' && (
+            <ImageGallery
+              entityType="product"
+              entityId={editing}
+              images={galleryImages}
+              onChange={setGalleryImages}
+              disabled={busy}
+            />
+          )}
+        </div>
       </EditorDrawer>
 
       <ul className="mt-6 space-y-3">
@@ -226,7 +248,7 @@ export function ProductCategoryEditor({
               last={index === products.length - 1}
               busy={busy}
               busyId={busyId}
-              onEdit={() => openEdit(product)}
+              onEdit={() => startEdit(product)}
               onDelete={() => remove(product)}
               onMoveUp={() => move(index, -1)}
               onMoveDown={() => move(index, 1)}

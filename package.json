@@ -20,7 +20,8 @@
     "cf:migrate:members": "wrangler d1 execute kazumi-clinic-tag-cache --remote -y --file migrations/0009_member_system.sql",
     "cf:migrate:ratelimit": "wrangler d1 execute kazumi-clinic-tag-cache --remote -y --file migrations/0010_rate_limits.sql",
     "cf:migrate:appointments": "wrangler d1 execute kazumi-clinic-tag-cache --remote -y --file migrations/0013_appointments.sql",
-    "cf:deploy": "opennextjs-cloudflare build && pnpm cf:tagcache && pnpm cf:migrate:members && pnpm cf:migrate:ratelimit && OPEN_NEXT_DEPLOY=true wrangler deploy"
+    "cf:migrate:entity-images": "wrangler d1 execute kazumi-clinic-tag-cache --remote -y --file migrations/0019_entity_images.sql",
+    "cf:deploy": "opennextjs-cloudflare build && pnpm cf:tagcache && pnpm cf:migrate:members && pnpm cf:migrate:ratelimit && pnpm cf:migrate:entity-images && OPEN_NEXT_DEPLOY=true wrangler deploy"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
