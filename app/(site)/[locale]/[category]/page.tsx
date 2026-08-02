@@ -84,12 +84,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     : undefined;
   const alternates = localizedAlternates(locale, `/${service.slug}`);
 
+  // These nine pages carry the commercial-intent queries, but their titles were the only ones on
+  // the site with no locality — bare "ฟิลเลอร์ — Kazumi Clinic" against a homepage that already
+  // says "คลินิกความงามสุขุมวิท กรุงเทพฯ". The suffix follows that existing, approved pattern.
+  const tMeta = await getTranslations({ locale, namespace: 'ServiceCategoryPage' });
+  const metaTitle = tMeta('metaTitle', { service: service.title });
+
   return {
-    title: service.title,
+    title: metaTitle,
     description: service.description,
     alternates,
     openGraph: {
-      title: service.title,
+      title: metaTitle,
       description: service.description,
       url: alternates.canonical,
       type: 'website',
@@ -99,7 +105,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     // set to override the root layout's default, which would otherwise leak the homepage hero
     // onto this page (CLAUDE.md §6 — every category needs its own image, never the homepage's).
     twitter: {
-      title: service.title,
+      title: metaTitle,
       description: service.description,
       ...(socialPreview
         ? { card: 'summary_large_image' as const, images: [socialPreview.url] }

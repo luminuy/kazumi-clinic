@@ -187,6 +187,7 @@
     }
   },
   "ServiceCategoryPage": {
+    "metaTitle": "{service} สุขุมวิท กรุงเทพฯ",
     "detailLabel": "รายละเอียด",
     "priceLabel": "ราคา",
     "priceValue": "{price} บาท",

@@ -187,6 +187,7 @@
     }
   },
   "ServiceCategoryPage": {
+    "metaTitle": "{service} in Sukhumvit, Bangkok",
     "detailLabel": "Details",
     "priceLabel": "Price",
     "priceValue": "{price} baht",
