@@ -336,14 +336,26 @@
 .promotion-carousel-dots {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
+  /* Matches .service-stream-dots — keeps the 1.5rem hit areas from overlapping each other. */
+  gap: 1.15rem;
 }
 .promotion-carousel-dot {
+  position: relative;
   width: 0.5rem;
   height: 0.5rem;
   border-radius: 999px;
   background: rgb(77 87 62 / 28%);
   transition: width 180ms ease-out, background-color 180ms ease-out;
+}
+/* 24px tappable area around an 8px dot — see the note on .service-stream-dots button::after. */
+.promotion-carousel-dot::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1.5rem;
+  height: 1.5rem;
+  transform: translate(-50%, -50%);
 }
 .promotion-carousel-dot--active {
   width: 1.5rem;
@@ -699,7 +711,9 @@
 .service-stream-dots {
   display: flex;
   justify-content: center;
-  gap: 0.45rem;
+  /* Wide enough that the 1.5rem hit areas below sit side by side instead of overlapping — with a
+     narrower gap a tap in the seam would land on whichever dot happened to paint last. */
+  gap: 1.15rem;
   padding: 0.8rem 1.5rem 0;
 }
 .service-stream-footer {
@@ -710,8 +724,9 @@
   top: 50%;
   right: 0.75rem;
   display: inline-flex;
-  width: 1.15rem;
-  height: 1.15rem;
+  /* 24px — the WCAG 2.2 SC 2.5.8 (AA) floor. The icon inside stays size-3. */
+  width: 1.5rem;
+  height: 1.5rem;
   align-items: center;
   justify-content: center;
   border-radius: 999px;
@@ -721,11 +736,23 @@
   transition: background-color 160ms ease-out, color 160ms ease-out;
 }
 .service-stream-dots button {
+  position: relative;
   width: 0.4rem;
   height: 0.4rem;
   border-radius: 999px;
   background: rgb(38 40 31 / 35%);
   transition: width 180ms ease-out, background-color 180ms ease-out;
+}
+/* The dot stays 6px because that is the design; the tappable area does not. 1.5rem = 24px is the
+   WCAG 2.2 SC 2.5.8 (AA) minimum, which a 6px control fails outright. */
+.service-stream-dots button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1.5rem;
+  height: 1.5rem;
+  transform: translate(-50%, -50%);
 }
 .service-stream-dots button.is-active {
   width: 1.4rem;
