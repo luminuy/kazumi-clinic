@@ -5,7 +5,7 @@
 > อัปเดตไฟล์นี้เป็นส่วนหนึ่งของ workflow: หลัง **deploy** และตอน **เริ่ม/จบงานสำคัญ** (ดู CLAUDE.md §0)
 > งานที่ปิดไปแล้วย้ายไป [docs/changelog.md](docs/changelog.md) — ไฟล์นี้เก็บแค่ **ตอนนี้ · ต่อไป · ค้าง**
 
-**อัปเดตล่าสุด:** 2026-07-27 (หลัง PR #277) · โดย: Claude Code
+**อัปเดตล่าสุด:** 2026-08-02 (หลัง PR #287, ระหว่างรอรีวิว #288) · โดย: Claude Code
 
 ---
 
@@ -25,6 +25,16 @@
 ---
 
 ## 🔨 กำลังทำ (in progress)
+
+- **2026-08-02 audit fix ชุดด่วน** (5 ข้อจาก user):
+  | ข้อ | สถานะ |
+  | --- | --- |
+  | เลข ว.75302 (ใบประกอบวิชาชีพแพทย์) ไม่อยู่บนหน้าบริการ | ✅ merged [#287](https://github.com/luminuy/kazumi-clinic/pull/287) — เพิ่มทุกหน้า (8 component + fallback template ที่ `/botox` ใช้) |
+  | ราคา SKU ติดป้าย "ราคาโปรโมชัน" โดยไม่มีวันหมดเขต (fake urgency, §0.2) | ✅ merged [#287](https://github.com/luminuy/kazumi-clinic/pull/287) — เปลี่ยนเป็น "ราคาเริ่มต้น" |
+  | หน้าบริการ 9 หมวดเนื้อหาบางมาก (22–64 คำ) ไม่มี aftercare/ข้อห้าม/downtime | 🔨 ร่างแล้วครบ 9 หมวด (TH+EN) — PR [#288](https://github.com/luminuy/kazumi-clinic/pull/288) **ห้าม merge จนกว่าแพทย์/เจ้าของจะอนุมัติเนื้อหา** (§0.2) |
+  | บทความ 20 ชิ้น ยังไม่มีฉบับอังกฤษใน D1 (ระบบพร้อมตั้งแต่เฟส 4) | ⏳ ยังไม่เริ่ม — ของเดิมในตาราง "เฟส 4b" ด้านล่างอยู่แล้ว |
+  | `www.kazumiclinic.skin` ไม่ resolve เลย (ไม่ใช่ redirect, เป็น DNS error) | ⏳ ค้าง — ต้องเพิ่ม Custom Domain ใน Cloudflare dashboard (Workers → kazumi-clinic → Settings → Domains & Routes) ตัวเองมี zone:read เท่านั้น เพิ่มให้ไม่ได้จากเครื่องนี้ — ดูแถว "ต่อไป/TODO" ด้านล่าง (มีอยู่แล้วตั้งแต่ก่อนหน้านี้ ทำเครื่องหมายว่าด่วนขึ้น)
+
 
 - **แปลเว็บอังกฤษให้ครบและถูกหลักภาษา** (Claude วางแผน/ตรวจ · Codex แก้โค้ด · Gemini CLI แปล) — ทำเป็นเฟส:
   | เฟส | สถานะ |
@@ -58,7 +68,7 @@
 
 - [x] **ระบบนัดหมาย Part A + B เสร็จและ deploy แล้ว** (ดู [docs/appointments.md](docs/appointments.md)) — จอง/ยืนยัน/ยกเลิก, อีเมลยืนยัน/ยกเลิก/เตือน, แนบ `.ics`, reminder 24 ชม. ผ่าน `app/api/internal/appointment-reminders` + GitHub Actions cron รายชั่วโมง, เรียง `/admin/leads` ตามเวลานัดใกล้สุด · `INTERNAL_TASK_SECRET` ตั้งแล้วทั้ง `wrangler secret put`/`gh secret set` และยิงจริงผ่าน (200 ด้วย secret ถูก, 401 ด้วย secret ผิด/ไม่มี) · **ยังไม่มีใครทดสอบว่าอีเมล (ยืนยัน/ยกเลิก/เตือน) ส่งถึงกล่องจดหมายจริง** — ดูแถวบนสุดของตาราง "ค้าง"
 - [x] **ขึ้นโดเมนจริง `kazumiclinic.skin` เสร็จแล้ว** (2026-07-27) — nameserver ชี้ Cloudflare, Custom Domain ผูก Worker, SSL Active, `site.url` เปลี่ยนแล้ว, `SITE_ENV` ลบแล้ว, Cloudflare Access destination เพิ่มแล้ว, Resend ยืนยันโดเมนแล้ว — ดูตาราง "Deployed ตอนนี้" ด้านบน
-- [ ] **เพิ่ม Custom Domain สำหรับ `www.kazumiclinic.skin`** (ไม่เร่ง) — ตอนนี้ผูกแค่ root domain, `www` ยังไม่ resolve เลย ถ้าอยากให้ `www` ใช้งานได้ต้องเพิ่มอีก Custom Domain แยกใน Workers → Domains
+- [ ] **เพิ่ม Custom Domain สำหรับ `www.kazumiclinic.skin`** (ถูกทำเครื่องหมายด่วนขึ้น 2026-08-02) — ตอนนี้ผูกแค่ root domain, `www` ยังไม่ resolve เลย (`dig www.kazumiclinic.skin` ว่างเปล่า — DNS error ไม่ใช่ redirect) ถ้าอยากให้ `www` ใช้งานได้ต้องเพิ่มอีก Custom Domain แยกใน Workers → kazumi-clinic → Settings → Domains & Routes · ตรวจแล้ว (2026-08-02): wrangler OAuth token ของเครื่องนี้มีแค่ `zone (read)` ไม่มีสิทธิ์แก้ DNS/Custom Domain ทำให้ agent เพิ่มเองไม่ได้ ต้องให้เจ้าของ (บัญชี Cloudflare) กดเพิ่มเอง
 - [ ] **เชื่อม payment gateway**: แก้ `lib/members/payments.ts` (`initiatePayment`) — ตอนนี้จองก่อนจ่ายที่คลินิกได้เต็ม, ชำระออนไลน์เป็น placeholder (ดู [docs/member-system.md](docs/member-system.md))
 - [ ] **เจ้าของอัปรูปเข้า /admin/images** — ตรวจของจริง 2026-07-25: มี **36 slot** · มีรูปจริง **6** (`about-hero`, `brand-mark`, `collagen-booster-editorial`, `hero-collagen-booster`, `hero-contact`, `hero-home` — โหลดได้ 200 ทุกใบ) + `brand-logo` ที่ใช้ default `kazumi-clinic/logo` · **ที่เหลือว่าง** จึงขึ้นกล่องไอคอน (ไม่ใช่รูปแตก) · ที่ควรอัปก่อนเพราะเห็นบ่อยสุด: `doctor-pratch`, `og-about` (รูปตอนแชร์ลิงก์), `hero-filler`, `hero-botox`, `hero-iv-drip-2` (ใช้ทั้ง /services และการ์ดแชร์ /blog)
 - [ ] **เจ้าของทดสอบ**: เปลี่ยนรูปสักช่องใน /admin → รีเฟรชหน้านั้น ควรอัปเดตใน ~ไม่กี่วินาที (ยืนยัน on-demand revalidation หลังแก้ tag cache 2026-07-22)
