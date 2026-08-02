@@ -555,8 +555,7 @@
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
 }
-.service-stream-rail::-webkit-scrollbar,
-.service-stream-picker::-webkit-scrollbar {
+.service-stream-rail::-webkit-scrollbar {
   display: none;
 }
 /* Mobile-only swipe rails on the home page (physicians, reviews) — hide the scrollbar so the
@@ -651,63 +650,6 @@
   letter-spacing: 0.06em;
   transition: transform 160ms ease-out, background-color 160ms ease-out;
 }
-.service-stream-picker {
-  display: flex;
-  gap: 0.5rem;
-  overflow-x: auto;
-  overscroll-behavior-inline: contain;
-  margin-top: 0.55rem;
-  padding: 0 0.75rem 0.5rem;
-  scrollbar-width: none;
-}
-.service-stream-picker__item {
-  position: relative;
-  flex: 0 0 24.45vw;
-  aspect-ratio: 1.78;
-  overflow: hidden;
-  background: var(--olive-deep);
-  color: var(--sand);
-  isolation: isolate;
-  transition: transform 160ms ease-out;
-}
-.service-stream-picker__item > svg {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  color: var(--mint-glow);
-}
-.service-stream-picker__item::after {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: linear-gradient(to top, rgb(15 24 21 / 72%), transparent 68%);
-  content: '';
-}
-.service-stream-picker__title {
-  position: absolute;
-  z-index: 2;
-  bottom: 0;
-  left: 0;
-  padding: 0.75rem;
-  font-size: 0.78rem;
-  font-weight: 500;
-  text-align: left;
-}
-.service-stream-picker__action {
-  position: absolute;
-  z-index: 2;
-  right: 0.75rem;
-  bottom: 0.75rem;
-  border-radius: 999px;
-  background: rgb(255 255 255 / 92%);
-  color: var(--store-ink);
-  padding: 0.44rem 0.7rem;
-  font-size: 0.66rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  line-height: 1;
-  transition: background-color 160ms ease-out, transform 160ms ease-out;
-}
 .service-stream-dots {
   display: flex;
   justify-content: center;
@@ -759,7 +701,6 @@
   background: var(--forest);
 }
 .service-stream-card__link:focus-visible,
-.service-stream-picker__item:focus-visible,
 .service-stream-dots button:focus-visible,
 .service-stream-pause:focus-visible {
   outline: 2px solid var(--mint);
@@ -769,13 +710,6 @@
   .service-stream-card__link:hover .service-stream-card__action {
     background: var(--mint);
     transform: translateY(-0.15rem);
-  }
-  .service-stream-picker__item:hover {
-    transform: translateY(-0.15rem);
-  }
-  .service-stream-picker__item:hover .service-stream-picker__action {
-    background: var(--mint);
-    transform: translateY(-0.1rem);
   }
   .service-stream-pause:hover {
     background: rgb(29 29 31 / 28%);
@@ -796,12 +730,6 @@
   }
   .service-stream-card__content {
     max-width: 88%;
-  }
-  .service-stream-picker {
-    padding-inline: 1.25rem;
-  }
-  .service-stream-picker__item {
-    flex-basis: min(58vw, 19rem);
   }
   .service-stream-pause {
     right: 1.25rem;
@@ -1035,8 +963,6 @@
   }
   .service-stream-card,
   .service-stream-card__action,
-  .service-stream-picker__item,
-  .service-stream-picker__action,
   .service-stream-dots button,
   .promotion-carousel-card__link,
   .promotion-carousel-card__image,
