@@ -166,10 +166,12 @@ export async function FillerServicePage({
                     )}
 
                     <div className="mt-6 flex items-baseline justify-between gap-3 border-t border-black/[0.08] pt-5">
-                      {/* §0.2: a promo price has to say it's a promo. The reference drops this
-                          label and shows a bare number — that's the one thing we can't copy. */}
+                      {/* §0.2: these are the clinic's posted starting prices, not a time-bound
+                          promo — label them as such rather than implying urgency. The reference
+                          drops this label entirely and shows a bare number — that's the one thing
+                          we can't copy. */}
                       <span className="text-[0.62rem] uppercase tracking-[0.16em] text-[var(--store-muted)]">
-                        {t('promoPriceLabel')}
+                        {t('startingPriceLabel')}
                       </span>
                       <p className="font-serif text-2xl text-[var(--store-ink)]">
                         {item.priceFrom !== undefined ? (
