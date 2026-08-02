@@ -94,7 +94,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
   const breadcrumb = breadcrumbSchema([
     { name: tNav('home'), path: '/' },
     { name: t('breadcrumb'), path: '/contact' },
-  ]);
+  ], locale);
 
   // Hours come straight from the single source (lib/site.ts) — only the row labels are translated.
   const weekday = site.hours[0];

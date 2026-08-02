@@ -73,22 +73,30 @@ export default async function BlogPostPage({ params }: Params) {
   const published = post.published_at ? new Date(post.published_at).toISOString() : undefined;
   const modified = new Date(post.updated_at).toISOString();
 
-  const article = blogPostingSchema({
-    title: post.title,
-    excerpt: post.excerpt ?? undefined,
-    slug: post.slug,
-    author: post.author ?? undefined,
-    datePublished: published,
-    dateModified: modified,
-    imagePublicId: post.cover_image_public_id ?? undefined,
-  });
+  // A post with no English body falls back to the Thai one (lib/content-locale.ts), so the language
+  // we declare follows the prose that actually rendered — not the URL it rendered under.
+  const renderedInEnglish = locale === 'en' && Boolean(post.body_en?.trim());
+
+  const article = blogPostingSchema(
+    {
+      title: post.title,
+      excerpt: post.excerpt ?? undefined,
+      slug: post.slug,
+      author: post.author ?? undefined,
+      datePublished: published,
+      dateModified: modified,
+      imagePublicId: post.cover_image_public_id ?? undefined,
+      inLanguage: renderedInEnglish ? 'en' : 'th-TH',
+    },
+    locale,
+  );
 
   const tNav = await getTranslations('Navigation');
   const breadcrumb = breadcrumbSchema([
     { name: tNav('home'), path: '/' },
     { name: t('breadcrumb'), path: '/blog' },
     { name: post.title, path: `/blog/${post.slug}` },
-  ]);
+  ], locale);
 
   return (
     <>

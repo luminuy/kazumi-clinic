@@ -1,4 +1,5 @@
 import { site, isPreviewDeploy } from '@/lib/site';
+import { serviceCategories } from '@/lib/services';
 
 // llms.txt (https://llmstxt.org) — a plain-text primer for AI assistants/crawlers that read a
 // site's own summary instead of (or alongside) crawling it. No Next.js file convention exists for
@@ -28,6 +29,10 @@ ${site.name} เป็นคลินิกความงามย่านส�
 - [เกี่ยวกับเรา](${site.url}/about): ข้อมูลแพทย์และคลินิก
 - [บทความ](${site.url}/blog): สาระความรู้ด้านผิวและความงาม
 - [ติดต่อเรา](${site.url}/contact): ที่อยู่ เบอร์โทร แผนที่ เวลาทำการ
+
+## หมวดบริการ
+
+${serviceCategories.map((c) => `- [${c.title} (${c.titleEn})](${site.url}/${c.slug}): ${c.shortDescription}`).join('\n')}
 
 ราคาที่แสดงบนเว็บไซต์อาจมีการเปลี่ยนแปลง กรุณาตรวจสอบราคาปัจจุบันและเงื่อนไขกับคลินิกโดยตรงก่อนเข้ารับบริการ ผลลัพธ์ของหัตถการแตกต่างกันในแต่ละบุคคลขึ้นอยู่กับการประเมินของแพทย์
 `;

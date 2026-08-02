@@ -46,21 +46,87 @@ describe('URL conventions — no trailing slash (CLAUDE.md §1)', () => {
     }
   });
 
-  it('generated JSON-LD contains no URL with a stray trailing slash', () => {
+  // Both locales: the English builders take a `/en` prefix, and the home crumb is the one input
+  // that can produce `/en/` if the path isn't normalised before it reaches localizedAlternates.
+  it.each(['th', 'en'])('generated %s JSON-LD contains no URL with a stray trailing slash', (locale) => {
     const schemas: unknown[] = [
-      clinicSchema({ locale: 'th' }),
-      serviceCategoryListSchema(serviceCategories),
-      breadcrumbSchema([
-        { name: 'หน้าหลัก', path: '/' },
-        { name: 'บริการ', path: '/services' },
-      ]),
-      ...serviceCategories.map((c) => serviceItemListSchema(c)),
+      clinicSchema({ locale }),
+      serviceCategoryListSchema(serviceCategories, locale),
+      breadcrumbSchema(
+        [
+          { name: 'หน้าหลัก', path: '/' },
+          { name: 'บริการ', path: '/services' },
+        ],
+        locale,
+      ),
+      ...serviceCategories.map((c) => serviceItemListSchema(c, locale)),
     ];
     const bad = schemas
       .flatMap((s) => collectUrls(s))
       .filter(isInternal)
       .filter((u) => !cleanPath(u));
     expect(bad, `URLs with a trailing slash: ${bad.join(', ')}`).toEqual([]);
+  });
+});
+
+// Regression cover for the 2026-08-02 SEO audit: every schema builder used to hardcode
+// `${site.url}${path}`, so the English pages shipped breadcrumbs, ItemLists and Offers pointing at
+// the Thai URLs — contradicting their own canonical.
+describe('English JSON-LD points at English URLs', () => {
+  const enUrls = (node: unknown) =>
+    collectUrls(node)
+      .filter(isInternal)
+      // The shared entity refs (#business, #website) and site.url itself are locale-independent.
+      .filter((u) => !u.includes('#') && u !== site.url);
+
+  it('breadcrumb items carry the /en prefix', () => {
+    const crumbs = breadcrumbSchema(
+      [
+        { name: 'Home', path: '/' },
+        { name: 'About Us', path: '/about' },
+      ],
+      'en',
+    );
+
+    expect(crumbs.itemListElement.map((entry) => entry.item)).toEqual([
+      `${site.url}/en`,
+      `${site.url}/en/about`,
+    ]);
+  });
+
+  it('category ItemList and its Offers carry the /en prefix', () => {
+    for (const category of serviceCategories) {
+      const list = serviceItemListSchema(category, 'en');
+      for (const url of enUrls(list)) {
+        expect(url, `${category.slug}: ${url} is missing the /en prefix`).toContain(
+          `${site.url}/en/`,
+        );
+      }
+    }
+  });
+
+  it('services hub ItemList carries the /en prefix and an English name', () => {
+    const list = serviceCategoryListSchema(serviceCategories, 'en');
+
+    expect(list.name).toBe(`All Services — ${site.name}`);
+    for (const url of enUrls(list)) {
+      expect(url, `${url} is missing the /en prefix`).toContain(`${site.url}/en/`);
+    }
+  });
+
+  it('clinic availableService uses English names and English URLs', () => {
+    const schema = clinicSchema({ locale: 'en' });
+
+    expect(schema.availableService.map((service) => service.name)).toEqual(
+      serviceCategories.map((category) => category.titleEn),
+    );
+    for (const service of schema.availableService) {
+      expect(service.url).toContain(`${site.url}/en/`);
+    }
+  });
+
+  it('carries the facility licence number as a verifiable identifier', () => {
+    expect(clinicSchema({ locale: 'th' }).identifier).toMatchObject({ value: site.license });
   });
 });
 

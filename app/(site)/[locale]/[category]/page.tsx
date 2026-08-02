@@ -229,7 +229,7 @@ export default async function ServiceCategoryPage({ params }: Props) {
   const breadcrumb = breadcrumbSchema([
     { name: t('breadcrumbHome'), path: '/' },
     { name: service.title, path: `/${service.slug}` },
-  ]);
+  ], locale);
 
   // Per-item product shots for the filler cards. Resolved here, in the server component, so the
   // page component never touches the override layer — same rule the atlas and carousel follow.
@@ -523,7 +523,7 @@ export default async function ServiceCategoryPage({ params }: Props) {
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: jsonLdHtml(serviceItemListSchema(service)) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(serviceItemListSchema(service, locale)) }}
       />
       <script
         type="application/ld+json"
