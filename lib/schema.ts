@@ -41,12 +41,19 @@ export function clinicSchema({
     priceRange: '$$',
     // Aesthetic dermatology — the specialty Google maps the entity to for health/beauty queries.
     medicalSpecialty: 'Dermatology',
+    // The สบส. facility licence. Already required in visible copy (§0.2); carrying it in structured
+    // data too gives the entity a verifiable credential, mirroring each physician's ว. number below.
+    identifier: {
+      '@type': 'PropertyValue',
+      name: isEnglish ? 'Healthcare facility licence' : 'เลขที่ใบอนุญาตสถานพยาบาล',
+      value: site.license,
+    },
     ...(imagePublicId && { image: cld(imagePublicId, { width: 1200, height: 630, crop: 'fill' }) }),
     ...(logoPublicId && { logo: cld(logoPublicId, { width: 512, height: 512, crop: 'fit' }) }),
     hasMap: site.mapsUrl,
     areaServed: {
       '@type': 'Place',
-      name: 'สุขุมวิท เขตวัฒนา กรุงเทพมหานคร',
+      name: isEnglish ? 'Sukhumvit, Watthana, Bangkok' : 'สุขุมวิท เขตวัฒนา กรุงเทพมหานคร',
     },
     address: {
       '@type': 'PostalAddress',
@@ -79,20 +86,23 @@ export function clinicSchema({
     // category page. Driven by lib/services.ts, so it stays in sync as categories change.
     availableService: serviceCategories.map((category) => ({
       '@type': 'MedicalProcedure',
-      name: category.title,
-      url: `${site.url}/${category.slug}`,
+      name: isEnglish ? category.titleEn : category.title,
+      url: localizedAlternates(locale, `/${category.slug}`).canonical,
     })),
     sameAs: [site.facebook, site.instagram, site.lineUrl].filter(Boolean),
   };
 }
 
+// The site is genuinely bilingual under one @id, so `inLanguage` carries both locales rather than
+// whichever page happened to render last — a single-valued 'th-TH' here contradicted the English
+// pages that inject the very same node.
 export const websiteSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   '@id': `${site.url}/#website`,
   name: site.name,
   url: site.url,
-  inLanguage: 'th-TH',
+  inLanguage: ['th-TH', 'en'],
   publisher: { '@id': `${site.url}/#business` },
 };
 
@@ -167,12 +177,14 @@ export function doctorSchema(
   };
 }
 
-export function serviceItemListSchema(category: ServiceCategory) {
+export function serviceItemListSchema(category: ServiceCategory, locale: string = 'th') {
+  const categoryUrl = localizedAlternates(locale, `/${category.slug}`).canonical;
+
   return {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
     name: `${category.title} — ${site.name}`,
-    url: `${site.url}/${category.slug}`,
+    url: categoryUrl,
     itemListElement: category.items.map((item, index) => ({
       '@type': 'ListItem',
       position: index + 1,
@@ -186,7 +198,7 @@ export function serviceItemListSchema(category: ServiceCategory) {
             '@type': 'Offer',
             price: item.priceFrom,
             priceCurrency: 'THB',
-            url: `${site.url}/${category.slug}`,
+            url: categoryUrl,
           },
         }),
       },
@@ -195,17 +207,19 @@ export function serviceItemListSchema(category: ServiceCategory) {
 }
 
 // ItemList for the /services hub — lists the service categories themselves (not procedures).
-export function serviceCategoryListSchema(categories: ServiceCategory[]) {
+export function serviceCategoryListSchema(categories: ServiceCategory[], locale: string = 'th') {
+  const isEnglish = locale === 'en';
+
   return {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
-    name: `บริการทั้งหมด — ${site.name}`,
-    url: `${site.url}/services`,
+    name: isEnglish ? `All Services — ${site.name}` : `บริการทั้งหมด — ${site.name}`,
+    url: localizedAlternates(locale, '/services').canonical,
     itemListElement: categories.map((category, index) => ({
       '@type': 'ListItem',
       position: index + 1,
       name: category.title,
-      url: `${site.url}/${category.slug}`,
+      url: localizedAlternates(locale, `/${category.slug}`).canonical,
     })),
   };
 }
@@ -213,16 +227,25 @@ export function serviceCategoryListSchema(categories: ServiceCategory[]) {
 // BlogPosting for a single /blog/[slug] article. Dates are ISO strings; image is a delivered
 // Cloudinary URL when the post has a cover. `author` falls back to the clinic entity when the post
 // names no writer, and `publisher` always refs the MedicalBusiness @id rather than repeating it.
-export function blogPostingSchema(post: {
-  title: string;
-  excerpt?: string;
-  slug: string;
-  author?: string;
-  datePublished?: string;
-  dateModified?: string;
-  imagePublicId?: string;
-}) {
-  const url = `${site.url}/blog/${post.slug}`;
+export function blogPostingSchema(
+  post: {
+    title: string;
+    excerpt?: string;
+    slug: string;
+    author?: string;
+    datePublished?: string;
+    dateModified?: string;
+    imagePublicId?: string;
+    /**
+     * The language actually rendered. English posts fall back to the Thai body when no translation
+     * exists (lib/content-locale.ts), so this is passed explicitly rather than derived from the
+     * locale — claiming `en` over Thai prose would be a false signal to crawlers.
+     */
+    inLanguage?: string;
+  },
+  locale: string = 'th',
+) {
+  const url = localizedAlternates(locale, `/blog/${post.slug}`).canonical;
   return {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
@@ -240,11 +263,11 @@ export function blogPostingSchema(post: {
     publisher: { '@id': `${site.url}/#business` },
     mainEntityOfPage: url,
     url,
-    inLanguage: 'th-TH',
+    inLanguage: post.inLanguage ?? 'th-TH',
   };
 }
 
-export function breadcrumbSchema(items: { name: string; path: string }[]) {
+export function breadcrumbSchema(items: { name: string; path: string }[], locale: string = 'th') {
   return {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -252,7 +275,9 @@ export function breadcrumbSchema(items: { name: string; path: string }[]) {
       '@type': 'ListItem',
       position: index + 1,
       name: item.name,
-      item: `${site.url}${item.path}`,
+      // '/' is the home crumb: localizedAlternates already appends the root slash for Thai and must
+      // not receive it for English, or the en URL comes out as `/en/`.
+      item: localizedAlternates(locale, item.path === '/' ? '' : item.path).canonical,
     })),
   };
 }

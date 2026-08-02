@@ -153,7 +153,7 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
   const breadcrumb = breadcrumbSchema([
     { name: tNav('home'), path: '/' },
     { name: t('breadcrumb'), path: '/services' },
-  ]);
+  ], locale);
 
   const overrides = await getImageOverrides();
   const pick = (key: string, fallback: string) => overrides.get(key)?.public_id ?? fallback;
@@ -178,7 +178,7 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
           // page it sits on. Still the hardcoded list rather than the merged one, so the schema
           // stays the stable reviewed set (CLAUDE.md §3.3).
           __html: jsonLdHtml(
-            serviceCategoryListSchema(localizeServiceCategories(serviceCategories, locale)),
+            serviceCategoryListSchema(localizeServiceCategories(serviceCategories, locale), locale),
           ),
         }}
       />

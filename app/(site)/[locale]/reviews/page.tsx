@@ -118,7 +118,7 @@ export default async function ReviewsPage({ params }: { params: Promise<{ locale
   const breadcrumb = breadcrumbSchema([
     { name: tNav('home'), path: '/' },
     { name: t('breadcrumb'), path: '/reviews' },
-  ]);
+  ], locale);
 
   return (
     <>

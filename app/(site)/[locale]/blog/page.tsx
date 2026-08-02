@@ -60,7 +60,7 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
   const breadcrumb = breadcrumbSchema([
     { name: tNav('home'), path: '/' },
     { name: t('breadcrumb'), path: '/blog' },
-  ]);
+  ], locale);
 
   const featuredPost = posts[0];
   const remainingPosts = posts.slice(1);

@@ -76,7 +76,7 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
   const breadcrumb = breadcrumbSchema([
     { name: tNav('home'), path: '/' },
     { name: t('breadcrumb'), path: '/about' },
-  ]);
+  ], locale);
 
   return (
     <div className="bg-[var(--background)]">

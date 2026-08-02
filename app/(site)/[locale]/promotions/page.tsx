@@ -80,7 +80,7 @@ export default async function PromotionsPage({ params }: { params: Promise<{ loc
   const breadcrumb = breadcrumbSchema([
     { name: tNav('home'), path: '/' },
     { name: t('breadcrumb'), path: '/promotions' },
-  ]);
+  ], locale);
 
   return (
     <>
