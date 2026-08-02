@@ -1,24 +1,21 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRef } from 'react';
 import Image from 'next/image';
 import {
-  Check,
-  ChevronDown,
-  ChevronUp,
   Clock,
+  ImageOff,
   Loader2,
   Pencil,
   Plus,
   Trash2,
-  TriangleAlert,
-  X,
   Upload,
-  ImageOff,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { btn, card, inputClass, SectionHeading } from './ui';
+import { btn, card, inputClass, SectionHeading, Field, EnglishFallbackNote } from './ui';
+import { useEntityEditor } from './use-entity-editor';
+import { EditorDrawer } from './editor-drawer';
+import { ReorderButtons } from './reorder-buttons';
 
 export type AdminPromotion = {
   id: string;
@@ -84,22 +81,6 @@ function draftFrom(promo: AdminPromotion): Draft {
   };
 }
 
-/** Reads a failed response without throwing "Unexpected end of JSON input" on an empty body. */
-async function errorMessage(res: Response, fallback: string): Promise<string> {
-  const text = await res.text().catch(() => '');
-  if (text) {
-    try {
-      const data = JSON.parse(text) as { error?: string };
-      if (data.error) return data.error;
-    } catch {
-      /* non-JSON body */
-    }
-  }
-  if (res.status === 401 || res.status === 404)
-    return 'เซสชันหมดอายุ — โหลดหน้านี้ใหม่แล้วลองอีกครั้ง';
-  return `${fallback} (${res.status})`;
-}
-
 function isExpired(validUntil: string, today: string) {
   return validUntil < today;
 }
@@ -120,45 +101,8 @@ export function PromotionEditor({
   /** Server-computed YYYY-MM-DD so "expired" is judged against the server clock, not the browser. */
   today: string;
 }) {
-  const router = useRouter();
-  // 'new' opens a blank add form; a promotion id opens that promotion's edit form.
-  const [editing, setEditing] = useState<string | null>(null);
-  const [draft, setDraft] = useState<Draft>(emptyDraft);
-  const [busyId, setBusyId] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const busy = busyId !== null;
-
-  function openAdd() {
-    setError(null);
-    setDraft(emptyDraft);
-    setEditing('new');
-  }
-
-  function openEdit(promo: AdminPromotion) {
-    setError(null);
-    setDraft(draftFrom(promo));
-    setEditing(promo.id);
-  }
-
-  function close() {
-    setEditing(null);
-    setError(null);
-  }
-
-  async function mutate(key: string, run: () => Promise<Response>, onOk?: () => void) {
-    setBusyId(key);
-    setError(null);
-    try {
-      const res = await run();
-      if (!res.ok) throw new Error(await errorMessage(res, 'บันทึกไม่สำเร็จ'));
-      onOk?.();
-      router.refresh();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'บันทึกไม่สำเร็จ');
-    } finally {
-      setBusyId(null);
-    }
-  }
+  const { editing, draft, setDraft, busyId, busy, error, setError, openAdd, openEdit, close, mutate } =
+    useEntityEditor<AdminPromotion, Draft>({ emptyDraft, draftFrom });
 
   async function save() {
     const name = draft.name.trim();
@@ -255,68 +199,57 @@ export function PromotionEditor({
     );
   }
 
+  const heading =
+    editing === 'new'
+      ? 'โปรโมชั่นใหม่'
+      : editing
+        ? `แก้ไข: ${promotions.find((p) => p.id === editing)?.name ?? ''}`
+        : '';
+
   return (
     <section className="mt-10">
       <SectionHeading
         title="รายการโปรโมชั่น"
         count={`${promotions.length} รายการ`}
         action={
-          <button type="button" onClick={openAdd} disabled={busy} className={btn.primary}>
+          <button type="button" onClick={() => openAdd()} disabled={busy} className={btn.primary}>
             <Plus className="size-3.5" />
             เพิ่มโปรโมชั่น
           </button>
         }
       />
 
-      {error && (
-        <p className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-red-50 px-3 py-2 text-xs text-red-600">
-          <TriangleAlert className="size-3.5" /> {error}
-        </p>
-      )}
-
-      {editing === 'new' && (
-        <PromotionForm
-          draft={draft}
-          setDraft={setDraft}
-          onSave={save}
-          onCancel={close}
-          busy={busy}
-          heading="โปรโมชั่นใหม่"
-          categories={categories}
-        />
-      )}
+      <EditorDrawer
+        open={editing !== null}
+        onOpenChange={(open) => !open && close()}
+        heading={heading}
+        busy={busy}
+        error={error}
+        onSave={save}
+        onCancel={close}
+      >
+        <PromotionForm draft={draft} setDraft={setDraft} categories={categories} />
+      </EditorDrawer>
 
       <ul className="mt-6 space-y-3">
         {promotions.map((promo, index) => (
           <li key={promo.id}>
-            {editing === promo.id ? (
-              <PromotionForm
-                draft={draft}
-                setDraft={setDraft}
-                onSave={save}
-                onCancel={close}
-                busy={busy}
-                heading={`แก้ไข: ${promo.name}`}
-                categories={categories}
-              />
-            ) : (
-              <PromotionRow
-                promo={promo}
-                expired={isExpired(promo.validUntil, today)}
-                first={index === 0}
-                last={index === promotions.length - 1}
-                busy={busy}
-                busyId={busyId}
-                onEdit={() => openEdit(promo)}
-                onDelete={() => remove(promo)}
-                onMoveUp={() => move(index, -1)}
-                onMoveDown={() => move(index, 1)}
-                onUpload={(file) => uploadImage(promo, file)}
-              />
-            )}
+            <PromotionRow
+              promo={promo}
+              expired={isExpired(promo.validUntil, today)}
+              first={index === 0}
+              last={index === promotions.length - 1}
+              busy={busy}
+              busyId={busyId}
+              onEdit={() => openEdit(promo)}
+              onDelete={() => remove(promo)}
+              onMoveUp={() => move(index, -1)}
+              onMoveDown={() => move(index, 1)}
+              onUpload={(file) => uploadImage(promo, file)}
+            />
           </li>
         ))}
-        {promotions.length === 0 && editing !== 'new' && (
+        {promotions.length === 0 && (
           <li className="rounded-2xl border border-dashed border-black/10 px-4 py-10 text-center text-sm text-ink/40">
             ยังไม่มีโปรโมชั่น — กด “เพิ่มโปรโมชั่น” เพื่อเริ่ม
           </li>
@@ -418,7 +351,7 @@ function PromotionRow({
         </span>
       </div>
 
-      <div className="mt-auto flex flex-wrap items-center gap-1.5 pt-3 border-t border-black/[0.05]">
+      <div className="mt-auto flex flex-wrap items-center gap-1.5 border-t border-black/[0.05] pt-3">
         <input
           ref={inputRef}
           type="file"
@@ -445,28 +378,11 @@ function PromotionRow({
           แก้ไข
         </button>
         <button type="button" disabled={busy} onClick={onDelete} className={btn.danger}>
-          {rowBusy ? <Loader2 className="size-3.5 animate-spin" /> : <Trash2 className="size-3.5" />}
+          {busyId === 'del-' + promo.id ? <Loader2 className="size-3.5 animate-spin" /> : <Trash2 className="size-3.5" />}
           ลบ
         </button>
-        <span className="ml-auto flex items-center gap-1">
-          <button
-            type="button"
-            disabled={busy || first}
-            onClick={onMoveUp}
-            aria-label="เลื่อนขึ้น"
-            className={cn(btn.icon, 'size-7')}
-          >
-            <ChevronUp className="size-4" />
-          </button>
-          <button
-            type="button"
-            disabled={busy || last}
-            onClick={onMoveDown}
-            aria-label="เลื่อนลง"
-            className={cn(btn.icon, 'size-7')}
-          >
-            <ChevronDown className="size-4" />
-          </button>
+        <span className="ml-auto">
+          <ReorderButtons disabled={busy} first={first} last={last} onMoveUp={onMoveUp} onMoveDown={onMoveDown} />
         </span>
       </div>
       </div>
@@ -474,186 +390,127 @@ function PromotionRow({
   );
 }
 
-function Field({
-  label,
-  children,
-  hint,
-}: {
-  label: string;
-  children: React.ReactNode;
-  hint?: string;
-}) {
-  return (
-    <label className="block">
-      <span className="text-xs font-medium text-ink/65">{label}</span>
-      {hint && <span className="ml-2 text-[0.65rem] text-ink/35">{hint}</span>}
-      <span className="mt-1.5 block">{children}</span>
-    </label>
-  );
-}
-
-function EnglishFallbackNote() {
-  return (
-    <p className="mt-1.5 text-[0.68rem] text-ink/40">
-      ปล่อยว่างได้ ถ้าไม่กรอกหน้าอังกฤษจะแสดงภาษาไทย
-    </p>
-  );
-}
-
 function PromotionForm({
   draft,
   setDraft,
-  onSave,
-  onCancel,
-  busy,
-  heading,
   categories,
 }: {
   draft: Draft;
   setDraft: (draft: Draft) => void;
-  onSave: () => void;
-  onCancel: () => void;
-  busy: boolean;
-  heading: string;
   categories: CategoryOption[];
 }) {
   const set = (patch: Partial<Draft>) => setDraft({ ...draft, ...patch });
 
   return (
-    <div className="rounded-2xl border border-black/[0.09] bg-cream p-5 shadow-[0_2px_16px_rgba(0,0,0,0.05)] sm:p-6">
-      <div className="flex items-center justify-between">
-        <h4 className="font-serif text-xl text-ink">{heading}</h4>
-        <button
-          type="button"
-          onClick={onCancel}
-          disabled={busy}
-          aria-label="ปิด"
-          className={cn(btn.icon, 'size-8')}
+    <div className="grid gap-4 sm:grid-cols-2">
+      <div className="sm:col-span-2">
+        <Field label="ชื่อโปรโมชั่น (ไทย)">
+          <input
+            className={inputClass}
+            value={draft.name}
+            onChange={(e) => set({ name: e.target.value })}
+            placeholder="เช่น Filler Neura Deep"
+          />
+        </Field>
+      </div>
+      <div className="sm:col-span-2">
+        <Field label="ชื่อโปรโมชั่น (อังกฤษ)">
+          <input
+            className={inputClass}
+            value={draft.nameEn}
+            onChange={(e) => set({ nameEn: e.target.value })}
+            placeholder="เช่น Neura Deep Filler"
+          />
+          <EnglishFallbackNote />
+        </Field>
+      </div>
+      <Field label="รายละเอียด (ไทย)" hint="เช่น ปริมาณ · ไม่บังคับ">
+        <input
+          className={inputClass}
+          value={draft.detail}
+          onChange={(e) => set({ detail: e.target.value })}
+          placeholder="เช่น 1 CC"
+        />
+      </Field>
+      <Field label="รายละเอียด (อังกฤษ)">
+        <input
+          className={inputClass}
+          value={draft.detailEn}
+          onChange={(e) => set({ detailEn: e.target.value })}
+          placeholder="เช่น 1 cc"
+        />
+        <EnglishFallbackNote />
+      </Field>
+      <Field label="หมวดบริการ" hint="ไม่บังคับ">
+        <select
+          className={inputClass}
+          value={draft.categorySlug}
+          onChange={(e) => set({ categorySlug: e.target.value })}
         >
-          <X className="size-4" />
-        </button>
-      </div>
-
-      <div className="mt-4 grid gap-4 sm:grid-cols-2">
-        <div className="sm:col-span-2">
-          <Field label="ชื่อโปรโมชั่น (ไทย)">
-            <input
-              className={inputClass}
-              value={draft.name}
-              onChange={(e) => set({ name: e.target.value })}
-              placeholder="เช่น Filler Neura Deep"
-            />
-          </Field>
+          <option value="">— ไม่ระบุ —</option>
+          {categories.map((category) => (
+            <option key={category.slug} value={category.slug}>
+              {category.title}
+            </option>
+          ))}
+        </select>
+      </Field>
+      <Field label="ราคาโปรโมชั่น (บาท)" hint="เว้นว่าง = ไม่ระบุราคา">
+        <input
+          className={inputClass}
+          inputMode="numeric"
+          value={draft.price}
+          onChange={(e) => set({ price: e.target.value })}
+          placeholder="เช่น 3990"
+        />
+      </Field>
+      <Field label="ราคาเดิม (บาท)" hint="ขีดฆ่า · ไม่บังคับ">
+        <input
+          className={inputClass}
+          inputMode="numeric"
+          value={draft.originalPrice}
+          onChange={(e) => set({ originalPrice: e.target.value })}
+          placeholder="เช่น 5990"
+        />
+      </Field>
+      <Field label="วันหมดอายุ" hint="โปรฯ จะซ่อนเองเมื่อเลยวันนี้">
+        <input
+          type="date"
+          className={inputClass}
+          value={draft.validUntil}
+          onChange={(e) => set({ validUntil: e.target.value })}
+        />
+      </Field>
+      <Field label="หมายเหตุ (ไทย)" hint="เช่น เงื่อนไข · ไม่บังคับ">
+        <input
+          className={inputClass}
+          value={draft.note}
+          onChange={(e) => set({ note: e.target.value })}
+          placeholder="เช่น ซื้อ 1 แถม 1"
+        />
+      </Field>
+      <Field label="หมายเหตุ (อังกฤษ)">
+        <input
+          className={inputClass}
+          value={draft.noteEn}
+          onChange={(e) => set({ noteEn: e.target.value })}
+          placeholder="เช่น Buy 1 get 1 free"
+        />
+        <EnglishFallbackNote />
+      </Field>
+      <Field label="รูปภาพโปรโมชั่น" hint="JPG/PNG/WebP/AVIF · ไม่บังคับ">
+        <div className="flex items-center gap-2">
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/avif"
+            className={cn(inputClass, 'p-1 text-sm file:mr-2 file:cursor-pointer file:rounded-md file:border-0 file:bg-forest/10 file:px-3 file:py-1 file:text-xs file:font-medium file:text-forest')}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) set({ imageFile: file });
+            }}
+          />
         </div>
-        <div className="sm:col-span-2">
-          <Field label="ชื่อโปรโมชั่น (อังกฤษ)">
-            <input
-              className={inputClass}
-              value={draft.nameEn}
-              onChange={(e) => set({ nameEn: e.target.value })}
-              placeholder="เช่น Neura Deep Filler"
-            />
-            <EnglishFallbackNote />
-          </Field>
-        </div>
-        <Field label="รายละเอียด (ไทย)" hint="เช่น ปริมาณ · ไม่บังคับ">
-          <input
-            className={inputClass}
-            value={draft.detail}
-            onChange={(e) => set({ detail: e.target.value })}
-            placeholder="เช่น 1 CC"
-          />
-        </Field>
-        <Field label="รายละเอียด (อังกฤษ)">
-          <input
-            className={inputClass}
-            value={draft.detailEn}
-            onChange={(e) => set({ detailEn: e.target.value })}
-            placeholder="เช่น 1 cc"
-          />
-          <EnglishFallbackNote />
-        </Field>
-        <Field label="หมวดบริการ" hint="ไม่บังคับ">
-          <select
-            className={inputClass}
-            value={draft.categorySlug}
-            onChange={(e) => set({ categorySlug: e.target.value })}
-          >
-            <option value="">— ไม่ระบุ —</option>
-            {categories.map((category) => (
-              <option key={category.slug} value={category.slug}>
-                {category.title}
-              </option>
-            ))}
-          </select>
-        </Field>
-        <Field label="ราคาโปรโมชั่น (บาท)" hint="เว้นว่าง = ไม่ระบุราคา">
-          <input
-            className={inputClass}
-            inputMode="numeric"
-            value={draft.price}
-            onChange={(e) => set({ price: e.target.value })}
-            placeholder="เช่น 3990"
-          />
-        </Field>
-        <Field label="ราคาเดิม (บาท)" hint="ขีดฆ่า · ไม่บังคับ">
-          <input
-            className={inputClass}
-            inputMode="numeric"
-            value={draft.originalPrice}
-            onChange={(e) => set({ originalPrice: e.target.value })}
-            placeholder="เช่น 5990"
-          />
-        </Field>
-        <Field label="วันหมดอายุ" hint="โปรฯ จะซ่อนเองเมื่อเลยวันนี้">
-          <input
-            type="date"
-            className={inputClass}
-            value={draft.validUntil}
-            onChange={(e) => set({ validUntil: e.target.value })}
-          />
-        </Field>
-        <Field label="หมายเหตุ (ไทย)" hint="เช่น เงื่อนไข · ไม่บังคับ">
-          <input
-            className={inputClass}
-            value={draft.note}
-            onChange={(e) => set({ note: e.target.value })}
-            placeholder="เช่น ซื้อ 1 แถม 1"
-          />
-        </Field>
-        <Field label="หมายเหตุ (อังกฤษ)">
-          <input
-            className={inputClass}
-            value={draft.noteEn}
-            onChange={(e) => set({ noteEn: e.target.value })}
-            placeholder="เช่น Buy 1 get 1 free"
-          />
-          <EnglishFallbackNote />
-        </Field>
-        <Field label="รูปภาพโปรโมชั่น" hint="JPG/PNG/WebP/AVIF · ไม่บังคับ">
-          <div className="flex items-center gap-2">
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp,image/avif"
-              className={cn(inputClass, 'p-1 text-sm file:mr-2 file:cursor-pointer file:rounded-md file:border-0 file:bg-forest/10 file:px-3 file:py-1 file:text-xs file:font-medium file:text-forest')}
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) set({ imageFile: file });
-              }}
-            />
-          </div>
-        </Field>
-      </div>
-
-      <div className="mt-6 flex items-center gap-2">
-        <button type="button" onClick={onSave} disabled={busy} className={btn.primary}>
-          {busy ? <Loader2 className="size-3.5 animate-spin" /> : <Check className="size-3.5" />}
-          บันทึก
-        </button>
-        <button type="button" onClick={onCancel} disabled={busy} className={btn.secondary}>
-          ยกเลิก
-        </button>
-      </div>
+      </Field>
     </div>
   );
 }

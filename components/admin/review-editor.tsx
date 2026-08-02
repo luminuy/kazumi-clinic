@@ -1,12 +1,8 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import {
-  Check,
-  ChevronDown,
-  ChevronUp,
   ImageOff,
   Loader2,
   Pencil,
@@ -16,10 +12,12 @@ import {
   Trash2,
   TriangleAlert,
   Upload,
-  X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { btn, card, inputClass, SectionHeading } from './ui';
+import { btn, card, inputClass, SectionHeading, Field, EnglishFallbackNote } from './ui';
+import { useEntityEditor } from './use-entity-editor';
+import { EditorDrawer } from './editor-drawer';
+import { ReorderButtons } from './reorder-buttons';
 
 export type AdminReview = {
   id: string;
@@ -85,21 +83,6 @@ function draftFrom(review: AdminReview): Draft {
   };
 }
 
-async function errorMessage(res: Response, fallback: string): Promise<string> {
-  const text = await res.text().catch(() => '');
-  if (text) {
-    try {
-      const data = JSON.parse(text) as { error?: string };
-      if (data.error) return data.error;
-    } catch {
-      /* non-JSON body */
-    }
-  }
-  if (res.status === 401 || res.status === 404)
-    return 'เซสชันหมดอายุ — โหลดหน้านี้ใหม่แล้วลองอีกครั้ง';
-  return `${fallback} (${res.status})`;
-}
-
 export function ReviewEditor({
   reviews,
   categories,
@@ -107,43 +90,11 @@ export function ReviewEditor({
   reviews: AdminReview[];
   categories: CategoryOption[];
 }) {
-  const router = useRouter();
-  const [editing, setEditing] = useState<string | null>(null);
-  const [draft, setDraft] = useState<Draft>(emptyDraft);
-  const [busyId, setBusyId] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const busy = busyId !== null;
+  const { editing, draft, setDraft, busyId, busy, error, setError, openAdd, openEdit, close, mutate } =
+    useEntityEditor<AdminReview, Draft>({ emptyDraft, draftFrom });
 
-  function openAdd() {
-    setError(null);
-    setDraft({ ...emptyDraft, id: `draft-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}` });
-    setEditing('new');
-  }
-
-  function openEdit(review: AdminReview) {
-    setError(null);
-    setDraft(draftFrom(review));
-    setEditing(review.id);
-  }
-
-  function close() {
-    setEditing(null);
-    setError(null);
-  }
-
-  async function mutate(key: string, run: () => Promise<Response>, onOk?: () => void) {
-    setBusyId(key);
-    setError(null);
-    try {
-      const res = await run();
-      if (!res.ok) throw new Error(await errorMessage(res, 'บันทึกไม่สำเร็จ'));
-      onOk?.();
-      router.refresh();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'บันทึกไม่สำเร็จ');
-    } finally {
-      setBusyId(null);
-    }
+  function startAdd() {
+    openAdd({ id: `draft-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}` });
   }
 
   async function save() {
@@ -225,13 +176,30 @@ export function ReviewEditor({
     return publicId;
   }
 
+  async function handleUpload(which: 'before' | 'after', file: File) {
+    const publicId = await uploadImage(draft.id, which, file);
+    if (publicId) {
+      setDraft({
+        ...draft,
+        ...(which === 'before' ? { beforeImagePublicId: publicId } : { afterImagePublicId: publicId }),
+      });
+    }
+  }
+
+  const heading =
+    editing === 'new'
+      ? 'รีวิวใหม่'
+      : editing
+        ? `แก้ไข: ${reviews.find((r) => r.id === editing)?.name ?? ''}`
+        : '';
+
   return (
     <section className="mt-10">
       <SectionHeading
         title="รายการรีวิว"
         count={`${reviews.length} รายการ`}
         action={
-          <button type="button" onClick={openAdd} disabled={busy} className={btn.primary}>
+          <button type="button" onClick={startAdd} disabled={busy} className={btn.primary}>
             <Plus className="size-3.5" />
             เพิ่มรีวิว
           </button>
@@ -244,73 +212,42 @@ export function ReviewEditor({
         / ประกาศโฆษณา อย.)
       </p>
 
-      {error && (
-        <p className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-red-50 px-3 py-2 text-xs text-red-600">
-          <TriangleAlert className="size-3.5" /> {error}
-        </p>
-      )}
-
-      {editing === 'new' && (
+      <EditorDrawer
+        open={editing !== null}
+        onOpenChange={(open) => !open && close()}
+        heading={heading}
+        busy={busy}
+        error={error}
+        onSave={save}
+        onCancel={close}
+      >
         <ReviewForm
           draft={draft}
           setDraft={setDraft}
-          onSave={save}
-          onCancel={close}
-          onUploadImage={async (which, file) => {
-            const publicId = await uploadImage(draft.id, which, file);
-            if (publicId) {
-              setDraft((d) => ({
-                ...d,
-                ...(which === 'before' ? { beforeImagePublicId: publicId } : { afterImagePublicId: publicId }),
-              }));
-            }
-          }}
+          onUploadImage={handleUpload}
           busy={busy}
           busyId={busyId}
-          heading="รีวิวใหม่"
           categories={categories}
         />
-      )}
+      </EditorDrawer>
 
       <ul className="mt-6 space-y-3">
         {reviews.map((review, index) => (
           <li key={review.id}>
-            {editing === review.id ? (
-              <ReviewForm
-                draft={draft}
-                setDraft={setDraft}
-                onSave={save}
-                onCancel={close}
-                onUploadImage={async (which, file) => {
-                  const publicId = await uploadImage(draft.id, which, file);
-                  if (publicId) {
-                    setDraft((d) => ({
-                      ...d,
-                      ...(which === 'before' ? { beforeImagePublicId: publicId } : { afterImagePublicId: publicId }),
-                    }));
-                  }
-                }}
-                busy={busy}
-                busyId={busyId}
-                heading={`แก้ไข: ${review.name}`}
-                categories={categories}
-              />
-            ) : (
-              <ReviewRow
-                review={review}
-                first={index === 0}
-                last={index === reviews.length - 1}
-                busy={busy}
-                busyId={busyId}
-                onEdit={() => openEdit(review)}
-                onDelete={() => remove(review)}
-                onMoveUp={() => move(index, -1)}
-                onMoveDown={() => move(index, 1)}
-              />
-            )}
+            <ReviewRow
+              review={review}
+              first={index === 0}
+              last={index === reviews.length - 1}
+              busy={busy}
+              busyId={busyId}
+              onEdit={() => openEdit(review)}
+              onDelete={() => remove(review)}
+              onMoveUp={() => move(index, -1)}
+              onMoveDown={() => move(index, 1)}
+            />
           </li>
         ))}
-        {reviews.length === 0 && editing !== 'new' && (
+        {reviews.length === 0 && (
           <li className="rounded-2xl border border-dashed border-black/10 px-4 py-10 text-center text-sm text-ink/40">
             ยังไม่มีรีวิว — กด “เพิ่มรีวิว” เพื่อเริ่ม
           </li>
@@ -490,25 +427,8 @@ function ReviewRow({
             )}
             ลบ
           </button>
-          <span className="ml-auto flex items-center gap-1">
-            <button
-              type="button"
-              disabled={busy || first}
-              onClick={onMoveUp}
-              aria-label="เลื่อนขึ้น"
-              className={cn(btn.icon, 'size-7')}
-            >
-              <ChevronUp className="size-4" />
-            </button>
-            <button
-              type="button"
-              disabled={busy || last}
-              onClick={onMoveDown}
-              aria-label="เลื่อนลง"
-              className={cn(btn.icon, 'size-7')}
-            >
-              <ChevronDown className="size-4" />
-            </button>
+          <span className="ml-auto">
+            <ReorderButtons disabled={busy} first={first} last={last} onMoveUp={onMoveUp} onMoveDown={onMoveDown} />
           </span>
         </div>
       </div>
@@ -516,71 +436,32 @@ function ReviewRow({
   );
 }
 
-function Field({
-  label,
-  children,
-  hint,
-}: {
-  label: string;
-  children: React.ReactNode;
-  hint?: string;
-}) {
-  return (
-    <label className="block">
-      <span className="text-xs font-medium text-ink/65">{label}</span>
-      {hint && <span className="ml-2 text-[0.65rem] text-ink/35">{hint}</span>}
-      <span className="mt-1.5 block">{children}</span>
-    </label>
-  );
-}
-
-function EnglishFallbackNote() {
-  return (
-    <p className="mt-1.5 text-[0.68rem] text-ink/40">
-      ปล่อยว่างได้ ถ้าไม่กรอกหน้าอังกฤษจะแสดงภาษาไทย
-    </p>
-  );
-}
-
 function ReviewForm({
   draft,
   setDraft,
-  onSave,
-  onCancel,
   onUploadImage,
   busy,
   busyId,
-  heading,
   categories,
 }: {
   draft: Draft;
   setDraft: (draft: Draft) => void;
-  onSave: () => void;
-  onCancel: () => void;
   onUploadImage: (which: 'before' | 'after', file: File) => void;
   busy: boolean;
   busyId: string | null;
-  heading: string;
   categories: CategoryOption[];
 }) {
   const set = (patch: Partial<Draft>) => setDraft({ ...draft, ...patch });
 
   return (
-    <div className="rounded-2xl border border-black/[0.09] bg-cream p-5 shadow-[0_2px_16px_rgba(0,0,0,0.05)] sm:p-6">
-      <div className="flex items-center justify-between">
-        <h4 className="font-serif text-xl text-ink">{heading}</h4>
-        <button
-          type="button"
-          onClick={onCancel}
-          disabled={busy}
-          aria-label="ปิด"
-          className={cn(btn.icon, 'size-8')}
-        >
-          <X className="size-4" />
-        </button>
-      </div>
+    <div className="flex flex-col gap-6">
+      {draft.published && !draft.consent && (
+        <p className="inline-flex items-center gap-1.5 rounded-xl bg-red-50 px-3 py-2 text-xs text-red-600">
+          <TriangleAlert className="size-3.5" /> ต้องยืนยันความยินยอมจากลูกค้าก่อนเผยแพร่
+        </p>
+      )}
 
-      <div className="mt-4 flex flex-col gap-6 sm:flex-row">
+      <div className="flex flex-col gap-6 sm:flex-row">
         <div className="flex shrink-0 gap-2 sm:w-64">
           <BeforeAfter
             label="ก่อน"
@@ -676,7 +557,7 @@ function ReviewForm({
         </div>
       </div>
 
-      <div className="mt-4 space-y-2.5 rounded-xl bg-sand/60 p-4">
+      <div className="space-y-2.5 rounded-xl bg-sand/60 p-4">
         <label className="flex items-start gap-2.5 text-sm text-ink/75">
           <input
             type="checkbox"
@@ -706,16 +587,6 @@ function ReviewForm({
             )}
           </span>
         </label>
-      </div>
-
-      <div className="mt-6 flex items-center gap-2">
-        <button type="button" onClick={onSave} disabled={busy} className={btn.primary}>
-          {busy ? <Loader2 className="size-3.5 animate-spin" /> : <Check className="size-3.5" />}
-          บันทึก
-        </button>
-        <button type="button" onClick={onCancel} disabled={busy} className={btn.secondary}>
-          ยกเลิก
-        </button>
       </div>
     </div>
   );
