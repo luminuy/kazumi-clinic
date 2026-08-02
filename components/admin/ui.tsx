@@ -86,3 +86,47 @@ export function SectionHeading({
     </div>
   );
 }
+
+/** A labelled form field — every editor form uses this for every input/select/textarea. */
+export function Field({
+  label,
+  children,
+  hint,
+}: {
+  label: string;
+  children: ReactNode;
+  hint?: string;
+}) {
+  return (
+    <label className="block">
+      <span className="text-xs font-medium text-ink/65">{label}</span>
+      {hint && <span className="ml-2 text-[0.65rem] text-ink/35">{hint}</span>}
+      <span className="mt-1.5 block">{children}</span>
+    </label>
+  );
+}
+
+/** Sits under every "(อังกฤษ)" field — the site falls back to Thai when the English is empty. */
+export function EnglishFallbackNote() {
+  return (
+    <p className="mt-1.5 text-[0.68rem] text-ink/40">
+      ปล่อยว่างได้ ถ้าไม่กรอกหน้าอังกฤษจะแสดงภาษาไทย
+    </p>
+  );
+}
+
+/** Reads a failed response without throwing "Unexpected end of JSON input" on an empty body. */
+export async function errorMessage(res: Response, fallback: string): Promise<string> {
+  const text = await res.text().catch(() => '');
+  if (text) {
+    try {
+      const data = JSON.parse(text) as { error?: string };
+      if (data.error) return data.error;
+    } catch {
+      /* non-JSON body */
+    }
+  }
+  if (res.status === 401 || res.status === 404)
+    return 'เซสชันหมดอายุ — โหลดหน้านี้ใหม่แล้วลองอีกครั้ง';
+  return `${fallback} (${res.status})`;
+}

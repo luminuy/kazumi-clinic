@@ -1,24 +1,21 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import {
-  Check,
-  ChevronDown,
-  ChevronUp,
   ImageOff,
   Loader2,
   Pencil,
   Plus,
   RotateCcw,
   Trash2,
-  TriangleAlert,
   Upload,
-  X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { btn, card, inputClass, SectionHeading } from './ui';
+import { btn, card, inputClass, SectionHeading, Field, EnglishFallbackNote } from './ui';
+import { useEntityEditor } from './use-entity-editor';
+import { EditorDrawer } from './editor-drawer';
+import { ReorderButtons } from './reorder-buttons';
 
 export type AdminProduct = {
   id: string;
@@ -84,22 +81,6 @@ function draftFrom(product: AdminProduct): Draft {
   };
 }
 
-/** Reads a failed response without throwing "Unexpected end of JSON input" on an empty body. */
-async function errorMessage(res: Response, fallback: string): Promise<string> {
-  const text = await res.text().catch(() => '');
-  if (text) {
-    try {
-      const data = JSON.parse(text) as { error?: string };
-      if (data.error) return data.error;
-    } catch {
-      /* non-JSON body */
-    }
-  }
-  if (res.status === 401 || res.status === 404)
-    return 'เซสชันหมดอายุ — โหลดหน้านี้ใหม่แล้วลองอีกครั้ง';
-  return `${fallback} (${res.status})`;
-}
-
 export function ProductCategoryEditor({
   slug,
   title,
@@ -111,63 +92,16 @@ export function ProductCategoryEditor({
   products: AdminProduct[];
   hiddenProducts: AdminProduct[];
 }) {
-  const router = useRouter();
-  // 'new' opens a blank add form; a product id opens that product's edit form.
-  const [editing, setEditing] = useState<string | null>(null);
-  const [draft, setDraft] = useState<Draft>(emptyDraft);
-  const [busyId, setBusyId] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const busy = busyId !== null;
-
-  function openAdd() {
-    setError(null);
-    setDraft(emptyDraft);
-    setEditing('new');
-  }
-
-  function openEdit(product: AdminProduct) {
-    setError(null);
-    setDraft(draftFrom(product));
-    setEditing(product.id);
-  }
-
-  function close() {
-    setEditing(null);
-    setError(null);
-  }
-
-  async function mutate(
-    key: string,
-    run: () => Promise<Response>,
-    onOk?: () => void,
-  ): Promise<boolean> {
-    setBusyId(key);
-    setError(null);
-    try {
-      const res = await run();
-      if (!res.ok) throw new Error(await errorMessage(res, 'บันทึกไม่สำเร็จ'));
-      onOk?.();
-      router.refresh();
-      return true;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'บันทึกไม่สำเร็จ');
-      return false;
-    } finally {
-      setBusyId(null);
-    }
-  }
+  const { editing, draft, setDraft, busyId, busy, error, setError, openAdd, openEdit, close, mutate } =
+    useEntityEditor<AdminProduct, Draft>({ emptyDraft, draftFrom });
 
   async function save() {
     const name = draft.name.trim();
-    if (!name) {
-      setError('ต้องมีชื่อสินค้า');
-      return;
-    }
+    if (!name) return setError('ต้องมีชื่อสินค้า');
     const priceValue = draft.price.trim();
     const priceFrom = priceValue === '' ? null : Number(priceValue);
     if (priceFrom !== null && (!Number.isInteger(priceFrom) || priceFrom <= 0)) {
-      setError('ราคาต้องเป็นจำนวนเต็มบวก หรือเว้นว่างไว้');
-      return;
+      return setError('ราคาต้องเป็นจำนวนเต็มบวก หรือเว้นว่างไว้');
     }
     const benefits = draft.benefits
       .split('\n')
@@ -252,62 +186,53 @@ export function ProductCategoryEditor({
     );
   }
 
+  const heading =
+    editing === 'new'
+      ? 'สินค้าใหม่'
+      : editing
+        ? `แก้ไข: ${products.find((p) => p.id === editing)?.name ?? ''}`
+        : '';
+
   return (
     <section id={`products-${slug}`} className="scroll-mt-36">
       <SectionHeading
         title={title}
         count={`${products.length} รายการ`}
         action={
-          <button type="button" onClick={openAdd} disabled={busy} className={btn.primary}>
+          <button type="button" onClick={() => openAdd()} disabled={busy} className={btn.primary}>
             <Plus className="size-3.5" />
             เพิ่มสินค้า
           </button>
         }
       />
 
-      {error && (
-        <p className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-red-50 px-3 py-2 text-xs text-red-600">
-          <TriangleAlert className="size-3.5" /> {error}
-        </p>
-      )}
-
-      {editing === 'new' && (
-        <ProductForm
-          draft={draft}
-          setDraft={setDraft}
-          onSave={save}
-          onCancel={close}
-          busy={busy}
-          heading="สินค้าใหม่"
-        />
-      )}
+      <EditorDrawer
+        open={editing !== null}
+        onOpenChange={(open) => !open && close()}
+        heading={heading}
+        busy={busy}
+        error={error}
+        onSave={save}
+        onCancel={close}
+      >
+        <ProductForm draft={draft} setDraft={setDraft} />
+      </EditorDrawer>
 
       <ul className="mt-6 space-y-3">
         {products.map((product, index) => (
           <li key={product.id}>
-            {editing === product.id ? (
-              <ProductForm
-                draft={draft}
-                setDraft={setDraft}
-                onSave={save}
-                onCancel={close}
-                busy={busy}
-                heading={`แก้ไข: ${product.name}`}
-              />
-            ) : (
-              <ProductRow
-                product={product}
-                first={index === 0}
-                last={index === products.length - 1}
-                busy={busy}
-                busyId={busyId}
-                onEdit={() => openEdit(product)}
-                onDelete={() => remove(product)}
-                onMoveUp={() => move(index, -1)}
-                onMoveDown={() => move(index, 1)}
-                onUpload={(file) => uploadImage(product, file)}
-              />
-            )}
+            <ProductRow
+              product={product}
+              first={index === 0}
+              last={index === products.length - 1}
+              busy={busy}
+              busyId={busyId}
+              onEdit={() => openEdit(product)}
+              onDelete={() => remove(product)}
+              onMoveUp={() => move(index, -1)}
+              onMoveDown={() => move(index, 1)}
+              onUpload={(file) => uploadImage(product, file)}
+            />
           </li>
         ))}
         {products.length === 0 && (
@@ -531,25 +456,8 @@ function ProductRow({
             {product.isDefault ? 'ซ่อน' : 'ลบ'}
           </button>
 
-          <span className="ml-auto flex items-center gap-1">
-            <button
-              type="button"
-              disabled={busy || first}
-              onClick={onMoveUp}
-              aria-label="เลื่อนขึ้น"
-              className={cn(btn.icon, 'size-7')}
-            >
-              <ChevronUp className="size-4" />
-            </button>
-            <button
-              type="button"
-              disabled={busy || last}
-              onClick={onMoveDown}
-              aria-label="เลื่อนลง"
-              className={cn(btn.icon, 'size-7')}
-            >
-              <ChevronDown className="size-4" />
-            </button>
+          <span className="ml-auto">
+            <ReorderButtons disabled={busy} first={first} last={last} onMoveUp={onMoveUp} onMoveDown={onMoveDown} />
           </span>
         </div>
       </div>
@@ -557,180 +465,121 @@ function ProductRow({
   );
 }
 
-function Field({
-  label,
-  children,
-  hint,
-}: {
-  label: string;
-  children: React.ReactNode;
-  hint?: string;
-}) {
-  return (
-    <label className="block">
-      <span className="text-xs font-medium text-ink/65">{label}</span>
-      {hint && <span className="ml-2 text-[0.65rem] text-ink/35">{hint}</span>}
-      <span className="mt-1.5 block">{children}</span>
-    </label>
-  );
-}
-
-function EnglishFallbackNote() {
-  return (
-    <p className="mt-1.5 text-[0.68rem] text-ink/40">
-      ปล่อยว่างได้ ถ้าไม่กรอกหน้าอังกฤษจะแสดงภาษาไทย
-    </p>
-  );
-}
-
 function ProductForm({
   draft,
   setDraft,
-  onSave,
-  onCancel,
-  busy,
-  heading,
 }: {
   draft: Draft;
   setDraft: (draft: Draft) => void;
-  onSave: () => void;
-  onCancel: () => void;
-  busy: boolean;
-  heading: string;
 }) {
   const set = (patch: Partial<Draft>) => setDraft({ ...draft, ...patch });
 
   return (
-    <div className="rounded-2xl border border-black/[0.09] bg-cream p-5 shadow-[0_2px_16px_rgba(0,0,0,0.05)] sm:p-6">
-      <div className="flex items-center justify-between">
-        <h4 className="font-serif text-xl text-ink">{heading}</h4>
-        <button
-          type="button"
-          onClick={onCancel}
-          disabled={busy}
-          aria-label="ปิด"
-          className={cn(btn.icon, 'size-8')}
-        >
-          <X className="size-4" />
-        </button>
-      </div>
-
-      <div className="mt-4 grid gap-4 sm:grid-cols-2">
-        <div className="sm:col-span-2">
-          <Field label="ชื่อสินค้า (ไทย)">
-            <input
-              className={inputClass}
-              value={draft.name}
-              onChange={(e) => set({ name: e.target.value })}
-              placeholder="เช่น Neura Deep"
-            />
-          </Field>
-        </div>
-        <div className="sm:col-span-2">
-          <Field label="ชื่อสินค้า (อังกฤษ)">
-            <input
-              className={inputClass}
-              value={draft.nameEn}
-              onChange={(e) => set({ nameEn: e.target.value })}
-              placeholder="เช่น Neura Deep"
-            />
-            <EnglishFallbackNote />
-          </Field>
-        </div>
-        <Field label="รายละเอียด (ไทย)" hint="เช่น ปริมาณ/รุ่น">
+    <div className="grid gap-4 sm:grid-cols-2">
+      <div className="sm:col-span-2">
+        <Field label="ชื่อสินค้า (ไทย)">
           <input
             className={inputClass}
-            value={draft.detail}
-            onChange={(e) => set({ detail: e.target.value })}
-            placeholder="เช่น 1 CC"
+            value={draft.name}
+            onChange={(e) => set({ name: e.target.value })}
+            placeholder="เช่น Neura Deep"
           />
         </Field>
-        <Field label="รายละเอียด (อังกฤษ)">
+      </div>
+      <div className="sm:col-span-2">
+        <Field label="ชื่อสินค้า (อังกฤษ)">
           <input
             className={inputClass}
-            value={draft.detailEn}
-            onChange={(e) => set({ detailEn: e.target.value })}
-            placeholder="เช่น 1 cc"
+            value={draft.nameEn}
+            onChange={(e) => set({ nameEn: e.target.value })}
+            placeholder="เช่น Neura Deep"
           />
           <EnglishFallbackNote />
         </Field>
-        <Field label="กลุ่มย่อย" hint="ไม่บังคับ">
-          <input
-            className={inputClass}
-            value={draft.collection}
-            onChange={(e) => set({ collection: e.target.value })}
-            placeholder="เช่น Essential Glow Collection"
-          />
-        </Field>
-        <Field label="ราคา (บาท)" hint="เว้นว่าง = สอบถามราคา">
-          <input
-            className={inputClass}
-            inputMode="numeric"
-            value={draft.price}
-            onChange={(e) => set({ price: e.target.value })}
-            placeholder="เช่น 3990"
-          />
-        </Field>
-        <Field label="หน่วย">
-          <input
-            className={inputClass}
-            value={draft.unit}
-            onChange={(e) => set({ unit: e.target.value })}
-            placeholder="ครั้ง"
-          />
-        </Field>
-        <div className="sm:col-span-2">
-          <Field label="คำโปรย (ไทย)" hint="ไม่บังคับ">
-            <input
-              className={inputClass}
-              value={draft.tagline}
-              onChange={(e) => set({ tagline: e.target.value })}
-              placeholder="เช่น Rh Collagen"
-            />
-          </Field>
-        </div>
-        <div className="sm:col-span-2">
-          <Field label="คำโปรย (อังกฤษ)">
-            <input
-              className={inputClass}
-              value={draft.taglineEn}
-              onChange={(e) => set({ taglineEn: e.target.value })}
-              placeholder="เช่น Rh Collagen"
-            />
-            <EnglishFallbackNote />
-          </Field>
-        </div>
-        <div className="sm:col-span-2">
-          <Field label="จุดเด่น (ไทย)" hint="บรรทัดละ 1 ข้อ · ไม่บังคับ">
-            <textarea
-              className={cn(inputClass, 'min-h-24 resize-y')}
-              value={draft.benefits}
-              onChange={(e) => set({ benefits: e.target.value })}
-              placeholder={'ข้อดีข้อที่ 1\nข้อดีข้อที่ 2'}
-            />
-          </Field>
-        </div>
-        <div className="sm:col-span-2">
-          <Field label="จุดเด่น (อังกฤษ)" hint="บรรทัดละ 1 ข้อ">
-            <textarea
-              className={cn(inputClass, 'min-h-24 resize-y')}
-              value={draft.benefitsEn}
-              onChange={(e) => set({ benefitsEn: e.target.value })}
-              placeholder={'First benefit\nSecond benefit'}
-            />
-            <EnglishFallbackNote />
-          </Field>
-        </div>
       </div>
-
-      <div className="mt-6 flex items-center gap-2">
-        <button type="button" onClick={onSave} disabled={busy} className={btn.primary}>
-          {busy ? <Loader2 className="size-3.5 animate-spin" /> : <Check className="size-3.5" />}
-          บันทึก
-        </button>
-        <button type="button" onClick={onCancel} disabled={busy} className={btn.secondary}>
-          ยกเลิก
-        </button>
+      <Field label="รายละเอียด (ไทย)" hint="เช่น ปริมาณ/รุ่น">
+        <input
+          className={inputClass}
+          value={draft.detail}
+          onChange={(e) => set({ detail: e.target.value })}
+          placeholder="เช่น 1 CC"
+        />
+      </Field>
+      <Field label="รายละเอียด (อังกฤษ)">
+        <input
+          className={inputClass}
+          value={draft.detailEn}
+          onChange={(e) => set({ detailEn: e.target.value })}
+          placeholder="เช่น 1 cc"
+        />
+        <EnglishFallbackNote />
+      </Field>
+      <Field label="กลุ่มย่อย" hint="ไม่บังคับ">
+        <input
+          className={inputClass}
+          value={draft.collection}
+          onChange={(e) => set({ collection: e.target.value })}
+          placeholder="เช่น Essential Glow Collection"
+        />
+      </Field>
+      <Field label="ราคา (บาท)" hint="เว้นว่าง = สอบถามราคา">
+        <input
+          className={inputClass}
+          inputMode="numeric"
+          value={draft.price}
+          onChange={(e) => set({ price: e.target.value })}
+          placeholder="เช่น 3990"
+        />
+      </Field>
+      <Field label="หน่วย">
+        <input
+          className={inputClass}
+          value={draft.unit}
+          onChange={(e) => set({ unit: e.target.value })}
+          placeholder="ครั้ง"
+        />
+      </Field>
+      <div className="sm:col-span-2">
+        <Field label="คำโปรย (ไทย)" hint="ไม่บังคับ">
+          <input
+            className={inputClass}
+            value={draft.tagline}
+            onChange={(e) => set({ tagline: e.target.value })}
+            placeholder="เช่น Rh Collagen"
+          />
+        </Field>
+      </div>
+      <div className="sm:col-span-2">
+        <Field label="คำโปรย (อังกฤษ)">
+          <input
+            className={inputClass}
+            value={draft.taglineEn}
+            onChange={(e) => set({ taglineEn: e.target.value })}
+            placeholder="เช่น Rh Collagen"
+          />
+          <EnglishFallbackNote />
+        </Field>
+      </div>
+      <div className="sm:col-span-2">
+        <Field label="จุดเด่น (ไทย)" hint="บรรทัดละ 1 ข้อ · ไม่บังคับ">
+          <textarea
+            className={cn(inputClass, 'min-h-24 resize-y')}
+            value={draft.benefits}
+            onChange={(e) => set({ benefits: e.target.value })}
+            placeholder={'ข้อดีข้อที่ 1\nข้อดีข้อที่ 2'}
+          />
+        </Field>
+      </div>
+      <div className="sm:col-span-2">
+        <Field label="จุดเด่น (อังกฤษ)" hint="บรรทัดละ 1 ข้อ">
+          <textarea
+            className={cn(inputClass, 'min-h-24 resize-y')}
+            value={draft.benefitsEn}
+            onChange={(e) => set({ benefitsEn: e.target.value })}
+            placeholder={'First benefit\nSecond benefit'}
+          />
+          <EnglishFallbackNote />
+        </Field>
       </div>
     </div>
   );
