@@ -74,9 +74,12 @@ export async function generateMetadata({
     },
     description: t('description', { siteName: site.name }),
     alternates: localizedAlternates(locale),
+    // No `shortcut` entry: it emits a second <link rel="shortcut icon"> for the *same* URL as
+    // `icon`, and Chrome treats the two rels as separate requests — measured 2026-08-03, /icon.png
+    // was fetched twice at High priority. `rel="shortcut icon"` is a legacy IE alias that no
+    // supported browser needs, so the duplicate bought nothing.
     icons: {
       icon: [{ url: '/icon.png', type: 'image/png', sizes: '64x64' }],
-      shortcut: ['/icon.png'],
       apple: [{ url: '/apple-icon.png', type: 'image/png', sizes: '180x180' }],
     },
     openGraph: {
