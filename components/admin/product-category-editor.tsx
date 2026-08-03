@@ -204,7 +204,7 @@ export function ProductCategoryEditor({
         : '';
 
   return (
-    <section id={`products-${slug}`} className="scroll-mt-36">
+    <section>
       <SectionHeading
         title={title}
         count={`${products.length} รายการ`}

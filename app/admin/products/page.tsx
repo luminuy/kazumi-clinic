@@ -5,9 +5,9 @@ import {
   getHiddenProducts,
   type MergedServiceItem,
 } from '@/lib/service-products-store';
-import { ProductCategoryEditor, type AdminProduct } from '@/components/admin/product-category-editor';
+import { type AdminProduct } from '@/components/admin/product-category-editor';
+import { ProductTabs } from '@/components/admin/product-tabs';
 import { PageHeading } from '@/components/admin/ui';
-import { SectionNav } from '@/components/admin/nav';
 import { getEntityImages } from '@/lib/entity-images-store';
 
 export const metadata: Metadata = { title: 'สินค้า' };
@@ -91,26 +91,7 @@ export default async function AdminProductsPage() {
         }
       />
 
-      {/* Direct child of the page content column on purpose: position:sticky can only travel within
-          its parent's box, so wrapping this in a short div would pin it for a few pixels and drop it. */}
-      <SectionNav
-        items={categories.map((category) => ({
-          id: `products-${category.slug}`,
-          label: category.title,
-        }))}
-      />
-
-      <div className="mt-10 space-y-16">
-        {categories.map((category) => (
-          <ProductCategoryEditor
-            key={category.slug}
-            slug={category.slug}
-            title={category.title}
-            products={category.products}
-            hiddenProducts={category.hiddenProducts}
-          />
-        ))}
-      </div>
+      <ProductTabs categories={categories} />
     </>
   );
 }
