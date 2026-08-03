@@ -93,6 +93,7 @@ export default function Header({
                               <li key={c.slug}>
                                 <Link
                                   href={`/${c.slug}`}
+                                  prefetch={false}
                                   className="text-sm text-[var(--store-muted)] transition-colors hover:text-primary"
                                 >
                                   {isEn ? c.titleEn : c.title}
