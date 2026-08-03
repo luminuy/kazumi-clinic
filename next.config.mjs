@@ -41,6 +41,11 @@ const securityHeaders = [
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   trailingSlash: false,
+  // NOTE: `experimental.inlineCss` was measured here on 2026-08-03 and rejected. It does remove the
+  // two render-blocking stylesheet requests, but Next also copies the CSS into the inline RSC
+  // flight payload — home went 50KB → 90KB gzip and the flight payload 136KB → 273KB, i.e. ~137KB
+  // of extra main-thread string parsing. TBT is already this page's worst metric, and a paired
+  // Lighthouse A/B showed no improvement. Don't re-enable without measuring both numbers again.
   outputFileTracingRoot: path.resolve(process.cwd()),
   images: {
     // Delegates resizing to Cloudinary (see lib/cloud.ts default export) instead of Next's

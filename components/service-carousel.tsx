@@ -5,11 +5,30 @@ import Image from 'next/image';
 import { Link } from '@/i18n/routing';
 import { ArrowUpRight, Pause, Play } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
-import type { ServiceCategory } from '@/lib/services';
 import { ServiceIcon } from '@/components/service-icon';
 
+/**
+ * Deliberately NOT `ServiceCategory` — this is a client component, so every field named here is
+ * serialised into the RSC flight payload inlined in the HTML *and* re-parsed during hydration.
+ * A full `ServiceCategory` drags along `description`, `aftercare`, `contraindications`,
+ * `downtime` and the entire `items[]` array (each with `detail`, `tagline`, `benefits[]`), none of
+ * which this carousel renders — that was ~143KB of flight payload on the home page. Keep this type
+ * to what the JSX below actually reads; widen it only when you render the new field.
+ */
+export type ServiceCarouselCategory = {
+  slug: string;
+  title: string;
+  titleEn: string;
+  shortDescription: string;
+  heroImage?: string;
+  heroAlt?: string;
+  /** Lowest `priceFrom` across the category's products, precomputed on the server. Undefined when
+   *  the clinic hasn't published a fixed price for any of them (the card then shows no price). */
+  startingPrice?: number;
+};
+
 type ServiceCarouselProps = {
-  categories: ServiceCategory[];
+  categories: ServiceCarouselCategory[];
   /** slug → Cloudinary public ID, resolved by the home server component from the /admin layer. */
   heroOverrides?: Record<string, string>;
 };
@@ -162,10 +181,7 @@ export function ServiceCarousel({ categories, heroOverrides = {} }: ServiceCarou
           {orderedItems.map(({ category, position }) => {
             const imageSrc = heroOverrides[category.slug] ?? category.heroImage;
             const hasImage = Boolean(imageSrc);
-            const prices = category.items
-              .map((item) => item.priceFrom)
-              .filter((price): price is number => price !== undefined);
-            const startingPrice = prices.length > 0 ? Math.min(...prices) : undefined;
+            const { startingPrice } = category;
 
             return (
               <article key={category.slug} data-service-index={position} className="service-stream-card">

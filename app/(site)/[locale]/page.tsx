@@ -16,7 +16,7 @@ import { siteSocialImage } from '@/lib/metadata-images';
 import { resolvePromotionPosters } from '@/lib/promotions';
 import { Reveal } from '@/components/reveal';
 import { PromotionCardGrid } from '@/components/promotion-card-grid';
-import { ServiceCarousel } from '@/components/service-carousel';
+import { ServiceCarousel, type ServiceCarouselCategory } from '@/components/service-carousel';
 import { MapEmbed } from '@/components/map-embed';
 import { PhysicianPanel } from '@/components/physician-panel';
 import { BrandStrip } from '@/components/brand-strip';
@@ -116,6 +116,25 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   );
   // Merged so the carousel's "เริ่มต้น ฿x" reflects prices the clinic edits through /admin.
   const mergedCategories = await getAllMergedCategories(locale);
+  // Narrowed to the fields <ServiceCarousel> actually renders before it crosses the client
+  // boundary — everything named here gets serialised into the inline RSC payload and re-parsed
+  // during hydration, so passing whole ServiceCategory objects shipped the full product catalogue
+  // (items[], aftercare, contraindications, description) to the browser for nothing.
+  const carouselCategories: ServiceCarouselCategory[] = mergedCategories.map((category) => {
+    const prices = category.items
+      .map((item) => item.priceFrom)
+      .filter((price): price is number => price !== undefined);
+
+    return {
+      slug: category.slug,
+      title: category.title,
+      titleEn: category.titleEn,
+      shortDescription: category.shortDescription,
+      heroImage: category.heroImage,
+      heroAlt: category.heroAlt,
+      startingPrice: prices.length > 0 ? Math.min(...prices) : undefined,
+    };
+  });
 
   return (
     <>
@@ -232,7 +251,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           </p>
         </Reveal>
 
-        <ServiceCarousel categories={mergedCategories} heroOverrides={serviceHeroOverrides} />
+        <ServiceCarousel categories={carouselCategories} heroOverrides={serviceHeroOverrides} />
       </section>
 
       {/* ── Brand & technology strip: the brands behind the services above ──────── */}
