@@ -473,7 +473,11 @@ function ProductRow({
             แก้ไข
           </button>
           <button type="button" disabled={busy} onClick={onDelete} className={btn.danger}>
-            <Trash2 className="size-3.5" />
+            {busyId === 'del-' + product.id ? (
+              <Loader2 className="size-3.5 animate-spin" />
+            ) : (
+              <Trash2 className="size-3.5" />
+            )}
             ซ่อน
           </button>
 
