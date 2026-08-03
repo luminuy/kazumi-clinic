@@ -83,7 +83,8 @@
       "contact": "ช่องทางติดต่อ",
       "line": "LINE Official",
       "clinicImageAlt": "หน้าคลินิก {siteName}",
-      "mapTitle": "แผนที่ {siteName} — {address}"
+      "mapTitle": "แผนที่ {siteName} — {address}",
+      "mapLoadLabel": "โหลดแผนที่แบบโต้ตอบ"
     },
     "reviews": {
       "title": "เสียงจากผู้ใช้บริการ",
@@ -183,7 +184,8 @@
       "hours": "เวลาทำการ",
       "contact": "ช่องทางติดต่อ",
       "clinicImageAlt": "หน้าคลินิก {siteName}",
-      "mapTitle": "แผนที่ {siteName} — {address}"
+      "mapTitle": "แผนที่ {siteName} — {address}",
+      "mapLoadLabel": "โหลดแผนที่แบบโต้ตอบ"
     }
   },
   "ServiceCategoryPage": {
@@ -362,7 +364,8 @@
       "sunday": "อาทิตย์"
     },
     "license": "ใบอนุญาตสถานพยาบาลเลขที่ {license}",
-    "mapTitle": "แผนที่ {siteName}"
+    "mapTitle": "แผนที่ {siteName}",
+    "mapLoadLabel": "โหลดแผนที่แบบโต้ตอบ"
   },
   "BlogPage": {
     "metaTitle": "บทความ / สาระความรู้",

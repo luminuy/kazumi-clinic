@@ -83,7 +83,8 @@
       "contact": "Contact",
       "line": "LINE Official",
       "clinicImageAlt": "Exterior of {siteName}",
-      "mapTitle": "Map of {siteName} — {address}"
+      "mapTitle": "Map of {siteName} — {address}",
+      "mapLoadLabel": "Load interactive map"
     },
     "reviews": {
       "title": "Patient Reviews",
@@ -183,7 +184,8 @@
       "hours": "Operating hours",
       "contact": "Contact",
       "clinicImageAlt": "Exterior of {siteName}",
-      "mapTitle": "Map of {siteName} — {address}"
+      "mapTitle": "Map of {siteName} — {address}",
+      "mapLoadLabel": "Load interactive map"
     }
   },
   "ServiceCategoryPage": {
@@ -362,7 +364,8 @@
       "sunday": "Sunday"
     },
     "license": "Healthcare license no. {license}",
-    "mapTitle": "{siteName} Map"
+    "mapTitle": "{siteName} Map",
+    "mapLoadLabel": "Load interactive map"
   },
   "BlogPage": {
     "metaTitle": "Blog / Knowledge Hub",

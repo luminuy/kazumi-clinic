@@ -10,6 +10,7 @@ import { siteSocialImage } from '@/lib/metadata-images';
 import { getImage } from '@/lib/site-images-store';
 import { Reveal } from '@/components/reveal';
 import { BookingForm } from '@/components/booking-form';
+import { MapEmbed } from '@/components/map-embed';
 import { LineIcon, InstagramIcon } from '@/components/brand-icons';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -280,14 +281,11 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
 
           <Reveal delay={80} className="md:col-span-7">
             <div className="relative h-[500px] overflow-hidden rounded-3xl shadow-2xl">
-              <iframe
+              <MapEmbed
                 src={site.mapsEmbedUrl}
-                className="absolute inset-0 size-full"
-                style={{ border: 0 }}
-                loading="lazy"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
                 title={t('mapTitle', { siteName: site.name })}
+                loadLabel={t('mapLoadLabel')}
+                referrerPolicy="strict-origin-when-cross-origin"
               />
               <div className="pointer-events-none absolute inset-0 bg-foreground/[0.03]" />
             </div>
