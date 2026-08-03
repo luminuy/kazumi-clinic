@@ -1,0 +1,15 @@
+# Cloudflare Workers Assets header rules. Static assets bypass the Worker entirely (they're served
+# by the asset binding, which is why `headers()` in next.config.mjs never reaches them — verified:
+# a CSS chunk comes back with no Content-Security-Policy), so this file is the only place their
+# cache policy can be set.
+#
+# Without it Workers Assets defaults every file to `public, max-age=0, must-revalidate`, which
+# measured on production 2026-08-03 for /_next/static/chunks/*.css. The filenames are already
+# content-hashed by Next, so that default costs a conditional request + round trip per chunk, per
+# font, on every repeat page view for zero benefit — a new build changes the URL, never the body.
+#
+# NOTE: keep this file out of any "no files in public/" reasoning about images (CLAUDE.md §12) —
+# it isn't an asset, it's config that OpenNext copies into .open-next/assets/ for wrangler to read.
+
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
