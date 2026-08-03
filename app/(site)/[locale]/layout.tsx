@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { routing } from '@/i18n/routing';
+import { pickClientMessages } from '@/i18n/client-namespaces';
 import { notFound } from 'next/navigation';
 import '../../globals.css';
 
@@ -123,7 +124,9 @@ export default async function SiteLayout({
   });
   const siteDescription = locale === 'en' ? site.descriptionEn : site.description;
 
-  const messages = await getMessages();
+  // Only the namespaces client components read — see i18n/client-namespaces.ts for why the rest
+  // must not cross the boundary.
+  const messages = pickClientMessages(await getMessages());
 
   return (
     <html lang={locale} className={cn(serif.variable, sans.variable)}>
