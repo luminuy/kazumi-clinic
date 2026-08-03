@@ -32,15 +32,20 @@ export async function ServiceAftercareSection({ service }: { service: ServiceCat
 
       <div className="mx-auto grid max-w-6xl gap-6 md:grid-cols-3">
         {service.aftercare && service.aftercare.length > 0 && (
-          <Reveal className="rounded-[1.75rem] border border-black/[0.08] bg-[var(--store-card)] p-7">
-            <div className="flex items-center gap-2.5 text-[var(--store-ink)]">
-              <Sparkles aria-hidden="true" className="size-4 shrink-0 text-[var(--mint)]" />
-              <h3 className="text-sm font-medium">{t('aftercareLabel')}</h3>
+          <Reveal className="rounded-[1.75rem] border border-black/[0.08] bg-[var(--store-card)] p-8">
+            <div className="flex items-center gap-3">
+              <span
+                aria-hidden="true"
+                className="grid size-9 shrink-0 place-items-center rounded-xl bg-[var(--forest)]/[0.08] text-[var(--forest)]"
+              >
+                <Sparkles className="size-4" strokeWidth={1.6} />
+              </span>
+              <h3 className="font-serif text-lg text-[var(--store-ink)]">{t('aftercareLabel')}</h3>
             </div>
-            <ul className="mt-4 space-y-2.5">
+            <ul className="mt-5 space-y-3">
               {service.aftercare.map((note) => (
-                <li key={note} className="flex gap-3 text-xs leading-[1.75] text-[var(--store-muted)]">
-                  <span aria-hidden="true" className="mt-2.5 h-px w-3 shrink-0 bg-[var(--store-control)]" />
+                <li key={note} className="flex gap-3 text-[0.8rem] leading-[1.75] text-[var(--store-muted)]">
+                  <span aria-hidden="true" className="mt-2.5 h-px w-3 shrink-0 bg-[var(--store-muted)]/40" />
                   <span>{note}</span>
                 </li>
               ))}
@@ -51,16 +56,21 @@ export async function ServiceAftercareSection({ service }: { service: ServiceCat
         {service.contraindications && service.contraindications.length > 0 && (
           <Reveal
             delay={60}
-            className="rounded-[1.75rem] border border-black/[0.08] bg-[var(--store-card)] p-7"
+            className="rounded-[1.75rem] border border-black/[0.08] bg-[var(--store-card)] p-8"
           >
-            <div className="flex items-center gap-2.5 text-[var(--store-ink)]">
-              <ShieldAlert aria-hidden="true" className="size-4 shrink-0 text-[var(--mint)]" />
-              <h3 className="text-sm font-medium">{t('contraindicationsLabel')}</h3>
+            <div className="flex items-center gap-3">
+              <span
+                aria-hidden="true"
+                className="grid size-9 shrink-0 place-items-center rounded-xl bg-[var(--forest)]/[0.08] text-[var(--forest)]"
+              >
+                <ShieldAlert className="size-4" strokeWidth={1.6} />
+              </span>
+              <h3 className="font-serif text-lg text-[var(--store-ink)]">{t('contraindicationsLabel')}</h3>
             </div>
-            <ul className="mt-4 space-y-2.5">
+            <ul className="mt-5 space-y-3">
               {service.contraindications.map((note) => (
-                <li key={note} className="flex gap-3 text-xs leading-[1.75] text-[var(--store-muted)]">
-                  <span aria-hidden="true" className="mt-2.5 h-px w-3 shrink-0 bg-[var(--store-control)]" />
+                <li key={note} className="flex gap-3 text-[0.8rem] leading-[1.75] text-[var(--store-muted)]">
+                  <span aria-hidden="true" className="mt-2.5 h-px w-3 shrink-0 bg-[var(--store-muted)]/40" />
                   <span>{note}</span>
                 </li>
               ))}
@@ -71,13 +81,18 @@ export async function ServiceAftercareSection({ service }: { service: ServiceCat
         {service.downtime && (
           <Reveal
             delay={120}
-            className="rounded-[1.75rem] border border-black/[0.08] bg-[var(--store-card)] p-7"
+            className="rounded-[1.75rem] border border-black/[0.08] bg-[var(--store-card)] p-8"
           >
-            <div className="flex items-center gap-2.5 text-[var(--store-ink)]">
-              <Clock aria-hidden="true" className="size-4 shrink-0 text-[var(--mint)]" />
-              <h3 className="text-sm font-medium">{t('downtimeLabel')}</h3>
+            <div className="flex items-center gap-3">
+              <span
+                aria-hidden="true"
+                className="grid size-9 shrink-0 place-items-center rounded-xl bg-[var(--forest)]/[0.08] text-[var(--forest)]"
+              >
+                <Clock className="size-4" strokeWidth={1.6} />
+              </span>
+              <h3 className="font-serif text-lg text-[var(--store-ink)]">{t('downtimeLabel')}</h3>
             </div>
-            <p className="mt-4 text-xs leading-[1.75] text-[var(--store-muted)]">{service.downtime}</p>
+            <p className="mt-5 text-[0.8rem] leading-[1.75] text-[var(--store-muted)]">{service.downtime}</p>
           </Reveal>
         )}
       </div>
