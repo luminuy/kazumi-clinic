@@ -236,6 +236,9 @@
   padding: 0.25rem 2.75rem 0.75rem;
   scroll-behavior: smooth;
   scroll-snap-type: x mandatory;
+  /* Same pairing as .promo-card-grid__rail above — keeps the snap position at the padded gutter
+     instead of the container edge, so the rail never auto-scrolls on first layout. */
+  scroll-padding-inline: 2.75rem;
   scrollbar-width: none;
 }
 .promotion-carousel-rail::-webkit-scrollbar {
@@ -375,6 +378,11 @@
   overflow-x: auto;
   padding: 0 clamp(1rem, 2.3vw, 3rem) 0.5rem;
   scroll-snap-type: x mandatory;
+  /* Must mirror padding-inline. Without it the first card's `scroll-snap-align: start` snap
+     position sits one gutter to the right of scrollLeft 0, so the browser auto-scrolls the rail
+     to snap on first layout. Chrome treats that scroll as user interaction and stops recording
+     LCP — before any candidate exists — which made Lighthouse report NO_LCP for the whole page. */
+  scroll-padding-inline: clamp(1rem, 2.3vw, 3rem);
   scroll-behavior: smooth;
   scrollbar-width: none;
   -ms-overflow-style: none;

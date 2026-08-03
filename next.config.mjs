@@ -18,8 +18,13 @@ const csp = [
   "img-src 'self' https://res.cloudinary.com data: blob:",
   "font-src 'self' data:",
   "style-src 'self' 'unsafe-inline'",
-  "script-src 'self' 'unsafe-inline'",
-  "connect-src 'self'",
+  // static.cloudflareinsights.com is Cloudflare Web Analytics (RUM). The edge injects that beacon
+  // into every HTML response by itself, so leaving it out of the CSP didn't stop it loading — it
+  // only made the browser block it and log a CSP violation on every page view. Allow the script
+  // plus the endpoint it reports to. (To drop it instead, turn Web Analytics off in the Cloudflare
+  // dashboard — Analytics & Logs → Web Analytics — and revert these two entries.)
+  "script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com",
+  "connect-src 'self' https://cloudflareinsights.com",
   'frame-src https://www.google.com',
   'upgrade-insecure-requests',
 ].join('; ');
