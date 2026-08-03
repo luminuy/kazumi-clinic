@@ -17,6 +17,7 @@ import { resolvePromotionPosters } from '@/lib/promotions';
 import { Reveal } from '@/components/reveal';
 import { PromotionCardGrid } from '@/components/promotion-card-grid';
 import { ServiceCarousel } from '@/components/service-carousel';
+import { MapEmbed } from '@/components/map-embed';
 import { PhysicianPanel } from '@/components/physician-panel';
 import { BrandStrip } from '@/components/brand-strip';
 import { GoogleIcon, InstagramIcon, LineIcon } from '@/components/brand-icons';
@@ -403,16 +404,13 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                 ) : (
                   // No clinic photo uploaded yet — show the real embedded map instead of a
                   // placeholder icon. Uploading a photo via /admin (home-visit) takes over.
-                  <iframe
+                  <MapEmbed
                     src={site.mapsEmbedUrl}
                     title={t('visit.mapTitle', {
                       siteName: site.name,
                       address: site.addressFull,
                     })}
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    allowFullScreen
-                    className="absolute inset-0 size-full border-0"
+                    loadLabel={t('visit.mapLoadLabel')}
                   />
                 )}
               </div>

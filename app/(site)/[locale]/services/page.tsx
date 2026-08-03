@@ -17,6 +17,7 @@ import { serviceCategoryListSchema, breadcrumbSchema } from '@/lib/schema';
 import { Reveal } from '@/components/reveal';
 import { ServiceIcon } from '@/components/service-icon';
 import { PromotionCarousel } from '@/components/promotion-carousel';
+import { MapEmbed } from '@/components/map-embed';
 import { LineIcon } from '@/components/brand-icons';
 import { PhysicianPanel } from '@/components/physician-panel';
 
@@ -468,16 +469,13 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
                     className="object-cover"
                   />
                 ) : (
-                  <iframe
+                  <MapEmbed
                     src={site.mapsEmbedUrl}
                     title={t('visit.mapTitle', {
                       siteName: site.name,
                       address: site.addressFull,
                     })}
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    allowFullScreen
-                    className="absolute inset-0 size-full border-0"
+                    loadLabel={t('visit.mapLoadLabel')}
                   />
                 )}
               </div>
