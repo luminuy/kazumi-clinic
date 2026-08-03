@@ -24,17 +24,29 @@ import { routing } from '@/i18n/routing';
 import { notFound } from 'next/navigation';
 import '../../globals.css';
 
+// `preload: false` on both families is deliberate and measured (2026-08-03). next/font otherwise
+// emits <link rel="preload"> for three woff2 files (99KB) that the browser fetches at High priority
+// 1-3ms BEFORE the hero image — and the home page's LCP element IS that image, at only 24KB. On
+// Lighthouse's Slow-4G model the image lost the bandwidth race and its Load Time phase was 3.5s.
+// Fonts still load from the CSS @font-face; they just stop outranking the LCP element. Text has no
+// visible flash because next/font's `adjustFontFallback` (on by default for Google fonts) inserts a
+// size-adjusted local fallback, which is also why CLS stays at 0 — verify both if you change this.
 const serif = EB_Garamond({
   subsets: ['latin'],
   variable: '--font-serif',
   weight: ['400', '500', '600'],
+  preload: false,
 });
 
 // Noto Sans Thai is required — Geist/other Latin-only fonts silently fall back for Thai glyphs.
+// Weight 300 is not loaded: the only three `font-light` usages in the codebase are on service/
+// category pages, and each pairs it with `italic` on a Latin `lang="en"` span, so they render from
+// the serif stack anyway. Dropping it removes a whole Thai weight file from the build.
 const sans = Noto_Sans_Thai({
   subsets: ['thai', 'latin'],
   variable: '--font-sans',
-  weight: ['300', '400', '500', '600'],
+  weight: ['400', '500', '600'],
+  preload: false,
 });
 
 export function generateStaticParams() {
