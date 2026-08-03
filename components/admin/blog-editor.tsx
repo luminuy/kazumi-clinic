@@ -428,7 +428,7 @@ function PostRow({
           )}
           <button type="button" disabled={busy} onClick={onDelete} className={btn.danger}>
             {busyId === 'del-' + post.id ? <Loader2 className="size-3.5 animate-spin" /> : <Trash2 className="size-3.5" />}
-            ลบ
+            ซ่อน
           </button>
           <span className="ml-auto">
             <ReorderButtons disabled={busy} first={first} last={last} onMoveUp={onMoveUp} onMoveDown={onMoveDown} />
