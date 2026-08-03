@@ -112,7 +112,7 @@ name servers ชี้ Cloudflare อยู่แล้วแต่ origin ต�
 
 **ชั้นที่ 1 — Cloudflare Access (ที่ edge)**
 Zero Trust → Access → Applications → app ชื่อ `kazumi-clinic-admin`
-- Destinations (สูงสุด 5 ต่อ app, ตอนนี้ใช้ 2): `kazumiclinic.skin/admin` (เพิ่ม 2026-07-27 หลังโดเมนจริงขึ้น — **ตัวที่ใช้จริง**), `kazumi-clinic.bankjack10452.workers.dev/admin` (ค้างไว้เฉย ๆ ตั้งแต่ workers.dev ถูกปิดใน PR #277 · ลบทิ้งได้ แต่ไม่มีผลอะไรถ้าปล่อยไว้)
+- Destinations (สูงสุด 5 ต่อ app, ตอนนี้ใช้ **1**): `kazumiclinic.skin/admin` เท่านั้น — destination เก่า `kazumi-clinic.bankjack10452.workers.dev/admin` **ลบออกแล้ว 2026-08-03** หลังพบว่ามันไม่ได้ "ไม่มีผลอะไร" ตามที่เอกสารเคยเขียนไว้ (ดูบทเรียน 2026-08-03 ใน [CLAUDE.md](../CLAUDE.md) §0.5) — มันทำให้ Access เลือก destination ผิดตัวตอน SSO auto-login จริง ๆ · **ห้ามเพิ่ม destination โดเมนที่เลิกใช้แล้วกลับเข้ามาใน app นี้อีก แม้จะคิดว่า "ปล่อยไว้เฉย ๆ ไม่เป็นไร"**
 - Policy: `Admin only` (ใช้ร่วมกับ littlesmileflower)
 - Session: 24 ชม.
 
