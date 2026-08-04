@@ -13,10 +13,7 @@ export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: '*',
-      // `/api/img/` is carved back out of the `/api/` block below: every inline image on the site
-      // is served from there now (lib/cloud.ts), and a blanket Disallow would make all of them
-      // uncrawlable for Google Images. More specific Allow wins over a broader Disallow.
-      allow: ['/', '/api/img/'],
+      allow: '/',
       disallow: [
         '/admin',
         '/admin/',

@@ -1,14 +1,6 @@
 // Cloudinary helpers — single source of truth for the cloud name and URL building.
 // Assets live under the `kazumi-clinic/` folder in the account.
-export const CLOUD_NAME = 'dvskwrapm';
-
-/**
- * Inline images are delivered through our own origin instead of res.cloudinary.com — see
- * app/api/img/[...path]/route.ts. Only the `next/image` loader uses this; `cld()` below still
- * returns absolute Cloudinary URLs because OG/Twitter/JSON-LD consumers need a fully-qualified
- * one they can fetch without our site in the loop.
- */
-export const IMAGE_PROXY_PREFIX = '/api/img';
+const CLOUD_NAME = 'dvskwrapm';
 
 type CldOptions = {
   width?: number;
@@ -69,13 +61,7 @@ function cloudinaryLoader({
   const [head, ...rest] = src.split('/');
   const prefix = rest.length > 0 && TRANSFORM_SEGMENT.test(head) ? `${head}/` : '';
   const publicId = prefix ? rest.join('/') : src;
-  // Same-origin on purpose. res.cloudinary.com is a second origin, so the browser has to pay DNS +
-  // TCP + TLS before it can even ask for the image — and on this site the LCP element IS an image.
-  // Lighthouse's Slow-4G model charges that as ~4 round trips (~600ms) of "Load Delay" in front of
-  // the largest paint, and a real phone on a slow link pays the same. Going through our own origin
-  // reuses the connection the HTML already opened; the Worker's fetch to Cloudinary happens over
-  // Cloudflare's backbone from the same colo and is cached at the edge.
-  return `${IMAGE_PROXY_PREFIX}/${prefix}${resize}/${publicId}`;
+  return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${prefix}${resize}/${publicId}`;
 }
 
 export default cloudinaryLoader;
