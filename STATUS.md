@@ -5,7 +5,7 @@
 > อัปเดตไฟล์นี้เป็นส่วนหนึ่งของ workflow: หลัง **deploy** และตอน **เริ่ม/จบงานสำคัญ** (ดู CLAUDE.md §0)
 > งานที่ปิดไปแล้วย้ายไป [docs/changelog.md](docs/changelog.md) — ไฟล์นี้เก็บแค่ **ตอนนี้ · ต่อไป · ค้าง**
 
-**อัปเดตล่าสุด:** 2026-08-02 (หลัง PR #287, ระหว่างรอรีวิว #288) · โดย: Claude Code
+**อัปเดตล่าสุด:** 2026-08-04 (หลังรอบ perf/a11y #307–#315) · โดย: Claude Code
 
 ---
 
@@ -60,6 +60,8 @@
 | เรื่อง | รายละเอียด |
 |---|---|
 | **Password reset + อีเมลนัดหมาย — ตั้งค่าครบแล้ว ยังไม่มีใครทดสอบ delivery จริง** | Resend ยืนยันโดเมน `kazumiclinic.skin` แล้ว, `RESEND_API_KEY`/`RESEND_FROM_EMAIL` ตั้งครบ, `isEmailConfigured()` = true ยืนยันจาก production จริง (ปุ่ม "ลืมรหัสผ่าน?" โผล่แล้ว) — **สิ่งที่เหลือคือลองกดจริงแล้วเช็คว่าอีเมลถึงกล่องจดหมายจริงไหม** (ยังไม่มีใครทำ) ดู [docs/member-system.md](docs/member-system.md) + [docs/appointments.md](docs/appointments.md) |
+| **Mobile PageSpeed ค้างที่ 82 — เหลือ LCP อย่างเดียว** | Desktop 100 ทุกช่อง · Accessibility 90 → **100** แล้ว · mobile ติด LCP 4.4s · **อ่าน [docs/performance.md](docs/performance.md) ก่อนลงมือ** — ในนั้นมีตารางการทดลอง 7 อันที่วัดจริงแล้ว**ล้มเหลว** (รวมอันที่ deploy ขึ้น production แล้วต้อง revert) · กุญแจ: `observedFCP` = `observedLCP` = 778ms แปลว่าหน้าเว็บจริงเร็วอยู่แล้ว เลข 4.4s เป็นโมเดลจำลอง Lantern — **การไล่แก้ network จะไม่ขยับอะไร** ทางเดียวที่เหลือคือลดขนาด JS bundle (244KB/18 chunk) |
+| **ปุ่ม LINE ตกเกณฑ์คอนทราสต์ — รอเจ้าของตัดสิน** | ขาวบน `--mint` `#06c755` = 2.26:1 (ต้องการ 4.5:1) เป็นจุดเดียวที่เหลือทั้งเว็บ · แต่เป็นสีแบรนด์ LINE จริงและเป็น CTA หลักของธุรกิจ **อย่าเปลี่ยนเองโดยไม่ถาม** — ทางเลือกอยู่ใน [docs/performance.md](docs/performance.md) |
 | **`blog/[slug]` ไม่ prerender ตอน build — ตั้งใจ ไม่ใช่ของค้าง** | slug อยู่ใน D1 ซึ่ง CI เข้าไม่ถึง · `generateStaticParams` คืน list ว่างเพื่อให้เข้า ISR ตอน on-demand (คนแรกที่เปิดจ่ายค่า render, ที่เหลือได้ cache) · จะ prerender จริงต้องให้ CI ถือ Cloudflare API token ไปอ่าน D1 ตอน build = เพิ่ม secret + ทำให้ build ล้มได้เมื่อ D1 ล่ม แลกกับ latency ของ request แรกเท่านั้น — **ไม่คุ้ม อย่าเปลี่ยนโดยไม่มีเหตุใหม่** |
 
 ---
@@ -69,6 +71,8 @@
 - [x] **ระบบนัดหมาย Part A + B เสร็จและ deploy แล้ว** (ดู [docs/appointments.md](docs/appointments.md)) — จอง/ยืนยัน/ยกเลิก, อีเมลยืนยัน/ยกเลิก/เตือน, แนบ `.ics`, reminder 24 ชม. ผ่าน `app/api/internal/appointment-reminders` + GitHub Actions cron รายชั่วโมง, เรียง `/admin/leads` ตามเวลานัดใกล้สุด · `INTERNAL_TASK_SECRET` ตั้งแล้วทั้ง `wrangler secret put`/`gh secret set` และยิงจริงผ่าน (200 ด้วย secret ถูก, 401 ด้วย secret ผิด/ไม่มี) · **ยังไม่มีใครทดสอบว่าอีเมล (ยืนยัน/ยกเลิก/เตือน) ส่งถึงกล่องจดหมายจริง** — ดูแถวบนสุดของตาราง "ค้าง"
 - [x] **ขึ้นโดเมนจริง `kazumiclinic.skin` เสร็จแล้ว** (2026-07-27) — nameserver ชี้ Cloudflare, Custom Domain ผูก Worker, SSL Active, `site.url` เปลี่ยนแล้ว, `SITE_ENV` ลบแล้ว, Cloudflare Access destination เพิ่มแล้ว, Resend ยืนยันโดเมนแล้ว — ดูตาราง "Deployed ตอนนี้" ด้านบน
 - [x] **เพิ่ม Custom Domain สำหรับ `www.kazumiclinic.skin`** — เจ้าของกด Add Domain ใน Workers → kazumi-clinic → Domains เอง (2026-08-02, agent ทำให้ไม่ได้เพราะ wrangler token มีแค่ `zone: read`) ยืนยันด้วย `dig`/`curl` จริงว่า resolve ตรงกับ IP เดียวกับ root domain และตอบ HTTP 200 แล้ว
+- [ ] **เจ้าของปิด Cloudflare Web Analytics** (dashboard → Analytics & Logs → Web Analytics) — beacon ตัวนี้ครองเส้นทางยาวสุดใน network dependency tree คนเดียว 659ms จาก 659ms · ปิดแล้วเหลือ ~397ms · **หลังปิดต้องลบ `cloudflareinsights` ออกจาก CSP ใน [next.config.mjs](next.config.mjs) ด้วย**
+- [ ] **เจ้าของตั้ง `GA_MEASUREMENT_ID`** ถ้าจะใช้ GA4 — เป็น **GitHub repository variable** (Settings → Secrets and variables → Actions → Variables) **ไม่ใช่** `wrangler.jsonc` (หน้า prerendered อ่านค่าตอน build) · ⚠️ `gtag.js` หนัก 148KB เทียบกับ beacon 11KB → **คะแนน mobile จะหล่นจาก 82** และมีปม PDPA (ยังไม่มี cookie consent) — ดู [docs/performance.md](docs/performance.md)
 - [ ] **เชื่อม payment gateway**: แก้ `lib/members/payments.ts` (`initiatePayment`) — ตอนนี้จองก่อนจ่ายที่คลินิกได้เต็ม, ชำระออนไลน์เป็น placeholder (ดู [docs/member-system.md](docs/member-system.md))
 - [ ] **เจ้าของอัปรูปเข้า /admin/images** — ตรวจของจริง 2026-07-25: มี **36 slot** · มีรูปจริง **6** (`about-hero`, `brand-mark`, `collagen-booster-editorial`, `hero-collagen-booster`, `hero-contact`, `hero-home` — โหลดได้ 200 ทุกใบ) + `brand-logo` ที่ใช้ default `kazumi-clinic/logo` · **ที่เหลือว่าง** จึงขึ้นกล่องไอคอน (ไม่ใช่รูปแตก) · ที่ควรอัปก่อนเพราะเห็นบ่อยสุด: `doctor-pratch`, `og-about` (รูปตอนแชร์ลิงก์), `hero-filler`, `hero-botox`, `hero-iv-drip-2` (ใช้ทั้ง /services และการ์ดแชร์ /blog)
 - [ ] **เจ้าของทดสอบ**: เปลี่ยนรูปสักช่องใน /admin → รีเฟรชหน้านั้น ควรอัปเดตใน ~ไม่กี่วินาที (ยืนยัน on-demand revalidation หลังแก้ tag cache 2026-07-22)

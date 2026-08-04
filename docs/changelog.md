@@ -6,6 +6,25 @@
 
 ---
 
+## 2026-08-03/04 — รอบ perf + a11y: Desktop 100, Accessibility 100, Mobile ค้าง 82 (PR #307–#315)
+
+**ผล**: Desktop Performance จาก **"Error!" (`NO_LCP`) → 100** · Accessibility **90 → 100** · Mobile Performance ยังไม่ถึงเป้า 90 (ได้ 82, ติดที่ LCP)
+
+สถานะเต็ม ๆ + สิ่งที่ลองแล้วไม่ได้ผล + วิธีวัด อยู่ที่ **[performance.md](./performance.md)** — ไฟล์นั้นคือจุดส่งไม้ต่อ ไม่ใช่ไฟล์นี้
+
+ที่ปิดไป:
+
+- **#307** static asset ทุกไฟล์เสิร์ฟด้วย `max-age=0, must-revalidate` มาตลอด — `headers()` ใน `next.config.mjs` แตะไม่ถึงเพราะ asset ไม่วิ่งผ่าน Worker (พิสูจน์: response ไม่มี CSP header) ต้องใช้ `public/_headers` · พ่วงแก้ `.service-stream-rail` ที่ auto-scroll 72px ตอน layout แรก เฉพาะเดสก์ท็อป เพราะ padding จัดกึ่งกลางคำนวณจากคนละค่ากับความกว้างการ์ด
+- **#309** `NextIntlClientProvider` ได้ messages ทั้งไฟล์ (32 namespace) แล้ว serialize ลง flight payload ของทุกหน้า — หน้าแรกแบกข้อความ checkout/ประวัติการจอง/บทความไปด้วย · ส่งเฉพาะ 12 namespace ที่ client component อ่านจริง ลด HTML ทุกหน้า 32KB · กันพลาดด้วยเทสต์ที่ไล่ import graph จากทุกไฟล์ `'use client'` แทนที่จะเชื่อลิสต์
+- **#310** `/icon.png` เป็นไฟล์ 1500×1500 ขนาด 315KB **และโหลดสองรอบ** เพราะ `icons.shortcut` ชี้ URL เดียวกับ `icons.icon` → Chrome ยิงคนละ request · 617KB นี้มากกว่า JS + รูปทั้งหน้ารวมกัน และไม่มี Lighthouse audit ตัวไหนฟ้อง เจอจากการอ่าน network log ดิบ
+- **#311 → revert #312** proxy รูปมา origin ตัวเอง — เหตุผลฟังขึ้นและมีข้อมูลรองรับ แต่วัดหลัง deploy 6 รอบแล้ว FCP/LCP แย่ลงทั้งคู่ ต้อง revert · บทเรียนอยู่ใน CLAUDE.md §0.5
+- **#313 #314** `<dl>` ห่อ `<details>` ทำ accessibility tree เสีย + คอนทราสต์ตก AA 25 จุด → เหลือจุดเดียว (ปุ่ม LINE ซึ่งเป็นสีแบรนด์จริง รอเจ้าของตัดสิน)
+- **#315** GA4 แบบเปิดด้วยตัวแปร — ยัง inert สนิท ยังไม่ตั้ง `GA_MEASUREMENT_ID`
+
+**บทเรียนใหญ่สุดของรอบนี้**: `observedFCP` = `observedLCP` = **778ms** — หน้าเว็บจริงพ่นทุกอย่างพร้อมกัน · เลข LCP 4.4s มาจากโมเดลจำลอง Lantern ล้วน ๆ การไล่แก้ network จึงไม่ขยับอะไรเลย 6 การทดลองติด ที่เหลือคือ JS bundle
+
+---
+
 ## 2026-07-25 — ต่อ Resend เป็น email provider (PR #264)
 
 เลือก Resend เพราะฟรี 3,000 อีเมล/เดือน (100/วัน) เกินพอสำหรับปริมาณจริง (ลืมรหัสผ่าน + แจ้งสมัครซ้ำ) · ยิง REST API ตรงด้วย `fetch` ไม่ใช้ SDK แบบเดียวกับ `lib/cloudinary-upload.ts`
