@@ -20,6 +20,7 @@ import { PromotionCarousel } from '@/components/promotion-carousel';
 import { MapEmbed } from '@/components/map-embed';
 import { LineIcon } from '@/components/brand-icons';
 import { PhysicianPanel } from '@/components/physician-panel';
+import { IntlBoundary } from '@/components/intl-boundary';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -170,7 +171,8 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
   const visitPhoto = overrides.get('home-visit')?.public_id;
 
   return (
-    <div className="bg-[var(--background)]">
+    <IntlBoundary namespaces={['A11y', 'Promotions']}>
+      <div className="bg-[var(--background)]">
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
@@ -483,6 +485,7 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
           </Reveal>
         </div>
       </section>
-    </div>
+      </div>
+    </IntlBoundary>
   );
 }

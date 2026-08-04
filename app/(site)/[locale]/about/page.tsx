@@ -12,6 +12,7 @@ import { siteSocialImage } from '@/lib/metadata-images';
 import { Reveal } from '@/components/reveal';
 import { SectionLabel } from '@/components/page-hero';
 import { LineIcon } from '@/components/brand-icons';
+import { IntlBoundary } from '@/components/intl-boundary';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -79,7 +80,8 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
   ], locale);
 
   return (
-    <div className="bg-[var(--background)]">
+    <IntlBoundary namespaces={[]}>
+      <div className="bg-[var(--background)]">
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
@@ -578,6 +580,7 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
           </div>
         </div>
       </section>
-    </div>
+      </div>
+    </IntlBoundary>
   );
 }

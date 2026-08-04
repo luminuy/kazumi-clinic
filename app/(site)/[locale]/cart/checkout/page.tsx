@@ -5,6 +5,7 @@ import { getActiveCartForOrder } from '@/lib/members/cart';
 import { getCurrentMemberRow } from '@/lib/members/session';
 import { DEPOSIT_PERCENT, depositSatang } from '@/lib/members/config';
 import { CheckoutForm } from '@/components/account/checkout-form';
+import { IntlBoundary } from '@/components/intl-boundary';
 
 export async function generateMetadata({
   params,
@@ -31,23 +32,25 @@ export default async function CheckoutPage({ params }: { params: Promise<{ local
   const member = await getCurrentMemberRow();
 
   return (
-    <section className="bg-[var(--store-surface)] py-16">
-      <div className="mx-auto w-full max-w-5xl px-6">
-        <p className="text-[0.7rem] font-medium uppercase tracking-[0.16em] text-forest">
-          {t('eyebrow')}
-        </p>
-        <h1 className="mb-8 mt-1 font-serif text-3xl text-[var(--store-ink)]">{t('title')}</h1>
-        <CheckoutForm
-          subtotalSatang={activeCart.subtotalSatang}
-          depositSatang={depositSatang(activeCart.subtotalSatang)}
-          depositPercent={DEPOSIT_PERCENT}
-          prefill={{
-            name: member?.name ?? '',
-            phone: member?.phone ?? '',
-            email: member?.email ?? '',
-          }}
-        />
-      </div>
-    </section>
+    <IntlBoundary namespaces={['Checkout']}>
+      <section className="bg-[var(--store-surface)] py-16">
+        <div className="mx-auto w-full max-w-5xl px-6">
+          <p className="text-[0.7rem] font-medium uppercase tracking-[0.16em] text-forest">
+            {t('eyebrow')}
+          </p>
+          <h1 className="mb-8 mt-1 font-serif text-3xl text-[var(--store-ink)]">{t('title')}</h1>
+          <CheckoutForm
+            subtotalSatang={activeCart.subtotalSatang}
+            depositSatang={depositSatang(activeCart.subtotalSatang)}
+            depositPercent={DEPOSIT_PERCENT}
+            prefill={{
+              name: member?.name ?? '',
+              phone: member?.phone ?? '',
+              email: member?.email ?? '',
+            }}
+          />
+        </div>
+      </section>
+    </IntlBoundary>
   );
 }

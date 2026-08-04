@@ -12,6 +12,7 @@ import { Reveal } from '@/components/reveal';
 import { PageHero } from '@/components/page-hero';
 import { PromotionsGrid, type PromoCard, type PromoTab } from '@/components/promotions-grid';
 import { LineIcon } from '@/components/brand-icons';
+import { IntlBoundary } from '@/components/intl-boundary';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -83,7 +84,7 @@ export default async function PromotionsPage({ params }: { params: Promise<{ loc
   ], locale);
 
   return (
-    <>
+    <IntlBoundary namespaces={['A11y', 'Promotions']}>
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
@@ -118,6 +119,6 @@ export default async function PromotionsPage({ params }: { params: Promise<{ loc
           {t('inquireLine')}
         </Button>
       </section>
-    </>
+    </IntlBoundary>
   );
 }

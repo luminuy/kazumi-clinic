@@ -8,6 +8,7 @@ import { getOrderById } from '@/lib/members/orders';
 import { getCurrentMember } from '@/lib/members/session';
 import { formatSatang } from '@/lib/members/money';
 import { isGuestOrderLinkExpired } from '@/lib/members/config';
+import { IntlBoundary } from '@/components/intl-boundary';
 
 export async function generateMetadata({
   params,
@@ -51,7 +52,8 @@ export default async function OrderPage({
       : 'next.booking';
 
   return (
-    <section className="bg-[var(--store-surface)] py-16">
+    <IntlBoundary namespaces={[]}>
+      <section className="bg-[var(--store-surface)] py-16">
       <div className="mx-auto w-full max-w-2xl px-6">
         <div className="rounded-[1.5rem] border border-black/5 bg-[var(--store-card)] p-8 shadow-xl shadow-black/5 md:p-10">
           <span className="grid size-12 place-items-center rounded-full bg-forest/10 text-forest">
@@ -117,6 +119,7 @@ export default async function OrderPage({
           </div>
         </div>
       </div>
-    </section>
+      </section>
+    </IntlBoundary>
   );
 }

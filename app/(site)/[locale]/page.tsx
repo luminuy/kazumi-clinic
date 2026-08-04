@@ -21,6 +21,7 @@ import { MapEmbed } from '@/components/map-embed';
 import { PhysicianPanel } from '@/components/physician-panel';
 import { BrandStrip } from '@/components/brand-strip';
 import { GoogleIcon, InstagramIcon, LineIcon } from '@/components/brand-icons';
+import { IntlBoundary } from '@/components/intl-boundary';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -137,7 +138,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   });
 
   return (
-    <>
+    <IntlBoundary namespaces={['A11y', 'ServiceCarousel']}>
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
@@ -518,6 +519,6 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </div>
       </section>
 
-    </>
+    </IntlBoundary>
   );
 }

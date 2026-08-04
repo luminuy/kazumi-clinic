@@ -10,6 +10,7 @@ import { blogPostingSchema, breadcrumbSchema } from '@/lib/schema';
 import { socialImage, siteSocialImage } from '@/lib/metadata-images';
 import { getPublishedPostBySlug } from '@/lib/blog-store';
 import { Prose } from '@/components/prose';
+import { IntlBoundary } from '@/components/intl-boundary';
 
 export function generateStaticParams() {
   return [];
@@ -99,7 +100,7 @@ export default async function BlogPostPage({ params }: Params) {
   ], locale);
 
   return (
-    <>
+    <IntlBoundary namespaces={[]}>
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
@@ -148,6 +149,6 @@ export default async function BlogPostPage({ params }: Params) {
 
         <Prose content={post.body} className="mt-8 text-[1.02rem]" />
       </article>
-    </>
+    </IntlBoundary>
   );
 }

@@ -4,6 +4,7 @@ import { Calendar, ShoppingBag, User as UserIcon } from 'lucide-react';
 import { redirect, Link } from '@/i18n/routing';
 import { getCurrentMember } from '@/lib/members/session';
 import { LogoutButton } from '@/components/account/logout-button';
+import { IntlBoundary } from '@/components/intl-boundary';
 
 export async function generateMetadata({
   params,
@@ -26,7 +27,8 @@ export default async function AccountPage({ params }: { params: Promise<{ locale
   const me = member!;
 
   return (
-    <section className="bg-[var(--store-surface)] py-20">
+    <IntlBoundary namespaces={['Account']}>
+      <section className="bg-[var(--store-surface)] py-20">
       <div className="mx-auto w-full max-w-3xl px-6">
         <div className="flex items-center justify-between">
           <div>
@@ -91,6 +93,7 @@ export default async function AccountPage({ params }: { params: Promise<{ locale
           </Link>
         </div>
       </div>
-    </section>
+      </section>
+    </IntlBoundary>
   );
 }

@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/reveal';
 import { PageHero } from '@/components/page-hero';
 import { LineIcon } from '@/components/brand-icons';
+import { IntlBoundary } from '@/components/intl-boundary';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -121,7 +122,7 @@ export default async function ReviewsPage({ params }: { params: Promise<{ locale
   ], locale);
 
   return (
-    <>
+    <IntlBoundary namespaces={[]}>
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
@@ -215,6 +216,6 @@ export default async function ReviewsPage({ params }: { params: Promise<{ locale
           </Button>
         </div>
       </section>
-    </>
+    </IntlBoundary>
   );
 }

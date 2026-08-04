@@ -11,6 +11,7 @@ import { siteSocialImage } from '@/lib/metadata-images';
 import { getPublishedPosts } from '@/lib/blog-store';
 import { serviceCategories } from '@/lib/services';
 import { BlogFilterGrid, type BlogGridPost, type BlogTab } from '@/components/blog-filter-grid';
+import { IntlBoundary } from '@/components/intl-boundary';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -82,7 +83,7 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
     .map((category) => ({ slug: category.slug, title: category.title }));
 
   return (
-    <>
+    <IntlBoundary namespaces={['A11y', 'BlogPage']}>
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
@@ -190,6 +191,6 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
           </div>
         </div>
       </section>
-    </>
+    </IntlBoundary>
   );
 }
