@@ -79,6 +79,14 @@ name servers ชี้ Cloudflare อยู่แล้วแต่ origin ต�
 | `CF_ACCESS_AUD` | `e2a3d26d5b575e1290b4e5db4c438bab437e59e35d386c1a87e11242dffd6b35` | |
 | `RESEND_FROM_EMAIL` | `Kazumi Clinic <noreply@kazumiclinic.skin>` | ไม่ใช่ความลับ แค่ string แสดงผล — ดูบทเรียนด้านล่างว่าทำไม**ต้อง**อยู่ตรงนี้ ไม่ใช่ dashboard-only var |
 
+### GA4 — ตั้งที่ GitHub ไม่ใช่ `wrangler.jsonc`
+
+| ตัวแปร | ตั้งที่ไหน | หมายเหตุ |
+| --- | --- | --- |
+| `GA_MEASUREMENT_ID` | **GitHub repository variable** (Settings → Secrets and variables → Actions → **Variables**) | GA4 measurement ID (`G-XXXXXXXXXX`) · **ไม่ใช่ความลับ** — มันโผล่ใน HTML ทุกหน้าอยู่แล้วโดยธรรมชาติ จึงเป็น *variable* ไม่ใช่ *secret* · ไม่ตั้ง = [components/google-analytics.tsx](../components/google-analytics.tsx) ไม่ render อะไรเลย ไม่มี script ไหนโหลด |
+
+🔴 **ห้ามใส่ตัวนี้ใน `vars` ของ `wrangler.jsonc`** — มันจะไม่ทำงาน · หน้าสาธารณะส่วนใหญ่เป็น prerendered ค่านี้จึงถูกอ่านตอน `opennextjs-cloudflare build` แล้ว bake ลง HTML ตั้งแต่ตอน build · var ฝั่ง runtime ของ Worker มาทีหลัง จะได้ GA เฉพาะ route ที่เป็น dynamic ส่วนหน้าที่ prerender ไว้จะไม่มีเลย (ยืนยันจริง 2026-08-04: ตั้งเฉพาะ runtime แล้วหน้าแรกไม่มี tag เลย) · เชื่อมไว้ที่ [.github/workflows/deploy.yml](../.github/workflows/deploy.yml) แล้ว
+
 > ⚠️ **`SITE_ENV` ถูกลบออกแล้ว 2026-07-27** — โดเมนจริง `kazumiclinic.skin` ขึ้นแล้ว ไม่ต้อง block crawling อีกต่อไป (ดูหัวข้อโดเมนด้านบน)
 
 **ทำไม `CF_ACCESS_*` ไม่ใช่ secret** — AUD เป็น public identifier ของ Access application, team domain เป็น hostname สาธารณะ · ความปลอดภัยมาจาก [lib/auth.ts](../lib/auth.ts) ที่ **verify ลายเซ็น JWT** กับ key set ของ Cloudflare → รู้ค่าพวกนี้ก็ปลอม JWT ไม่ได้ · อยู่ใน git ดีกว่าเพราะรีวิวได้

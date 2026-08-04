@@ -5,6 +5,7 @@ import Header from '@/components/Header';
 import { configuredProviders } from '@/lib/members/oauth';
 import Footer from '@/components/Footer';
 import { MobileContactBar } from '@/components/mobile-contact-bar';
+import { GoogleAnalytics } from '@/components/google-analytics';
 import { clinicSchema, websiteSchema } from '@/lib/schema';
 import { getImage } from '@/lib/site-images-store';
 import { site, localizedAlternates } from '@/lib/site';
@@ -155,6 +156,8 @@ export default async function SiteLayout({
           <Footer logoMark={brandMark} description={siteDescription} />
           <MobileContactBar />
         </NextIntlClientProvider>
+        {/* Renders nothing until GA_MEASUREMENT_ID is set — see the component for the cost. */}
+        <GoogleAnalytics />
       </body>
     </html>
   );

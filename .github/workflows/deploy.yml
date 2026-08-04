@@ -48,6 +48,13 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # GA4 has to be a BUILD-time value, not a `wrangler.jsonc` var: most public pages are
+          # prerendered, so the layout reads process.env during `opennextjs-cloudflare build` and
+          # the tag is baked into the static HTML. A runtime-only var would give GA on the dynamic
+          # routes and nothing on the prerendered ones — verified 2026-08-04.
+          # Set it as a repository *variable* (Settings → Secrets and variables → Actions →
+          # Variables), not a secret: a measurement ID is public by design. Unset = no GA at all.
+          GA_MEASUREMENT_ID: ${{ vars.GA_MEASUREMENT_ID }}
 
       # This catches runtime-only failures that pass under Node but fail under workerd within a
       # minute of deployment. The Worker is already live, so a red result is an alert, not rollback.
