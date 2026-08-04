@@ -28,7 +28,7 @@ export function ProductThumbnail({
         <ServiceIcon
           aria-hidden="true"
           slug={category}
-          className="absolute inset-0 m-auto size-5 text-[var(--store-muted)]/60"
+          className="absolute inset-0 m-auto size-5 text-[var(--store-muted)]"
           strokeWidth={0.8}
         />
       )}

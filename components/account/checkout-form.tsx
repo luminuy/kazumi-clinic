@@ -18,7 +18,7 @@ type PaymentMethod = 'pay_at_clinic' | 'gateway';
 type State = { kind: 'idle' | 'sending' } | { kind: 'error'; message: string };
 
 const fieldClass =
-  'w-full rounded-xl border border-olive/20 bg-cream px-4 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-ink/35 focus:border-olive/50';
+  'w-full rounded-xl border border-olive/20 bg-cream px-4 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-ink/70 focus:border-olive/50';
 
 /**
  * Checkout: contact details + how the customer wants to settle. The cart itself is read server-side

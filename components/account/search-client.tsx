@@ -44,7 +44,7 @@ export function SearchClient({ index }: { index: SearchEntry[] }) {
           onChange={(e) => setQuery(e.target.value)}
           placeholder={t('placeholder')}
           aria-label={t('placeholder')}
-          className="w-full rounded-full border border-olive/20 bg-[var(--store-card)] py-3.5 pl-12 pr-4 text-sm text-ink outline-none transition-colors placeholder:text-ink/35 focus:border-olive/50"
+          className="w-full rounded-full border border-olive/20 bg-[var(--store-card)] py-3.5 pl-12 pr-4 text-sm text-ink outline-none transition-colors placeholder:text-ink/70 focus:border-olive/50"
         />
       </div>
 

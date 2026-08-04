@@ -68,6 +68,13 @@
   --store-control: #d2d2d7;
   --store-control-ink: #424245;
 
+  /* Promotion-card badge fills. These replace a stock #e74c3c / #3b82f6 pair whose white 11px
+     bold label measured 3.82:1 and 3.68:1 against their own background — both below WCAG AA's
+     4.5:1 for text that size. Darkened to 5.90:1 and 6.70:1 while keeping the red/blue reading
+     that "LIMITED" and "HOT" rely on. Re-measure before changing either. */
+  --badge-limited: #a8452f;
+  --badge-hot: #1d4ed8;
+
   /* Clinical / Knowledge Hub additions */
   --clinical-blue: #0066cc;
   --surface-container-low: #f3f3f5;
@@ -209,7 +216,9 @@
   animation: hero-float 5s ease-in-out 1.1s infinite;
 }
 .section-eyebrow {
-  color: var(--olive-light);
+  /* olive-light (#86868b) only reaches 3.62:1 on white at this size — below AA. olive is 5.07:1
+     and reads the same at 0.68rem/0.3em tracking. */
+  color: var(--olive);
   font-size: 0.68rem;
   letter-spacing: 0.3em;
   line-height: 1;
@@ -332,7 +341,8 @@
   padding: 1.15rem 2.75rem 0;
 }
 .promotion-carousel-note {
-  color: rgb(38 40 31 / 50%);
+  /* Was rgb(38 40 31 / 50%) — 3.09:1, below AA at 0.68rem. */
+  color: var(--olive);
   font-size: 0.68rem;
   letter-spacing: 0.08em;
 }
@@ -429,10 +439,10 @@
   z-index: 2;
 }
 .promo-card-grid__badge--red {
-  background: #e74c3c;
+  background: var(--badge-limited);
 }
 .promo-card-grid__badge--blue {
-  background: #3b82f6;
+  background: var(--badge-hot);
 }
 .promo-card-grid__meta {
   padding: 1rem 1.25rem 1.25rem;
@@ -444,7 +454,9 @@
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #3b82f6;
+  /* Was #3b82f6 — a stray blue that both missed the brand's green-is-the-accent rule and only
+     reached 3.68:1 on white at 11px/600. forest is 6.43:1. */
+  color: var(--forest);
 }
 .promo-card-grid__title {
   font-family: var(--font-serif, serif);
@@ -457,7 +469,9 @@
 .promo-card-grid__subtitle {
   margin-top: 0.25rem;
   font-size: 0.82rem;
-  color: #888;
+  /* Was #888 — 3.54:1 on white, below AA. The olive token is the site's muted-text colour and
+     measures 5.07:1. */
+  color: var(--olive);
   line-height: 1.4;
 }
 .promo-card-grid__arrow {

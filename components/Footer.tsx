@@ -36,7 +36,7 @@ export default function Footer({
               )}
               <span className="font-serif text-lg">Kazumi Clinic</span>
             </Link>
-            <p className="mt-5 text-xs leading-[1.75] text-ink/60">{description}</p>
+            <p className="mt-5 text-xs leading-[1.75] text-olive">{description}</p>
             <div className="mt-5 flex items-center gap-4">
               <a
                 href={site.lineUrl}
@@ -69,7 +69,7 @@ export default function Footer({
           </div>
 
           <nav>
-            <p className="text-xs text-olive-deep/55">Navigation</p>
+            <p className="text-xs text-olive">Navigation</p>
             <ul className="mt-5 space-y-3 text-xs">
               {navItems.map((item) => {
                 const translationKey = item.href === '/services' ? 'services' : 
@@ -89,7 +89,7 @@ export default function Footer({
           </nav>
         </div>
 
-        <div className="mt-20 flex flex-col gap-2 border-t border-olive/10 pt-5 text-[0.62rem] text-olive-deep/55 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-20 flex flex-col gap-2 border-t border-olive/10 pt-5 text-[0.62rem] text-olive sm:flex-row sm:items-center sm:justify-between">
           <p>
             © {new Date().getFullYear()} {site.name}. All Rights Reserved.
           </p>

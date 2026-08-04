@@ -54,7 +54,7 @@ export default function Header({
           )}
           <span className="flex flex-col font-serif leading-none tracking-[0.18em]">
             <span className="text-[1.08rem]">KAZUMI</span>
-            <span className="mt-1 pl-0.5 text-[0.56rem] tracking-[0.34em] text-olive/75">
+            <span className="mt-1 pl-0.5 text-[0.56rem] tracking-[0.34em] text-olive">
               CLINIC
             </span>
           </span>

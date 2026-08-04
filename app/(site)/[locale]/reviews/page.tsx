@@ -166,7 +166,7 @@ export default async function ReviewsPage({ params }: { params: Promise<{ locale
                         )}
                       </div>
                       {review.procedure && (
-                        <p className="mt-1 text-xs text-ink/50">{review.procedure}</p>
+                        <p className="mt-1 text-xs text-ink/70">{review.procedure}</p>
                       )}
                       {review.quote && (
                         <p className="mt-3 text-sm leading-relaxed text-ink/70">“{review.quote}”</p>
@@ -176,7 +176,7 @@ export default async function ReviewsPage({ params }: { params: Promise<{ locale
                 </Reveal>
               ))}
             </div>
-            <p className="mt-6 text-xs text-ink/40">
+            <p className="mt-6 text-xs text-ink/70">
               {t('disclaimer')}
             </p>
           </>
@@ -188,10 +188,10 @@ export default async function ReviewsPage({ params }: { params: Promise<{ locale
               ))}
             </div>
             <p className="mt-4 font-serif text-xl text-olive-deep">{t('empty.title')}</p>
-            <p className="mx-auto mt-2 max-w-md text-sm text-ink/60">
+            <p className="mx-auto mt-2 max-w-md text-sm text-ink/70">
               {t('empty.desc')}
             </p>
-            <p className="mt-4 text-xs text-ink/40">{t('empty.disclaimer')}</p>
+            <p className="mt-4 text-xs text-ink/70">{t('empty.disclaimer')}</p>
           </Reveal>
         )}
 

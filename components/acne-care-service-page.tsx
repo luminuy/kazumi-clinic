@@ -29,7 +29,7 @@ function MenuRow({
         {/* h3, not h4: these rows sit directly under the "Service Menu" h2, so h4 would skip a
             level and break the heading outline. */}
         <h3 className="font-serif text-lg text-[var(--store-ink)] md:text-xl">{item.name}</h3>
-        {item.detail && <p className="mt-1 text-sm leading-relaxed text-[var(--store-muted)]/60">{item.detail}</p>}
+        {item.detail && <p className="mt-1 text-sm leading-relaxed text-[var(--store-muted)]">{item.detail}</p>}
         </div>
       </div>
       <div className="flex shrink-0 flex-col items-end text-right">
@@ -66,12 +66,12 @@ export async function AcneCareServicePage({
         <div className="mx-auto max-w-4xl">
           <h1 className="mt-12 font-serif text-4xl leading-[1.15] tracking-tight text-[var(--store-ink)] md:text-5xl">
             {service.title}
-            <span lang="en" className="mt-1 block font-light italic text-[var(--store-muted)]/60">
+            <span lang="en" className="mt-1 block font-light italic text-[var(--store-muted)]">
               {service.titleEn}
             </span>
           </h1>
           <span aria-hidden="true" className="my-6 block h-px w-12 bg-[var(--store-control)]/25" />
-          <p lang="en" className="text-[0.66rem] uppercase tracking-[0.24em] text-[var(--store-muted)]/55">
+          <p lang="en" className="text-[0.66rem] uppercase tracking-[0.24em] text-[var(--store-muted)]">
             {site.taglineTh}
           </p>
 
@@ -94,7 +94,7 @@ export async function AcneCareServicePage({
               >
                 <ServiceIcon
                   slug={service.slug}
-                  className="size-12 text-[var(--store-muted)]/25"
+                  className="size-12 text-[var(--store-muted)]"
                   strokeWidth={0.75}
                 />
               </span>
@@ -110,7 +110,7 @@ export async function AcneCareServicePage({
       {/* ── Philosophy ───────────────────────────────────────── */}
       <section className="px-6 pb-24 sm:px-10 md:px-14 lg:px-20">
         <Reveal className="mx-auto max-w-4xl border-l border-black/[0.08] py-4 pl-6">
-          <h2 lang="en" className="text-[0.66rem] uppercase tracking-[0.2em] text-[var(--store-muted)]/60">
+          <h2 lang="en" className="text-[0.66rem] uppercase tracking-[0.2em] text-[var(--store-muted)]">
             The Kazumi Discipline
           </h2>
           <p
@@ -119,7 +119,7 @@ export async function AcneCareServicePage({
           >
             “{site.tagline}”
           </p>
-          <p className="mt-6 text-sm leading-[1.9] text-[var(--store-muted)]/65">
+          <p className="mt-6 text-sm leading-[1.9] text-[var(--store-muted)]">
             {t('philosophyDescription', { serviceDescription: service.description })}
           </p>
         </Reveal>
@@ -129,7 +129,7 @@ export async function AcneCareServicePage({
       <section className="bg-[var(--store-surface)] px-6 py-24 sm:px-10 md:px-14 md:py-28 lg:px-20">
         <div className="mx-auto max-w-4xl">
           <Reveal>
-            <p lang="en" className="text-[0.66rem] uppercase tracking-[0.24em] text-[var(--store-muted)]/60">
+            <p lang="en" className="text-[0.66rem] uppercase tracking-[0.24em] text-[var(--store-muted)]">
               Curated Treatments
             </p>
             <h2 lang="en" className="mt-2 font-serif text-3xl text-[var(--store-ink)] md:text-4xl">
@@ -151,7 +151,7 @@ export async function AcneCareServicePage({
           </div>
 
           <Reveal>
-            <p className="mt-10 text-[0.66rem] italic leading-[1.8] text-[var(--store-muted)]/45">
+            <p className="mt-10 text-[0.66rem] italic leading-[1.8] text-[var(--store-muted)]">
               {t('pricingDisclaimer')}
             </p>
           </Reveal>
@@ -178,7 +178,7 @@ export async function AcneCareServicePage({
               >
                 <ServiceIcon
                   slug={service.slug}
-                  className="size-10 text-[var(--store-muted)]/20"
+                  className="size-10 text-[var(--store-muted)]"
                   strokeWidth={0.75}
                 />
               </span>
@@ -200,7 +200,7 @@ export async function AcneCareServicePage({
           <h2 lang="en" className="font-serif text-3xl italic text-[var(--store-ink)] md:text-4xl">
             Ready for your transformation?
           </h2>
-          <p className="mt-6 text-sm leading-[1.9] text-[var(--store-muted)]/65">
+          <p className="mt-6 text-sm leading-[1.9] text-[var(--store-muted)]">
             {tCommon('closingDescription', { serviceTitle: service.title })}
           </p>
           <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:justify-center">

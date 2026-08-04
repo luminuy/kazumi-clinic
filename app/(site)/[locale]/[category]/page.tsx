@@ -386,7 +386,7 @@ export default async function ServiceCategoryPage({ params }: Props) {
                     >
                       <ServiceIcon
                         slug={service.slug}
-                        className="size-12 text-[var(--store-muted)]/60"
+                        className="size-12 text-[var(--store-muted)]"
                         strokeWidth={0.75}
                       />
                     </div>

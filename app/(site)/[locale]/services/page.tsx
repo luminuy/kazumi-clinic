@@ -121,7 +121,7 @@ function TreatmentCard({
             )}
             <p className="mt-3 text-[0.82rem] leading-[1.75] text-[var(--store-muted)]">{category.shortDescription}</p>
 
-            <p className="mt-4 text-[0.68rem] leading-[1.7] text-[var(--store-muted)]/70">
+            <p className="mt-4 text-[0.68rem] leading-[1.7] text-[var(--store-muted)]">
               {programNames.slice(0, 3).join(' · ')}
               {programNames.length > 3 && ` · +${programNames.length - 3}`}
             </p>

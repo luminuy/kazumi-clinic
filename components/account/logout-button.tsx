@@ -23,7 +23,7 @@ export function LogoutButton() {
       type="button"
       onClick={logout}
       disabled={busy}
-      className="inline-flex items-center gap-2 text-sm text-ink/60 transition-colors hover:text-forest disabled:opacity-60"
+      className="inline-flex items-center gap-2 text-sm text-ink/70 transition-colors hover:text-forest disabled:opacity-60"
     >
       {busy ? <Loader2 className="size-4 animate-spin" /> : <LogOut className="size-4" />}
       {t('logout')}

@@ -68,10 +68,10 @@ function HubCard({
         {icon}
       </span>
       <div className="space-y-2">
-        <p className="text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-foreground/45">{label}</p>
+        <p className="text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-foreground/70">{label}</p>
         <p className="text-3xl font-semibold tracking-tight text-foreground">{value}</p>
       </div>
-      <p className="text-[0.95rem] leading-[1.6] text-foreground/60">{desc}</p>
+      <p className="text-[0.95rem] leading-[1.6] text-foreground/70">{desc}</p>
       <a
         href={href}
         {...(external ? { target: '_blank', rel: 'noopener' } : {})}
@@ -215,7 +215,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
             <h2 className="text-4xl font-bold tracking-tight text-foreground md:text-5xl">
               {t('form.title')}
             </h2>
-            <p className="mt-8 max-w-md text-lg leading-[1.6] text-foreground/60">
+            <p className="mt-8 max-w-md text-lg leading-[1.6] text-foreground/70">
               {t('form.desc')}
             </p>
 
@@ -225,13 +225,13 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
                   <span className="mt-0.5 text-forest">{item.icon}</span>
                   <div>
                     <h3 className="font-semibold text-foreground">{item.title}</h3>
-                    <p className="mt-1 text-[0.95rem] leading-[1.55] text-foreground/55">{item.desc}</p>
+                    <p className="mt-1 text-[0.95rem] leading-[1.55] text-foreground/70">{item.desc}</p>
                   </div>
                 </div>
               ))}
             </div>
 
-            <p className="mt-12 text-[0.8rem] text-foreground/45">
+            <p className="mt-12 text-[0.8rem] text-foreground/70">
               {t('license', { license: site.license })}
             </p>
           </Reveal>
@@ -261,7 +261,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
                   className="flex items-center justify-between border-b border-border py-4"
                 >
                   <span className="font-medium text-foreground">{row.label}</span>
-                  <span className={row.accent ? 'font-semibold text-forest' : 'text-foreground/55'}>
+                  <span className={row.accent ? 'font-semibold text-forest' : 'text-foreground/70'}>
                     {row.value}
                   </span>
                 </div>
