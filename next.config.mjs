@@ -15,7 +15,7 @@ const csp = [
   "object-src 'none'",
   "frame-ancestors 'none'",
   "form-action 'self'",
-  "img-src 'self' https://res.cloudinary.com data: blob:",
+  "img-src 'self' https://res.cloudinary.com https://www.google-analytics.com data: blob:",
   "font-src 'self' data:",
   "style-src 'self' 'unsafe-inline'",
   // static.cloudflareinsights.com is Cloudflare Web Analytics (RUM). The edge injects that beacon
@@ -23,8 +23,12 @@ const csp = [
   // only made the browser block it and log a CSP violation on every page view. Allow the script
   // plus the endpoint it reports to. (To drop it instead, turn Web Analytics off in the Cloudflare
   // dashboard — Analytics & Logs → Web Analytics — and revert these two entries.)
-  "script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com",
-  "connect-src 'self' https://cloudflareinsights.com",
+  // googletagmanager.com serves gtag.js; GA4 then beacons events to *.google-analytics.com (the
+  // region-sharded hosts are why this needs a wildcard) and, for some regions, back to
+  // *.analytics.google.com. img-src covers the legacy /collect pixel GA falls back to when
+  // sendBeacon/fetch is unavailable. Drop all of these again if GA4 is ever removed.
+  "script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com https://www.googletagmanager.com",
+  "connect-src 'self' https://cloudflareinsights.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com",
   'frame-src https://www.google.com',
   'upgrade-insecure-requests',
 ].join('; ');
