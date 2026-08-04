@@ -16,6 +16,7 @@
 | binding, secret, var, ตาราง D1, Access, โดเมน | [docs/infrastructure.md](docs/infrastructure.md) | docs/infrastructure.md |
 | รูป: /admin → Cloudinary → D1 → หน้า/OG/JSON-LD | [docs/images.md](docs/images.md) | docs/images.md |
 | สี, ตัวอักษร, layout, โครงหน้า Services, a11y | [docs/design.md](docs/design.md) (ค่าจริง = [app/globals.css](app/globals.css)) | docs/design.md |
+| คะแนน PSI, สิ่งที่ลองแล้วไม่ได้ผล, วิธีวัด, งาน perf/a11y ที่เหลือ | **[docs/performance.md](docs/performance.md)** | docs/performance.md |
 | สมาชิก, ตะกร้า, checkout, OAuth, payment | [docs/member-system.md](docs/member-system.md) | docs/member-system.md |
 | ระบบนัดหมาย (leads), จอง/ยืนยัน/ยกเลิก, อีเมลนัดหมาย | [docs/appointments.md](docs/appointments.md) | docs/appointments.md |
 | ภาพรวมโปรเจกต์สำหรับคนนอก | [README.md](README.md) | README.md |
