@@ -114,7 +114,7 @@ export default async function BlogPostPage({ params }: Params) {
       <article className="mx-auto max-w-3xl px-6 py-16 sm:py-20">
         <Link
           href="/blog"
-          className="inline-flex items-center gap-1.5 text-sm text-ink/50 transition-colors hover:text-forest"
+          className="inline-flex items-center gap-1.5 text-sm text-ink/70 transition-colors hover:text-forest"
         >
           <ArrowLeft className="size-4" />
           {t('allArticles')}
@@ -124,7 +124,7 @@ export default async function BlogPostPage({ params }: Params) {
           <h1 className="font-serif text-3xl leading-tight text-olive-deep sm:text-4xl">
             {post.title}
           </h1>
-          <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-ink/45">
+          <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-ink/70">
             {post.author && <span>{post.author}</span>}
             {post.author && formatThaiDate(post.published_at, locale) && <span aria-hidden="true">·</span>}
             {formatThaiDate(post.published_at, locale) && (

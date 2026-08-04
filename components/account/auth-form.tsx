@@ -243,7 +243,7 @@ export function AuthForm({
         {mode === 'register' ? t('submit.register') : t('submit.login')}
       </Button>
 
-      <p className="pt-2 text-center text-sm text-ink/60">
+      <p className="pt-2 text-center text-sm text-ink/70">
         {mode === 'register' ? t('switch.haveAccount') : t('switch.noAccount')}{' '}
         <Link
           href={mode === 'register' ? '/account/login' : '/account/register'}

@@ -103,7 +103,7 @@ export default async function PromotionsPage({ params }: { params: Promise<{ loc
           <Reveal className="rounded-2xl border border-dashed border-olive/30 bg-cream p-14 text-center">
             <Sparkles className="mx-auto size-8 text-olive-light" />
             <p className="mt-4 font-serif text-xl text-olive-deep">{t('empty.title')}</p>
-            <p className="mx-auto mt-2 max-w-md text-sm text-ink/60">
+            <p className="mx-auto mt-2 max-w-md text-sm text-ink/70">
               {t('empty.desc')}
             </p>
           </Reveal>

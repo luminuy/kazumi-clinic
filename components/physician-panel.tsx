@@ -84,11 +84,11 @@ export function PhysicianPanel({
 
           <dl className="mx-auto mt-4 flex flex-wrap justify-center gap-x-6 gap-y-1.5 text-[0.7rem] text-[var(--store-muted)] sm:mt-5 sm:gap-x-8 sm:gap-y-2 sm:text-[0.72rem]">
             <div className="flex items-center gap-1.5">
-              <dt className="uppercase tracking-[0.16em] text-[var(--store-muted)]/70">{t('license')}</dt>
+              <dt className="uppercase tracking-[0.16em] text-[var(--store-muted)]">{t('license')}</dt>
               <dd className="text-[var(--store-ink)]">{licenseNo}</dd>
             </div>
             <div className="flex items-center gap-1.5">
-              <dt className="uppercase tracking-[0.16em] text-[var(--store-muted)]/70">{t('languages')}</dt>
+              <dt className="uppercase tracking-[0.16em] text-[var(--store-muted)]">{t('languages')}</dt>
               <dd className="text-[var(--store-ink)]">{languages.join(' · ')}</dd>
             </div>
           </dl>

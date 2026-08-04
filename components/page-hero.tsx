@@ -61,7 +61,7 @@ export function PageHero({
         </h1>
 
         {lead && (
-          <p className={`mt-6 max-w-2xl text-sm leading-relaxed ${onImage ? 'text-sand/70' : 'text-ink/60'}`}>
+          <p className={`mt-6 max-w-2xl text-sm leading-relaxed ${onImage ? 'text-sand/70' : 'text-ink/70'}`}>
             {lead}
           </p>
         )}

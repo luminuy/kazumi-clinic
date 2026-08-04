@@ -489,7 +489,13 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               <div className="flex items-center gap-3 text-[0.66rem] uppercase tracking-[0.22em] text-forest">
                 <span aria-hidden="true" className="h-px w-10 bg-forest" /> {t('reviews.faq')}
               </div>
-              <dl className="mt-4 border-t border-black/10">
+              {/* Not a <dl>. A definition list may only contain <dt>/<dd>/<div>, so wrapping
+                  <details> in one produced an accessibility tree that axe rejects twice over —
+                  "<dl> must only directly contain <dt>/<dd> groups" plus "<dt>/<dd> not wrapped in
+                  a <dl>", because the <dt> sat inside <summary>. <details>/<summary> is already
+                  the native disclosure pattern with the right semantics, and the machine-readable
+                  Q&A pairing comes from the FAQPage JSON-LD on this page, not from the markup. */}
+              <div className="mt-4 border-t border-black/10">
                 {faqs.map((f, index) => (
                   <details
                     key={f.question}
@@ -498,15 +504,15 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                   >
                     <summary className="flex cursor-pointer list-none items-start gap-3 py-4 [&::-webkit-details-marker]:hidden">
                       <span className="mt-1 font-sans text-xs tracking-[0.15em] text-forest">0{index + 1}</span>
-                      <dt className="flex-1 font-serif text-base leading-snug text-[var(--store-ink)] md:text-lg">
+                      <span className="flex-1 font-serif text-base leading-snug text-[var(--store-ink)] md:text-lg">
                         {f.question}
-                      </dt>
+                      </span>
                       <ChevronDown className="mt-1 size-4 shrink-0 text-[var(--store-muted)] transition-transform duration-300 group-open:rotate-180" />
                     </summary>
-                    <dd className="pb-5 pl-9 pr-2 text-sm leading-relaxed text-[var(--store-muted)]">{f.answer}</dd>
+                    <p className="pb-5 pl-9 pr-2 text-sm leading-relaxed text-[var(--store-muted)]">{f.answer}</p>
                   </details>
                 ))}
-              </dl>
+              </div>
             </div>
           </Reveal>
         </div>

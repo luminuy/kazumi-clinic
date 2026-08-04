@@ -27,7 +27,7 @@ export async function GoogleReviews({
           <div>
             <h2 className="font-serif text-2xl text-olive-deep">{heading}</h2>
             {data.rating !== null && (
-              <p className="mt-0.5 flex items-center gap-1.5 text-sm text-ink/60">
+              <p className="mt-0.5 flex items-center gap-1.5 text-sm text-ink/70">
                 <span className="flex items-center gap-0.5 text-forest">
                   <Star className="size-3.5 fill-current" />
                 </span>
@@ -88,7 +88,7 @@ export async function GoogleReviews({
                       ))}
                     </span>
                     {review.relativeTime && (
-                      <span className="text-xs text-ink/40">{review.relativeTime}</span>
+                      <span className="text-xs text-ink/70">{review.relativeTime}</span>
                     )}
                   </div>
                 </div>
@@ -99,7 +99,7 @@ export async function GoogleReviews({
         ))}
       </div>
 
-      <p className="mt-4 text-xs text-ink/40">{t('google.disclaimer')}</p>
+      <p className="mt-4 text-xs text-ink/70">{t('google.disclaimer')}</p>
     </section>
   );
 }

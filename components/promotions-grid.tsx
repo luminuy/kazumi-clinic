@@ -100,7 +100,7 @@ export function PromotionsGrid({ promos, tabs }: { promos: PromoCard[]; tabs: Pr
               <CardContent className={cn("flex-1", p.imagePublicId ? "pt-6" : "pt-6")}>
                 <p className="font-serif text-lg text-olive-deep">{p.name}</p>
                 {p.detail && (
-                  <Badge variant="outline" className="mt-2 border-olive/30 text-ink/60">
+                  <Badge variant="outline" className="mt-2 border-olive/30 text-ink/70">
                     {p.detail}
                   </Badge>
                 )}
@@ -108,7 +108,7 @@ export function PromotionsGrid({ promos, tabs }: { promos: PromoCard[]; tabs: Pr
                   <p className="mt-4 text-xl font-medium text-forest">
                     {tPromotions('price', { price: p.price.toLocaleString('th-TH') })}
                     {p.originalPrice && (
-                      <span className="ml-2 text-sm font-normal text-ink/40 line-through">
+                      <span className="ml-2 text-sm font-normal text-ink/70 line-through">
                         {p.originalPrice.toLocaleString('th-TH')}
                       </span>
                     )}
@@ -119,7 +119,7 @@ export function PromotionsGrid({ promos, tabs }: { promos: PromoCard[]; tabs: Pr
                   </p>
                 )}
                 {p.note && <p className="mt-1 text-xs text-olive-light">{p.note}</p>}
-                <p className="mt-2 text-xs text-ink/50">
+                <p className="mt-2 text-xs text-ink/70">
                   {tPromotions('validUntil', { date: formatValidUntil(p.validUntil) })}
                 </p>
               </CardContent>
@@ -129,7 +129,7 @@ export function PromotionsGrid({ promos, tabs }: { promos: PromoCard[]; tabs: Pr
       </div>
 
       {visible.length === 0 && (
-        <p className="rounded-2xl border border-dashed border-olive/30 bg-cream px-6 py-12 text-center text-sm text-ink/50">
+        <p className="rounded-2xl border border-dashed border-olive/30 bg-cream px-6 py-12 text-center text-sm text-ink/70">
           {tPromotions('filterEmpty')}
         </p>
       )}

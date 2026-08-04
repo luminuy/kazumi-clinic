@@ -12,7 +12,7 @@ import {
 type State = { kind: 'idle' | 'sending' | 'sent' } | { kind: 'error'; message: string };
 
 const fieldClass =
-  'w-full rounded-2xl border-none bg-background px-5 py-4 text-[0.95rem] text-foreground ring-1 ring-border/50 outline-none transition-all placeholder:text-muted-foreground/60 focus:ring-2 focus:ring-foreground';
+  'w-full rounded-2xl border-none bg-background px-5 py-4 text-[0.95rem] text-foreground ring-1 ring-border/50 outline-none transition-all placeholder:text-muted-foreground focus:ring-2 focus:ring-foreground';
 
 function bookingDateRange() {
   const bangkokNow = new Date();
@@ -113,7 +113,7 @@ export function BookingForm({ interests }: { interests: string[] }) {
           <Check className="size-6" />
         </span>
         <p className="mt-4 font-serif text-xl text-olive-deep">{t('success.title')}</p>
-        <p className="mx-auto mt-2 max-w-sm text-sm text-ink/60">
+        <p className="mx-auto mt-2 max-w-sm text-sm text-ink/70">
           {t('success.desc')}
         </p>
         <button
@@ -274,7 +274,7 @@ export function BookingForm({ interests }: { interests: string[] }) {
           {t('form.submit')}
         </Button>
       </div>
-      <p className="text-xs text-muted-foreground/80">
+      <p className="text-xs text-muted-foreground">
         {t('form.disclaimer')}
       </p>
     </form>
