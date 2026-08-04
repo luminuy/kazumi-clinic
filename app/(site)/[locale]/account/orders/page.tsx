@@ -5,6 +5,7 @@ import { redirect, Link } from '@/i18n/routing';
 import { getCurrentMember } from '@/lib/members/session';
 import { listMemberOrders } from '@/lib/members/orders';
 import { formatSatang } from '@/lib/members/money';
+import { IntlBoundary } from '@/components/intl-boundary';
 
 export async function generateMetadata({
   params,
@@ -30,7 +31,8 @@ export default async function OrdersPage({ params }: { params: Promise<{ locale:
   const orders = await listMemberOrders(me.id);
 
   return (
-    <section className="bg-[var(--store-surface)] py-16">
+    <IntlBoundary namespaces={[]}>
+      <section className="bg-[var(--store-surface)] py-16">
       <div className="mx-auto w-full max-w-2xl px-6">
         <p className="text-[0.7rem] font-medium uppercase tracking-[0.16em] text-forest">
           {t('list.eyebrow')}
@@ -74,6 +76,7 @@ export default async function OrdersPage({ params }: { params: Promise<{ locale:
           </ul>
         )}
       </div>
-    </section>
+      </section>
+    </IntlBoundary>
   );
 }

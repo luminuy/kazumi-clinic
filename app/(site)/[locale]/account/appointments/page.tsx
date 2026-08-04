@@ -7,6 +7,7 @@ import { getLeadsForMember } from '@/lib/leads-store';
 import { formatAppointmentDateTime } from '@/lib/appointments/schedule';
 import { site } from '@/lib/site';
 import { AppointmentCancelButton } from '@/components/account/appointment-cancel-button';
+import { IntlBoundary } from '@/components/intl-boundary';
 
 export async function generateMetadata({
   params,
@@ -35,7 +36,8 @@ export default async function AppointmentsPage({
   const leads = await getLeadsForMember(me.id);
 
   return (
-    <section className="bg-[var(--store-surface)] py-16">
+    <IntlBoundary namespaces={['Appointments']}>
+      <section className="bg-[var(--store-surface)] py-16">
       <div className="mx-auto w-full max-w-2xl px-6">
         <p className="text-[0.7rem] font-medium uppercase tracking-[0.16em] text-forest">
           {t('eyebrow')}
@@ -103,6 +105,7 @@ export default async function AppointmentsPage({
           </ul>
         )}
       </div>
-    </section>
+      </section>
+    </IntlBoundary>
   );
 }

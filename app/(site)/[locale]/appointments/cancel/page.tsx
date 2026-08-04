@@ -4,6 +4,7 @@ import { CalendarX } from 'lucide-react';
 import { findLeadByCancelToken } from '@/lib/leads-store';
 import { formatAppointmentDateTime } from '@/lib/appointments/schedule';
 import { AppointmentCancelForm } from '@/components/appointment-cancel-form';
+import { IntlBoundary } from '@/components/intl-boundary';
 
 export async function generateMetadata({
   params,
@@ -38,7 +39,8 @@ export default async function CancelAppointmentPage({
       : null;
 
   return (
-    <section className="bg-[var(--store-surface)] py-20">
+    <IntlBoundary namespaces={['Appointments']}>
+      <section className="bg-[var(--store-surface)] py-20">
       <div className="mx-auto w-full max-w-xl px-6">
         <div className="rounded-[2rem] border border-black/5 bg-[var(--store-card)] p-8 shadow-lg shadow-black/5 sm:p-10">
           <span className="grid size-14 place-items-center rounded-full bg-red-50 text-red-600">
@@ -75,6 +77,7 @@ export default async function CancelAppointmentPage({
           ) : null}
         </div>
       </div>
-    </section>
+      </section>
+    </IntlBoundary>
   );
 }

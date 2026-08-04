@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { site } from '@/lib/site';
 import { getCart } from '@/lib/members/cart';
 import { CartView } from '@/components/account/cart-view';
+import { IntlBoundary } from '@/components/intl-boundary';
 
 export async function generateMetadata({
   params,
@@ -24,14 +25,16 @@ export default async function CartPage({ params }: { params: Promise<{ locale: s
   const cart = await getCart();
 
   return (
-    <section className="bg-[var(--store-surface)] py-20">
-      <div className="mx-auto w-full max-w-5xl px-6">
-        <p className="text-[0.7rem] font-medium uppercase tracking-[0.16em] text-forest">
-          {t('eyebrow')}
-        </p>
-        <h1 className="mb-12 mt-2 font-serif text-4xl tracking-tight text-[var(--store-ink)]">{t('title')}</h1>
-        <CartView initialCart={cart} lineUrl={site.lineUrl} />
-      </div>
-    </section>
+    <IntlBoundary namespaces={['Cart']}>
+      <section className="bg-[var(--store-surface)] py-20">
+        <div className="mx-auto w-full max-w-5xl px-6">
+          <p className="text-[0.7rem] font-medium uppercase tracking-[0.16em] text-forest">
+            {t('eyebrow')}
+          </p>
+          <h1 className="mb-12 mt-2 font-serif text-4xl tracking-tight text-[var(--store-ink)]">{t('title')}</h1>
+          <CartView initialCart={cart} lineUrl={site.lineUrl} />
+        </div>
+      </section>
+    </IntlBoundary>
   );
 }

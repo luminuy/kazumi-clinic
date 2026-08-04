@@ -31,6 +31,7 @@ Mobile metrics: FCP 2.1s · **LCP 4.4s** · TBT 40ms · CLS 0.047 · SI 3.3s
 | [#313](https://github.com/luminuy/kazumi-clinic/pull/313) [#314](https://github.com/luminuy/kazumi-clinic/pull/314) | `<dl>` ที่ห่อ `<details>` + คอนทราสต์ 25 จุด | **Accessibility 90 → 100** · Agent Accessibility ผ่าน |
 | [#315](https://github.com/luminuy/kazumi-clinic/pull/315) | GA4 แบบเปิดด้วยตัวแปร | ยัง inert — ดูหัวข้อ "ค้างรอเจ้าของ" |
 | [#317](https://github.com/luminuy/kazumi-clinic/pull/317) | เมนูแฮมเบอร์เกอร์มือถือ (Base UI Dialog) เป็น `next/dynamic` | JS ที่ต้อง parse ก่อน hydrate **−59KB raw / −18.4KB gzip (−9%)** ทุกหน้าสาธารณะ · HTML หน้าแรก −15.7KB raw · A/B localhost 3 รอบ/ฝั่ง: score median **66 → 86**, LCP median **3,890 → 3,722ms**, TBT median 933 → 175ms (ทุกรอบของฝั่งใหม่ดีกว่าทุกรอบของฝั่งเก่า) |
+| [#318](https://github.com/luminuy/kazumi-clinic/pull/318) | ส่ง i18n namespace **ต่อหน้า** แทนที่จะยัดครบ 12 ตัวทุกหน้า | HTML ลด **11–14.5KB raw ต่อหน้า** (ไทย) · หน้าแรก 219.1 → **205.8KB** · /reviews 105.5 → 91.0KB (−13.7%) · props ของ `NextIntlClientProvider` เคยเป็นแถวเดียวที่ใหญ่ที่สุดใน flight payload (21,157B = 19%) |
 
 ผลรวม: Desktop จาก **"Error!" (`NO_LCP`) → 100** · Accessibility **90 → 100** · Mobile ยังไม่ถึงเป้า
 
@@ -92,9 +93,10 @@ observedLargestContentfulPaint: 778   ← เท่ากันเป๊ะ
 
 ที่ยังพอมีเนื้อ เรียงตามความคุ้ม:
 
-1. **ถอด `next-intl` ออกจาก client bundle ของหน้าสาธารณะ** (−12KB gzip + JSON ใน HTML อีก ~22KB raw) — วิธี: ให้ client component รับข้อความเป็น prop แทน `useTranslations()` (แบบที่ [components/map-embed.tsx](../components/map-embed.tsx) กับ [components/mobile-menu-sheet.tsx](../components/mobile-menu-sheet.tsx) ทำอยู่) แล้วย้าย `NextIntlClientProvider` ลงไปไว้เฉพาะหน้าที่ต้องใช้จริง (cart / checkout / account / search / blog) · ⚠️ ตัวที่ยากคือ `search-modal` กับ `login-modal` ซึ่งอยู่บน header ของทุกหน้า — ถ้าถอด provider ออกจาก layout ต้องแก้สองตัวนี้ให้รับ prop ก่อน ไม่งั้นพังตอน runtime
-2. `components/service-carousel.tsx` — autoplay carousel มี `useLayoutEffect` + `setInterval` + scroll handler · การ์ด 9 ใบ hydrate ทั้งชุด
-3. `components/promotion-card-grid.tsx`, `components/promotion-carousel.tsx` — ตรรกะ client ตัวเดียวคือเปิด/ปิดปุ่มลูกศรตามตำแหน่ง scroll ซึ่งทำด้วย CSS ล้วนได้
+1. **`login-modal` + `search-modal` ให้รับข้อความเป็น prop** (−6.7KB raw ต่อหน้า **ทุกหน้า**) — หลัง [#318](https://github.com/luminuy/kazumi-clinic/pull/318) boundary ของ layout ยังต้องส่ง `Account` (5,763B) + `Search` (929B) ให้ทุกหน้า ทั้งที่โมดัลสองตัวนี้ `next/dynamic` อยู่แล้วและเปิดเมื่อกดเท่านั้น · ถ้าให้มันรับ label เป็น prop (แบบ [components/mobile-menu-sheet.tsx](../components/mobile-menu-sheet.tsx)) ชุดของ layout จะเหลือแค่ `Navigation` + `LanguageSwitcher` = 650B · ต้นทุนที่แลกคือ label ~26 ตัวถูก serialize เข้า flight payload (~1.5KB) ⇒ ยังคุ้มราว 5KB/หน้า
+2. **ถอด `next-intl` runtime ออกจาก client bundle ทั้งก้อน** (−12KB gzip) — งานใหญ่กว่ามาก: ⚠️ `navigation/shared/BaseLink.js` ของ next-intl เป็น `'use client'` และเรียก `useLocale()` **เสมอ** ⇒ ตราบใดที่ยังใช้ `Link` จาก `@/i18n/routing` ที่ไหนก็ตาม runtime ตัวนี้จะอยู่ในบันเดิลและทุกหน้าต้องมี provider · จะถอดได้ต้องเปลี่ยนไปใช้ `next/link` กับ href ที่ resolve locale มาจาก server แล้ว **ทุกจุด** — เสี่ยงพัง locale routing/SEO ให้ประเมินก่อนว่าคุ้มไหม
+3. `components/service-carousel.tsx` — autoplay carousel มี `useLayoutEffect` + `setInterval` + scroll handler · การ์ด 9 ใบ hydrate ทั้งชุด
+4. `components/promotion-card-grid.tsx`, `components/promotion-carousel.tsx` — ตรรกะ client ตัวเดียวคือเปิด/ปิดปุ่มลูกศรตามตำแหน่ง scroll ซึ่งทำด้วย CSS ล้วนได้
 
 คำถามที่ควรถาม: อันไหนแปลงเป็น server component ได้, อันไหน `next/dynamic` ได้, อันไหน CSS ล้วนแทนได้ (แบบที่ [#306](https://github.com/luminuy/kazumi-clinic/pull/306) ทำกับ `reveal`)
 

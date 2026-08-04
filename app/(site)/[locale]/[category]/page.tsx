@@ -32,6 +32,7 @@ import { CollagenBoosterServicePage } from '@/components/collagen-booster-servic
 import { ProductThumbnail } from '@/components/product-thumbnail';
 import { ServiceItemActions } from '@/components/service-item-actions';
 import { ServiceAftercareSection } from '@/components/service-aftercare-section';
+import { IntlBoundary } from '@/components/intl-boundary';
 
 type Props = { params: Promise<{ locale: string; category: string }> };
 
@@ -532,7 +533,7 @@ export default async function ServiceCategoryPage({ params }: Props) {
     );
 
   return (
-    <>
+    <IntlBoundary namespaces={['A11y', 'Cart']}>
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
@@ -545,6 +546,6 @@ export default async function ServiceCategoryPage({ params }: Props) {
       />
 
       {pageContent}
-    </>
+    </IntlBoundary>
   );
 }

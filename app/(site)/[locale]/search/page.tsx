@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { serviceCategories } from '@/lib/services';
 import { SearchClient, type SearchEntry } from '@/components/account/search-client';
+import { IntlBoundary } from '@/components/intl-boundary';
 
 export async function generateMetadata({
   params,
@@ -51,14 +52,16 @@ export default async function SearchPage({ params }: { params: Promise<{ locale:
   const t = await getTranslations('Search');
 
   return (
-    <section className="bg-[var(--store-surface)] py-16">
-      <div className="mx-auto w-full max-w-2xl px-6">
-        <p className="text-[0.7rem] font-medium uppercase tracking-[0.16em] text-forest">
-          {t('eyebrow')}
-        </p>
-        <h1 className="mb-8 mt-1 font-serif text-3xl text-[var(--store-ink)]">{t('title')}</h1>
-        <SearchClient index={buildIndex()} />
-      </div>
-    </section>
+    <IntlBoundary namespaces={['Cart', 'Search']}>
+      <section className="bg-[var(--store-surface)] py-16">
+        <div className="mx-auto w-full max-w-2xl px-6">
+          <p className="text-[0.7rem] font-medium uppercase tracking-[0.16em] text-forest">
+            {t('eyebrow')}
+          </p>
+          <h1 className="mb-8 mt-1 font-serif text-3xl text-[var(--store-ink)]">{t('title')}</h1>
+          <SearchClient index={buildIndex()} />
+        </div>
+      </section>
+    </IntlBoundary>
   );
 }

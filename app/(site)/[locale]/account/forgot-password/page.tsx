@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { PasswordResetRequestForm } from '@/components/account/password-reset-form';
+import { IntlBoundary } from '@/components/intl-boundary';
 
 export async function generateMetadata({
   params,
@@ -22,7 +23,8 @@ export default async function ForgotPasswordPage({
   const t = await getTranslations('Account');
 
   return (
-    <section className="bg-[var(--store-surface)] py-20">
+    <IntlBoundary namespaces={['Account']}>
+      <section className="bg-[var(--store-surface)] py-20">
       <div className="mx-auto w-full max-w-md px-6">
         <div className="rounded-[2rem] border border-black/[0.03] bg-white p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:p-10">
           <h1 className="font-serif text-3xl tracking-tight text-[var(--store-ink)]">
@@ -34,6 +36,7 @@ export default async function ForgotPasswordPage({
           <PasswordResetRequestForm />
         </div>
       </div>
-    </section>
+      </section>
+    </IntlBoundary>
   );
 }

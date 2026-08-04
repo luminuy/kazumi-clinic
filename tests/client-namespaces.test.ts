@@ -2,27 +2,27 @@ import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { CLIENT_MESSAGE_NAMESPACES } from '@/i18n/client-namespaces';
+import {
+  CLIENT_MESSAGE_NAMESPACES,
+  LAYOUT_CLIENT_NAMESPACES,
+} from '@/i18n/client-namespaces';
 
 /**
- * `app/(site)/[locale]/layout.tsx` hands NextIntlClientProvider only the namespaces in
- * CLIENT_MESSAGE_NAMESPACES, because the full message object is ~15KB of JSON serialised into
- * every page's HTML (see that file for the measurement). The saving is real but the failure mode
- * is nasty and invisible in review: add a client component that calls `useTranslations('Orders')`
- * and it throws MISSING_MESSAGE at runtime, in production, on a page nobody re-tested.
+ * Each public page now ships only the client namespaces reachable from that page, because the old
+ * all-site provider contributed 21,157 bytes to every RSC flight payload. The saving is real but
+ * the failure mode is nasty and invisible in review: forget a namespace and the client component
+ * throws MISSING_MESSAGE while rendering in production.
  *
- * So this test rebuilds the same answer from the source instead of trusting the list: it finds
- * every module reachable from a `'use client'` entry point — the directive marks a boundary, and
- * *everything imported past it is client code too*, which is the part that's easy to forget — and
- * asserts that every namespace those modules read is actually shipped.
- *
- * It deliberately does NOT assert the reverse (that every listed namespace is still used). A stale
- * extra entry costs a few hundred bytes; churn on this list costs correctness.
+ * These tests rebuild the answer from each page/layout entry instead of trusting hand-maintained
+ * comments. The walker follows server imports until it crosses `'use client'`, then treats that
+ * file and everything below it as client code and collects the root translation namespaces. Every
+ * page must still declare a boundary when that set is empty because next-intl's client BaseLink
+ * calls `useLocale()` unconditionally; package internals are deliberately outside this walker.
  */
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const SOURCE_DIRS = ['app', 'components', 'lib', 'i18n'];
 const EXTENSIONS = ['.tsx', '.ts'];
+const PUBLIC_PAGE_ROOT = join(root, 'app', '(site)', '[locale]');
 
 function walk(dir: string): string[] {
   const out: string[] = [];
@@ -61,6 +61,7 @@ function resolveImport(specifier: string, fromFile: string): string | null {
 }
 
 const IMPORT_RE = /(?:import|export)[\s\S]*?from\s*['"]([^'"]+)['"]|import\(\s*['"]([^'"]+)['"]\s*\)/g;
+const NAMESPACE_RE = /use(?:Translations|Messages|Format)\(\s*['"]([^'"]+)['"]/g;
 
 function importsOf(source: string, file: string): string[] {
   const out: string[] = [];
@@ -73,45 +74,78 @@ function importsOf(source: string, file: string): string[] {
   return out;
 }
 
-/** Every module the bundler will treat as client code, starting from the `'use client'` files. */
-function clientModuleGraph(): Set<string> {
-  const allFiles = SOURCE_DIRS.flatMap((dir) => walk(join(root, dir)));
-  const queue = allFiles.filter((file) => /^\s*(['"])use client\1/m.test(readFileSync(file, 'utf8')));
-  const seen = new Set<string>(queue);
+/** Root namespaces read by client code reachable from one server page/layout entry. */
+function namespacesRequiredBy(entryFile: string): Set<string> {
+  const queue: Array<{ file: string; client: boolean }> = [
+    { file: resolve(root, entryFile), client: false },
+  ];
+  const seen = new Set<string>();
+  const namespaces = new Set<string>();
 
   while (queue.length) {
-    const file = queue.pop()!;
+    const { file, client: parentIsClient } = queue.pop()!;
+    const seenKey = `${parentIsClient ? 'client' : 'server'}:${file}`;
+    if (seen.has(seenKey)) continue;
+    seen.add(seenKey);
 
-    for (const dep of importsOf(readFileSync(file, 'utf8'), file)) {
-      if (seen.has(dep)) continue;
-      seen.add(dep);
-      queue.push(dep);
+    const source = readFileSync(file, 'utf8');
+    const isClient = parentIsClient || /^\s*(['"])use client\1/m.test(source);
+
+    if (isClient) {
+      for (const match of source.matchAll(NAMESPACE_RE)) {
+        // `useTranslations('Appointments.cancelPage')` needs the root namespace only.
+        namespaces.add(match[1].split('.')[0]);
+      }
+    }
+
+    for (const dep of importsOf(source, file)) {
+      queue.push({ file: dep, client: isClient });
     }
   }
 
-  return seen;
+  return namespaces;
 }
 
-const NAMESPACE_RE = /use(?:Translations|Messages|Format)\(\s*['"]([^'"]+)['"]/g;
+function declaredPageNamespaces(source: string): Set<string> {
+  const list = source.match(/namespaces=\{\[([\s\S]*?)\]\}/)?.[1] ?? '';
+  return new Set(
+    [...list.matchAll(/'([A-Za-z][A-Za-z0-9]*)'/g)].map((match) => match[1]),
+  );
+}
 
 describe('client message namespaces', () => {
-  const clientFiles = clientModuleGraph();
+  const layoutEntry = 'app/(site)/[locale]/layout.tsx';
 
   it('finds the client boundary at all (guards against the walker silently matching nothing)', () => {
-    expect(clientFiles.size).toBeGreaterThan(10);
+    expect(namespacesRequiredBy(layoutEntry).size).toBeGreaterThan(0);
   });
 
-  it('ships every namespace that client components read', () => {
-    const shipped = new Set<string>(CLIENT_MESSAGE_NAMESPACES);
-    const missing: string[] = [];
+  it('gives every page a boundary that covers its client graph', () => {
+    const pageFiles = walk(PUBLIC_PAGE_ROOT)
+      .filter((file) => file.endsWith('page.tsx'))
+      .sort();
+    const knownNamespaces = new Set<string>(CLIENT_MESSAGE_NAMESPACES);
 
-    for (const file of clientFiles) {
-      for (const match of readFileSync(file, 'utf8').matchAll(NAMESPACE_RE)) {
-        // `useTranslations('Appointments.cancelPage')` still only needs the root namespace.
-        const namespace = match[1].split('.')[0];
-        if (!shipped.has(namespace)) missing.push(`${file.slice(root.length + 1)} → ${match[1]}`);
-      }
+    for (const pageFile of pageFiles) {
+      const entry = pageFile.slice(root.length + 1);
+      const source = readFileSync(pageFile, 'utf8');
+      const required = namespacesRequiredBy(entry);
+      const declared = declaredPageNamespaces(source);
+      const label = pageFile.slice(PUBLIC_PAGE_ROOT.length + 1);
+      const unknown = [...declared].filter((namespace) => !knownNamespaces.has(namespace));
+
+      expect(unknown, `${label} declares an unknown client namespace`).toEqual([]);
+      expect(source, `${label} needs an IntlBoundary`).toContain('<IntlBoundary');
+      const missing = [...required].filter((namespace) => !declared.has(namespace));
+
+      expect(missing, `${label} does not ship every required namespace`).toEqual([]);
     }
+  });
+
+  it('the layout boundary covers every client namespace reachable from the layout', () => {
+    const required = namespacesRequiredBy(layoutEntry);
+    const shipped = new Set<string>(LAYOUT_CLIENT_NAMESPACES);
+    const missing = [...required].filter((namespace) => !shipped.has(namespace));
 
     expect(missing).toEqual([]);
   });

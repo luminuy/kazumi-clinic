@@ -12,6 +12,7 @@ import { Reveal } from '@/components/reveal';
 import { BookingForm } from '@/components/booking-form';
 import { MapEmbed } from '@/components/map-embed';
 import { LineIcon, InstagramIcon } from '@/components/brand-icons';
+import { IntlBoundary } from '@/components/intl-boundary';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -111,7 +112,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
   ];
 
   return (
-    <>
+    <IntlBoundary namespaces={['BookingForm']}>
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
@@ -292,6 +293,6 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
           </Reveal>
         </div>
       </section>
-    </>
+    </IntlBoundary>
   );
 }

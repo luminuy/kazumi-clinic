@@ -11,6 +11,8 @@ import { getImage } from '@/lib/site-images-store';
 import { site, localizedAlternates } from '@/lib/site';
 import { siteSocialImage } from '@/lib/metadata-images';
 import { cn } from '@/lib/utils';
+import { IntlBoundary } from '@/components/intl-boundary';
+import { LAYOUT_CLIENT_NAMESPACES } from '@/i18n/client-namespaces';
 
 /**
  * Chrome for the public site. It lives here rather than in the root layout so /admin doesn't
@@ -19,10 +21,8 @@ import { cn } from '@/lib/utils';
  *
  * A route group adds no path segment, so every URL is exactly what it was.
  */
-import { NextIntlClientProvider } from 'next-intl';
-import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { routing } from '@/i18n/routing';
-import { pickClientMessages } from '@/i18n/client-namespaces';
 import { notFound } from 'next/navigation';
 import '../../globals.css';
 
@@ -128,10 +128,6 @@ export default async function SiteLayout({
   });
   const siteDescription = locale === 'en' ? site.descriptionEn : site.description;
 
-  // Only the namespaces client components read — see i18n/client-namespaces.ts for why the rest
-  // must not cross the boundary.
-  const messages = pickClientMessages(await getMessages());
-
   return (
     <html lang={locale} className={cn(serif.variable, sans.variable)}>
       {/* Nearly every hero/LCP image on the site resolves through res.cloudinary.com
@@ -140,7 +136,7 @@ export default async function SiteLayout({
           in front of every LCP image request. Next.js hoists direct <link> children into <head>. */}
       <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
       <body className="font-sans">
-        <NextIntlClientProvider messages={messages}>
+        <IntlBoundary namespaces={LAYOUT_CLIENT_NAMESPACES}>
           <script
             type="application/ld+json"
             // eslint-disable-next-line react/no-danger
@@ -155,7 +151,7 @@ export default async function SiteLayout({
           <main>{children}</main>
           <Footer logoMark={brandMark} description={siteDescription} />
           <MobileContactBar />
-        </NextIntlClientProvider>
+        </IntlBoundary>
         {/* Renders nothing until GA_MEASUREMENT_ID is set — see the component for the cost. */}
         <GoogleAnalytics />
       </body>
