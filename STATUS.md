@@ -5,7 +5,7 @@
 > อัปเดตไฟล์นี้เป็นส่วนหนึ่งของ workflow: หลัง **deploy** และตอน **เริ่ม/จบงานสำคัญ** (ดู CLAUDE.md §0)
 > งานที่ปิดไปแล้วย้ายไป [docs/changelog.md](docs/changelog.md) — ไฟล์นี้เก็บแค่ **ตอนนี้ · ต่อไป · ค้าง**
 
-**อัปเดตล่าสุด:** 2026-08-04 (หลังรอบ perf/a11y #307–#315) · โดย: Claude Code
+**อัปเดตล่าสุด:** 2026-08-04 (หลังรอบ perf/a11y #307–#317) · โดย: Claude Code
 
 ---
 
@@ -60,7 +60,7 @@
 | เรื่อง | รายละเอียด |
 |---|---|
 | **Password reset + อีเมลนัดหมาย — ตั้งค่าครบแล้ว ยังไม่มีใครทดสอบ delivery จริง** | Resend ยืนยันโดเมน `kazumiclinic.skin` แล้ว, `RESEND_API_KEY`/`RESEND_FROM_EMAIL` ตั้งครบ, `isEmailConfigured()` = true ยืนยันจาก production จริง (ปุ่ม "ลืมรหัสผ่าน?" โผล่แล้ว) — **สิ่งที่เหลือคือลองกดจริงแล้วเช็คว่าอีเมลถึงกล่องจดหมายจริงไหม** (ยังไม่มีใครทำ) ดู [docs/member-system.md](docs/member-system.md) + [docs/appointments.md](docs/appointments.md) |
-| **Mobile PageSpeed ค้างที่ 82 — เหลือ LCP อย่างเดียว** | Desktop 100 ทุกช่อง · Accessibility 90 → **100** แล้ว · mobile ติด LCP 4.4s · **อ่าน [docs/performance.md](docs/performance.md) ก่อนลงมือ** — ในนั้นมีตารางการทดลอง 7 อันที่วัดจริงแล้ว**ล้มเหลว** (รวมอันที่ deploy ขึ้น production แล้วต้อง revert) · กุญแจ: `observedFCP` = `observedLCP` = 778ms แปลว่าหน้าเว็บจริงเร็วอยู่แล้ว เลข 4.4s เป็นโมเดลจำลอง Lantern — **การไล่แก้ network จะไม่ขยับอะไร** ทางเดียวที่เหลือคือลดขนาด JS bundle (244KB/18 chunk) |
+| **Mobile PageSpeed ค้างที่ 82 — เหลือ LCP อย่างเดียว** | Desktop 100 ทุกช่อง · Accessibility 90 → **100** แล้ว · mobile ติด LCP 4.4s · **อ่าน [docs/performance.md](docs/performance.md) ก่อนลงมือ** — ในนั้นมีตารางการทดลอง 7 อันที่วัดจริงแล้ว**ล้มเหลว** (รวมอันที่ deploy ขึ้น production แล้วต้อง revert) · กุญแจ: `observedFCP` = `observedLCP` = 778ms แปลว่าหน้าเว็บจริงเร็วอยู่แล้ว เลข 4.4s เป็นโมเดลจำลอง Lantern — **การไล่แก้ network จะไม่ขยับอะไร** ทางเดียวที่เหลือคือลดขนาด JS bundle · เริ่มแล้ว: [#317](https://github.com/luminuy/kazumi-clinic/pull/317) ทำเมนูมือถือ (Base UI Dialog) เป็น `next/dynamic` → JS ที่ parse ก่อน hydrate 211 → **191KB gzip** ทุกหน้า · ⚠️ ตัวเลข "244KB/18 chunk" ที่เคยเขียนไว้รวม polyfill `noModule` 39.5KB ที่ Chrome ไม่โหลด — headroom จริงเหลือ ~40KB (framework กิน 79%) ดูตารางแจกแจงใน docs/performance.md · **ยังไม่ได้วัด PSI ของ production หลัง #317** |
 | **ปุ่ม LINE ตกเกณฑ์คอนทราสต์ — รอเจ้าของตัดสิน** | ขาวบน `--mint` `#06c755` = 2.26:1 (ต้องการ 4.5:1) เป็นจุดเดียวที่เหลือทั้งเว็บ · แต่เป็นสีแบรนด์ LINE จริงและเป็น CTA หลักของธุรกิจ **อย่าเปลี่ยนเองโดยไม่ถาม** — ทางเลือกอยู่ใน [docs/performance.md](docs/performance.md) |
 | **`blog/[slug]` ไม่ prerender ตอน build — ตั้งใจ ไม่ใช่ของค้าง** | slug อยู่ใน D1 ซึ่ง CI เข้าไม่ถึง · `generateStaticParams` คืน list ว่างเพื่อให้เข้า ISR ตอน on-demand (คนแรกที่เปิดจ่ายค่า render, ที่เหลือได้ cache) · จะ prerender จริงต้องให้ CI ถือ Cloudflare API token ไปอ่าน D1 ตอน build = เพิ่ม secret + ทำให้ build ล้มได้เมื่อ D1 ล่ม แลกกับ latency ของ request แรกเท่านั้น — **ไม่คุ้ม อย่าเปลี่ยนโดยไม่มีเหตุใหม่** |
 
