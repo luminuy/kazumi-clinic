@@ -46,7 +46,7 @@ function withCurrentLocale(path: string): string {
 }
 
 export const fieldClass =
-  'w-full rounded-xl border border-black/5 bg-black/[0.04] px-4 py-3 text-sm text-[var(--store-ink)] outline-none transition-all placeholder:text-[var(--store-ink)]/40 focus:border-transparent focus:bg-white focus:ring-2 focus:ring-forest/50 focus:shadow-[0_4px_12px_rgb(0,0,0,0.05)]';
+  'w-full rounded-xl border border-black/5 bg-black/[0.04] px-4 py-3 text-sm text-[var(--store-ink)] outline-none transition-all placeholder:text-[var(--store-muted)] focus:border-transparent focus:bg-white focus:ring-2 focus:ring-forest/50 focus:shadow-[0_4px_12px_rgb(0,0,0,0.05)]';
 
 /**
  * Email/password sign-in + sign-up in one form. On success it does a full-page navigation (not a
@@ -161,7 +161,7 @@ export function AuthForm({
 
           <div className="flex items-center gap-3 py-2">
             <span className="h-px flex-1 bg-black/5" />
-            <span className="text-[0.7rem] uppercase tracking-[0.14em] text-[var(--store-ink)]/40">{t('oauth.or')}</span>
+            <span className="text-[0.7rem] uppercase tracking-[0.14em] text-[var(--store-muted)]">{t('oauth.or')}</span>
             <span className="h-px flex-1 bg-black/5" />
           </div>
         </>
