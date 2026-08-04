@@ -30,6 +30,7 @@ Mobile metrics: FCP 2.1s · **LCP 4.4s** · TBT 40ms · CLS 0.047 · SI 3.3s
 | [#310](https://github.com/luminuy/kazumi-clinic/pull/310) | favicon 1500px 315KB ที่โหลดสองรอบ | น้ำหนักหน้า **1,456KB → 833KB (−43%)** |
 | [#313](https://github.com/luminuy/kazumi-clinic/pull/313) [#314](https://github.com/luminuy/kazumi-clinic/pull/314) | `<dl>` ที่ห่อ `<details>` + คอนทราสต์ 25 จุด | **Accessibility 90 → 100** · Agent Accessibility ผ่าน |
 | [#315](https://github.com/luminuy/kazumi-clinic/pull/315) | GA4 แบบเปิดด้วยตัวแปร | ยัง inert — ดูหัวข้อ "ค้างรอเจ้าของ" |
+| [#317](https://github.com/luminuy/kazumi-clinic/pull/317) | เมนูแฮมเบอร์เกอร์มือถือ (Base UI Dialog) เป็น `next/dynamic` | JS ที่ต้อง parse ก่อน hydrate **−59KB raw / −18.4KB gzip (−9%)** ทุกหน้าสาธารณะ · HTML หน้าแรก −15.7KB raw · A/B localhost 3 รอบ/ฝั่ง: score median **66 → 86**, LCP median **3,890 → 3,722ms**, TBT median 933 → 175ms (ทุกรอบของฝั่งใหม่ดีกว่าทุกรอบของฝั่งเก่า) |
 
 ผลรวม: Desktop จาก **"Error!" (`NO_LCP`) → 100** · Accessibility **90 → 100** · Mobile ยังไม่ถึงเป้า
 
@@ -62,7 +63,7 @@ observedLargestContentfulPaint: 778   ← เท่ากันเป๊ะ
 
 หน้าเว็บจริงพ่นทุกอย่างพร้อมกันที่ ~0.8 วินาที · เลข 4.4s มาจาก **Lantern** ซึ่งเป็นโมเดลจำลองของ Lighthouse ที่เอา trace จริงมายืดใหม่บน Slow-4G + CPU ช้า 4 เท่า
 
-แปลว่า **การไล่แก้ network (ลด request, ลด origin, ลดไบต์) จะไม่ขยับเลข** — ที่ Lantern คิดเป็นเวลากั้นการ paint คือ **JavaScript ที่หน้านี้ส่งไป hydrate** ต่างหาก · หน้าแรกส่ง **JS 244KB / 18 chunk** และ chunk เดียว (`38_*.js`, 69KB) กิน scripting 1,105ms ในการวัดครั้งหนึ่ง
+แปลว่า **การไล่แก้ network (ลด request, ลด origin, ลดไบต์) จะไม่ขยับเลข** — ที่ Lantern คิดเป็นเวลากั้นการ paint คือ **JavaScript ที่หน้านี้ส่งไป hydrate** ต่างหาก · หน้าแรกส่ง JS ที่เบราว์เซอร์สมัยใหม่โหลดจริง **~191KB gzip / 12 chunk** (หลัง [#317](https://github.com/luminuy/kazumi-clinic/pull/317) · ก่อนหน้านั้น 211KB / 13) และ chunk เดียว (`react-dom`, 70KB gzip) กิน scripting หลักร้อย ms ทุกครั้ง — ดูตารางแจกแจงในหัวข้อ "อะไรเหลือ" ข้อ 1
 
 นี่คือเหตุผลที่การทดลอง 6 อันข้างบนล้มหมด — มันแก้ผิดชั้น
 
@@ -72,13 +73,30 @@ observedLargestContentfulPaint: 778   ← เท่ากันเป๊ะ
 
 ### 1. ลดขนาด JS bundle (งานจริง — ทางเดียวที่เหลือที่จะพา mobile ถึง 90)
 
-ไม่ใช่ config flag · ต้องไล่ว่า client component ตัวไหนบนหน้าแรก**จำเป็นต้อง hydrate จริง**:
+ไม่ใช่ config flag · ต้องไล่ว่า client component ตัวไหนบนหน้าแรก**จำเป็นต้อง hydrate จริง**
 
-- `components/service-carousel.tsx` — autoplay carousel มี `useLayoutEffect` + `setInterval` + scroll handler
-- `components/promotion-card-grid.tsx`, `components/promotion-carousel.tsx`
-- `components/header-actions.tsx` (modal ทำ `next/dynamic` ไปแล้ว)
+⚠️ **ตัวเลข "244KB / 18 chunk" ที่เคยเขียนไว้ทำให้ประเมินสูงเกินจริง** — วัดของจริงทีละก้อน 2026-08-04 พบว่าในนั้นมี **polyfill 39.5KB gzip ที่ติดแอตทริบิวต์ `noModule`** อยู่ด้วย ซึ่ง Chrome (และ Lighthouse) **ไม่โหลดเลย** · JS ที่เบราว์เซอร์สมัยใหม่โหลดจริงคือ ~211KB gzip / 13 ก้อน และหลัง [#317](https://github.com/luminuy/kazumi-clinic/pull/317) เหลือ **191KB / 12 ก้อน**
 
-คำถามที่ควรถาม: อันไหนแปลงเป็น server component ได้, อันไหน `next/dynamic` ได้, อันไหน CSS ล้วนแทนได้ (แบบที่ [#306](https://github.com/luminuy/kazumi-clinic/pull/306) ทำกับ `reveal`) · ประเมินหยาบ ๆ: ลด JS ลง 30-40% น่าจะพา LCP แตะ ~3s = ~90 คะแนน
+แจกแจงตามเจ้าของ (gzip, วัดหลัง #317):
+
+| ก้อน | คือใคร | ลดได้ไหม |
+| --- | --- | --- |
+| 70.5KB | `react-dom` | ❌ ตายตัว |
+| 37.3KB | react-server-dom (ตัวอ่าน RSC flight payload) | ❌ ตายตัว |
+| 12.8 + 9.2 + 8.9 + 4.5 + 4.2 + 2.3 + 1.5KB | router / next-runtime / `next/image` / turbopack runtime | ❌ ตายตัว |
+| **20.0KB** | โค้ด client ของเราเอง (HeaderActions, LanguageSwitcher, ปุ่มเมนู, cloudinary loader) | 🟡 |
+| **12.0KB** | `next-intl` client runtime + `@formatjs/intl-messageformat` | 🟡 |
+| **8.5KB** | `clsx` + `tailwind-merge` (ผ่าน `cn()`) | 🟡 |
+
+⇒ **framework กินไป ~152KB (79%)** เหลือส่วนที่โค้ดเราคุมได้จริงแค่ ~40KB gzip · "ลด JS 30-40%" เป็นไปไม่ได้ในทางเลข ให้ตั้งเป้าที่ *ลดงาน parse/hydrate* แทนการไล่ไบต์
+
+ที่ยังพอมีเนื้อ เรียงตามความคุ้ม:
+
+1. **ถอด `next-intl` ออกจาก client bundle ของหน้าสาธารณะ** (−12KB gzip + JSON ใน HTML อีก ~22KB raw) — วิธี: ให้ client component รับข้อความเป็น prop แทน `useTranslations()` (แบบที่ [components/map-embed.tsx](../components/map-embed.tsx) กับ [components/mobile-menu-sheet.tsx](../components/mobile-menu-sheet.tsx) ทำอยู่) แล้วย้าย `NextIntlClientProvider` ลงไปไว้เฉพาะหน้าที่ต้องใช้จริง (cart / checkout / account / search / blog) · ⚠️ ตัวที่ยากคือ `search-modal` กับ `login-modal` ซึ่งอยู่บน header ของทุกหน้า — ถ้าถอด provider ออกจาก layout ต้องแก้สองตัวนี้ให้รับ prop ก่อน ไม่งั้นพังตอน runtime
+2. `components/service-carousel.tsx` — autoplay carousel มี `useLayoutEffect` + `setInterval` + scroll handler · การ์ด 9 ใบ hydrate ทั้งชุด
+3. `components/promotion-card-grid.tsx`, `components/promotion-carousel.tsx` — ตรรกะ client ตัวเดียวคือเปิด/ปิดปุ่มลูกศรตามตำแหน่ง scroll ซึ่งทำด้วย CSS ล้วนได้
+
+คำถามที่ควรถาม: อันไหนแปลงเป็น server component ได้, อันไหน `next/dynamic` ได้, อันไหน CSS ล้วนแทนได้ (แบบที่ [#306](https://github.com/luminuy/kazumi-clinic/pull/306) ทำกับ `reveal`)
 
 > ⚠️ ก่อนแตะ `service-carousel.tsx` อ่าน §0.5 ของ [CLAUDE.md](../CLAUDE.md) เรื่อง rail กับ `scroll-snap` ก่อน — ไฟล์นี้เคยทำ LCP พังมาแล้วสองรอบด้วยคนละสาเหตุ
 

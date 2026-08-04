@@ -1,24 +1,32 @@
 import { Link } from '@/i18n/routing';
 import Image from 'next/image';
-import { Menu, ChevronDown, ArrowRight } from 'lucide-react';
+import { ChevronDown, ArrowRight } from 'lucide-react';
 import { site } from '@/lib/site';
 import { navItems, resolvedServiceNavGroups } from '@/lib/nav';
-import { Button } from '@/components/ui/button';
-import { ServiceIcon } from '@/components/service-icon';
-import { LineIcon } from '@/components/brand-icons';
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-  SheetClose,
-} from '@/components/ui/sheet';
 import { useTranslations, useLocale } from 'next-intl';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { HeaderActions } from '@/components/header-actions';
+import { MobileMenu } from '@/components/mobile-menu';
 import { isEmailConfigured } from '@/lib/members/password-reset';
 import type { OAuthProvider } from '@/lib/members/oauth';
+
+/** The href whose entry carries the service mega-menu, in both the desktop nav and the mobile one. */
+const SERVICE_HREF = '/services';
+
+/**
+ * `Navigation` message keys don't match the hrefs they label, so the mapping is spelled out once
+ * here — it used to be an inline ternary chain duplicated between the desktop nav and the mobile
+ * sheet, which meant a new nav item had to be taught to two places or it silently rendered the
+ * "contact" label.
+ */
+const navTranslationKeys: Record<string, string> = {
+  '/services': 'services',
+  '/reviews': 'reviews',
+  '/promotions': 'promotions',
+  '/about': 'about',
+  '/blog': 'blog',
+  '/contact': 'contact',
+};
 
 export default function Header({
   logoMark,
@@ -64,13 +72,9 @@ export default function Header({
             Component, and the menu opens on keyboard focus as well as hover. */}
         <nav className="hidden gap-6 text-sm text-foreground/80 md:flex">
           {navItems.map((item) => {
-            const translationKey = item.href === '/services' ? 'services' : 
-                                  item.href === '/reviews' ? 'reviews' :
-                                  item.href === '/promotions' ? 'promotions' :
-                                  item.href === '/about' ? 'about' :
-                                  item.href === '/blog' ? 'blog' : 'contact';
-            
-            return item.href === '/services' ? (
+            const translationKey = navTranslationKeys[item.href] ?? 'contact';
+
+            return item.href === SERVICE_HREF ? (
               <div key={item.href} className="group">
                 <Link href={item.href} className="flex items-center gap-1 py-2 hover:text-primary">
                   {t(translationKey)}
@@ -129,85 +133,24 @@ export default function Header({
           <LanguageSwitcher />
           <HeaderActions oauthProviders={oauthProviders} emailConfigured={emailConfigured} />
 
-          <Sheet>
-            <SheetTrigger
-              render={
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="md:hidden"
-                  aria-label={t('openMenu')}
-                />
-              }
-            >
-              <Menu className="size-5" />
-            </SheetTrigger>
-            <SheetContent side="right">
-              <SheetHeader>
-                <SheetTitle className="font-serif tracking-widest text-olive-deep">
-                  KAZUMI CLINIC
-                </SheetTitle>
-              </SheetHeader>
-              <nav className="flex flex-col gap-1 overflow-y-auto px-4 pb-4">
-                {navItems.map((item) => {
-                  const translationKey = item.href === '/services' ? 'services' : 
-                                        item.href === '/reviews' ? 'reviews' :
-                                        item.href === '/promotions' ? 'promotions' :
-                                        item.href === '/about' ? 'about' :
-                                        item.href === '/blog' ? 'blog' : 'contact';
-                  return (
-                  <div key={item.href}>
-                    <SheetClose
-                      render={
-                        <Link
-                          href={item.href}
-                          className="block rounded-md px-3 py-2 text-sm text-foreground/80 hover:bg-muted hover:text-primary"
-                        />
-                      }
-                    >
-                      {t(translationKey)}
-                    </SheetClose>
-
-                    {/* The mega dropdown has no hover on touch — the groups expand inline instead. */}
-                    {item.href === '/services' && (
-                      <div className="mb-2 mt-1 space-y-3 border-l border-olive/15 pl-3">
-                        {serviceGroups.map(({ group, categories }) => (
-                          <div key={group.title}>
-                            <p className="px-3 text-[0.7rem] leading-snug text-olive-light">
-                              <span aria-hidden="true">{group.glyph}</span>{' '}
-                              {isEn ? group.titleEn : group.title}
-                            </p>
-                            {categories.map((c) => (
-                              <SheetClose
-                                key={c.slug}
-                                render={
-                                  <Link
-                                    href={`/${c.slug}`}
-                                    className="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-ink/70 hover:bg-muted hover:text-primary"
-                                  />
-                                }
-                              >
-                                <ServiceIcon slug={c.slug} className="size-3.5 text-olive-light" />
-                                {isEn ? c.titleEn : c.title}
-                              </SheetClose>
-                            ))}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-                <Button
-                  render={<a href={site.lineUrl} target="_blank" rel="noopener" />}
-                  className="mt-4 bg-line text-white hover:bg-line/90"
-                >
-                  <LineIcon className="size-4" />
-                  {t('bookLine')}
-                </Button>
-              </nav>
-            </SheetContent>
-          </Sheet>
+          <MobileMenu
+            openLabel={t('openMenu')}
+            items={navItems.map((item) => ({
+              href: item.href,
+              label: t(navTranslationKeys[item.href] ?? 'contact'),
+            }))}
+            serviceGroups={serviceGroups.map(({ group, categories }) => ({
+              glyph: group.glyph,
+              label: isEn ? group.titleEn : group.title,
+              categories: categories.map((c) => ({
+                slug: c.slug,
+                label: isEn ? c.titleEn : c.title,
+              })),
+            }))}
+            serviceHref={SERVICE_HREF}
+            lineUrl={site.lineUrl}
+            lineLabel={t('bookLine')}
+          />
         </div>
       </div>
     </header>
